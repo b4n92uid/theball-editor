@@ -1,0 +1,9 @@
+### DIRS
+build
+dist
+nbproject
+
+### FILES
+Makefile
+.dep.inc
+tbeditor_resource.rc
