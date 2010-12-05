@@ -15,9 +15,12 @@
 #include "QEnvManager.h"
 #include "QLightsManager.h"
 #include "QNodesManager.h"
+#include "QTBEngine.h"
 
 class MainWindow : public QMainWindow
 {
+    Q_OBJECT
+
 public:
     MainWindow();
     virtual ~MainWindow();
@@ -26,6 +29,8 @@ private:
     QNodesManager* m_nodsManager;
     QLightsManager* m_lightsManager;
     QEnvManager* m_envManager;
+
+    QTBEngine* m_tbeWidget;
 };
 
 #endif	/* MAINWINDOW_H */

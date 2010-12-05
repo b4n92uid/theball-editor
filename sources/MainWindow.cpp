@@ -14,9 +14,11 @@ MainWindow::MainWindow()
 
     uinterface->setupUi(this);
 
-    m_nodsManager = new QNodesManager(uinterface);
-    m_lightsManager = new QLightsManager(uinterface);
-    m_envManager = new QEnvManager(uinterface);
+    m_nodsManager = new QNodesManager(this, uinterface);
+    m_lightsManager = new QLightsManager(this, uinterface);
+    m_envManager = new QEnvManager(this, uinterface);
+
+    m_tbeWidget = new QTBEngine(this);
 }
 
 MainWindow::~MainWindow()

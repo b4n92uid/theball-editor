@@ -7,7 +7,7 @@
 
 #include "QNodesManager.h"
 
-QNodesManager::QNodesManager(Ui_mainWindow* uinterface)
+QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObject(parent)
 {
 }
 
