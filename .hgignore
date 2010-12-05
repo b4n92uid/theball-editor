@@ -1,9 +1,11 @@
-### DIRS
+#### DIRS
 build
 dist
 nbproject
 
-### FILES
+#### FILES
 Makefile
 .dep.inc
 tbeditor_resource.rc
+object_script.tbeditor
+release.lnk

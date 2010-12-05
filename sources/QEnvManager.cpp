@@ -7,7 +7,7 @@
 
 #include "QEnvManager.h"
 
-QEnvManager::QEnvManager(Ui_mainWindow* uinterface)
+QEnvManager::QEnvManager(QObject* parent, Ui_mainWindow* uinterface) : QObject(parent)
 {
 }
 

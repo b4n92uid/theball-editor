@@ -7,7 +7,7 @@
 
 #include "QLightsManager.h"
 
-QLightsManager::QLightsManager(Ui_mainWindow* uinterface)
+QLightsManager::QLightsManager(QObject* parent, Ui_mainWindow* uinterface) : QObject(parent)
 {
 }
 

@@ -8,13 +8,25 @@
 #ifndef QBROWSEDIT_H
 #define	QBROWSEDIT_H
 
-class QBrowsEdit
-{
-public:
-    QBrowsEdit();
-    virtual ~QBrowsEdit();
-private:
+#include <QtGui/QtGui>
 
+class QBrowsEdit : public QObject
+{
+    Q_OBJECT
+
+public:
+    QBrowsEdit(QWidget* parent, QLineEdit* lineEdit, QPushButton* browse);
+    virtual ~QBrowsEdit();
+
+public slots:
+    void OpenFileName();
+
+signals:
+    void textChanged(const QString& filename);
+
+private:
+    QLineEdit* m_lineEdit;
+    QPushButton* m_browse;
 };
 
 #endif	/* QBROWSEDIT_H */
