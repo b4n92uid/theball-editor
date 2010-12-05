@@ -17,6 +17,8 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(parent)
 
     m_grabCamera = false;
 
+    m_selectedNode = NULL;
+
     setMouseTracking(true);
 }
 
@@ -58,23 +60,6 @@ void QTBEngine::paintGL()
     m_device->EndScene();
 }
 
-void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
-{
-    m_eventManager->notify = EventManager::EVENT_MOUSE_MOVE;
-
-    if(m_grabCamera)
-    {
-        Vector2i curPos = qptovec(ev->pos());
-
-        m_eventManager->mousePosRel = curPos - m_lastCursorPos;
-        m_eventManager->mousePos = curPos;
-
-        m_lastCursorPos = curPos;
-
-        m_camera->OnEvent(m_eventManager);
-    }
-}
-
 void QTBEngine::mousePressEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
@@ -88,7 +73,9 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
     }
 
     else if(ev->button() == Qt::RightButton)
+    {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = true;
+    }
 
     else if(ev->button() == Qt::MiddleButton)
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = true;
@@ -112,6 +99,23 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = false;
 
     m_camera->OnEvent(m_eventManager);
+}
+
+void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
+{
+    m_eventManager->notify = EventManager::EVENT_MOUSE_MOVE;
+
+    if(m_grabCamera)
+    {
+        Vector2i curPos = qptovec(ev->pos());
+
+        m_eventManager->mousePosRel = curPos - m_lastCursorPos;
+        m_eventManager->mousePos = curPos;
+
+        m_lastCursorPos = curPos;
+
+        m_camera->OnEvent(m_eventManager);
+    }
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)

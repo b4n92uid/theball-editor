@@ -14,21 +14,28 @@
 
 class QTBEngine : public QGLWidget
 {
+    Q_OBJECT
+
 public:
     QTBEngine(QWidget* parent);
-    virtual ~QTBEngine();
+    ~QTBEngine();
 
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
 
-    void mouseMoveEvent(QMouseEvent* ev);
     void mousePressEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
-    void mouse(QMouseEvent* ev);
+    void mouseMoveEvent(QMouseEvent* ev);
+
     void keyPressEvent(QKeyEvent* ev);
     void keyReleaseEvent(QKeyEvent* ev);
+
+signals:
+    void MeshUpdated(tbe::scene::Mesh*);
+    void ParticlesUpdated(tbe::scene::ParticlesEmiter*);
+    void WaterUpdated(tbe::scene::Water*);
 
 private:
     tbe::Device* m_device;
@@ -38,6 +45,8 @@ private:
 
     bool m_grabCamera;
     tbe::Vector2i m_lastCursorPos;
+
+    tbe::scene::Node* m_selectedNode;
 };
 
 #endif	/* QTBENGINE_H */

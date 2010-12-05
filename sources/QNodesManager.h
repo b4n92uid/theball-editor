@@ -20,6 +20,29 @@ public:
     QNodesManager(QObject* parent, Ui_mainWindow* uinterface);
     virtual ~QNodesManager();
 
+public slots:
+    void OnNodeNameChanged(const QString& str);
+    void OnNodePosChanged(const tbe::Vector3f& vec);
+    void OnNodeRotChanged(const tbe::Vector3f& vec);
+
+    void OnNodeMeshSet();
+    void OnNodeMeshAlloc();
+
+    void OnNodeWaterSet();
+    void OnNodeWaterAlloc();
+
+    void OnNodeParticleSet();
+    void OnNodeParticleAlloc();
+
+    void SetCurrentMesh(tbe::scene::Mesh* mesh);
+    void SetCurrentParticle(tbe::scene::ParticlesEmiter* particles);
+    void SetCurrentWater(tbe::scene::Water* water);
+
+signals:
+    void RegisterMesh(tbe::scene::Mesh*);
+    void RegisterParticles(tbe::scene::ParticlesEmiter*);
+    void RegisterWater(tbe::scene::Water*);
+
 private:
     QLineEdit* m_nodeName;
     QVectorBox* m_nodePos;
@@ -60,7 +83,12 @@ private:
 
     } ParticlesTab;
 
-    QTreeView m_nodeList;
+    QTreeView* m_nodeList;
+
+    tbe::scene::Node* m_curNode;
+    tbe::scene::Mesh* m_curMesh;
+    tbe::scene::ParticlesEmiter* m_curParticles;
+    tbe::scene::Water* m_curWater;
 };
 
 #endif	/* QNODESMANAGER_H */
