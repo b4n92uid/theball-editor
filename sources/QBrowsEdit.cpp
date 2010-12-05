@@ -27,3 +27,8 @@ void QBrowsEdit::OpenFileName()
     if(!filename.isEmpty())
         m_lineEdit->setText(filename);
 }
+
+QString QBrowsEdit::GetOpenFileName()
+{
+    return m_lineEdit->text();
+}

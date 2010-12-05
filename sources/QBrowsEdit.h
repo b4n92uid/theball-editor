@@ -18,6 +18,8 @@ public:
     QBrowsEdit(QWidget* parent, QLineEdit* lineEdit, QPushButton* browse);
     virtual ~QBrowsEdit();
 
+    QString GetOpenFileName();
+
 public slots:
     void OpenFileName();
 
