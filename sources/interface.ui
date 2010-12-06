@@ -92,7 +92,7 @@
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="node_rotation_z">
+            <layout class="QHBoxLayout" name="_2">
              <item>
               <widget class="QDoubleSpinBox" name="node_rotation_x"/>
              </item>
@@ -100,7 +100,7 @@
               <widget class="QDoubleSpinBox" name="node_rotation_y"/>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_30"/>
+              <widget class="QDoubleSpinBox" name="node_rotation_z"/>
              </item>
             </layout>
            </item>
@@ -175,18 +175,12 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_size"/>
-            </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_17">
               <property name="text">
                <string>Uv repeat</string>
               </property>
              </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_uvrepeat"/>
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_16">
@@ -208,6 +202,19 @@
             <item row="4" column="1">
              <widget class="QDoubleSpinBox" name="node_water_blend"/>
             </item>
+            <item row="5" column="0" colspan="2">
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>100</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="6" column="0" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_24">
               <item>
@@ -226,18 +233,25 @@
               </item>
              </layout>
             </item>
-            <item row="5" column="0" colspan="2">
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>100</height>
-               </size>
-              </property>
-             </spacer>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_water_size_x"/>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_water_size_y"/>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_water_uvrepeat_x"/>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_water_uvrepeat_y"/>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -255,9 +269,6 @@
                <string>Gravity</string>
               </property>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="node_particles_gravity"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_21">
@@ -361,6 +372,19 @@
                  <string>Effacer</string>
                 </property>
                </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="_3">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_particles_gravity_x"/>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_particles_gravity_y"/>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_particles_gravity_z"/>
               </item>
              </layout>
             </item>
