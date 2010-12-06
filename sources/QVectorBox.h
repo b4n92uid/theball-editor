@@ -16,7 +16,7 @@ class QVectorBox : public QObject
     Q_OBJECT
 
 public:
-    QVectorBox(QWidget* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QDoubleSpinBox* z);
+    QVectorBox(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QDoubleSpinBox* z);
     virtual ~QVectorBox();
 
 public slots:

@@ -133,3 +133,18 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     m_camera->OnEvent(m_eventManager);
 }
+
+void QTBEngine::RegisterMesh(tbe::scene::Mesh* newmesh)
+{
+    m_meshScene->AddChild(newmesh);
+}
+
+void QTBEngine::RegisterParticles(tbe::scene::ParticlesEmiter* newparticles)
+{
+    m_particlesScene->AddChild(newparticles);
+}
+
+void QTBEngine::RegisterWater(tbe::scene::Water* newwater)
+{
+    m_waterScene->AddChild(newwater);
+}

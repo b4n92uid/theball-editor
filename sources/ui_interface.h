@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfaceWc1572.ui'
+** Form generated from reading UI file 'interfacelI3388.ui'
 **
-** Created: Sun 5. Dec 20:37:02 2010
+** Created: Tue 7. Dec 00:46:52 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEWC1572_H
-#define INTERFACEWC1572_H
+#ifndef INTERFACELI3388_H
+#define INTERFACELI3388_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -63,10 +63,10 @@ public:
     QDoubleSpinBox *node_pos_y;
     QDoubleSpinBox *node_pos_z;
     QLabel *label_13;
-    QHBoxLayout *node_rotation_z;
+    QHBoxLayout *_2;
     QDoubleSpinBox *node_rotation_x;
     QDoubleSpinBox *node_rotation_y;
-    QDoubleSpinBox *doubleSpinBox_30;
+    QDoubleSpinBox *node_rotation_z;
     QTabWidget *tabWidget_2;
     QWidget *tab_4;
     QVBoxLayout *verticalLayout_10;
@@ -79,21 +79,24 @@ public:
     QLabel *label_19;
     QDoubleSpinBox *node_water_deform;
     QLabel *label_18;
-    QDoubleSpinBox *node_water_size;
     QLabel *label_17;
-    QDoubleSpinBox *node_water_uvrepeat;
     QLabel *label_16;
     QDoubleSpinBox *node_water_speed;
     QLabel *label_15;
     QDoubleSpinBox *node_water_blend;
+    QSpacerItem *verticalSpacer_2;
     QHBoxLayout *horizontalLayout_24;
     QPushButton *node_water_add;
     QPushButton *node_water_del;
-    QSpacerItem *verticalSpacer_2;
+    QHBoxLayout *horizontalLayout_9;
+    QDoubleSpinBox *node_water_size_x;
+    QDoubleSpinBox *node_water_size_y;
+    QHBoxLayout *horizontalLayout_8;
+    QDoubleSpinBox *node_water_uvrepeat_x;
+    QDoubleSpinBox *node_water_uvrepeat_y;
     QWidget *tab_6;
     QFormLayout *formLayout_2;
     QLabel *label_20;
-    QDoubleSpinBox *node_particles_gravity;
     QLabel *label_21;
     QDoubleSpinBox *node_particles_freemove;
     QLabel *label_23;
@@ -111,6 +114,10 @@ public:
     QHBoxLayout *horizontalLayout_25;
     QPushButton *node_particles_add;
     QPushButton *node_particles_del;
+    QHBoxLayout *_3;
+    QDoubleSpinBox *node_particles_gravity_x;
+    QDoubleSpinBox *node_particles_gravity_y;
+    QDoubleSpinBox *node_particles_gravity_z;
     QTreeView *node_list;
     QWidget *tab_2;
     QVBoxLayout *verticalLayout_5;
@@ -282,25 +289,25 @@ public:
 
         verticalLayout->addWidget(label_13);
 
-        node_rotation_z = new QHBoxLayout();
-        node_rotation_z->setObjectName(QString::fromUtf8("node_rotation_z"));
+        _2 = new QHBoxLayout();
+        _2->setObjectName(QString::fromUtf8("_2"));
         node_rotation_x = new QDoubleSpinBox(groupBox);
         node_rotation_x->setObjectName(QString::fromUtf8("node_rotation_x"));
 
-        node_rotation_z->addWidget(node_rotation_x);
+        _2->addWidget(node_rotation_x);
 
         node_rotation_y = new QDoubleSpinBox(groupBox);
         node_rotation_y->setObjectName(QString::fromUtf8("node_rotation_y"));
 
-        node_rotation_z->addWidget(node_rotation_y);
+        _2->addWidget(node_rotation_y);
 
-        doubleSpinBox_30 = new QDoubleSpinBox(groupBox);
-        doubleSpinBox_30->setObjectName(QString::fromUtf8("doubleSpinBox_30"));
+        node_rotation_z = new QDoubleSpinBox(groupBox);
+        node_rotation_z->setObjectName(QString::fromUtf8("node_rotation_z"));
 
-        node_rotation_z->addWidget(doubleSpinBox_30);
+        _2->addWidget(node_rotation_z);
 
 
-        verticalLayout->addLayout(node_rotation_z);
+        verticalLayout->addLayout(_2);
 
 
         verticalLayout_3->addWidget(groupBox);
@@ -351,20 +358,10 @@ public:
 
         formLayout->setWidget(1, QFormLayout::LabelRole, label_18);
 
-        node_water_size = new QDoubleSpinBox(tab_5);
-        node_water_size->setObjectName(QString::fromUtf8("node_water_size"));
-
-        formLayout->setWidget(1, QFormLayout::FieldRole, node_water_size);
-
         label_17 = new QLabel(tab_5);
         label_17->setObjectName(QString::fromUtf8("label_17"));
 
         formLayout->setWidget(2, QFormLayout::LabelRole, label_17);
-
-        node_water_uvrepeat = new QDoubleSpinBox(tab_5);
-        node_water_uvrepeat->setObjectName(QString::fromUtf8("node_water_uvrepeat"));
-
-        formLayout->setWidget(2, QFormLayout::FieldRole, node_water_uvrepeat);
 
         label_16 = new QLabel(tab_5);
         label_16->setObjectName(QString::fromUtf8("label_16"));
@@ -386,6 +383,10 @@ public:
 
         formLayout->setWidget(4, QFormLayout::FieldRole, node_water_blend);
 
+        verticalSpacer_2 = new QSpacerItem(20, 100, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        formLayout->setItem(5, QFormLayout::SpanningRole, verticalSpacer_2);
+
         horizontalLayout_24 = new QHBoxLayout();
         horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
         node_water_add = new QPushButton(tab_5);
@@ -401,9 +402,35 @@ public:
 
         formLayout->setLayout(6, QFormLayout::SpanningRole, horizontalLayout_24);
 
-        verticalSpacer_2 = new QSpacerItem(20, 100, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        horizontalLayout_9 = new QHBoxLayout();
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        node_water_size_x = new QDoubleSpinBox(tab_5);
+        node_water_size_x->setObjectName(QString::fromUtf8("node_water_size_x"));
 
-        formLayout->setItem(5, QFormLayout::SpanningRole, verticalSpacer_2);
+        horizontalLayout_9->addWidget(node_water_size_x);
+
+        node_water_size_y = new QDoubleSpinBox(tab_5);
+        node_water_size_y->setObjectName(QString::fromUtf8("node_water_size_y"));
+
+        horizontalLayout_9->addWidget(node_water_size_y);
+
+
+        formLayout->setLayout(1, QFormLayout::FieldRole, horizontalLayout_9);
+
+        horizontalLayout_8 = new QHBoxLayout();
+        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
+        node_water_uvrepeat_x = new QDoubleSpinBox(tab_5);
+        node_water_uvrepeat_x->setObjectName(QString::fromUtf8("node_water_uvrepeat_x"));
+
+        horizontalLayout_8->addWidget(node_water_uvrepeat_x);
+
+        node_water_uvrepeat_y = new QDoubleSpinBox(tab_5);
+        node_water_uvrepeat_y->setObjectName(QString::fromUtf8("node_water_uvrepeat_y"));
+
+        horizontalLayout_8->addWidget(node_water_uvrepeat_y);
+
+
+        formLayout->setLayout(2, QFormLayout::FieldRole, horizontalLayout_8);
 
         tabWidget_2->addTab(tab_5, QString());
         tab_6 = new QWidget();
@@ -415,11 +442,6 @@ public:
         label_20->setObjectName(QString::fromUtf8("label_20"));
 
         formLayout_2->setWidget(0, QFormLayout::LabelRole, label_20);
-
-        node_particles_gravity = new QDoubleSpinBox(tab_6);
-        node_particles_gravity->setObjectName(QString::fromUtf8("node_particles_gravity"));
-
-        formLayout_2->setWidget(0, QFormLayout::FieldRole, node_particles_gravity);
 
         label_21 = new QLabel(tab_6);
         label_21->setObjectName(QString::fromUtf8("label_21"));
@@ -511,6 +533,26 @@ public:
 
 
         formLayout_2->setLayout(8, QFormLayout::SpanningRole, horizontalLayout_25);
+
+        _3 = new QHBoxLayout();
+        _3->setObjectName(QString::fromUtf8("_3"));
+        node_particles_gravity_x = new QDoubleSpinBox(tab_6);
+        node_particles_gravity_x->setObjectName(QString::fromUtf8("node_particles_gravity_x"));
+
+        _3->addWidget(node_particles_gravity_x);
+
+        node_particles_gravity_y = new QDoubleSpinBox(tab_6);
+        node_particles_gravity_y->setObjectName(QString::fromUtf8("node_particles_gravity_y"));
+
+        _3->addWidget(node_particles_gravity_y);
+
+        node_particles_gravity_z = new QDoubleSpinBox(tab_6);
+        node_particles_gravity_z->setObjectName(QString::fromUtf8("node_particles_gravity_z"));
+
+        _3->addWidget(node_particles_gravity_z);
+
+
+        formLayout_2->setLayout(0, QFormLayout::FieldRole, _3);
 
         tabWidget_2->addTab(tab_6, QString());
 
@@ -1016,4 +1058,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEWC1572_H
+#endif // INTERFACELI3388_H

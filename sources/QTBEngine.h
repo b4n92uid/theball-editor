@@ -33,15 +33,24 @@ protected:
     void keyReleaseEvent(QKeyEvent* ev);
 
 signals:
-    void MeshUpdated(tbe::scene::Mesh*);
-    void ParticlesUpdated(tbe::scene::ParticlesEmiter*);
-    void WaterUpdated(tbe::scene::Water*);
+    void UpdatMeshGui(tbe::scene::Mesh*);
+    void UpdatParticlesGui(tbe::scene::Mesh*);
+    void UpdatWaterGui(tbe::scene::Mesh*);
+
+public slots:
+    void RegisterMesh(tbe::scene::Mesh* newmesh);
+    void RegisterParticles(tbe::scene::ParticlesEmiter* newparticles);
+    void RegisterWater(tbe::scene::Water* newwater);
 
 private:
     tbe::Device* m_device;
     tbe::EventManager* m_eventManager;
     tbe::scene::SceneManager* m_sceneManager;
     tbe::scene::UserCamera* m_camera;
+
+    tbe::scene::MeshParallelScene* m_meshScene;
+    tbe::scene::ParticlesParallelScene* m_particlesScene;
+    tbe::scene::WaterParallelScene* m_waterScene;
 
     bool m_grabCamera;
     tbe::Vector2i m_lastCursorPos;

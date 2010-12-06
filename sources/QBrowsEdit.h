@@ -15,9 +15,10 @@ class QBrowsEdit : public QObject
     Q_OBJECT
 
 public:
-    QBrowsEdit(QWidget* parent, QLineEdit* lineEdit, QPushButton* browse);
+    QBrowsEdit(QObject* parent, QLineEdit* lineEdit, QPushButton* browse);
     virtual ~QBrowsEdit();
 
+    void SetOpenFileName(const QString& str);
     QString GetOpenFileName();
 
 public slots:

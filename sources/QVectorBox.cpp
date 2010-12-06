@@ -7,15 +7,15 @@
 
 #include "QVectorBox.h"
 
-QVectorBox::QVectorBox(QWidget* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QDoubleSpinBox* z) : QObject(parent)
+QVectorBox::QVectorBox(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QDoubleSpinBox* z) : QObject(parent)
 {
     m_x = x;
-    m_z = y;
-    m_y = z;
+    m_y = y;
+    m_z = z;
 
-    connect(m_x, SIGNAL(valueChanged(double)), this, SIGNAL(ComponentValueChanged(double)));
-    connect(m_y, SIGNAL(valueChanged(double)), this, SIGNAL(ComponentValueChanged(double)));
-    connect(m_z, SIGNAL(valueChanged(double)), this, SIGNAL(ComponentValueChanged(double)));
+    connect(m_x, SIGNAL(valueChanged(double)), this, SLOT(ComponentValueChanged(double)));
+    connect(m_y, SIGNAL(valueChanged(double)), this, SLOT(ComponentValueChanged(double)));
+    connect(m_z, SIGNAL(valueChanged(double)), this, SLOT(ComponentValueChanged(double)));
 }
 
 QVectorBox::~QVectorBox()
