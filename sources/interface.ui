@@ -21,12 +21,12 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_8" stretch="9,1">
       <item>
-       <widget class="QTBEngine" name="widget" native="true"/>
+       <widget class="QTBEngine" name="glwidget" native="true"/>
       </item>
       <item>
-       <widget class="QLabel" name="label_14">
+       <widget class="QLabel" name="infoText">
         <property name="text">
-         <string>Information</string>
+         <string/>
         </property>
        </widget>
       </item>
