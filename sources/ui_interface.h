@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfacelI3388.ui'
+** Form generated from reading UI file 'interfacezR3412.ui'
 **
-** Created: Tue 7. Dec 00:46:52 2010
+** Created: Thu 9. Dec 22:13:59 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACELI3388_H
-#define INTERFACELI3388_H
+#ifndef INTERFACEZR3412_H
+#define INTERFACEZR3412_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -48,8 +48,8 @@ public:
     QWidget *centralwidget;
     QHBoxLayout *horizontalLayout_7;
     QVBoxLayout *verticalLayout_8;
-    QTBEngine *widget;
-    QLabel *label_14;
+    QTBEngine *glwidget;
+    QLabel *infoText;
     QTabWidget *tabWidget;
     QWidget *tab;
     QVBoxLayout *verticalLayout_3;
@@ -219,15 +219,15 @@ public:
         horizontalLayout_7->setSizeConstraint(QLayout::SetDefaultConstraint);
         verticalLayout_8 = new QVBoxLayout();
         verticalLayout_8->setObjectName(QString::fromUtf8("verticalLayout_8"));
-        widget = new QTBEngine(centralwidget);
-        widget->setObjectName(QString::fromUtf8("widget"));
+        glwidget = new QTBEngine(centralwidget);
+        glwidget->setObjectName(QString::fromUtf8("glwidget"));
 
-        verticalLayout_8->addWidget(widget);
+        verticalLayout_8->addWidget(glwidget);
 
-        label_14 = new QLabel(centralwidget);
-        label_14->setObjectName(QString::fromUtf8("label_14"));
+        infoText = new QLabel(centralwidget);
+        infoText->setObjectName(QString::fromUtf8("infoText"));
 
-        verticalLayout_8->addWidget(label_14);
+        verticalLayout_8->addWidget(infoText);
 
         verticalLayout_8->setStretch(0, 9);
         verticalLayout_8->setStretch(1, 1);
@@ -987,7 +987,7 @@ public:
         actionEnregistrer->setText(QApplication::translate("mainWindow", "Enregistrer", 0, QApplication::UnicodeUTF8));
         actionEnregistrer_sous->setText(QApplication::translate("mainWindow", "Enregistrer sous...", 0, QApplication::UnicodeUTF8));
         actionQuitter->setText(QApplication::translate("mainWindow", "Quitter", 0, QApplication::UnicodeUTF8));
-        label_14->setText(QApplication::translate("mainWindow", "Information", 0, QApplication::UnicodeUTF8));
+        infoText->setText(QString());
         groupBox->setTitle(QApplication::translate("mainWindow", "Propri\303\251t\303\251s", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("mainWindow", "Nom", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("mainWindow", "Position", 0, QApplication::UnicodeUTF8));
@@ -1058,4 +1058,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACELI3388_H
+#endif // INTERFACEZR3412_H

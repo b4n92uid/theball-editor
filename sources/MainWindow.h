@@ -25,12 +25,26 @@ public:
     MainWindow();
     virtual ~MainWindow();
 
+public slots:
+    void OpenFileDialog();
+    void OpenFile(const QString& filename);
+
+    void SaveFile();
+    void SaveFileDialog();
+    void SaveFile(const QString& filename);
+
+    void UpdateGui();
+
 private:
     QNodesManager* m_nodsManager;
     QLightsManager* m_lightsManager;
     QEnvManager* m_envManager;
 
     QTBEngine* m_tbeWidget;
+
+    QString m_filename;
+
+    QLabel* m_infoText;
 };
 
 #endif	/* MAINWINDOW_H */

@@ -10,7 +10,8 @@
 
 using namespace tbe;
 
-QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(parent)
+QTBEngine::QTBEngine(QWidget* parent)
+: QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     m_device = NULL;
     m_sceneManager = NULL;
@@ -20,6 +21,7 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(parent)
     m_selectedNode = NULL;
 
     setMouseTracking(true);
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 QTBEngine::~QTBEngine()
@@ -31,20 +33,21 @@ void QTBEngine::initializeGL()
     m_device = new Device;
     m_device->Init();
 
+    m_sceneManager = m_device->GetSceneManager();
     m_eventManager = m_device->GetEventManager();
 
-    m_sceneManager = m_device->GetSceneManager();
+    using namespace scene;
 
-    scene::OrbitalCamera* orbCamera = new scene::OrbitalCamera;
-    m_sceneManager->AddCamera(orbCamera);
+    m_ffcamera = new FreeFlyCamera;
+    m_orbcamera = new OrbitalCamera;
 
-    m_camera = orbCamera;
+    m_sceneManager->AddCamera(m_ffcamera);
+    m_sceneManager->AddCamera(m_orbcamera);
 
-    scene::SceneParser scenefile(m_sceneManager);
-    scenefile.LoadScene("D:\\projets\\cpp\\tbengine\\demo\\bin\\medias\\scene.ballscene");
+    m_camera = m_orbcamera;
 
     QTimer* timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
     timer->start(16);
 }
 
@@ -53,98 +56,281 @@ void QTBEngine::resizeGL(int w, int h)
     m_device->SetViewportSize(Vector2i(w, h));
 }
 
+void QTBEngine::moveApply()
+{
+    if(!m_selectedNode)
+        return;
+
+    if(!m_eventManager->keyState[EventManager::KEY_SPACE])
+        return;
+
+    Vector3f pos = m_selectedNode->GetPos();
+    Matrix4f matrix = m_selectedNode->GetMatrix();
+
+    // Rotation ----------------------------------------------------------------
+
+    float rotateSpeed = 45 * M_PI / 180;
+
+    if(m_eventManager->keyState['a'])
+        matrix.SetRotateX(-rotateSpeed);
+
+    if(m_eventManager->keyState['z'])
+        matrix.SetRotateX(rotateSpeed);
+
+    if(m_eventManager->keyState['q'])
+        matrix.SetRotateY(-rotateSpeed);
+
+    if(m_eventManager->keyState['s'])
+        matrix.SetRotateY(rotateSpeed);
+
+    if(m_eventManager->keyState['w'])
+        matrix.SetRotateZ(-rotateSpeed);
+
+    if(m_eventManager->keyState['x'])
+        matrix.SetRotateZ(rotateSpeed);
+
+    // In the floor ------------------------------------------------------------
+
+    if(m_eventManager->keyState['e'])
+    {
+        pos.y = -m_selectedNode->GetAabb().min.y;
+        pos = m_meshScene->FindFloor(pos);
+
+        if(m_selectedNode->HasParent())
+            pos = m_selectedNode->MapFromGlobal(pos);
+    }
+
+    else if(m_eventManager->keyState['f'])
+    {
+        pos.y = 0;
+        pos = m_meshScene->FindFloor(pos);
+
+        if(m_selectedNode->HasParent())
+            pos = m_selectedNode->MapFromGlobal(pos);
+    }
+
+    // In the gride ------------------------------------------------------------
+
+    if(m_eventManager->keyState['g'])
+        tools::round(pos, Vector3f(1));
+
+    matrix.SetPos(pos);
+
+    m_selectedNode->SetMatrix(matrix);
+    m_axe->SetPos(pos);
+
+    // Movement ----------------------------------------------------------------
+
+    if(m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
+    {
+        float moveSpeed = 0.01;
+
+        Vector3f transform;
+        Vector3f target = m_camera->GetTarget();
+        Vector3f left = m_camera->GetLeft();
+        Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+        if(m_eventManager->keyState['c'])
+        {
+            transform.y -= mousePosRel.y * moveSpeed;
+        }
+        else
+        {
+            transform = -left * mousePosRel.x * moveSpeed;
+            transform -= target * mousePosRel.y * moveSpeed;
+            transform.y = 0;
+        }
+
+        transform += m_selectedNode->GetPos();
+
+        m_selectedNode->SetPos(transform);
+        m_axe->SetPos(transform);
+
+        m_eventManager->notify = EventManager::EVENT_NO_EVENT;
+    }
+}
+
 void QTBEngine::paintGL()
 {
+    moveApply();
+
     m_device->BeginScene();
     m_sceneManager->Render();
+    m_curCursor3D = m_sceneManager->ScreenToWorld(m_curCursorPos);
     m_device->EndScene();
 }
+
+struct SelectionSort
+{
+    tbe::Vector3f cameraPos;
+    int type;
+
+    bool operator()(const tbe::scene::Node* node1, const tbe::scene::Node * node2)
+    {
+        if(type == 1)
+            return (node1->GetPos() - cameraPos) < (node2->GetPos() - cameraPos);
+        else if(type == 2)
+            return node1->GetAabb().GetSize() < node2->GetAabb().GetSize();
+        else
+            return false;
+    }
+};
 
 void QTBEngine::mousePressEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
 
-
     if(ev->button() == Qt::LeftButton)
     {
-        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = true;
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 1;
+
         m_grabCamera = true;
+
         m_lastCursorPos = qptovec(ev->pos());
+        m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
     }
 
     else if(ev->button() == Qt::RightButton)
     {
-        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = true;
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = 1;
+
+        using namespace tbe;
+        using namespace tbe::scene;
+
+        m_selectedNode = NULL;
+
+        SelectionSort sortfunc;
+        sortfunc.cameraPos = m_camera->GetPos();
+
+        sortfunc.type = 1;
+        std::sort(m_nodes.begin(), m_nodes.end(), sortfunc);
+
+        sortfunc.type = 2;
+        std::sort(m_nodes.begin(), m_nodes.end(), sortfunc);
+
+        foreach(Node* node, m_nodes)
+        {
+            if(node->GetAbsolutAabb().Add(0.5).IsInner(m_curCursor3D))
+            {
+                m_selectedNode = node;
+                break;
+            }
+        }
+
+        if(m_selectedNode)
+        {
+            m_orbcamera->SetCenter(m_selectedNode->GetPos());
+            m_axe->SetPos(m_selectedNode->GetPos());
+        }
     }
-
-    else if(ev->button() == Qt::MiddleButton)
-        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = true;
-
-    m_camera->OnEvent(m_eventManager);
 }
 
 void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_UP;
 
-    m_grabCamera = false;
-
     if(ev->button() == Qt::LeftButton)
-        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = false;
+    {
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 0;
+        m_grabCamera = false;
+    }
 
     else if(ev->button() == Qt::RightButton)
-        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = false;
-
-    else if(ev->button() == Qt::MiddleButton)
-        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = false;
-
-    m_camera->OnEvent(m_eventManager);
+    {
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = 0;
+    }
 }
 
 void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 {
+    m_curCursorPos = qptovec(ev->pos());
+    m_curCursorPos.y = size().height() - m_curCursorPos.y;
+
+    Vector2f mousePosRel = m_curCursorPos - m_lastCursorPos;
+
     m_eventManager->notify = EventManager::EVENT_MOUSE_MOVE;
+    m_eventManager->mousePos = m_curCursorPos;
+    m_eventManager->mousePosRel = mousePosRel;
+
+    m_lastCursorPos = m_curCursorPos;
 
     if(m_grabCamera)
     {
-        Vector2i curPos = qptovec(ev->pos());
-
-        m_eventManager->mousePosRel = curPos - m_lastCursorPos;
-        m_eventManager->mousePos = curPos;
-
-        m_lastCursorPos = curPos;
-
         m_camera->OnEvent(m_eventManager);
+    }
+
+    if(m_eventManager->keyState[EventManager::KEY_SPACE])
+    {
+        QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
-    m_eventManager->keyState[ev->key()] = true;
+    m_eventManager->keyState[std::isalpha(ev->key()) ? std::tolower(ev->key()) : ev->key()] = 1;
 
-    m_camera->OnEvent(m_eventManager);
+    if(ev->key() == Qt::Key_Space)
+    {
+        grabMouse();
+        setCursor(Qt::BlankCursor);
+    }
+
+    if(ev->key() == Qt::Key_V)
+        swapcontainer(m_camera, m_ffcamera, m_orbcamera);
 }
 
 void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
-    m_eventManager->keyState[ev->key()] = false;
+    m_eventManager->keyState[std::isalpha(ev->key()) ? std::tolower(ev->key()) : ev->key()] = 0;
 
-    m_camera->OnEvent(m_eventManager);
+    if(ev->key() == Qt::Key_Space)
+    {
+        releaseMouse();
+        unsetCursor();
+    }
 }
 
-void QTBEngine::RegisterMesh(tbe::scene::Mesh* newmesh)
+void QTBEngine::loadScene(const QString& filename)
 {
-    m_meshScene->AddChild(newmesh);
+    using namespace scene;
+
+    SceneParser scenefile(m_sceneManager);
+    scenefile.LoadScene(filename.toStdString());
+
+    m_meshScene = scenefile.GetMeshScene();
+
+    m_axe = new Axes(4, 4);
+    m_meshScene->RegisterMesh(m_axe);
+
+    for(Iterator<Mesh*> it = m_meshScene->GetIterator(); it; it++)
+    {
+        m_nodes.push_back(*it);
+
+        if(!it->HasParent())
+            emit notifyMeshAlloc(*it);
+    }
 }
 
-void QTBEngine::RegisterParticles(tbe::scene::ParticlesEmiter* newparticles)
+void QTBEngine::fillTextInfo(QLabel* label)
 {
-    m_particlesScene->AddChild(newparticles);
-}
+    QString text;
 
-void QTBEngine::RegisterWater(tbe::scene::Water* newwater)
-{
-    m_waterScene->AddChild(newwater);
+    text += QString("Curseur 3D: %1 %2 %3\n").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
+    text += QString("Curseur: %1 %2\n\n").arg(m_curCursorPos.x).arg(m_curCursorPos.y);
+    text += QString("Move: %1 %2\n\n").arg(m_eventManager->mousePosRel.x).arg(m_eventManager->mousePosRel.y);
+
+    if(m_selectedNode)
+    {
+        QString name = m_selectedNode->GetName().c_str();
+        tbe::Vector3f pos = m_selectedNode->GetPos();
+
+        text += QString("Node: %1\n").arg(name);
+        text += QString("Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
+    }
+    else
+        text += QString("Pas de séléction");
+
+    label->setText(text);
 }

@@ -38,13 +38,14 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
 
     m_qwater = new QWater(this, NULL);
     m_qparticles = new QParticles(this, NULL);
+    m_selectedNode = NULL;
 
-    connect(m_nodeName, SIGNAL(textChanged(const QString&)), this, SLOT(OnNodeNameChanged(const QString&)));
-    connect(m_nodePos, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(OnNodePosChanged(const tbe::Vector3f&)));
-    connect(m_nodeRot, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(OnNodeRotChanged(const tbe::Vector3f&)));
+    connect(m_nodeName, SIGNAL(textChanged(const QString&)), this, SLOT(NodeNameChanged(const QString&)));
+    connect(m_nodePos, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(NodePosChanged(const tbe::Vector3f&)));
+    connect(m_nodeRot, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(NodeRotChanged(const tbe::Vector3f&)));
 
-    connect(MeshTab.add, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
-    connect(MeshTab.del, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
+    connect(MeshTab.add, SIGNAL(clicked()), this, SLOT(MeshNew()));
+    //    connect(MeshTab.del, SIGNAL(clicked()), this, SLOT());
 
 
     connect(WaterTab.deform, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetDeform(double)));
@@ -53,8 +54,8 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     connect(WaterTab.speed, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetSpeed(double)));
     connect(WaterTab.blend, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetBlend(double)));
 
-    connect(WaterTab.add, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
-    connect(WaterTab.del, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
+    //    connect(WaterTab.add, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
+    //    connect(WaterTab.del, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
 
 
     connect(ParticlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qparticles, SLOT(SetGravity(const tbe::Vector3f&)));
@@ -65,30 +66,41 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     connect(ParticlesTab.texture, SIGNAL(textChanged(const QString&)), m_qparticles, SLOT(SetTexture(const QString&)));
     connect(ParticlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qparticles, SLOT(SetContinousMode(int)));
 
-    connect(ParticlesTab.add, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
-    connect(ParticlesTab.del, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
+    //    connect(ParticlesTab.add, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
+    //    connect(ParticlesTab.del, SIGNAL(clicked()), this, SLOT(OnGuiMeshAlloc()));
+
+    QStringList headerLabels;
+    headerLabels << "ID" << "Nom" << "Position";
+
+    m_nodeModel = new QStandardItemModel(this);
+    m_nodeModel->setHorizontalHeaderLabels(headerLabels);
+
+    m_nodeList->setModel(m_nodeModel);
 }
 
 QNodesManager::~QNodesManager()
 {
 }
 
-void QNodesManager::OnNodeNameChanged(const QString& str)
+void QNodesManager::NodeNameChanged(const QString& str)
 {
-    m_curNode->SetName(str.toStdString());
+    if(m_selectedNode)
+        m_selectedNode->SetName(str.toStdString());
 }
 
-void QNodesManager::OnNodePosChanged(const tbe::Vector3f& vec)
+void QNodesManager::NodePosChanged(const tbe::Vector3f& vec)
 {
-    m_curNode->SetPos(vec);
+    if(m_selectedNode)
+        m_selectedNode->SetPos(vec);
 }
 
-void QNodesManager::OnNodeRotChanged(const tbe::Vector3f& vec)
+void QNodesManager::NodeRotChanged(const tbe::Vector3f& vec)
 {
-    m_curNode->GetMatrix().SetRotate(vec);
+    if(m_selectedNode)
+        m_selectedNode->GetMatrix().SetRotate(vec);
 }
 
-void QNodesManager::OnGuiMeshAlloc()
+void QNodesManager::MeshNew()
 {
     QString filename = QFileDialog::getOpenFileName(qobject_cast<QWidget*>(parent()));
 
@@ -102,130 +114,28 @@ void QNodesManager::OnGuiMeshAlloc()
     else if(filename.endsWith("obj"))
         mesh = new OBJMesh(filename.toStdString());
 
-    emit RegisterMesh(mesh);
+    MeshSelect(mesh);
 }
 
-void QNodesManager::OnGuiWaterAlloc()
+void QNodesManager::MeshAdd(tbe::scene::Mesh* mesh)
 {
-    using namespace tbe;
-    using namespace scene;
+    int id = m_nodeModel->rowCount() + 1;
+    tbe::Vector3f pos = mesh->GetPos();
 
-    Water* waterplane = new Water;
+    QStandardItem* itid = new QStandardItem(QString::number(id));
 
-    emit RegisterWater(waterplane);
+    QStandardItem* itname = new QStandardItem(mesh->GetName().c_str());
+
+    QStandardItem* itpos = new QStandardItem(QString("%1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z));
+
+    QList<QStandardItem*> items;
+    items << itid << itname << itpos;
+
+    m_nodeModel->appendRow(items);
 }
 
-void QNodesManager::OnGuiParticleAlloc()
+void QNodesManager::MeshSelect(tbe::scene::Mesh* mesh)
 {
-    using namespace tbe;
-    using namespace scene;
-
-    ParticlesEmiter* pemitter = new ParticlesEmiter;
-
-    emit RegisterParticles(pemitter);
-}
-
-QWater::QWater(QObject* parent, tbe::scene::Water* water) : QObject(parent)
-{
-    m_curwater = water;
-}
-
-void QWater::SetDeform(double v)
-{
-    m_curwater->SetDeform(v);
-}
-
-void QWater::SetSize(const tbe::Vector2f& v)
-{
-    m_curwater->SetSize(v);
-}
-
-void QWater::SetUvRepeat(const tbe::Vector2f& v)
-{
-    m_curwater->SetUvRepeat(v);
-}
-
-void QWater::SetSpeed(double v)
-{
-    m_curwater->SetSpeed(v);
-}
-
-void QWater::SetBlend(double v)
-{
-    m_curwater->SetBlend(v);
-}
-
-void QWater::setCurwater(tbe::scene::Water* curwater)
-{
-    this->m_curwater = curwater;
-}
-
-tbe::scene::Water* QWater::getCurwater() const
-{
-    return m_curwater;
-}
-
-QParticles::QParticles(QObject* parent, tbe::scene::ParticlesEmiter* particles) : QObject(parent)
-{
-    m_curparticles = particles;
-}
-
-void QParticles::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
-{
-    this->m_curparticles = curparticles;
-}
-
-tbe::scene::ParticlesEmiter* QParticles::getCurparticles() const
-{
-    return m_curparticles;
-}
-
-void QParticles::SetGravity(const tbe::Vector3f& v)
-{
-    m_curparticles->SetGravity(v);
-}
-
-void QParticles::SetFreemove(double v)
-{
-    m_curparticles->SetFreeMove(v);
-}
-
-void QParticles::SetLifeinit(double v)
-{
-    m_curparticles->SetLifeInit(v);
-}
-
-void QParticles::SetLifedown(double v)
-{
-    m_curparticles->SetLifeDown(v);
-}
-
-void QParticles::SetNumber(int v)
-{
-    m_curparticles->SetNumber(v);
-}
-
-void QParticles::SetTexture(const QString& v)
-{
-    m_curparticles->SetTexture(v.toStdString());
-}
-
-void QParticles::SetContinousMode(int v)
-{
-    m_curparticles->SetContinousMode(v);
-}
-
-QMesh::QMesh(QObject* parent, tbe::scene::Mesh* mesh)
-{
-    m_curmesh = mesh;
-}
-
-void QMesh::setCurmesh(tbe::scene::Mesh* curmesh)
-{
-    this->m_curmesh = curmesh;
-}
-
-tbe::scene::Mesh* QMesh::getCurmesh() const
-{
-    return m_curmesh;
+    m_qmesh->setCurmesh(mesh);
+    m_selectedNode = mesh;
 }
