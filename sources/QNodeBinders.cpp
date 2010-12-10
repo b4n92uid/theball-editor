@@ -7,9 +7,42 @@
 
 #include "QNodeBinders.h"
 
-QWater::QWater(QObject* parent, tbe::scene::Water* water) : QObject(parent)
+QNode::QNode(QObject* parent) : QObject(parent)
 {
-    m_curwater = water;
+    m_curNode = NULL;
+}
+
+void QNode::setCurNode(tbe::scene::Node* curNode)
+{
+    this->m_curNode = curNode;
+}
+
+tbe::scene::Node* QNode::getCurNode() const
+{
+    return m_curNode;
+}
+
+void QNode::SetName(const QString& s)
+{
+    if(m_curNode)
+        m_curNode->SetName(s.toStdString());
+}
+
+void QNode::SetPos(const tbe::Vector3f& v)
+{
+    if(m_curNode)
+        m_curNode->SetPos(v);
+}
+
+void QNode::SetMatrix(const tbe::Matrix4f& m)
+{
+    if(m_curNode)
+        m_curNode->SetMatrix(m);
+}
+
+QWater::QWater(QObject* parent) : QObject(parent)
+{
+    m_curwater = NULL;
 }
 
 void QWater::SetDeform(double v)
@@ -52,9 +85,9 @@ tbe::scene::Water* QWater::getCurwater() const
     return m_curwater;
 }
 
-QParticles::QParticles(QObject* parent, tbe::scene::ParticlesEmiter* particles) : QObject(parent)
+QParticles::QParticles(QObject* parent) : QObject(parent)
 {
-    m_curparticles = particles;
+    m_curparticles = NULL;
 }
 
 void QParticles::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
@@ -109,9 +142,9 @@ void QParticles::SetContinousMode(int v)
         m_curparticles->SetContinousMode(v);
 }
 
-QMesh::QMesh(QObject* parent, tbe::scene::Mesh* mesh)
+QMesh::QMesh(QObject* parent) : QObject(parent)
 {
-    m_curmesh = mesh;
+    m_curmesh = NULL;
 }
 
 void QMesh::setCurmesh(tbe::scene::Mesh* curmesh)

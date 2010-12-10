@@ -11,12 +11,31 @@
 #include <Tbe.h>
 #include <QObject>
 
+class QNode : public QObject
+{
+    Q_OBJECT
+
+public:
+    QNode(QObject* parent);
+
+    void setCurNode(tbe::scene::Node* curNode);
+    tbe::scene::Node* getCurNode() const;
+
+public slots:
+    void SetName(const QString& s);
+    void SetPos(const tbe::Vector3f& v);
+    void SetMatrix(const tbe::Matrix4f& m);
+
+private:
+    tbe::scene::Node* m_curNode;
+};
+
 class QWater : public QObject
 {
     Q_OBJECT
 
 public:
-    QWater(QObject* parent, tbe::scene::Water* water);
+    QWater(QObject* parent);
 
     void setCurwater(tbe::scene::Water* curwater);
     tbe::scene::Water* getCurwater() const;
@@ -37,7 +56,7 @@ class QParticles : public QObject
     Q_OBJECT
 
 public:
-    QParticles(QObject* parent, tbe::scene::ParticlesEmiter* particles);
+    QParticles(QObject* parent);
 
     void setCurparticles(tbe::scene::ParticlesEmiter* curparticles);
     tbe::scene::ParticlesEmiter* getCurparticles() const;
@@ -60,7 +79,7 @@ class QMesh : public QObject
     Q_OBJECT
 
 public:
-    QMesh(QObject* parent, tbe::scene::Mesh* mesh);
+    QMesh(QObject* parent);
 
     void setCurmesh(tbe::scene::Mesh* curmesh);
     tbe::scene::Mesh* getCurmesh() const;
