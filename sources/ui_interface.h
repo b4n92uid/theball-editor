@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfacezR3412.ui'
+** Form generated from reading UI file 'interfacegk2876.ui'
 **
-** Created: Thu 9. Dec 22:13:59 2010
+** Created: Fri 10. Dec 15:58:01 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEZR3412_H
-#define INTERFACEZR3412_H
+#ifndef INTERFACEGK2876_H
+#define INTERFACEGK2876_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -49,6 +49,8 @@ public:
     QHBoxLayout *horizontalLayout_7;
     QVBoxLayout *verticalLayout_8;
     QTBEngine *glwidget;
+    QGroupBox *groupBox_5;
+    QVBoxLayout *verticalLayout_9;
     QLabel *infoText;
     QTabWidget *tabWidget;
     QWidget *tab;
@@ -224,13 +226,19 @@ public:
 
         verticalLayout_8->addWidget(glwidget);
 
-        infoText = new QLabel(centralwidget);
+        groupBox_5 = new QGroupBox(centralwidget);
+        groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
+        verticalLayout_9 = new QVBoxLayout(groupBox_5);
+        verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
+        infoText = new QLabel(groupBox_5);
         infoText->setObjectName(QString::fromUtf8("infoText"));
 
-        verticalLayout_8->addWidget(infoText);
+        verticalLayout_9->addWidget(infoText);
+
+
+        verticalLayout_8->addWidget(groupBox_5);
 
         verticalLayout_8->setStretch(0, 9);
-        verticalLayout_8->setStretch(1, 1);
 
         horizontalLayout_7->addLayout(verticalLayout_8);
 
@@ -268,16 +276,19 @@ public:
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         node_pos_x = new QDoubleSpinBox(groupBox);
         node_pos_x->setObjectName(QString::fromUtf8("node_pos_x"));
+        node_pos_x->setMinimum(-99);
 
         horizontalLayout_2->addWidget(node_pos_x);
 
         node_pos_y = new QDoubleSpinBox(groupBox);
         node_pos_y->setObjectName(QString::fromUtf8("node_pos_y"));
+        node_pos_y->setMinimum(-99);
 
         horizontalLayout_2->addWidget(node_pos_y);
 
         node_pos_z = new QDoubleSpinBox(groupBox);
         node_pos_z->setObjectName(QString::fromUtf8("node_pos_z"));
+        node_pos_z->setMinimum(-99);
 
         horizontalLayout_2->addWidget(node_pos_z);
 
@@ -293,16 +304,19 @@ public:
         _2->setObjectName(QString::fromUtf8("_2"));
         node_rotation_x = new QDoubleSpinBox(groupBox);
         node_rotation_x->setObjectName(QString::fromUtf8("node_rotation_x"));
+        node_rotation_x->setMinimum(-99);
 
         _2->addWidget(node_rotation_x);
 
         node_rotation_y = new QDoubleSpinBox(groupBox);
         node_rotation_y->setObjectName(QString::fromUtf8("node_rotation_y"));
+        node_rotation_y->setMinimum(-99);
 
         _2->addWidget(node_rotation_y);
 
         node_rotation_z = new QDoubleSpinBox(groupBox);
         node_rotation_z->setObjectName(QString::fromUtf8("node_rotation_z"));
+        node_rotation_z->setMinimum(-99);
 
         _2->addWidget(node_rotation_z);
 
@@ -538,16 +552,19 @@ public:
         _3->setObjectName(QString::fromUtf8("_3"));
         node_particles_gravity_x = new QDoubleSpinBox(tab_6);
         node_particles_gravity_x->setObjectName(QString::fromUtf8("node_particles_gravity_x"));
+        node_particles_gravity_x->setMinimum(-99);
 
         _3->addWidget(node_particles_gravity_x);
 
         node_particles_gravity_y = new QDoubleSpinBox(tab_6);
         node_particles_gravity_y->setObjectName(QString::fromUtf8("node_particles_gravity_y"));
+        node_particles_gravity_y->setMinimum(-99);
 
         _3->addWidget(node_particles_gravity_y);
 
         node_particles_gravity_z = new QDoubleSpinBox(tab_6);
         node_particles_gravity_z->setObjectName(QString::fromUtf8("node_particles_gravity_z"));
+        node_particles_gravity_z->setMinimum(-99);
 
         _3->addWidget(node_particles_gravity_z);
 
@@ -591,16 +608,19 @@ public:
         horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         light_pos_x = new QDoubleSpinBox(groupBox_4);
         light_pos_x->setObjectName(QString::fromUtf8("light_pos_x"));
+        light_pos_x->setMinimum(-99);
 
         horizontalLayout_3->addWidget(light_pos_x);
 
         light_pos_y = new QDoubleSpinBox(groupBox_4);
         light_pos_y->setObjectName(QString::fromUtf8("light_pos_y"));
+        light_pos_y->setMinimum(-99);
 
         horizontalLayout_3->addWidget(light_pos_y);
 
         light_pos_z = new QDoubleSpinBox(groupBox_4);
         light_pos_z->setObjectName(QString::fromUtf8("light_pos_z"));
+        light_pos_z->setMinimum(-99);
 
         horizontalLayout_3->addWidget(light_pos_z);
 
@@ -987,6 +1007,7 @@ public:
         actionEnregistrer->setText(QApplication::translate("mainWindow", "Enregistrer", 0, QApplication::UnicodeUTF8));
         actionEnregistrer_sous->setText(QApplication::translate("mainWindow", "Enregistrer sous...", 0, QApplication::UnicodeUTF8));
         actionQuitter->setText(QApplication::translate("mainWindow", "Quitter", 0, QApplication::UnicodeUTF8));
+        groupBox_5->setTitle(QApplication::translate("mainWindow", "Informations", 0, QApplication::UnicodeUTF8));
         infoText->setText(QString());
         groupBox->setTitle(QApplication::translate("mainWindow", "Propri\303\251t\303\251s", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("mainWindow", "Nom", 0, QApplication::UnicodeUTF8));
@@ -1058,4 +1079,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEZR3412_H
+#endif // INTERFACEGK2876_H
