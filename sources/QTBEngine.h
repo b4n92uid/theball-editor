@@ -36,12 +36,15 @@ protected:
 
     void moveApply();
 
-signals:
-    void notifyMeshAlloc(tbe::scene::Mesh*);
-    void notifyMeshUpdate(tbe::scene::Mesh*);
-
 public slots:
+    void meshAdd(tbe::scene::Mesh* mesh);
+    void meshSelect(tbe::scene::Mesh* mesh);
+
     void fillTextInfo(QLabel* label);
+
+signals:
+    void notifyMeshAdd(tbe::scene::Mesh*);
+    void notifyMeshSelect(tbe::scene::Mesh*);
 
 private:
     tbe::Device* m_device;
@@ -66,6 +69,7 @@ private:
     tbe::scene::Mesh* m_axe;
 
     tbe::scene::Node::Array m_nodes;
+    tbe::scene::Mesh::Array m_meshs;
 
     template< typename TC, typename T1, typename T2>
     void swapcontainer(TC& c, T1& v1, T2& v2)
