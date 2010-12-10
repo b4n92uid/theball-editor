@@ -27,8 +27,17 @@ MainWindow::MainWindow()
     m_lightsManager = new QLightsManager(this, &uinterface);
     m_envManager = new QEnvManager(this, &uinterface);
 
-    connect(m_tbeWidget, SIGNAL(NotifyMeshAlloc(tbe::scene::Mesh*)),
-            m_nodsManager, SLOT(MeshAdd(tbe::scene::Mesh*)));
+    connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)),
+            m_nodsManager, SLOT(meshAdd(tbe::scene::Mesh*)));
+
+    connect(m_tbeWidget, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)),
+            m_nodsManager, SLOT(meshSelect(tbe::scene::Mesh*)));
+
+    connect(m_nodsManager, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)),
+            m_tbeWidget, SLOT(meshAdd(tbe::scene::Mesh*)));
+
+    connect(m_nodsManager, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)),
+            m_tbeWidget, SLOT(meshSelect(tbe::scene::Mesh*)));
 
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(UpdateGui()));
