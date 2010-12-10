@@ -71,23 +71,28 @@ void QTBEngine::moveApply()
 
     float rotateSpeed = 45 * M_PI / 180;
 
-    if(m_eventManager->keyState['a'])
-        matrix.SetRotateX(-rotateSpeed);
+    if(m_eventManager->notify == EventManager::EVENT_KEY_DOWN)
+    {
+        if(m_eventManager->keyState['a'])
+            matrix.SetRotateX(-rotateSpeed);
 
-    if(m_eventManager->keyState['z'])
-        matrix.SetRotateX(rotateSpeed);
+        if(m_eventManager->keyState['z'])
+            matrix.SetRotateX(rotateSpeed);
 
-    if(m_eventManager->keyState['q'])
-        matrix.SetRotateY(-rotateSpeed);
+        if(m_eventManager->keyState['q'])
+            matrix.SetRotateY(-rotateSpeed);
 
-    if(m_eventManager->keyState['s'])
-        matrix.SetRotateY(rotateSpeed);
+        if(m_eventManager->keyState['s'])
+            matrix.SetRotateY(rotateSpeed);
 
-    if(m_eventManager->keyState['w'])
-        matrix.SetRotateZ(-rotateSpeed);
+        if(m_eventManager->keyState['w'])
+            matrix.SetRotateZ(-rotateSpeed);
 
-    if(m_eventManager->keyState['x'])
-        matrix.SetRotateZ(rotateSpeed);
+        if(m_eventManager->keyState['x'])
+            matrix.SetRotateZ(rotateSpeed);
+
+        m_eventManager->notify = EventManager::EVENT_NO_EVENT;
+    }
 
     // In the floor ------------------------------------------------------------
 
@@ -96,8 +101,7 @@ void QTBEngine::moveApply()
         pos.y = -m_selectedNode->GetAabb().min.y;
         pos = m_meshScene->FindFloor(pos);
 
-        if(m_selectedNode->HasParent())
-            pos = m_selectedNode->MapFromGlobal(pos);
+        pos = m_selectedNode->MapFromGlobal(pos);
     }
 
     else if(m_eventManager->keyState['f'])
@@ -105,8 +109,7 @@ void QTBEngine::moveApply()
         pos.y = 0;
         pos = m_meshScene->FindFloor(pos);
 
-        if(m_selectedNode->HasParent())
-            pos = m_selectedNode->MapFromGlobal(pos);
+        pos = m_selectedNode->MapFromGlobal(pos);
     }
 
     // In the gride ------------------------------------------------------------
@@ -145,9 +148,12 @@ void QTBEngine::moveApply()
 
         m_selectedNode->SetPos(transform);
         m_axe->SetPos(transform);
+        m_orbcamera->SetCenter(transform);
 
         m_eventManager->notify = EventManager::EVENT_NO_EVENT;
     }
+
+    emit notifyMeshSelect(*std::find(m_meshs.begin(), m_meshs.end(), m_selectedNode));
 }
 
 void QTBEngine::paintGL()
@@ -203,24 +209,19 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         sortfunc.cameraPos = m_camera->GetPos();
 
         sortfunc.type = 1;
-        std::sort(m_nodes.begin(), m_nodes.end(), sortfunc);
+        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
         sortfunc.type = 2;
-        std::sort(m_nodes.begin(), m_nodes.end(), sortfunc);
+        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
-        foreach(Node* node, m_nodes)
+        foreach(Mesh* node, m_meshs)
         {
             if(node->GetAbsolutAabb().Add(0.5).IsInner(m_curCursor3D))
             {
-                m_selectedNode = node;
+                meshSelect(node);
+                emit notifyMeshSelect(node);
                 break;
             }
-        }
-
-        if(m_selectedNode)
-        {
-            m_orbcamera->SetCenter(m_selectedNode->GetPos());
-            m_axe->SetPos(m_selectedNode->GetPos());
         }
     }
 }
@@ -271,10 +272,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     m_eventManager->keyState[std::isalpha(ev->key()) ? std::tolower(ev->key()) : ev->key()] = 1;
 
     if(ev->key() == Qt::Key_Space)
-    {
-        grabMouse();
         setCursor(Qt::BlankCursor);
-    }
 
     if(ev->key() == Qt::Key_V)
         swapcontainer(m_camera, m_ffcamera, m_orbcamera);
@@ -286,10 +284,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
     m_eventManager->keyState[std::isalpha(ev->key()) ? std::tolower(ev->key()) : ev->key()] = 0;
 
     if(ev->key() == Qt::Key_Space)
-    {
-        releaseMouse();
         unsetCursor();
-    }
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -306,10 +301,11 @@ void QTBEngine::loadScene(const QString& filename)
 
     for(Iterator<Mesh*> it = m_meshScene->GetIterator(); it; it++)
     {
+        m_meshs.push_back(*it);
         m_nodes.push_back(*it);
 
         if(!it->HasParent())
-            emit notifyMeshAlloc(*it);
+            emit notifyMeshAdd(*it);
     }
 }
 
@@ -333,4 +329,18 @@ void QTBEngine::fillTextInfo(QLabel* label)
         text += QString("Pas de séléction");
 
     label->setText(text);
+}
+
+void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
+{
+    m_selectedNode = mesh;
+
+    m_orbcamera->SetCenter(m_selectedNode->GetPos());
+    m_axe->SetPos(m_selectedNode->GetPos());
+}
+
+void QTBEngine::meshAdd(tbe::scene::Mesh* mesh)
+{
+    m_meshScene->RegisterMesh(mesh);
+    m_selectedNode = mesh;
 }

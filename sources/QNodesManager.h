@@ -23,20 +23,24 @@ public:
     virtual ~QNodesManager();
 
 public slots:
-    void NodeNameChanged(const QString& str);
-    void NodePosChanged(const tbe::Vector3f& vec);
-    void NodeRotChanged(const tbe::Vector3f& vec);
+    void guiMeshNew();
+    void guiMeshSelect(const QModelIndex& index);
 
-    void MeshNew();
-    void MeshAdd(tbe::scene::Mesh* mesh);
-    void MeshSelect(tbe::scene::Mesh* mesh);
+    void meshAdd(tbe::scene::Mesh* mesh);
+    void meshSelect(tbe::scene::Mesh* mesh);
 
 signals:
+    void notifyMeshAdd(tbe::scene::Mesh* mesh);
+    void notifyMeshSelect(tbe::scene::Mesh* mesh);
 
 private:
-    QLineEdit* m_nodeName;
-    QVectorBox* m_nodePos;
-    QVectorBox* m_nodeRot;
+
+    struct
+    {
+        QLineEdit* name;
+        QVectorBox* pos;
+        
+    } NodeTab;
 
     struct
     {
@@ -82,6 +86,7 @@ private:
 
     tbe::scene::Node* m_selectedNode;
 
+    QNode* m_qnode;
     QWater* m_qwater;
     QMesh* m_qmesh;
     QParticles* m_qparticles;
