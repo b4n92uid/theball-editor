@@ -14,8 +14,8 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     NodeTab.name = uinterface->node_name;
     NodeTab.pos = new QVectorBox(this, uinterface->node_pos_x, uinterface->node_pos_y, uinterface->node_pos_z);
 
-    MeshTab.add = uinterface->node_add;
-    MeshTab.del = uinterface->node_del;
+    MeshTab.add = uinterface->node_mesh_add;
+    MeshTab.del = uinterface->node_mesh_del;
 
     WaterTab.deform = uinterface->node_water_deform;
     WaterTab.size = new QVector2Box(this, uinterface->node_water_size_x, uinterface->node_water_size_y);
@@ -36,14 +36,14 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     ParticlesTab.del = uinterface->node_particles_del;
 
     QStringList headerLabels;
-    headerLabels << "ID" << "Nom" << "Position";
+    headerLabels << "Type" << "Nom";
 
-    m_nodeModel = new QStandardItemModel(this);
-    m_nodeModel->setHorizontalHeaderLabels(headerLabels);
+    m_nodesListModel = new QStandardItemModel(this);
+    m_nodesListModel->setHorizontalHeaderLabels(headerLabels);
 
-    m_nodeList = uinterface->node_list;
-    m_nodeList->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_nodeList->setModel(m_nodeModel);
+    m_nodesListView = uinterface->node_list;
+    m_nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_nodesListView->setModel(m_nodesListModel);
 
     m_qnode = new QNode(this);
     m_qmesh = new QMesh(this);
@@ -52,11 +52,14 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
 
     m_selectedNode = NULL;
 
-    connect(m_nodeList, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiMeshSelect(const QModelIndex&)));
+    connect(m_nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiMeshSelect(const QModelIndex&)));
 
     // Node
     connect(NodeTab.name, SIGNAL(textChanged(const QString&)), m_qnode, SLOT(SetName(const QString&)));
     connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnode, SLOT(SetPos(const tbe::Vector3f&)));
+
+    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), this, SLOT(updateList()));
+    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(updateList()));
 
     // Mesh
     connect(MeshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
@@ -84,28 +87,37 @@ QNodesManager::~QNodesManager()
 
 void QNodesManager::guiMeshNew()
 {
+    emit pauseRendring();
+
     QString filename = QFileDialog::getOpenFileName(qobject_cast<QWidget*>(parent()));
 
-    using namespace tbe;
-    using namespace scene;
+    if(!filename.isNull())
+    {
+        using namespace tbe;
+        using namespace scene;
 
-    Mesh* mesh = NULL;
+        Mesh* mesh = NULL;
 
-    if(filename.endsWith("ball3d"))
-        mesh = new Ball3DMesh(filename.toStdString());
-    else if(filename.endsWith("obj"))
-        mesh = new OBJMesh(filename.toStdString());
+        if(filename.endsWith("ball3d"))
+            mesh = new Ball3DMesh(filename.toStdString());
 
-    meshAdd(mesh);
+        else if(filename.endsWith("obj"))
+            mesh = new OBJMesh(filename.toStdString());
 
-    emit notifyMeshAdd(mesh);
+        emit notifyMeshAdd(mesh);
+
+        meshAdd(mesh);
+        meshSelect(mesh);
+    }
+
+    emit resumeRendring();
 }
 
 void QNodesManager::guiMeshSelect(const QModelIndex& index)
 {
     using namespace tbe::scene;
 
-    Mesh* mesh = m_nodeModel->itemFromIndex(index)->data().value<Mesh*>();
+    Mesh* mesh = m_nodesListModel->itemFromIndex(index)->data().value<Mesh*>();
 
     meshSelect(mesh);
 
@@ -114,25 +126,45 @@ void QNodesManager::guiMeshSelect(const QModelIndex& index)
 
 void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
 {
-    int id = m_nodeModel->rowCount() + 1;
-    tbe::Vector3f pos = mesh->GetPos();
+    using namespace tbe::scene;
+
+    QStandardItem* parent = NULL;
+
+    int id = m_nodesListModel->rowCount();
+
+    if(mesh->HasParent())
+        for(int i = 0; i < id; i++)
+        {
+            QStandardItem* item = m_nodesListModel->item(i);
+
+            if(item && mesh->GetParent() == item->data().value<Mesh*>())
+            {
+                parent = item;
+                break;
+            }
+        }
+
+    id++;
 
     QVariant userdata;
-    userdata.setValue<tbe::scene::Mesh*>(mesh);
+    userdata.setValue<Mesh*>(mesh);
 
-    QStandardItem* itid = new QStandardItem(QString::number(id));
+    QStandardItem* itid = new QStandardItem(QString("Mesh %1").arg(id));
     itid->setData(userdata);
 
     QStandardItem* itname = new QStandardItem(mesh->GetName().c_str());
     itname->setData(userdata);
 
-    QStandardItem* itpos = new QStandardItem(QString("%1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z));
-    itpos->setData(userdata);
-
     QList<QStandardItem*> items;
-    items << itid << itname << itpos;
+    items << itid << itname;
 
-    m_nodeModel->appendRow(items);
+    if(parent)
+        parent->appendRow(items);
+    else
+        m_nodesListModel->appendRow(items);
+
+    m_nodesListView->resizeColumnToContents(0);
+    m_nodesListView->resizeColumnToContents(1);
 }
 
 void QNodesManager::meshSelect(tbe::scene::Mesh* mesh)
@@ -144,4 +176,39 @@ void QNodesManager::meshSelect(tbe::scene::Mesh* mesh)
 
     NodeTab.name->setText(mesh->GetName().c_str());
     NodeTab.pos->SetVectorValue(mesh->GetPos());
+
+    int count = m_nodesListModel->rowCount();
+
+    for(int i = 0; i < count; i++)
+    {
+        using namespace tbe::scene;
+
+        QStandardItem* item = m_nodesListModel->item(i);
+
+        if(mesh == item->data().value<Mesh*>())
+        {
+            while(item->parent())
+                item = item->parent();
+
+            m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
+            break;
+        }
+    }
+
+}
+
+void QNodesManager::updateList()
+{
+    int count = m_nodesListModel->rowCount();
+
+    for(int i = 0; i < count; i++)
+    {
+        using namespace tbe::scene;
+
+        QStandardItem* item = m_nodesListModel->item(i);
+        QStandardItem* itemName = m_nodesListModel->item(i, 1);
+
+        Mesh* mesh = item->data().value<Mesh*>();
+        itemName->setText(mesh->GetName().c_str());
+    }
 }

@@ -6,26 +6,23 @@
  */
 
 #include "MainWindow.h"
-#include "ui_interface.h"
 
 MainWindow::MainWindow()
 {
-    Ui_mainWindow uinterface;
+    m_uinterface.setupUi(this);
 
-    uinterface.setupUi(this);
+    connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
+    connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
+    connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
+    connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-    connect(uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(OpenFileDialog()));
-    connect(uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(SaveFile()));
-    connect(uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(SaveFileDialog()));
-    connect(uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
+    m_tbeWidget = m_uinterface.glwidget;
 
-    m_tbeWidget = uinterface.glwidget;
+    m_infoText = m_uinterface.infoText;
 
-    m_infoText = uinterface.infoText;
-
-    m_nodsManager = new QNodesManager(this, &uinterface);
-    m_lightsManager = new QLightsManager(this, &uinterface);
-    m_envManager = new QEnvManager(this, &uinterface);
+    m_nodsManager = new QNodesManager(this, &m_uinterface);
+    m_lightsManager = new QLightsManager(this, &m_uinterface);
+    m_envManager = new QEnvManager(this, &m_uinterface);
 
     connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)),
             m_nodsManager, SLOT(meshAdd(tbe::scene::Mesh*)));
@@ -39,46 +36,58 @@ MainWindow::MainWindow()
     connect(m_nodsManager, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)),
             m_tbeWidget, SLOT(meshSelect(tbe::scene::Mesh*)));
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(UpdateGui()));
-    timer->start(16);
+    connect(m_nodsManager, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
+    connect(m_nodsManager, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
+
+    m_timer = new QTimer(this);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
+    m_timer->start(16);
 }
 
 MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::OpenFileDialog()
+void MainWindow::openSceneDialog()
 {
+    m_tbeWidget->pauseRendring();
+
     QString filename = QFileDialog::getOpenFileName(this);
 
     if(!filename.isNull())
-        OpenFile(filename);
+        openScene(filename);
+
+    m_tbeWidget->resumeRendring();
 }
 
-void MainWindow::OpenFile(const QString& filename)
+void MainWindow::openScene(const QString& filename)
 {
+    QFileInfo filei(filename);
+    
+    QDir::setCurrent(filei.path());
+
     m_tbeWidget->loadScene(filename);
 }
 
-void MainWindow::SaveFileDialog()
+void MainWindow::saveSceneDialog()
 {
     QString filename = QFileDialog::getSaveFileName(this);
 
     if(!filename.isNull())
-        SaveFile(filename);
+        saveScene(filename);
 }
 
-void MainWindow::SaveFile()
+void MainWindow::saveScene()
 {
-    SaveFile(m_filename);
+    saveScene(m_filename);
 }
 
-void MainWindow::SaveFile(const QString& filename)
+void MainWindow::saveScene(const QString& filename)
 {
+    m_tbeWidget->saveScene(filename);
 }
 
-void MainWindow::UpdateGui()
+void MainWindow::updateGui()
 {
     m_tbeWidget->fillTextInfo(m_infoText);
 }

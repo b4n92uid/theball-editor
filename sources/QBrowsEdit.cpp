@@ -14,6 +14,9 @@ QBrowsEdit::QBrowsEdit(QObject* parent, QLineEdit* lineEdit, QPushButton* browse
 
     connect(m_browse, SIGNAL(clicked()), this, SLOT(OpenFileName()));
     connect(m_lineEdit, SIGNAL(textChanged(const QString&)), this, SIGNAL(textChanged(const QString&)));
+
+    connect(this, SIGNAL(beginChoose()), parent, SIGNAL(pauseRendring()));
+    connect(this, SIGNAL(endChoose()), parent, SIGNAL(resumeRendring()));
 }
 
 QBrowsEdit::~QBrowsEdit()
@@ -22,10 +25,14 @@ QBrowsEdit::~QBrowsEdit()
 
 void QBrowsEdit::OpenFileName()
 {
+    emit beginChoose();
+
     QString filename = QFileDialog::getOpenFileName(m_browse);
 
     if(!filename.isEmpty())
         m_lineEdit->setText(filename);
+
+    emit endChoose();
 }
 
 void QBrowsEdit::SetOpenFileName(const QString& str)

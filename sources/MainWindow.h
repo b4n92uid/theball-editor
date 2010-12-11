@@ -12,6 +12,8 @@
 
 #include <Tbe.h>
 
+#include "ui_interface.h"
+
 #include "QEnvManager.h"
 #include "QLightsManager.h"
 #include "QNodesManager.h"
@@ -26,14 +28,14 @@ public:
     virtual ~MainWindow();
 
 public slots:
-    void OpenFileDialog();
-    void OpenFile(const QString& filename);
+    void openSceneDialog();
+    void openScene(const QString& filename);
 
-    void SaveFile();
-    void SaveFileDialog();
-    void SaveFile(const QString& filename);
+    void saveScene();
+    void saveSceneDialog();
+    void saveScene(const QString& filename);
 
-    void UpdateGui();
+    void updateGui();
 
 private:
     QNodesManager* m_nodsManager;
@@ -45,6 +47,10 @@ private:
     QString m_filename;
 
     QLabel* m_infoText;
+
+    QTimer* m_timer;
+
+    Ui_mainWindow m_uinterface;
 };
 
 #endif	/* MAINWINDOW_H */

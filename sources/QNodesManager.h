@@ -29,9 +29,15 @@ public slots:
     void meshAdd(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh);
 
+    void updateList();
+
+
 signals:
     void notifyMeshAdd(tbe::scene::Mesh* mesh);
     void notifyMeshSelect(tbe::scene::Mesh* mesh);
+
+    void pauseRendring();
+    void resumeRendring();
 
 private:
 
@@ -81,8 +87,8 @@ private:
 
     } ParticlesTab;
 
-    QTreeView* m_nodeList;
-    QStandardItemModel* m_nodeModel;
+    QTreeView* m_nodesListView;
+    QStandardItemModel* m_nodesListModel;
 
     tbe::scene::Node* m_selectedNode;
 
