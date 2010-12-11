@@ -21,7 +21,7 @@ QTBEngine::QTBEngine(QWidget* parent)
     m_selectedNode = NULL;
 
     setMouseTracking(true);
-    setFocusPolicy(Qt::ClickFocus);
+    setFocusPolicy(Qt::StrongFocus);
 }
 
 QTBEngine::~QTBEngine()
@@ -36,6 +36,9 @@ void QTBEngine::initializeGL()
     m_sceneManager = m_device->GetSceneManager();
     m_eventManager = m_device->GetEventManager();
 
+    m_fog = m_sceneManager->GetFog();
+    m_skybox = m_sceneManager->GetSkybox();
+
     using namespace scene;
 
     m_ffcamera = new FreeFlyCamera;
@@ -46,9 +49,19 @@ void QTBEngine::initializeGL()
 
     m_camera = m_orbcamera;
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-    timer->start(16);
+    m_updateTimer = new QTimer(this);
+    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    m_updateTimer->start(16);
+}
+
+void QTBEngine::pauseRendring()
+{
+    m_updateTimer->stop();
+}
+
+void QTBEngine::resumeRendring()
+{
+    m_updateTimer->start();
 }
 
 void QTBEngine::resizeGL(int w, int h)
@@ -69,7 +82,7 @@ void QTBEngine::moveApply()
 
     // Rotation ----------------------------------------------------------------
 
-    float rotateSpeed = 45 * M_PI / 180;
+    float rotateSpeed = 5 * M_PI / 180;
 
     if(m_eventManager->notify == EventManager::EVENT_KEY_DOWN)
     {
@@ -90,8 +103,6 @@ void QTBEngine::moveApply()
 
         if(m_eventManager->keyState['x'])
             matrix.SetRotateZ(rotateSpeed);
-
-        m_eventManager->notify = EventManager::EVENT_NO_EVENT;
     }
 
     // In the floor ------------------------------------------------------------
@@ -120,7 +131,7 @@ void QTBEngine::moveApply()
     matrix.SetPos(pos);
 
     m_selectedNode->SetMatrix(matrix);
-    m_axe->SetPos(pos);
+    m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
 
     // Movement ----------------------------------------------------------------
 
@@ -128,10 +139,17 @@ void QTBEngine::moveApply()
     {
         float moveSpeed = 0.01;
 
-        Vector3f transform;
-        Vector3f target = m_camera->GetTarget();
-        Vector3f left = m_camera->GetLeft();
         Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+        Vector3f target = m_camera->GetTarget();
+        target.y = 0;
+        target.Normalize();
+
+        Vector3f left = m_camera->GetLeft();
+        left.y = 0;
+        left.Normalize();
+
+        Vector3f transform;
 
         if(m_eventManager->keyState['c'])
         {
@@ -147,13 +165,17 @@ void QTBEngine::moveApply()
         transform += m_selectedNode->GetPos();
 
         m_selectedNode->SetPos(transform);
-        m_axe->SetPos(transform);
-        m_orbcamera->SetCenter(transform);
 
-        m_eventManager->notify = EventManager::EVENT_NO_EVENT;
+        Vector3f abs = m_selectedNode->GetAbsoluteMatrix().GetPos();
+
+        m_axe->SetPos(abs);
+        m_orbcamera->SetCenter(abs);
+
     }
 
     emit notifyMeshSelect(*std::find(m_meshs.begin(), m_meshs.end(), m_selectedNode));
+
+    m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 }
 
 void QTBEngine::paintGL()
@@ -194,6 +216,11 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         m_lastCursorPos = qptovec(ev->pos());
         m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
+    }
+
+    else if(ev->button() == Qt::MiddleButton)
+    {
+        m_axe->SetPos(m_curCursor3D);
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -242,6 +269,26 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
     }
 }
 
+void QTBEngine::wheelEvent(QWheelEvent* ev)
+{
+    m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
+
+    m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_UP] =
+            m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_DOWN] = 0;
+
+    if(ev->delta() > 0)
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_UP] = 1;
+    else
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_DOWN] = 1;
+
+    m_camera->OnEvent(m_eventManager);
+
+    m_eventManager->notify = EventManager::EVENT_NO_EVENT;
+
+    m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_UP] =
+            m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_DOWN] = 0;
+}
+
 void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 {
     m_curCursorPos = qptovec(ev->pos());
@@ -269,44 +316,56 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
-    m_eventManager->keyState[std::isalpha(ev->key()) ? std::tolower(ev->key()) : ev->key()] = 1;
+    m_eventManager->keyState[std::tolower(ev->key())] = 1;
 
     if(ev->key() == Qt::Key_Space)
         setCursor(Qt::BlankCursor);
 
     if(ev->key() == Qt::Key_V)
+    {
         swapcontainer(m_camera, m_ffcamera, m_orbcamera);
+        m_sceneManager->SetCurCamera(m_camera);
+    }
 }
 
 void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
-    m_eventManager->keyState[std::isalpha(ev->key()) ? std::tolower(ev->key()) : ev->key()] = 0;
+    m_eventManager->keyState[std::tolower(ev->key())] = 0;
 
     if(ev->key() == Qt::Key_Space)
         unsetCursor();
+}
+
+void QTBEngine::saveScene(const QString& filename)
+{
 }
 
 void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
+    m_sceneManager->ClearLights();
+    m_sceneManager->ClearParallelScenes();
+
+    m_fog->Clear();
+    m_skybox->Clear();
+
     SceneParser scenefile(m_sceneManager);
     scenefile.LoadScene(filename.toStdString());
 
     m_meshScene = scenefile.GetMeshScene();
-
-    m_axe = new Axes(4, 4);
-    m_meshScene->RegisterMesh(m_axe);
 
     for(Iterator<Mesh*> it = m_meshScene->GetIterator(); it; it++)
     {
         m_meshs.push_back(*it);
         m_nodes.push_back(*it);
 
-        if(!it->HasParent())
-            emit notifyMeshAdd(*it);
+        emit notifyMeshAdd(*it);
     }
+
+    m_axe = new Axes(4, 4);
+    m_meshScene->RegisterMesh(m_axe);
 }
 
 void QTBEngine::fillTextInfo(QLabel* label)
@@ -335,12 +394,15 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 {
     m_selectedNode = mesh;
 
-    m_orbcamera->SetCenter(m_selectedNode->GetPos());
-    m_axe->SetPos(m_selectedNode->GetPos());
+    m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
 }
 
 void QTBEngine::meshAdd(tbe::scene::Mesh* mesh)
 {
     m_meshScene->RegisterMesh(mesh);
     m_selectedNode = mesh;
+
+    m_meshs.push_back(mesh);
+    m_nodes.push_back(mesh);
 }

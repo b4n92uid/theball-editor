@@ -21,6 +21,7 @@ public:
     ~QTBEngine();
 
     void loadScene(const QString& filename);
+    void saveScene(const QString& filename);
 
 protected:
     void initializeGL();
@@ -30,6 +31,7 @@ protected:
     void mousePressEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
     void mouseMoveEvent(QMouseEvent* ev);
+    void wheelEvent(QWheelEvent* ev);
 
     void keyPressEvent(QKeyEvent* ev);
     void keyReleaseEvent(QKeyEvent* ev);
@@ -42,6 +44,9 @@ public slots:
 
     void fillTextInfo(QLabel* label);
 
+    void pauseRendring();
+    void resumeRendring();
+
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
     void notifyMeshSelect(tbe::scene::Mesh*);
@@ -49,7 +54,10 @@ signals:
 private:
     tbe::Device* m_device;
     tbe::EventManager* m_eventManager;
+
     tbe::scene::SceneManager* m_sceneManager;
+    tbe::scene::SkyBox* m_skybox;
+    tbe::scene::Fog* m_fog;
 
     tbe::scene::UserCamera* m_camera;
     tbe::scene::FreeFlyCamera* m_ffcamera;
@@ -58,6 +66,8 @@ private:
     tbe::scene::MeshParallelScene* m_meshScene;
     tbe::scene::ParticlesParallelScene* m_particlesScene;
     tbe::scene::WaterParallelScene* m_waterScene;
+
+    QTimer* m_updateTimer;
 
     bool m_grabCamera;
 

@@ -27,6 +27,9 @@ public slots:
 signals:
     void textChanged(const QString& filename);
 
+    void beginChoose();
+    void endChoose();
+
 private:
     QLineEdit* m_lineEdit;
     QPushButton* m_browse;
