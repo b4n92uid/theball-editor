@@ -14,7 +14,7 @@
    <string>theBall Editor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="8,2">
+   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="8,0">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
@@ -56,31 +56,34 @@
        <attribute name="title">
         <string>Noeuds</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
            <string>Propriétés</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
+          <layout class="QFormLayout" name="formLayout_3">
+           <item row="0" column="0">
             <widget class="QLabel" name="label_6">
              <property name="text">
               <string>Nom</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="1">
             <widget class="QLineEdit" name="node_name"/>
            </item>
-           <item>
+           <item row="1" column="0">
             <widget class="QLabel" name="label">
              <property name="text">
               <string>Position</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="1" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
               <widget class="QDoubleSpinBox" name="node_pos_x">
@@ -105,38 +108,6 @@
              </item>
             </layout>
            </item>
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="text">
-              <string>Rotation</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="_2">
-             <item>
-              <widget class="QDoubleSpinBox" name="node_rotation_x">
-               <property name="minimum">
-                <double>-99.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="node_rotation_y">
-               <property name="minimum">
-                <double>-99.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="node_rotation_z">
-               <property name="minimum">
-                <double>-99.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
           </layout>
          </widget>
         </item>
@@ -151,6 +122,31 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_18">
+              <item>
+               <widget class="QPushButton" name="node_mesh_add">
+                <property name="text">
+                 <string>Ajouter</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_mesh_clone">
+                <property name="text">
+                 <string>Cloner</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_mesh_del">
+                <property name="text">
+                 <string>Effacer</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_3">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -163,24 +159,6 @@
               </property>
              </spacer>
             </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
-              <item>
-               <widget class="QPushButton" name="node_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_del">
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_5">
@@ -191,69 +169,19 @@
             <property name="fieldGrowthPolicy">
              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
             </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_19">
-              <property name="text">
-               <string>Deform</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_deform"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_18">
-              <property name="text">
-               <string>Size</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_17">
-              <property name="text">
-               <string>Uv repeat</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_16">
-              <property name="text">
-               <string>Speed</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_speed"/>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_15">
-              <property name="text">
-               <string>Blend</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_blend"/>
-            </item>
-            <item row="5" column="0" colspan="2">
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>100</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="6" column="0" colspan="2">
+            <item row="0" column="0" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_24">
               <item>
                <widget class="QPushButton" name="node_water_add">
                 <property name="text">
                  <string>Ajouter</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_water_clone">
+                <property name="text">
+                 <string>Cloner</string>
                 </property>
                </widget>
               </item>
@@ -266,7 +194,24 @@
               </item>
              </layout>
             </item>
-            <item row="1" column="1">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>Deform</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDoubleSpinBox" name="node_water_deform"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_18">
+              <property name="text">
+               <string>Size</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_9">
               <item>
                <widget class="QDoubleSpinBox" name="node_water_size_x"/>
@@ -276,7 +221,14 @@
               </item>
              </layout>
             </item>
-            <item row="2" column="1">
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_17">
+              <property name="text">
+               <string>Uv repeat</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_8">
               <item>
                <widget class="QDoubleSpinBox" name="node_water_uvrepeat_x"/>
@@ -285,6 +237,26 @@
                <widget class="QDoubleSpinBox" name="node_water_uvrepeat_y"/>
               </item>
              </layout>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_16">
+              <property name="text">
+               <string>Speed</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QDoubleSpinBox" name="node_water_speed"/>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Blend</string>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QDoubleSpinBox" name="node_water_blend"/>
             </item>
            </layout>
           </widget>
@@ -296,61 +268,86 @@
             <property name="fieldGrowthPolicy">
              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
             </property>
-            <item row="0" column="0">
+            <item row="1" column="0">
              <widget class="QLabel" name="label_20">
               <property name="text">
                <string>Gravity</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_particles_gravity_x">
+                <property name="minimum">
+                 <double>-99.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_particles_gravity_y">
+                <property name="minimum">
+                 <double>-99.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_particles_gravity_z">
+                <property name="minimum">
+                 <double>-99.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="0">
              <widget class="QLabel" name="label_21">
               <property name="text">
                <string>FreeMove</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="2" column="1">
              <widget class="QDoubleSpinBox" name="node_particles_freemove"/>
             </item>
-            <item row="2" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="label_23">
               <property name="text">
                <string>LifeInit</string>
               </property>
              </widget>
             </item>
-            <item row="2" column="1">
+            <item row="3" column="1">
              <widget class="QDoubleSpinBox" name="node_particles_lifeinit"/>
             </item>
-            <item row="3" column="0">
+            <item row="4" column="0">
              <widget class="QLabel" name="label_24">
               <property name="text">
                <string>LifeDown</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="4" column="1">
              <widget class="QDoubleSpinBox" name="node_particles_lifedown"/>
             </item>
-            <item row="4" column="0">
+            <item row="5" column="0">
              <widget class="QLabel" name="label_25">
               <property name="text">
                <string>Number</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="5" column="1">
              <widget class="QSpinBox" name="node_particles_number"/>
             </item>
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_26">
               <property name="text">
                <string>Texture</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="6" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="3,1">
               <item>
                <widget class="QLineEdit" name="node_particles_texture"/>
@@ -370,27 +367,14 @@
               </item>
              </layout>
             </item>
-            <item row="6" column="1">
+            <item row="7" column="1">
              <widget class="QCheckBox" name="node_particles_continousmide">
               <property name="text">
                <string>Continous Mode</string>
               </property>
              </widget>
             </item>
-            <item row="7" column="0" colspan="2">
-             <spacer name="verticalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="8" column="0" colspan="2">
+            <item row="0" column="0" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_25">
               <item>
                <widget class="QPushButton" name="node_particles_add">
@@ -400,34 +384,16 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="node_particles_clone">
+                <property name="text">
+                 <string>Cloner</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="node_particles_del">
                 <property name="text">
                  <string>Effacer</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="0" column="1">
-             <layout class="QHBoxLayout" name="_3">
-              <item>
-               <widget class="QDoubleSpinBox" name="node_particles_gravity_x">
-                <property name="minimum">
-                 <double>-99.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="node_particles_gravity_y">
-                <property name="minimum">
-                 <double>-99.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QDoubleSpinBox" name="node_particles_gravity_z">
-                <property name="minimum">
-                 <double>-99.000000000000000</double>
                 </property>
                </widget>
               </item>
@@ -452,15 +418,15 @@
           <property name="title">
            <string>Propriétés</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
+          <layout class="QFormLayout" name="formLayout_4">
+           <item row="0" column="0">
             <widget class="QLabel" name="label_7">
              <property name="text">
               <string>Type</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="1">
             <widget class="QComboBox" name="light_type">
              <item>
               <property name="text">
@@ -474,14 +440,14 @@
              </item>
             </widget>
            </item>
-           <item>
+           <item row="1" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Position</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="1" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QDoubleSpinBox" name="light_pos_x">
@@ -506,14 +472,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="2" column="0">
             <widget class="QLabel" name="label_8">
              <property name="text">
               <string>Ambient</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="2" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_19">
              <item>
               <widget class="QDoubleSpinBox" name="light_ambiant_x"/>
@@ -526,14 +492,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="3" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
               <string>Diffuse</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="3" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_20">
              <item>
               <widget class="QDoubleSpinBox" name="light_diffuse_x"/>
@@ -546,14 +512,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="4" column="0">
             <widget class="QLabel" name="label_10">
              <property name="text">
               <string>Spéculaire</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="4" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_21">
              <item>
               <widget class="QDoubleSpinBox" name="light_specular_x"/>
@@ -566,38 +532,43 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="5" column="0">
             <widget class="QLabel" name="label_11">
              <property name="text">
               <string>Shininess</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="5" column="1">
             <widget class="QDoubleSpinBox" name="light_shininess"/>
            </item>
           </layout>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_12">
-          <property name="text">
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="title">
            <string>Ambient de la scene</string>
           </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_22">
+             <item>
+              <widget class="QDoubleSpinBox" name="light_scene_x"/>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="light_scene_y"/>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="light_scene_z"/>
+             </item>
+            </layout>
+           </item>
+          </layout>
          </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_22">
-          <item>
-           <widget class="QDoubleSpinBox" name="light_scene_x"/>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="light_scene_y"/>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="light_scene_z"/>
-          </item>
-         </layout>
         </item>
         <item>
          <widget class="QTreeView" name="node_type"/>
@@ -608,6 +579,13 @@
            <widget class="QPushButton" name="light_add">
             <property name="text">
              <string>Ajouter</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="light_clone">
+            <property name="text">
+             <string>Cloner</string>
             </property>
            </widget>
           </item>
@@ -629,11 +607,27 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QGroupBox" name="groupBox_2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="title">
            <string>Skybox</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <layout class="QFormLayout" name="formLayout_5">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Devant</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_16" stretch="6,1">
              <item>
               <widget class="QLineEdit" name="skybox_front"/>
@@ -653,7 +647,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>Deriere</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="6,1">
              <item>
               <widget class="QLineEdit" name="skybox_back"/>
@@ -673,7 +674,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_22">
+             <property name="text">
+              <string>Haut</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="6,1">
              <item>
               <widget class="QLineEdit" name="skybox_top"/>
@@ -693,7 +701,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_27">
+             <property name="text">
+              <string>Bas</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="6,1">
              <item>
               <widget class="QLineEdit" name="skybox_bottom"/>
@@ -713,7 +728,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_28">
+             <property name="text">
+              <string>Gauche</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="6,1">
              <item>
               <widget class="QLineEdit" name="skybox_left"/>
@@ -733,7 +755,14 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_29">
+             <property name="text">
+              <string>Droite</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="6,1">
              <item>
               <widget class="QLineEdit" name="skybox_right"/>
@@ -753,7 +782,7 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="7" column="0" colspan="2">
             <layout class="QHBoxLayout" name="horizontalLayout_13">
              <item>
               <widget class="QPushButton" name="skybox_apply">
@@ -771,30 +800,35 @@
              </item>
             </layout>
            </item>
-           <item>
-            <widget class="QCheckBox" name="skybox_enable">
-             <property name="text">
-              <string>Activer le Skybox</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_3">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="title">
            <string>Fog</string>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <layout class="QFormLayout" name="formLayout_6">
+           <property name="fieldGrowthPolicy">
+            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+           </property>
+           <item row="0" column="0">
             <widget class="QLabel" name="label_3">
              <property name="text">
               <string>Couleur</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_17">
              <item>
               <widget class="QDoubleSpinBox" name="fog_x"/>
@@ -807,48 +841,41 @@
              </item>
             </layout>
            </item>
-           <item>
+           <item row="1" column="0">
             <widget class="QLabel" name="label_5">
              <property name="text">
               <string>Début</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="fog_start"/>
            </item>
-           <item>
+           <item row="2" column="0">
             <widget class="QLabel" name="label_4">
              <property name="text">
               <string>Fin</string>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="2" column="1">
             <widget class="QDoubleSpinBox" name="fog_end"/>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="fog_enable">
-             <property name="text">
-              <string>Activer le FOG (brouaillard)</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
