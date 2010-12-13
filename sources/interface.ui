@@ -202,7 +202,11 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_deform"/>
+             <widget class="QDoubleSpinBox" name="node_water_deform">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_18">
@@ -246,7 +250,11 @@
              </widget>
             </item>
             <item row="5" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_speed"/>
+             <widget class="QDoubleSpinBox" name="node_water_speed">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="6" column="0">
              <widget class="QLabel" name="label_15">
@@ -256,7 +264,11 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <widget class="QDoubleSpinBox" name="node_water_blend"/>
+             <widget class="QDoubleSpinBox" name="node_water_blend">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -308,7 +320,11 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="node_particles_freemove"/>
+             <widget class="QDoubleSpinBox" name="node_particles_freemove">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_23">
@@ -318,7 +334,11 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="node_particles_lifeinit"/>
+             <widget class="QDoubleSpinBox" name="node_particles_lifeinit">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="4" column="0">
              <widget class="QLabel" name="label_24">
@@ -328,7 +348,11 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QDoubleSpinBox" name="node_particles_lifedown"/>
+             <widget class="QDoubleSpinBox" name="node_particles_lifedown">
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="5" column="0">
              <widget class="QLabel" name="label_25">
@@ -540,7 +564,11 @@
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QDoubleSpinBox" name="light_shininess"/>
+            <widget class="QDoubleSpinBox" name="light_shininess">
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -791,13 +819,6 @@
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QPushButton" name="skybox_clear">
-               <property name="text">
-                <string>Effacer</string>
-               </property>
-              </widget>
-             </item>
             </layout>
            </item>
           </layout>
@@ -849,7 +870,11 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="fog_start"/>
+            <widget class="QDoubleSpinBox" name="fog_start">
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_4">
@@ -859,7 +884,11 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QDoubleSpinBox" name="fog_end"/>
+            <widget class="QDoubleSpinBox" name="fog_end">
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
