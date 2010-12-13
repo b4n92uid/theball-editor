@@ -9,11 +9,7 @@
 #define	QENVMANAGER_H
 
 #include "QVectorBox.h"
-
-
 #include "QBrowsEdit.h"
-
-
 #include "ui_interface.h"
 
 class QEnvManager : public QObject
@@ -21,28 +17,43 @@ class QEnvManager : public QObject
     Q_OBJECT
 
 public:
-    QEnvManager(QObject* parent, Ui_mainWindow* uinterface);
+    QEnvManager(QWidget* parent, Ui_mainWindow* uinterface);
     virtual ~QEnvManager();
+
+public slots:
+    void skyboxChanged(bool stat = true);
+    void fogChanged(bool stat = true);
+
+    void fogInit(tbe::scene::Fog* tbefog);
+    void skyboxInit(tbe::scene::SkyBox* tbesky);
+
+signals:
+    void skyboxApply(const QStringList&);
+    void skyboxClear();
+
+    void fogApply(tbe::Vector4f, float, float);
+    void fogClear();
 
 private:
 
     struct
     {
         QBrowsEdit * textures[6];
-        QPushButton apply;
-        QPushButton clear;
-        QCheckBox enable;
+        QPushButton* apply;
+        QGroupBox* enable;
 
-    } Skybox;
+    } skybox;
 
     struct
     {
         QVectorBox* color;
         QDoubleSpinBox* start;
         QDoubleSpinBox* end;
-        QCheckBox enable;
+        QGroupBox* enable;
 
-    } Fog;
+    } fog;
+
+    QWidget* m_parent;
 };
 
 #endif	/* QENVMANAGER_H */

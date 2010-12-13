@@ -33,11 +33,35 @@ MainWindow::MainWindow()
     connect(m_nodsManager, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)),
             m_tbeWidget, SLOT(meshAdd(tbe::scene::Mesh*)));
 
+    connect(m_nodsManager, SIGNAL(notifyMeshClone(tbe::scene::Mesh*)),
+            m_tbeWidget, SLOT(meshClone(tbe::scene::Mesh*)));
+
     connect(m_nodsManager, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)),
             m_tbeWidget, SLOT(meshSelect(tbe::scene::Mesh*)));
 
-    connect(m_nodsManager, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
-    connect(m_nodsManager, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
+    connect(m_nodsManager, SIGNAL(pauseRendring()),
+            m_tbeWidget, SLOT(pauseRendring()));
+
+    connect(m_nodsManager, SIGNAL(resumeRendring()),
+            m_tbeWidget, SLOT(resumeRendring()));
+
+    connect(m_envManager, SIGNAL(skyboxApply(const QStringList&)),
+            m_tbeWidget, SLOT(skyboxApply(const QStringList&)));
+
+    connect(m_envManager, SIGNAL(skyboxClear()),
+            m_tbeWidget, SLOT(skyboxClear()));
+
+    connect(m_envManager, SIGNAL(fogApply(tbe::Vector4f, float, float)),
+            m_tbeWidget, SLOT(fogApply(tbe::Vector4f, float, float)));
+
+    connect(m_envManager, SIGNAL(fogClear()),
+            m_tbeWidget, SLOT(fogClear()));
+
+    connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)),
+            m_envManager, SLOT(fogInit(tbe::scene::Fog*)));
+
+    connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)),
+            m_envManager, SLOT(skyboxInit(tbe::scene::SkyBox*)));
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
@@ -63,7 +87,7 @@ void MainWindow::openSceneDialog()
 void MainWindow::openScene(const QString& filename)
 {
     QFileInfo filei(filename);
-    
+
     QDir::setCurrent(filei.path());
 
     m_tbeWidget->loadScene(filename);
