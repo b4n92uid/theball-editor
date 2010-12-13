@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfaceGIc636.ui'
+** Form generated from reading UI file 'interfaceUBy692.ui'
 **
-** Created: Mon 13. Dec 22:22:56 2010
+** Created: Tue 14. Dec 00:36:03 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEGIC636_H
-#define INTERFACEGIC636_H
+#ifndef INTERFACEUBY692_H
+#define INTERFACEUBY692_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -186,7 +186,6 @@ public:
     QPushButton *skybox_right_browse;
     QHBoxLayout *horizontalLayout_13;
     QPushButton *skybox_apply;
-    QPushButton *skybox_clear;
     QGroupBox *fog_enable;
     QFormLayout *formLayout_6;
     QLabel *label_3;
@@ -364,6 +363,7 @@ public:
 
         node_water_deform = new QDoubleSpinBox(tab_5);
         node_water_deform->setObjectName(QString::fromUtf8("node_water_deform"));
+        node_water_deform->setSingleStep(0.1);
 
         formLayout->setWidget(2, QFormLayout::FieldRole, node_water_deform);
 
@@ -414,6 +414,7 @@ public:
 
         node_water_speed = new QDoubleSpinBox(tab_5);
         node_water_speed->setObjectName(QString::fromUtf8("node_water_speed"));
+        node_water_speed->setSingleStep(0.1);
 
         formLayout->setWidget(5, QFormLayout::FieldRole, node_water_speed);
 
@@ -424,6 +425,7 @@ public:
 
         node_water_blend = new QDoubleSpinBox(tab_5);
         node_water_blend->setObjectName(QString::fromUtf8("node_water_blend"));
+        node_water_blend->setSingleStep(0.1);
 
         formLayout->setWidget(6, QFormLayout::FieldRole, node_water_blend);
 
@@ -468,6 +470,7 @@ public:
 
         node_particles_freemove = new QDoubleSpinBox(tab_6);
         node_particles_freemove->setObjectName(QString::fromUtf8("node_particles_freemove"));
+        node_particles_freemove->setSingleStep(0.1);
 
         formLayout_2->setWidget(2, QFormLayout::FieldRole, node_particles_freemove);
 
@@ -478,6 +481,7 @@ public:
 
         node_particles_lifeinit = new QDoubleSpinBox(tab_6);
         node_particles_lifeinit->setObjectName(QString::fromUtf8("node_particles_lifeinit"));
+        node_particles_lifeinit->setSingleStep(0.1);
 
         formLayout_2->setWidget(3, QFormLayout::FieldRole, node_particles_lifeinit);
 
@@ -488,6 +492,7 @@ public:
 
         node_particles_lifedown = new QDoubleSpinBox(tab_6);
         node_particles_lifedown->setObjectName(QString::fromUtf8("node_particles_lifedown"));
+        node_particles_lifedown->setSingleStep(0.1);
 
         formLayout_2->setWidget(4, QFormLayout::FieldRole, node_particles_lifedown);
 
@@ -692,6 +697,7 @@ public:
 
         light_shininess = new QDoubleSpinBox(groupBox_4);
         light_shininess->setObjectName(QString::fromUtf8("light_shininess"));
+        light_shininess->setSingleStep(0.1);
 
         formLayout_4->setWidget(5, QFormLayout::FieldRole, light_shininess);
 
@@ -914,11 +920,6 @@ public:
 
         horizontalLayout_13->addWidget(skybox_apply);
 
-        skybox_clear = new QPushButton(skybox_enable);
-        skybox_clear->setObjectName(QString::fromUtf8("skybox_clear"));
-
-        horizontalLayout_13->addWidget(skybox_clear);
-
 
         formLayout_5->setLayout(7, QFormLayout::SpanningRole, horizontalLayout_13);
 
@@ -965,6 +966,7 @@ public:
 
         fog_start = new QDoubleSpinBox(fog_enable);
         fog_start->setObjectName(QString::fromUtf8("fog_start"));
+        fog_start->setSingleStep(0.1);
 
         formLayout_6->setWidget(1, QFormLayout::FieldRole, fog_start);
 
@@ -975,6 +977,7 @@ public:
 
         fog_end = new QDoubleSpinBox(fog_enable);
         fog_end->setObjectName(QString::fromUtf8("fog_end"));
+        fog_end->setSingleStep(0.1);
 
         formLayout_6->setWidget(2, QFormLayout::FieldRole, fog_end);
 
@@ -1086,7 +1089,6 @@ public:
         label_29->setText(QApplication::translate("mainWindow", "Droite", 0, QApplication::UnicodeUTF8));
         skybox_right_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
         skybox_apply->setText(QApplication::translate("mainWindow", "Apliquer", 0, QApplication::UnicodeUTF8));
-        skybox_clear->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
         fog_enable->setTitle(QApplication::translate("mainWindow", "Fog", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("mainWindow", "Couleur", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("mainWindow", "D\303\251but", 0, QApplication::UnicodeUTF8));
@@ -1103,4 +1105,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEGIC636_H
+#endif // INTERFACEUBY692_H

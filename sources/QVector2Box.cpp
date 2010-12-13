@@ -14,6 +14,9 @@ QVector2Box::QVector2Box(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y)
 
     connect(m_x, SIGNAL(valueChanged(double)), this, SLOT(ComponentValueChanged(double)));
     connect(m_y, SIGNAL(valueChanged(double)), this, SLOT(ComponentValueChanged(double)));
+
+    m_x->setSingleStep(0.1);
+    m_y->setSingleStep(0.1);
 }
 
 QVector2Box::~QVector2Box()

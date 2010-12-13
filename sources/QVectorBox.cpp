@@ -16,18 +16,22 @@ QVectorBox::QVectorBox(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QD
     connect(m_x, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
     connect(m_y, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
     connect(m_z, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
+
+    m_x->setSingleStep(0.1);
+    m_y->setSingleStep(0.1);
+    m_z->setSingleStep(0.1);
 }
 
 QVectorBox::~QVectorBox()
 {
 }
 
-tbe::Vector3f QVectorBox::getVectorValue()
+tbe::Vector3f QVectorBox::getValue()
 {
     return tbe::Vector3f(m_x->value(), m_y->value(), m_z->value());
 }
 
-void QVectorBox::setVectorValue(const tbe::Vector3f& value)
+void QVectorBox::setValue(const tbe::Vector3f& value)
 {
     m_x->setValue(value.x);
     m_y->setValue(value.y);
@@ -36,5 +40,5 @@ void QVectorBox::setVectorValue(const tbe::Vector3f& value)
 
 void QVectorBox::componentValueChanged(double d)
 {
-    emit valueChanged(getVectorValue());
+    emit valueChanged(getValue());
 }
