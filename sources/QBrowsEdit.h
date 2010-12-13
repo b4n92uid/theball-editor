@@ -18,11 +18,11 @@ public:
     QBrowsEdit(QObject* parent, QLineEdit* lineEdit, QPushButton* browse);
     virtual ~QBrowsEdit();
 
-    void SetOpenFileName(const QString& str);
-    QString GetOpenFileName();
+    void setOpenFileName(const QString& str);
+    QString getOpenFileName();
 
 public slots:
-    void OpenFileName();
+    void openFileName();
 
 signals:
     void textChanged(const QString& filename);
