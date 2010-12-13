@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfacecI3244.ui'
+** Form generated from reading UI file 'interfaceGIc636.ui'
 **
-** Created: Fri 10. Dec 17:53:21 2010
+** Created: Mon 13. Dec 22:22:56 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACECI3244_H
-#define INTERFACECI3244_H
+#ifndef INTERFACEGIC636_H
+#define INTERFACEGIC636_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -158,7 +158,7 @@ public:
     QPushButton *light_del;
     QWidget *tab_3;
     QVBoxLayout *verticalLayout_2;
-    QGroupBox *groupBox_2;
+    QGroupBox *skybox_enable;
     QFormLayout *formLayout_5;
     QLabel *label_13;
     QHBoxLayout *horizontalLayout_16;
@@ -187,7 +187,7 @@ public:
     QHBoxLayout *horizontalLayout_13;
     QPushButton *skybox_apply;
     QPushButton *skybox_clear;
-    QGroupBox *groupBox_3;
+    QGroupBox *fog_enable;
     QFormLayout *formLayout_6;
     QLabel *label_3;
     QHBoxLayout *horizontalLayout_17;
@@ -756,26 +756,26 @@ public:
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
         verticalLayout_2 = new QVBoxLayout(tab_3);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        groupBox_2 = new QGroupBox(tab_3);
-        groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
-        groupBox_2->setEnabled(true);
-        groupBox_2->setCheckable(true);
-        groupBox_2->setChecked(false);
-        formLayout_5 = new QFormLayout(groupBox_2);
+        skybox_enable = new QGroupBox(tab_3);
+        skybox_enable->setObjectName(QString::fromUtf8("skybox_enable"));
+        skybox_enable->setEnabled(true);
+        skybox_enable->setCheckable(true);
+        skybox_enable->setChecked(false);
+        formLayout_5 = new QFormLayout(skybox_enable);
         formLayout_5->setObjectName(QString::fromUtf8("formLayout_5"));
-        label_13 = new QLabel(groupBox_2);
+        label_13 = new QLabel(skybox_enable);
         label_13->setObjectName(QString::fromUtf8("label_13"));
 
         formLayout_5->setWidget(0, QFormLayout::LabelRole, label_13);
 
         horizontalLayout_16 = new QHBoxLayout();
         horizontalLayout_16->setObjectName(QString::fromUtf8("horizontalLayout_16"));
-        skybox_front = new QLineEdit(groupBox_2);
+        skybox_front = new QLineEdit(skybox_enable);
         skybox_front->setObjectName(QString::fromUtf8("skybox_front"));
 
         horizontalLayout_16->addWidget(skybox_front);
 
-        skybox_front_browse = new QPushButton(groupBox_2);
+        skybox_front_browse = new QPushButton(skybox_enable);
         skybox_front_browse->setObjectName(QString::fromUtf8("skybox_front_browse"));
         sizePolicy1.setHeightForWidth(skybox_front_browse->sizePolicy().hasHeightForWidth());
         skybox_front_browse->setSizePolicy(sizePolicy1);
@@ -787,19 +787,19 @@ public:
 
         formLayout_5->setLayout(0, QFormLayout::FieldRole, horizontalLayout_16);
 
-        label_14 = new QLabel(groupBox_2);
+        label_14 = new QLabel(skybox_enable);
         label_14->setObjectName(QString::fromUtf8("label_14"));
 
         formLayout_5->setWidget(1, QFormLayout::LabelRole, label_14);
 
         horizontalLayout_15 = new QHBoxLayout();
         horizontalLayout_15->setObjectName(QString::fromUtf8("horizontalLayout_15"));
-        skybox_back = new QLineEdit(groupBox_2);
+        skybox_back = new QLineEdit(skybox_enable);
         skybox_back->setObjectName(QString::fromUtf8("skybox_back"));
 
         horizontalLayout_15->addWidget(skybox_back);
 
-        skybox_back_browse = new QPushButton(groupBox_2);
+        skybox_back_browse = new QPushButton(skybox_enable);
         skybox_back_browse->setObjectName(QString::fromUtf8("skybox_back_browse"));
         sizePolicy1.setHeightForWidth(skybox_back_browse->sizePolicy().hasHeightForWidth());
         skybox_back_browse->setSizePolicy(sizePolicy1);
@@ -811,19 +811,19 @@ public:
 
         formLayout_5->setLayout(1, QFormLayout::FieldRole, horizontalLayout_15);
 
-        label_22 = new QLabel(groupBox_2);
+        label_22 = new QLabel(skybox_enable);
         label_22->setObjectName(QString::fromUtf8("label_22"));
 
         formLayout_5->setWidget(2, QFormLayout::LabelRole, label_22);
 
         horizontalLayout_14 = new QHBoxLayout();
         horizontalLayout_14->setObjectName(QString::fromUtf8("horizontalLayout_14"));
-        skybox_top = new QLineEdit(groupBox_2);
+        skybox_top = new QLineEdit(skybox_enable);
         skybox_top->setObjectName(QString::fromUtf8("skybox_top"));
 
         horizontalLayout_14->addWidget(skybox_top);
 
-        skybox_top_browse = new QPushButton(groupBox_2);
+        skybox_top_browse = new QPushButton(skybox_enable);
         skybox_top_browse->setObjectName(QString::fromUtf8("skybox_top_browse"));
         sizePolicy1.setHeightForWidth(skybox_top_browse->sizePolicy().hasHeightForWidth());
         skybox_top_browse->setSizePolicy(sizePolicy1);
@@ -835,19 +835,19 @@ public:
 
         formLayout_5->setLayout(2, QFormLayout::FieldRole, horizontalLayout_14);
 
-        label_27 = new QLabel(groupBox_2);
+        label_27 = new QLabel(skybox_enable);
         label_27->setObjectName(QString::fromUtf8("label_27"));
 
         formLayout_5->setWidget(3, QFormLayout::LabelRole, label_27);
 
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
-        skybox_bottom = new QLineEdit(groupBox_2);
+        skybox_bottom = new QLineEdit(skybox_enable);
         skybox_bottom->setObjectName(QString::fromUtf8("skybox_bottom"));
 
         horizontalLayout_4->addWidget(skybox_bottom);
 
-        skybox_bottom_browse = new QPushButton(groupBox_2);
+        skybox_bottom_browse = new QPushButton(skybox_enable);
         skybox_bottom_browse->setObjectName(QString::fromUtf8("skybox_bottom_browse"));
         sizePolicy1.setHeightForWidth(skybox_bottom_browse->sizePolicy().hasHeightForWidth());
         skybox_bottom_browse->setSizePolicy(sizePolicy1);
@@ -859,19 +859,19 @@ public:
 
         formLayout_5->setLayout(3, QFormLayout::FieldRole, horizontalLayout_4);
 
-        label_28 = new QLabel(groupBox_2);
+        label_28 = new QLabel(skybox_enable);
         label_28->setObjectName(QString::fromUtf8("label_28"));
 
         formLayout_5->setWidget(4, QFormLayout::LabelRole, label_28);
 
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        skybox_left = new QLineEdit(groupBox_2);
+        skybox_left = new QLineEdit(skybox_enable);
         skybox_left->setObjectName(QString::fromUtf8("skybox_left"));
 
         horizontalLayout_6->addWidget(skybox_left);
 
-        skybox_left_browse = new QPushButton(groupBox_2);
+        skybox_left_browse = new QPushButton(skybox_enable);
         skybox_left_browse->setObjectName(QString::fromUtf8("skybox_left_browse"));
         sizePolicy1.setHeightForWidth(skybox_left_browse->sizePolicy().hasHeightForWidth());
         skybox_left_browse->setSizePolicy(sizePolicy1);
@@ -883,19 +883,19 @@ public:
 
         formLayout_5->setLayout(4, QFormLayout::FieldRole, horizontalLayout_6);
 
-        label_29 = new QLabel(groupBox_2);
+        label_29 = new QLabel(skybox_enable);
         label_29->setObjectName(QString::fromUtf8("label_29"));
 
         formLayout_5->setWidget(5, QFormLayout::LabelRole, label_29);
 
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
-        skybox_right = new QLineEdit(groupBox_2);
+        skybox_right = new QLineEdit(skybox_enable);
         skybox_right->setObjectName(QString::fromUtf8("skybox_right"));
 
         horizontalLayout_5->addWidget(skybox_right);
 
-        skybox_right_browse = new QPushButton(groupBox_2);
+        skybox_right_browse = new QPushButton(skybox_enable);
         skybox_right_browse->setObjectName(QString::fromUtf8("skybox_right_browse"));
         sizePolicy1.setHeightForWidth(skybox_right_browse->sizePolicy().hasHeightForWidth());
         skybox_right_browse->setSizePolicy(sizePolicy1);
@@ -909,12 +909,12 @@ public:
 
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
-        skybox_apply = new QPushButton(groupBox_2);
+        skybox_apply = new QPushButton(skybox_enable);
         skybox_apply->setObjectName(QString::fromUtf8("skybox_apply"));
 
         horizontalLayout_13->addWidget(skybox_apply);
 
-        skybox_clear = new QPushButton(groupBox_2);
+        skybox_clear = new QPushButton(skybox_enable);
         skybox_clear->setObjectName(QString::fromUtf8("skybox_clear"));
 
         horizontalLayout_13->addWidget(skybox_clear);
@@ -923,34 +923,34 @@ public:
         formLayout_5->setLayout(7, QFormLayout::SpanningRole, horizontalLayout_13);
 
 
-        verticalLayout_2->addWidget(groupBox_2);
+        verticalLayout_2->addWidget(skybox_enable);
 
-        groupBox_3 = new QGroupBox(tab_3);
-        groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
-        groupBox_3->setEnabled(true);
-        groupBox_3->setCheckable(true);
-        groupBox_3->setChecked(false);
-        formLayout_6 = new QFormLayout(groupBox_3);
+        fog_enable = new QGroupBox(tab_3);
+        fog_enable->setObjectName(QString::fromUtf8("fog_enable"));
+        fog_enable->setEnabled(true);
+        fog_enable->setCheckable(true);
+        fog_enable->setChecked(false);
+        formLayout_6 = new QFormLayout(fog_enable);
         formLayout_6->setObjectName(QString::fromUtf8("formLayout_6"));
         formLayout_6->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
-        label_3 = new QLabel(groupBox_3);
+        label_3 = new QLabel(fog_enable);
         label_3->setObjectName(QString::fromUtf8("label_3"));
 
         formLayout_6->setWidget(0, QFormLayout::LabelRole, label_3);
 
         horizontalLayout_17 = new QHBoxLayout();
         horizontalLayout_17->setObjectName(QString::fromUtf8("horizontalLayout_17"));
-        fog_x = new QDoubleSpinBox(groupBox_3);
+        fog_x = new QDoubleSpinBox(fog_enable);
         fog_x->setObjectName(QString::fromUtf8("fog_x"));
 
         horizontalLayout_17->addWidget(fog_x);
 
-        fog_y = new QDoubleSpinBox(groupBox_3);
+        fog_y = new QDoubleSpinBox(fog_enable);
         fog_y->setObjectName(QString::fromUtf8("fog_y"));
 
         horizontalLayout_17->addWidget(fog_y);
 
-        fog_z = new QDoubleSpinBox(groupBox_3);
+        fog_z = new QDoubleSpinBox(fog_enable);
         fog_z->setObjectName(QString::fromUtf8("fog_z"));
 
         horizontalLayout_17->addWidget(fog_z);
@@ -958,28 +958,28 @@ public:
 
         formLayout_6->setLayout(0, QFormLayout::FieldRole, horizontalLayout_17);
 
-        label_5 = new QLabel(groupBox_3);
+        label_5 = new QLabel(fog_enable);
         label_5->setObjectName(QString::fromUtf8("label_5"));
 
         formLayout_6->setWidget(1, QFormLayout::LabelRole, label_5);
 
-        fog_start = new QDoubleSpinBox(groupBox_3);
+        fog_start = new QDoubleSpinBox(fog_enable);
         fog_start->setObjectName(QString::fromUtf8("fog_start"));
 
         formLayout_6->setWidget(1, QFormLayout::FieldRole, fog_start);
 
-        label_4 = new QLabel(groupBox_3);
+        label_4 = new QLabel(fog_enable);
         label_4->setObjectName(QString::fromUtf8("label_4"));
 
         formLayout_6->setWidget(2, QFormLayout::LabelRole, label_4);
 
-        fog_end = new QDoubleSpinBox(groupBox_3);
+        fog_end = new QDoubleSpinBox(fog_enable);
         fog_end->setObjectName(QString::fromUtf8("fog_end"));
 
         formLayout_6->setWidget(2, QFormLayout::FieldRole, fog_end);
 
 
-        verticalLayout_2->addWidget(groupBox_3);
+        verticalLayout_2->addWidget(fog_enable);
 
         verticalSpacer_5 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -1072,7 +1072,7 @@ public:
         light_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         light_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("mainWindow", "Lumiers", 0, QApplication::UnicodeUTF8));
-        groupBox_2->setTitle(QApplication::translate("mainWindow", "Skybox", 0, QApplication::UnicodeUTF8));
+        skybox_enable->setTitle(QApplication::translate("mainWindow", "Skybox", 0, QApplication::UnicodeUTF8));
         label_13->setText(QApplication::translate("mainWindow", "Devant", 0, QApplication::UnicodeUTF8));
         skybox_front_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("mainWindow", "Deriere", 0, QApplication::UnicodeUTF8));
@@ -1087,7 +1087,7 @@ public:
         skybox_right_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
         skybox_apply->setText(QApplication::translate("mainWindow", "Apliquer", 0, QApplication::UnicodeUTF8));
         skybox_clear->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
-        groupBox_3->setTitle(QApplication::translate("mainWindow", "Fog", 0, QApplication::UnicodeUTF8));
+        fog_enable->setTitle(QApplication::translate("mainWindow", "Fog", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("mainWindow", "Couleur", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("mainWindow", "D\303\251but", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("mainWindow", "Fin", 0, QApplication::UnicodeUTF8));
@@ -1103,4 +1103,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACECI3244_H
+#endif // INTERFACEGIC636_H
