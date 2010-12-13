@@ -148,10 +148,10 @@ void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
 
     QStandardItem* parent = NULL;
 
-    int id = m_nodesListModel->rowCount();
+    int count = m_nodesListModel->rowCount();
 
     if(mesh->HasParent())
-        for(int i = 0; i < id; i++)
+        for(int i = 0; i < count; i++)
         {
             QStandardItem* item = m_nodesListModel->item(i);
 
@@ -162,12 +162,10 @@ void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
             }
         }
 
-    id++;
-
     QVariant userdata;
     userdata.setValue<Mesh*>(mesh);
 
-    QStandardItem* itid = new QStandardItem(QString("Mesh %1").arg(id));
+    QStandardItem* itid = new QStandardItem(QString("Mesh"));
     itid->setData(userdata);
 
     QStandardItem* itname = new QStandardItem(mesh->GetName().c_str());
@@ -193,7 +191,7 @@ void QNodesManager::meshSelect(tbe::scene::Mesh* mesh)
     m_qnode->setCurNode(mesh);
 
     NodeTab.name->setText(mesh->GetName().c_str());
-    NodeTab.pos->setVectorValue(mesh->GetPos());
+    NodeTab.pos->setValue(mesh->GetPos());
 
     int count = m_nodesListModel->rowCount();
 
