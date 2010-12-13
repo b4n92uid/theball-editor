@@ -11,11 +11,33 @@ Q_DECLARE_METATYPE(tbe::scene::Mesh*)
 
 QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObject(parent)
 {
+    // Node --------------------------------------------------------------------
+
+    m_qnode = new QNode(this);
+
     NodeTab.name = uinterface->node_name;
     NodeTab.pos = new QVectorBox(this, uinterface->node_pos_x, uinterface->node_pos_y, uinterface->node_pos_z);
 
+    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), m_qnode, SLOT(SetName(const QString&)));
+    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnode, SLOT(SetPos(const tbe::Vector3f&)));
+
+    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), this, SLOT(updateList()));
+    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(updateList()));
+
+    // Mesh --------------------------------------------------------------------
+
+    m_qmesh = new QMesh(this);
+
     MeshTab.add = uinterface->node_mesh_add;
+    MeshTab.clone = uinterface->node_mesh_clone;
     MeshTab.del = uinterface->node_mesh_del;
+
+    connect(MeshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
+    connect(MeshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
+
+    // Water -------------------------------------------------------------------
+
+    m_qwater = new QWater(this);
 
     WaterTab.deform = uinterface->node_water_deform;
     WaterTab.size = new QVector2Box(this, uinterface->node_water_size_x, uinterface->node_water_size_y);
@@ -24,6 +46,16 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     WaterTab.blend = uinterface->node_water_blend;
     WaterTab.add = uinterface->node_water_add;
     WaterTab.del = uinterface->node_water_del;
+
+    connect(WaterTab.deform, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetDeform(double)));
+    connect(WaterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qwater, SLOT(SetSize(const tbe::Vector2f&)));
+    connect(WaterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qwater, SLOT(SetUvRepeat(const tbe::Vector2f&)));
+    connect(WaterTab.speed, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetSpeed(double)));
+    connect(WaterTab.blend, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetBlend(double)));
+
+    // Particles ---------------------------------------------------------------
+
+    m_qparticles = new QParticles(this);
 
     ParticlesTab.gravity = new QVectorBox(this, uinterface->node_particles_gravity_x, uinterface->node_particles_gravity_y, uinterface->node_particles_gravity_z);
     ParticlesTab.freemove = uinterface->node_particles_freemove;
@@ -35,6 +67,16 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     ParticlesTab.add = uinterface->node_particles_add;
     ParticlesTab.del = uinterface->node_particles_del;
 
+    connect(ParticlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qparticles, SLOT(SetGravity(const tbe::Vector3f&)));
+    connect(ParticlesTab.freemove, SIGNAL(valueChanged(double)), m_qparticles, SLOT(SetFreemove(double)));
+    connect(ParticlesTab.lifeinit, SIGNAL(valueChanged(double)), m_qparticles, SLOT(SetLifeinit(double)));
+    connect(ParticlesTab.lifedown, SIGNAL(valueChanged(double)), m_qparticles, SLOT(SetLifedown(double)));
+    connect(ParticlesTab.number, SIGNAL(valueChanged(int)), m_qparticles, SLOT(SetNumber(int)));
+    connect(ParticlesTab.texture, SIGNAL(textChanged(const QString&)), m_qparticles, SLOT(SetTexture(const QString&)));
+    connect(ParticlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qparticles, SLOT(SetContinousMode(int)));
+
+    // Nodes liste -------------------------------------------------------------
+
     QStringList headerLabels;
     headerLabels << "Type" << "Nom";
 
@@ -45,40 +87,11 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     m_nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_nodesListView->setModel(m_nodesListModel);
 
-    m_qnode = new QNode(this);
-    m_qmesh = new QMesh(this);
-    m_qparticles = new QParticles(this);
-    m_qwater = new QWater(this);
-
-    m_selectedNode = NULL;
-
     connect(m_nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiMeshSelect(const QModelIndex&)));
 
-    // Node
-    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), m_qnode, SLOT(SetName(const QString&)));
-    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnode, SLOT(SetPos(const tbe::Vector3f&)));
+    // -------------------------------------------------------------------------
 
-    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), this, SLOT(updateList()));
-    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(updateList()));
-
-    // Mesh
-    connect(MeshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
-
-    // Water
-    connect(WaterTab.deform, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetDeform(double)));
-    connect(WaterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qwater, SLOT(SetSize(const tbe::Vector2f&)));
-    connect(WaterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qwater, SLOT(SetUvRepeat(const tbe::Vector2f&)));
-    connect(WaterTab.speed, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetSpeed(double)));
-    connect(WaterTab.blend, SIGNAL(valueChanged(double)), m_qwater, SLOT(SetBlend(double)));
-
-    // Particles
-    connect(ParticlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qparticles, SLOT(SetGravity(const tbe::Vector3f&)));
-    connect(ParticlesTab.freemove, SIGNAL(valueChanged(double)), m_qparticles, SLOT(SetFreemove(double)));
-    connect(ParticlesTab.lifeinit, SIGNAL(valueChanged(double)), m_qparticles, SLOT(SetLifeinit(double)));
-    connect(ParticlesTab.lifedown, SIGNAL(valueChanged(double)), m_qparticles, SLOT(SetLifedown(double)));
-    connect(ParticlesTab.number, SIGNAL(valueChanged(int)), m_qparticles, SLOT(SetNumber(int)));
-    connect(ParticlesTab.texture, SIGNAL(textChanged(const QString&)), m_qparticles, SLOT(SetTexture(const QString&)));
-    connect(ParticlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qparticles, SLOT(SetContinousMode(int)));
+    m_selectedNode = NULL;
 }
 
 QNodesManager::~QNodesManager()
@@ -111,6 +124,11 @@ void QNodesManager::guiMeshNew()
     }
 
     emit resumeRendring();
+}
+
+void QNodesManager::guiMeshClone()
+{
+    emit notifyMeshClone(m_qmesh->getCurmesh());
 }
 
 void QNodesManager::guiMeshSelect(const QModelIndex& index)
@@ -175,7 +193,7 @@ void QNodesManager::meshSelect(tbe::scene::Mesh* mesh)
     m_qnode->setCurNode(mesh);
 
     NodeTab.name->setText(mesh->GetName().c_str());
-    NodeTab.pos->SetVectorValue(mesh->GetPos());
+    NodeTab.pos->setVectorValue(mesh->GetPos());
 
     int count = m_nodesListModel->rowCount();
 

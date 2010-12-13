@@ -25,15 +25,16 @@ public:
 public slots:
     void guiMeshNew();
     void guiMeshSelect(const QModelIndex& index);
+    void guiMeshClone();
 
     void meshAdd(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh);
 
     void updateList();
 
-
 signals:
     void notifyMeshAdd(tbe::scene::Mesh* mesh);
+    void notifyMeshClone(tbe::scene::Mesh* mesh);
     void notifyMeshSelect(tbe::scene::Mesh* mesh);
 
     void pauseRendring();
@@ -45,12 +46,13 @@ private:
     {
         QLineEdit* name;
         QVectorBox* pos;
-        
+
     } NodeTab;
 
     struct
     {
         QPushButton* add;
+        QPushButton* clone;
         QPushButton* del;
 
     } MeshTab;
