@@ -20,10 +20,10 @@ public:
     virtual ~QVectorBox();
 
 public slots:
-    tbe::Vector3f GetVectorValue();
-    void SetVectorValue(const tbe::Vector3f& value);
+    tbe::Vector3f getVectorValue();
+    void setVectorValue(const tbe::Vector3f& value);
 
-    void ComponentValueChanged(double d);
+    void componentValueChanged(double d);
 
 signals:
     void valueChanged(const tbe::Vector3f& vec);
