@@ -41,15 +41,25 @@ protected:
 public slots:
     void meshAdd(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh);
+    void meshClone(tbe::scene::Mesh* mesh);
 
     void fillTextInfo(QLabel* label);
 
     void pauseRendring();
     void resumeRendring();
 
+    void skyboxApply(const QStringList& texs);
+    void skyboxClear();
+
+    void fogApply(tbe::Vector4f color, float start, float end);
+    void fogClear();
+
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
     void notifyMeshSelect(tbe::scene::Mesh*);
+
+    void notifyInitFog(tbe::scene::Fog*);
+    void notifyInitSkybox(tbe::scene::SkyBox*);
 
 private:
     tbe::Device* m_device;
@@ -84,7 +94,7 @@ private:
     template< typename TC, typename T1, typename T2>
     void swapcontainer(TC& c, T1& v1, T2& v2)
     {
-        c = (TC) v1 == c ? (TC) v2 : (TC) v1;
+        c = (TC)v1 == c ? (TC)v2 : (TC)v1;
     }
 };
 

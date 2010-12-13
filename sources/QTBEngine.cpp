@@ -10,6 +10,22 @@
 
 using namespace tbe;
 
+inline void translate(int& c)
+{
+    switch(c)
+    {
+        case Qt::Key_Shift:
+            c = EventManager::KEY_LSHIFT;
+            break;
+        case Qt::Key_Alt:
+            c = EventManager::KEY_LALT;
+            break;
+        case Qt::Key_Control:
+            c = EventManager::KEY_LCTRL;
+            break;
+    }
+}
+
 QTBEngine::QTBEngine(QWidget* parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
@@ -22,6 +38,7 @@ QTBEngine::QTBEngine(QWidget* parent)
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
+    setCursor(Qt::OpenHandCursor);
 }
 
 QTBEngine::~QTBEngine()
@@ -74,7 +91,7 @@ void QTBEngine::moveApply()
     if(!m_selectedNode)
         return;
 
-    if(!m_eventManager->keyState[EventManager::KEY_SPACE])
+    if(!m_eventManager->keyState[EventManager::KEY_LSHIFT])
         return;
 
     Vector3f pos = m_selectedNode->GetPos();
@@ -105,24 +122,6 @@ void QTBEngine::moveApply()
             matrix.SetRotateZ(rotateSpeed);
     }
 
-    // In the floor ------------------------------------------------------------
-
-    if(m_eventManager->keyState['e'])
-    {
-        pos.y = -m_selectedNode->GetAabb().min.y;
-        pos = m_meshScene->FindFloor(pos);
-
-        pos = m_selectedNode->MapFromGlobal(pos);
-    }
-
-    else if(m_eventManager->keyState['f'])
-    {
-        pos.y = 0;
-        pos = m_meshScene->FindFloor(pos);
-
-        pos = m_selectedNode->MapFromGlobal(pos);
-    }
-
     // In the gride ------------------------------------------------------------
 
     if(m_eventManager->keyState['g'])
@@ -131,6 +130,7 @@ void QTBEngine::moveApply()
     matrix.SetPos(pos);
 
     m_selectedNode->SetMatrix(matrix);
+
     m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
 
     // Movement ----------------------------------------------------------------
@@ -151,7 +151,7 @@ void QTBEngine::moveApply()
 
         Vector3f transform;
 
-        if(m_eventManager->keyState['c'])
+        if(m_eventManager->keyState[EventManager::KEY_LALT])
         {
             transform.y -= mousePosRel.y * moveSpeed;
         }
@@ -195,7 +195,9 @@ struct SelectionSort
 
     bool operator()(const tbe::scene::Node* node1, const tbe::scene::Node * node2)
     {
-        if(type == 1)
+        if(node1->HasParent())
+            return false;
+        else if(type == 1)
             return (node1->GetPos() - cameraPos) < (node2->GetPos() - cameraPos);
         else if(type == 2)
             return node1->GetAabb().GetSize() < node2->GetAabb().GetSize();
@@ -216,6 +218,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         m_lastCursorPos = qptovec(ev->pos());
         m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
+
+        setCursor(Qt::ClosedHandCursor);
     }
 
     else if(ev->button() == Qt::MiddleButton)
@@ -261,6 +265,8 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 0;
         m_grabCamera = false;
+
+        setCursor(Qt::OpenHandCursor);
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -307,7 +313,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         m_camera->OnEvent(m_eventManager);
     }
 
-    if(m_eventManager->keyState[EventManager::KEY_SPACE])
+    if(m_eventManager->keyState[EventManager::KEY_LSHIFT])
     {
         QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
@@ -316,25 +322,62 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
-    m_eventManager->keyState[std::tolower(ev->key())] = 1;
 
-    if(ev->key() == Qt::Key_Space)
-        setCursor(Qt::BlankCursor);
-
-    if(ev->key() == Qt::Key_V)
+    if(ev->key() == Qt::Key_Shift)
     {
-        swapcontainer(m_camera, m_ffcamera, m_orbcamera);
-        m_sceneManager->SetCurCamera(m_camera);
+        setCursor(Qt::BlankCursor);
     }
+
+    else
+    {
+        if(ev->key() == Qt::Key_P && m_selectedNode->HasParent())
+        {
+            using namespace tbe::scene;
+
+            if(Mesh * mesh = tools::find(m_meshs, m_selectedNode->GetParent()))
+            {
+                meshSelect(mesh);
+                emit notifyMeshSelect(mesh);
+            }
+        }
+
+        if(ev->key() == Qt::Key_C)
+        {
+            using namespace tbe::scene;
+
+            if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
+                meshClone(mesh);
+        }
+
+        if(ev->key() == Qt::Key_F)
+        {
+            m_meshScene->SetInFloor(m_selectedNode);
+        }
+
+        else if(ev->key() == Qt::Key_V)
+        {
+            swapcontainer(m_camera, m_ffcamera, m_orbcamera);
+            m_sceneManager->SetCurCamera(m_camera);
+        }
+    }
+
+    int c = std::tolower(ev->key());
+    translate(c);
+
+    m_eventManager->keyState[c] = 1;
 }
 
 void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
-    m_eventManager->keyState[std::tolower(ev->key())] = 0;
 
-    if(ev->key() == Qt::Key_Space)
-        unsetCursor();
+    if(ev->key() == Qt::Key_Shift)
+        setCursor(Qt::OpenHandCursor);
+
+    int c = std::tolower(ev->key());
+    translate(c);
+
+    m_eventManager->keyState[c] = 0;
 }
 
 void QTBEngine::saveScene(const QString& filename)
@@ -366,15 +409,16 @@ void QTBEngine::loadScene(const QString& filename)
 
     m_axe = new Axes(4, 4);
     m_meshScene->RegisterMesh(m_axe);
+
+    emit notifyInitFog(m_fog);
+    emit notifyInitSkybox(m_skybox);
 }
 
 void QTBEngine::fillTextInfo(QLabel* label)
 {
     QString text;
 
-    text += QString("Curseur 3D: %1 %2 %3\n").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
-    text += QString("Curseur: %1 %2\n\n").arg(m_curCursorPos.x).arg(m_curCursorPos.y);
-    text += QString("Move: %1 %2\n\n").arg(m_eventManager->mousePosRel.x).arg(m_eventManager->mousePosRel.y);
+    text += QString("Curseur 3D: %1 %2 %3\n\n").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
 
     if(m_selectedNode)
     {
@@ -382,10 +426,28 @@ void QTBEngine::fillTextInfo(QLabel* label)
         tbe::Vector3f pos = m_selectedNode->GetPos();
 
         text += QString("Node: %1\n").arg(name);
-        text += QString("Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
+        text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
+
+
+        if(m_selectedNode->HasParent())
+        {
+            using namespace tbe::scene;
+
+            Node* parent = m_selectedNode->GetParent();
+
+            QString name = parent->GetName().c_str();
+            tbe::Vector3f pos = parent->GetPos();
+
+            text += "\n\n";
+            text += QString("Parent: %1\n").arg(name);
+            text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
+        }
     }
+
     else
+    {
         text += QString("Pas de séléction");
+    }
 
     label->setText(text);
 }
@@ -401,8 +463,51 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 void QTBEngine::meshAdd(tbe::scene::Mesh* mesh)
 {
     m_meshScene->RegisterMesh(mesh);
-    m_selectedNode = mesh;
 
     m_meshs.push_back(mesh);
     m_nodes.push_back(mesh);
+
+    meshSelect(mesh);
+}
+
+void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
+{
+    using namespace tbe::scene;
+
+    Mesh* newmesh = new Mesh(*mesh);
+
+    meshAdd(newmesh);
+
+    emit notifyMeshAdd(newmesh);
+}
+
+void QTBEngine::skyboxApply(const QStringList& texs)
+{
+    Texture skytex[6];
+
+    for(unsigned i = 0; i < 6; i++)
+        skytex[i] = texs[i].toStdString();
+
+    m_skybox->SetTextures(skytex);
+
+    m_skybox->SetEnable(true);
+}
+
+void QTBEngine::skyboxClear()
+{
+    m_skybox->Clear();
+}
+
+void QTBEngine::fogApply(tbe::Vector4f color, float start, float end)
+{
+    m_fog->SetColor(color);
+    m_fog->SetStart(start);
+    m_fog->SetEnd(end);
+
+    m_fog->SetEnable(true);
+}
+
+void QTBEngine::fogClear()
+{
+    m_fog->Clear();
 }
