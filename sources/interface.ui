@@ -122,6 +122,19 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_18">
               <item>
                <widget class="QPushButton" name="node_mesh_add">
@@ -146,19 +159,6 @@
               </item>
              </layout>
             </item>
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_5">
@@ -169,31 +169,6 @@
             <property name="fieldGrowthPolicy">
              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
             </property>
-            <item row="0" column="0" colspan="2">
-             <layout class="QHBoxLayout" name="horizontalLayout_24">
-              <item>
-               <widget class="QPushButton" name="node_water_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_water_clone">
-                <property name="text">
-                 <string>Cloner</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_water_del">
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_19">
               <property name="text">
@@ -269,6 +244,44 @@
                <double>0.100000000000000</double>
               </property>
              </widget>
+            </item>
+            <item row="8" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_24">
+              <item>
+               <widget class="QPushButton" name="node_water_add">
+                <property name="text">
+                 <string>Ajouter</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_water_clone">
+                <property name="text">
+                 <string>Cloner</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_water_del">
+                <property name="text">
+                 <string>Effacer</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="7" column="0" colspan="2">
+             <spacer name="verticalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </widget>
@@ -361,9 +374,6 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
-             <widget class="QSpinBox" name="node_particles_number"/>
-            </item>
             <item row="6" column="0">
              <widget class="QLabel" name="label_26">
               <property name="text">
@@ -372,7 +382,7 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="3,1">
+             <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="5,1">
               <item>
                <widget class="QLineEdit" name="node_particles_texture"/>
               </item>
@@ -398,7 +408,27 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0" colspan="2">
+            <item row="5" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,1">
+              <item>
+               <widget class="QSpinBox" name="node_particles_number"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_particles_build">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>B</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="8" column="0" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_25">
               <item>
                <widget class="QPushButton" name="node_particles_add">

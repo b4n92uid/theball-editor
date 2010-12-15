@@ -11,57 +11,42 @@
 #include <Tbe.h>
 #include <QObject>
 
-class QNode : public QObject
+class QNodeBinders : public QObject
 {
     Q_OBJECT
 
 public:
-    QNode(QObject* parent);
+    QNodeBinders(QObject* parent);
 
     void setCurNode(tbe::scene::Node* curNode);
     tbe::scene::Node* getCurNode() const;
+
+    void setCurmesh(tbe::scene::Mesh* curmesh);
+    tbe::scene::Mesh* getCurmesh() const;
+
+    void setCurparticles(tbe::scene::ParticlesEmiter* curparticles);
+    tbe::scene::ParticlesEmiter* getCurparticles() const;
+
+    void setCurwater(tbe::scene::Water* curwater);
+    tbe::scene::Water* getCurwater() const;
+
+signals:
+    void notifyUpdate(tbe::scene::Node*);
+    void notifyUpdate(tbe::scene::Mesh*);
+    void notifyUpdate(tbe::scene::ParticlesEmiter*);
+    void notifyUpdate(tbe::scene::Water*);
 
 public slots:
     void SetName(const QString& s);
     void SetPos(const tbe::Vector3f& v);
     void SetMatrix(const tbe::Matrix4f& m);
 
-private:
-    tbe::scene::Node* m_curNode;
-};
-
-class QWater : public QObject
-{
-    Q_OBJECT
-
-public:
-    QWater(QObject* parent);
-
-    void setCurwater(tbe::scene::Water* curwater);
-    tbe::scene::Water* getCurwater() const;
-
-public slots:
     void SetDeform(double v);
     void SetSize(const tbe::Vector2f& v);
     void SetUvRepeat(const tbe::Vector2f& v);
     void SetSpeed(double v);
     void SetBlend(double v);
 
-private:
-    tbe::scene::Water* m_curwater;
-};
-
-class QParticles : public QObject
-{
-    Q_OBJECT
-
-public:
-    QParticles(QObject* parent);
-
-    void setCurparticles(tbe::scene::ParticlesEmiter* curparticles);
-    tbe::scene::ParticlesEmiter* getCurparticles() const;
-
-public slots:
     void SetGravity(const tbe::Vector3f& v);
     void SetFreemove(double v);
     void SetLifeinit(double v);
@@ -70,24 +55,13 @@ public slots:
     void SetTexture(const QString& v);
     void SetContinousMode(int v);
 
-private:
-    tbe::scene::ParticlesEmiter* m_curparticles;
-};
-
-class QMesh : public QObject
-{
-    Q_OBJECT
-
-public:
-    QMesh(QObject* parent);
-
-    void setCurmesh(tbe::scene::Mesh* curmesh);
-    tbe::scene::Mesh* getCurmesh() const;
 
 private:
+    tbe::scene::Node* m_curNode;
     tbe::scene::Mesh* m_curmesh;
+    tbe::scene::ParticlesEmiter* m_curparticles;
+    tbe::scene::Water* m_curwater;
 };
-
 
 #endif	/* QNODEBINDERS_H */
 

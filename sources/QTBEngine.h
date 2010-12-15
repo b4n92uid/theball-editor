@@ -90,12 +90,6 @@ private:
 
     tbe::scene::Node::Array m_nodes;
     tbe::scene::Mesh::Array m_meshs;
-
-    template< typename TC, typename T1, typename T2>
-    void swapcontainer(TC& c, T1& v1, T2& v2)
-    {
-        c = (TC)v1 == c ? (TC)v2 : (TC)v1;
-    }
 };
 
 #endif	/* QTBENGINE_H */

@@ -94,10 +94,7 @@ private:
 
     tbe::scene::Node* m_selectedNode;
 
-    QNode* m_qnode;
-    QWater* m_qwater;
-    QMesh* m_qmesh;
-    QParticles* m_qparticles;
+    QNodeBinders* m_qnodebind;
 };
 
 #endif	/* QNODESMANAGER_H */

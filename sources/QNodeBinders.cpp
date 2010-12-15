@@ -7,152 +7,200 @@
 
 #include "QNodeBinders.h"
 
-QNode::QNode(QObject* parent) : QObject(parent)
+QNodeBinders::QNodeBinders(QObject* parent) : QObject(parent)
 {
+    m_curmesh = NULL;
+    m_curparticles = NULL;
+    m_curwater = NULL;
     m_curNode = NULL;
 }
 
-void QNode::setCurNode(tbe::scene::Node* curNode)
+void QNodeBinders::setCurmesh(tbe::scene::Mesh* curmesh)
 {
-    this->m_curNode = curNode;
+    m_curNode = m_curmesh = curmesh;
+    m_curwater = NULL;
+    m_curparticles = NULL;
 }
 
-tbe::scene::Node* QNode::getCurNode() const
+tbe::scene::Mesh* QNodeBinders::getCurmesh() const
+{
+    return m_curmesh;
+}
+
+void QNodeBinders::setCurNode(tbe::scene::Node* curNode)
+{
+    m_curNode = curNode;
+    m_curmesh = NULL;
+    m_curparticles = NULL;
+    m_curwater = NULL;
+
+    emit notifyUpdate(m_curNode);
+}
+
+tbe::scene::Node* QNodeBinders::getCurNode() const
 {
     return m_curNode;
 }
 
-void QNode::SetName(const QString& s)
+void QNodeBinders::setCurwater(tbe::scene::Water* curwater)
 {
-    if(m_curNode)
-        m_curNode->SetName(s.toStdString());
+    m_curNode = m_curwater = curwater;
+    m_curmesh = NULL;
+    m_curparticles = NULL;
+
+    emit notifyUpdate(m_curwater);
 }
 
-void QNode::SetPos(const tbe::Vector3f& v)
-{
-    if(m_curNode)
-        m_curNode->SetPos(v);
-}
-
-void QNode::SetMatrix(const tbe::Matrix4f& m)
-{
-    if(m_curNode)
-        m_curNode->SetMatrix(m);
-}
-
-QWater::QWater(QObject* parent) : QObject(parent)
-{
-    m_curwater = NULL;
-}
-
-void QWater::SetDeform(double v)
-{
-    if(m_curwater)
-        m_curwater->SetDeform(v);
-}
-
-void QWater::SetSize(const tbe::Vector2f& v)
-{
-    if(m_curwater)
-        m_curwater->SetSize(v);
-}
-
-void QWater::SetUvRepeat(const tbe::Vector2f& v)
-{
-    if(m_curwater)
-        m_curwater->SetUvRepeat(v);
-}
-
-void QWater::SetSpeed(double v)
-{
-    if(m_curwater)
-        m_curwater->SetSpeed(v);
-}
-
-void QWater::SetBlend(double v)
-{
-    if(m_curwater)
-        m_curwater->SetBlend(v);
-}
-
-void QWater::setCurwater(tbe::scene::Water* curwater)
-{
-    this->m_curwater = curwater;
-}
-
-tbe::scene::Water* QWater::getCurwater() const
+tbe::scene::Water* QNodeBinders::getCurwater() const
 {
     return m_curwater;
 }
 
-QParticles::QParticles(QObject* parent) : QObject(parent)
+void QNodeBinders::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
 {
-    m_curparticles = NULL;
+    m_curNode = m_curparticles = curparticles;
+    m_curmesh = NULL;
+    m_curwater = NULL;
+
+    emit notifyUpdate(m_curparticles);
 }
 
-void QParticles::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
-{
-    this->m_curparticles = curparticles;
-}
-
-tbe::scene::ParticlesEmiter* QParticles::getCurparticles() const
+tbe::scene::ParticlesEmiter* QNodeBinders::getCurparticles() const
 {
     return m_curparticles;
 }
 
-void QParticles::SetGravity(const tbe::Vector3f& v)
+void QNodeBinders::SetName(const QString& s)
+{
+    if(m_curNode)
+    {
+        m_curNode->SetName(s.toStdString());
+        emit notifyUpdate(m_curNode);
+    }
+}
+
+void QNodeBinders::SetPos(const tbe::Vector3f& v)
+{
+    if(m_curNode)
+    {
+        m_curNode->SetPos(v);
+        emit notifyUpdate(m_curNode);
+    }
+}
+
+void QNodeBinders::SetMatrix(const tbe::Matrix4f& m)
+{
+    if(m_curNode)
+    {
+        m_curNode->SetMatrix(m);
+        emit notifyUpdate(m_curNode);
+    }
+}
+
+void QNodeBinders::SetDeform(double v)
+{
+    if(m_curwater)
+    {
+        m_curwater->SetDeform(v);
+        emit notifyUpdate(m_curwater);
+    }
+}
+
+void QNodeBinders::SetSize(const tbe::Vector2f& v)
+{
+    if(m_curwater)
+    {
+        m_curwater->SetSize(v);
+        emit notifyUpdate(m_curwater);
+    }
+}
+
+void QNodeBinders::SetUvRepeat(const tbe::Vector2f& v)
+{
+    if(m_curwater)
+    {
+        m_curwater->SetUvRepeat(v);
+        emit notifyUpdate(m_curwater);
+    }
+}
+
+void QNodeBinders::SetSpeed(double v)
+{
+    if(m_curwater)
+    {
+        m_curwater->SetSpeed(v);
+        emit notifyUpdate(m_curwater);
+    }
+}
+
+void QNodeBinders::SetBlend(double v)
+{
+    if(m_curwater)
+    {
+        m_curwater->SetBlend(v);
+        emit notifyUpdate(m_curwater);
+    }
+}
+
+void QNodeBinders::SetGravity(const tbe::Vector3f& v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetGravity(v);
+        emit notifyUpdate(m_curparticles);
+    }
 }
 
-void QParticles::SetFreemove(double v)
+void QNodeBinders::SetFreemove(double v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetFreeMove(v);
+        emit notifyUpdate(m_curparticles);
+    }
 }
 
-void QParticles::SetLifeinit(double v)
+void QNodeBinders::SetLifeinit(double v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetLifeInit(v);
+        emit notifyUpdate(m_curparticles);
+    }
 }
 
-void QParticles::SetLifedown(double v)
+void QNodeBinders::SetLifedown(double v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetLifeDown(v);
+        emit notifyUpdate(m_curparticles);
+    }
 }
 
-void QParticles::SetNumber(int v)
+void QNodeBinders::SetNumber(int v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetNumber(v);
+        emit notifyUpdate(m_curparticles);
+    }
 }
 
-void QParticles::SetTexture(const QString& v)
+void QNodeBinders::SetTexture(const QString& v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetTexture(v.toStdString());
+        emit notifyUpdate(m_curparticles);
+    }
 }
 
-void QParticles::SetContinousMode(int v)
+void QNodeBinders::SetContinousMode(int v)
 {
     if(m_curparticles)
+    {
         m_curparticles->SetContinousMode(v);
-}
-
-QMesh::QMesh(QObject* parent) : QObject(parent)
-{
-    m_curmesh = NULL;
-}
-
-void QMesh::setCurmesh(tbe::scene::Mesh* curmesh)
-{
-    this->m_curmesh = curmesh;
-}
-
-tbe::scene::Mesh* QMesh::getCurmesh() const
-{
-    return m_curmesh;
+        emit notifyUpdate(m_curparticles);
+    }
 }
