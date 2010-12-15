@@ -26,7 +26,6 @@ QEnvManager::QEnvManager(QWidget* parent, Ui_mainWindow* uinterface) : QObject(p
     fog.start = uinterface->fog_start;
     fog.end = uinterface->fog_end;
     fog.enable = uinterface->fog_enable;
-
 }
 
 QEnvManager::~QEnvManager()

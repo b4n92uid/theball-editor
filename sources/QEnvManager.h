@@ -34,6 +34,9 @@ signals:
     void fogApply(tbe::Vector4f, float, float);
     void fogClear();
 
+    void pauseRendring();
+    void resumeRendring();
+
 private:
 
     struct

@@ -63,6 +63,12 @@ MainWindow::MainWindow()
     connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)),
             m_envManager, SLOT(skyboxInit(tbe::scene::SkyBox*)));
 
+    connect(m_envManager, SIGNAL(pauseRendring()),
+            m_tbeWidget, SLOT(pauseRendring()));
+
+    connect(m_envManager, SIGNAL(resumeRendring()),
+            m_tbeWidget, SLOT(resumeRendring()));
+
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
     m_timer->start(16);

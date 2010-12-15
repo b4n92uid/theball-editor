@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfaceUBy692.ui'
+** Form generated from reading UI file 'interfacexr2792.ui'
 **
-** Created: Tue 14. Dec 00:36:03 2010
+** Created: Tue 14. Dec 17:40:04 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEUBY692_H
-#define INTERFACEUBY692_H
+#ifndef INTERFACEXR2792_H
+#define INTERFACEXR2792_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -67,17 +67,13 @@ public:
     QTabWidget *tabWidget_2;
     QWidget *tab_4;
     QVBoxLayout *verticalLayout_10;
+    QSpacerItem *verticalSpacer_3;
     QHBoxLayout *horizontalLayout_18;
     QPushButton *node_mesh_add;
     QPushButton *node_mesh_clone;
     QPushButton *node_mesh_del;
-    QSpacerItem *verticalSpacer_3;
     QWidget *tab_5;
     QFormLayout *formLayout;
-    QHBoxLayout *horizontalLayout_24;
-    QPushButton *node_water_add;
-    QPushButton *node_water_clone;
-    QPushButton *node_water_del;
     QLabel *label_19;
     QDoubleSpinBox *node_water_deform;
     QLabel *label_18;
@@ -92,6 +88,11 @@ public:
     QDoubleSpinBox *node_water_speed;
     QLabel *label_15;
     QDoubleSpinBox *node_water_blend;
+    QHBoxLayout *horizontalLayout_24;
+    QPushButton *node_water_add;
+    QPushButton *node_water_clone;
+    QPushButton *node_water_del;
+    QSpacerItem *verticalSpacer_4;
     QWidget *tab_6;
     QFormLayout *formLayout_2;
     QLabel *label_20;
@@ -106,12 +107,14 @@ public:
     QLabel *label_24;
     QDoubleSpinBox *node_particles_lifedown;
     QLabel *label_25;
-    QSpinBox *node_particles_number;
     QLabel *label_26;
     QHBoxLayout *horizontalLayout_23;
     QLineEdit *node_particles_texture;
     QPushButton *node_particles_texture_browse;
     QCheckBox *node_particles_continousmide;
+    QHBoxLayout *horizontalLayout;
+    QSpinBox *node_particles_number;
+    QPushButton *node_particles_build;
     QHBoxLayout *horizontalLayout_25;
     QPushButton *node_particles_add;
     QPushButton *node_particles_clone;
@@ -306,6 +309,10 @@ public:
         tab_4->setObjectName(QString::fromUtf8("tab_4"));
         verticalLayout_10 = new QVBoxLayout(tab_4);
         verticalLayout_10->setObjectName(QString::fromUtf8("verticalLayout_10"));
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_10->addItem(verticalSpacer_3);
+
         horizontalLayout_18 = new QHBoxLayout();
         horizontalLayout_18->setObjectName(QString::fromUtf8("horizontalLayout_18"));
         node_mesh_add = new QPushButton(tab_4);
@@ -326,36 +333,12 @@ public:
 
         verticalLayout_10->addLayout(horizontalLayout_18);
 
-        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        verticalLayout_10->addItem(verticalSpacer_3);
-
         tabWidget_2->addTab(tab_4, QString());
         tab_5 = new QWidget();
         tab_5->setObjectName(QString::fromUtf8("tab_5"));
         formLayout = new QFormLayout(tab_5);
         formLayout->setObjectName(QString::fromUtf8("formLayout"));
         formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
-        horizontalLayout_24 = new QHBoxLayout();
-        horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
-        node_water_add = new QPushButton(tab_5);
-        node_water_add->setObjectName(QString::fromUtf8("node_water_add"));
-
-        horizontalLayout_24->addWidget(node_water_add);
-
-        node_water_clone = new QPushButton(tab_5);
-        node_water_clone->setObjectName(QString::fromUtf8("node_water_clone"));
-
-        horizontalLayout_24->addWidget(node_water_clone);
-
-        node_water_del = new QPushButton(tab_5);
-        node_water_del->setObjectName(QString::fromUtf8("node_water_del"));
-
-        horizontalLayout_24->addWidget(node_water_del);
-
-
-        formLayout->setLayout(0, QFormLayout::SpanningRole, horizontalLayout_24);
-
         label_19 = new QLabel(tab_5);
         label_19->setObjectName(QString::fromUtf8("label_19"));
 
@@ -429,6 +412,30 @@ public:
 
         formLayout->setWidget(6, QFormLayout::FieldRole, node_water_blend);
 
+        horizontalLayout_24 = new QHBoxLayout();
+        horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
+        node_water_add = new QPushButton(tab_5);
+        node_water_add->setObjectName(QString::fromUtf8("node_water_add"));
+
+        horizontalLayout_24->addWidget(node_water_add);
+
+        node_water_clone = new QPushButton(tab_5);
+        node_water_clone->setObjectName(QString::fromUtf8("node_water_clone"));
+
+        horizontalLayout_24->addWidget(node_water_clone);
+
+        node_water_del = new QPushButton(tab_5);
+        node_water_del->setObjectName(QString::fromUtf8("node_water_del"));
+
+        horizontalLayout_24->addWidget(node_water_del);
+
+
+        formLayout->setLayout(8, QFormLayout::SpanningRole, horizontalLayout_24);
+
+        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        formLayout->setItem(7, QFormLayout::SpanningRole, verticalSpacer_4);
+
         tabWidget_2->addTab(tab_5, QString());
         tab_6 = new QWidget();
         tab_6->setObjectName(QString::fromUtf8("tab_6"));
@@ -501,11 +508,6 @@ public:
 
         formLayout_2->setWidget(5, QFormLayout::LabelRole, label_25);
 
-        node_particles_number = new QSpinBox(tab_6);
-        node_particles_number->setObjectName(QString::fromUtf8("node_particles_number"));
-
-        formLayout_2->setWidget(5, QFormLayout::FieldRole, node_particles_number);
-
         label_26 = new QLabel(tab_6);
         label_26->setObjectName(QString::fromUtf8("label_26"));
 
@@ -528,7 +530,7 @@ public:
 
         horizontalLayout_23->addWidget(node_particles_texture_browse);
 
-        horizontalLayout_23->setStretch(0, 3);
+        horizontalLayout_23->setStretch(0, 5);
         horizontalLayout_23->setStretch(1, 1);
 
         formLayout_2->setLayout(6, QFormLayout::FieldRole, horizontalLayout_23);
@@ -537,6 +539,25 @@ public:
         node_particles_continousmide->setObjectName(QString::fromUtf8("node_particles_continousmide"));
 
         formLayout_2->setWidget(7, QFormLayout::FieldRole, node_particles_continousmide);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        node_particles_number = new QSpinBox(tab_6);
+        node_particles_number->setObjectName(QString::fromUtf8("node_particles_number"));
+
+        horizontalLayout->addWidget(node_particles_number);
+
+        node_particles_build = new QPushButton(tab_6);
+        node_particles_build->setObjectName(QString::fromUtf8("node_particles_build"));
+        sizePolicy1.setHeightForWidth(node_particles_build->sizePolicy().hasHeightForWidth());
+        node_particles_build->setSizePolicy(sizePolicy1);
+
+        horizontalLayout->addWidget(node_particles_build);
+
+        horizontalLayout->setStretch(0, 5);
+        horizontalLayout->setStretch(1, 1);
+
+        formLayout_2->setLayout(5, QFormLayout::FieldRole, horizontalLayout);
 
         horizontalLayout_25 = new QHBoxLayout();
         horizontalLayout_25->setObjectName(QString::fromUtf8("horizontalLayout_25"));
@@ -556,7 +577,7 @@ public:
         horizontalLayout_25->addWidget(node_particles_del);
 
 
-        formLayout_2->setLayout(0, QFormLayout::SpanningRole, horizontalLayout_25);
+        formLayout_2->setLayout(8, QFormLayout::SpanningRole, horizontalLayout_25);
 
         tabWidget_2->addTab(tab_6, QString());
 
@@ -1036,14 +1057,14 @@ public:
         node_mesh_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_mesh_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tab_4), QApplication::translate("mainWindow", "Mesh", 0, QApplication::UnicodeUTF8));
-        node_water_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
-        node_water_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
-        node_water_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("mainWindow", "Deform", 0, QApplication::UnicodeUTF8));
         label_18->setText(QApplication::translate("mainWindow", "Size", 0, QApplication::UnicodeUTF8));
         label_17->setText(QApplication::translate("mainWindow", "Uv repeat", 0, QApplication::UnicodeUTF8));
         label_16->setText(QApplication::translate("mainWindow", "Speed", 0, QApplication::UnicodeUTF8));
         label_15->setText(QApplication::translate("mainWindow", "Blend", 0, QApplication::UnicodeUTF8));
+        node_water_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
+        node_water_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
+        node_water_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tab_5), QApplication::translate("mainWindow", "Water", 0, QApplication::UnicodeUTF8));
         label_20->setText(QApplication::translate("mainWindow", "Gravity", 0, QApplication::UnicodeUTF8));
         label_21->setText(QApplication::translate("mainWindow", "FreeMove", 0, QApplication::UnicodeUTF8));
@@ -1053,6 +1074,7 @@ public:
         label_26->setText(QApplication::translate("mainWindow", "Texture", 0, QApplication::UnicodeUTF8));
         node_particles_texture_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
         node_particles_continousmide->setText(QApplication::translate("mainWindow", "Continous Mode", 0, QApplication::UnicodeUTF8));
+        node_particles_build->setText(QApplication::translate("mainWindow", "B", 0, QApplication::UnicodeUTF8));
         node_particles_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
         node_particles_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_particles_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
@@ -1105,4 +1127,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEUBY692_H
+#endif // INTERFACEXR2792_H

@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     MainWindow window;
-    window.show();
+    window.showMaximized();
     window.openScene("D:\\projets\\cpp\\tbengine\\demo\\bin\\medias\\scene.ballscene");
 
     return app.exec();

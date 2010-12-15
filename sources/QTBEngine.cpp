@@ -26,6 +26,12 @@ inline void translate(int& c)
     }
 }
 
+template< typename TC, typename T1, typename T2>
+void swapcontainer(TC& c, T1& v1, T2& v2)
+{
+    c = (TC)v1 == c ? (TC)v2 : (TC)v1;
+}
+
 QTBEngine::QTBEngine(QWidget* parent)
 : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
@@ -352,6 +358,16 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         if(ev->key() == Qt::Key_F)
         {
             m_meshScene->SetInFloor(m_selectedNode);
+        }
+
+        if(ev->key() == Qt::Key_E)
+        {
+            m_meshScene->SetInFloor(m_selectedNode);
+
+            Vector3f adjust = m_selectedNode->GetPos();
+            adjust.y += -m_selectedNode->GetAabb().min.y;
+
+            m_selectedNode->SetPos(adjust);
         }
 
         else if(ev->key() == Qt::Key_V)
