@@ -21,6 +21,9 @@ public:
     void setCurNode(tbe::scene::Node* curNode);
     tbe::scene::Node* getCurNode() const;
 
+    void setCurlight(tbe::scene::Light* curlight);
+    tbe::scene::Light* getCurlight() const;
+
     void setCurmesh(tbe::scene::Mesh* curmesh);
     tbe::scene::Mesh* getCurmesh() const;
 
@@ -32,34 +35,42 @@ public:
 
 signals:
     void notifyUpdate(tbe::scene::Node*);
+    void notifyUpdate(tbe::scene::Light*);
     void notifyUpdate(tbe::scene::Mesh*);
     void notifyUpdate(tbe::scene::ParticlesEmiter*);
     void notifyUpdate(tbe::scene::Water*);
 
 public slots:
-    void SetName(const QString& s);
-    void SetPos(const tbe::Vector3f& v);
-    void SetMatrix(const tbe::Matrix4f& m);
+    void nodeSetName(const QString& s);
+    void nodeSetPos(const tbe::Vector3f& v);
+    void nodeSetMatrix(const tbe::Matrix4f& m);
 
-    void SetDeform(double v);
-    void SetSize(const tbe::Vector2f& v);
-    void SetUvRepeat(const tbe::Vector2f& v);
-    void SetSpeed(double v);
-    void SetBlend(double v);
+    void waterSetDeform(double v);
+    void waterSetSize(const tbe::Vector2f& v);
+    void waterSetUvRepeat(const tbe::Vector2f& v);
+    void waterSetSpeed(double v);
+    void waterSetBlend(double v);
 
-    void SetGravity(const tbe::Vector3f& v);
-    void SetFreemove(double v);
-    void SetLifeinit(double v);
-    void SetLifedown(double v);
-    void SetNumber(int v);
-    void SetTexture(const QString& v);
-    void SetContinousMode(int v);
+    void particleSetGravity(const tbe::Vector3f& v);
+    void particleSetFreemove(double v);
+    void particleSetLifeinit(double v);
+    void particleSetLifedown(double v);
+    void particleSetNumber(int v);
+    void particleSetTexture(const QString& v);
+    void particleSetContinousMode(int v);
+
+    void lightSetType(int type);
+    void lightSetAmbiant(const tbe::Vector3f& value);
+    void lightSetDiffuse(const tbe::Vector3f& value);
+    void lightSetSpecular(const tbe::Vector3f& value);
+    void lightSetRadius(double value);
 
 
 private:
     tbe::scene::Node* m_curNode;
     tbe::scene::Mesh* m_curmesh;
     tbe::scene::ParticlesEmiter* m_curparticles;
+    tbe::scene::Light* m_curlight;
     tbe::scene::Water* m_curwater;
 };
 

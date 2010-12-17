@@ -94,6 +94,8 @@ void QTBEngine::resizeGL(int w, int h)
 
 void QTBEngine::moveApply()
 {
+    using namespace scene;
+
     if(!m_selectedNode)
         return;
 
@@ -179,7 +181,11 @@ void QTBEngine::moveApply()
 
     }
 
-    emit notifyMeshSelect(*std::find(m_meshs.begin(), m_meshs.end(), m_selectedNode));
+    if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
+        emit notifyMeshSelect(mesh);
+
+    else if(Light * light = tools::find(m_lights, m_selectedNode))
+        emit notifyLightSelect(light);
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 }
@@ -404,7 +410,6 @@ void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
-    m_sceneManager->ClearLights();
     m_sceneManager->ClearParallelScenes();
 
     m_fog->Clear();
@@ -425,6 +430,16 @@ void QTBEngine::loadScene(const QString& filename)
 
     m_axe = new Axes(4, 4);
     m_meshScene->RegisterMesh(m_axe);
+
+    m_lightScene = scenefile.GetLightScene();
+
+    for(Iterator<Light*> it = m_lightScene->GetIterator(); it; it++)
+    {
+        m_lights.push_back(*it);
+        m_nodes.push_back(*it);
+
+        emit notifyLightAdd(*it);
+    }
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
@@ -495,6 +510,35 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
     meshAdd(newmesh);
 
     emit notifyMeshAdd(newmesh);
+}
+
+void QTBEngine::lightAdd(tbe::scene::Light* light)
+{
+    m_lightScene->Register(light);
+
+    m_lights.push_back(light);
+    m_nodes.push_back(light);
+
+    lightSelect(light);
+}
+
+void QTBEngine::lightSelect(tbe::scene::Light* light)
+{
+    m_selectedNode = light;
+
+    m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+}
+
+void QTBEngine::lightClone(tbe::scene::Light* light)
+{
+    using namespace tbe::scene;
+
+    Light* newlight = new Light(*light);
+
+    lightAdd(newlight);
+
+    emit notifyLightAdd(newlight);
 }
 
 void QTBEngine::skyboxApply(const QStringList& texs)

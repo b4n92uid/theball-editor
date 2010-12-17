@@ -21,8 +21,9 @@ MainWindow::MainWindow()
     m_infoText = m_uinterface.infoText;
 
     m_nodsManager = new QNodesManager(this, &m_uinterface);
-    m_lightsManager = new QLightsManager(this, &m_uinterface);
     m_envManager = new QEnvManager(this, &m_uinterface);
+
+    // Node --------------------------------------------------------------------
 
     connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)),
             m_nodsManager, SLOT(meshAdd(tbe::scene::Mesh*)));
@@ -39,11 +40,27 @@ MainWindow::MainWindow()
     connect(m_nodsManager, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)),
             m_tbeWidget, SLOT(meshSelect(tbe::scene::Mesh*)));
 
+
+    connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)),
+            m_nodsManager, SLOT(lightAdd(tbe::scene::Light*)));
+
+    connect(m_tbeWidget, SIGNAL(notifyLightSelect(tbe::scene::Light*)),
+            m_nodsManager, SLOT(lightSelect(tbe::scene::Light*)));
+
+    connect(m_nodsManager, SIGNAL(notifyLightNew(tbe::scene::Light*)),
+            m_tbeWidget, SLOT(lightAdd(tbe::scene::Light*)));
+
+    connect(m_nodsManager, SIGNAL(notifyLightSelect(tbe::scene::Light*)),
+            m_tbeWidget, SLOT(lightSelect(tbe::scene::Light*)));
+
+
     connect(m_nodsManager, SIGNAL(pauseRendring()),
             m_tbeWidget, SLOT(pauseRendring()));
 
     connect(m_nodsManager, SIGNAL(resumeRendring()),
             m_tbeWidget, SLOT(resumeRendring()));
+
+    // Envirenment -------------------------------------------------------------
 
     connect(m_envManager, SIGNAL(skyboxApply(const QStringList&)),
             m_tbeWidget, SLOT(skyboxApply(const QStringList&)));
@@ -68,6 +85,7 @@ MainWindow::MainWindow()
 
     connect(m_envManager, SIGNAL(resumeRendring()),
             m_tbeWidget, SLOT(resumeRendring()));
+
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));

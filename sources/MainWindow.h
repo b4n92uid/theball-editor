@@ -15,7 +15,6 @@
 #include "ui_interface.h"
 
 #include "QEnvManager.h"
-#include "QLightsManager.h"
 #include "QNodesManager.h"
 #include "QTBEngine.h"
 
@@ -39,7 +38,6 @@ public slots:
 
 private:
     QNodesManager* m_nodsManager;
-    QLightsManager* m_lightsManager;
     QEnvManager* m_envManager;
 
     QTBEngine* m_tbeWidget;
