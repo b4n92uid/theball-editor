@@ -7,7 +7,19 @@
 
 #include "QNodesManager.h"
 
+#define ContentType (Qt::UserRole + 2)
+
+enum NodeType
+{
+    IsUnknown, IsMesh, IsParticles, IsWater, IsLight
+};
+
+Q_DECLARE_METATYPE(tbe::scene::Node*)
 Q_DECLARE_METATYPE(tbe::scene::Mesh*)
+Q_DECLARE_METATYPE(tbe::scene::Water*)
+Q_DECLARE_METATYPE(tbe::scene::ParticlesEmiter*)
+Q_DECLARE_METATYPE(tbe::scene::Light*)
+Q_DECLARE_METATYPE(NodeType)
 
 QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObject(parent)
 {
@@ -21,8 +33,8 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     NodeTab.name = uinterface->node_name;
     NodeTab.pos = new QVectorBox(this, uinterface->node_pos_x, uinterface->node_pos_y, uinterface->node_pos_z);
 
-    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(SetName(const QString&)));
-    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(SetPos(const tbe::Vector3f&)));
+    connect(NodeTab.name, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(nodeSetName(const QString&)));
+    connect(NodeTab.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(nodeSetPos(const tbe::Vector3f&)));
 
     // Mesh --------------------------------------------------------------------
 
@@ -43,11 +55,11 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     WaterTab.add = uinterface->node_water_add;
     WaterTab.del = uinterface->node_water_del;
 
-    connect(WaterTab.deform, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(SetDeform(double)));
-    connect(WaterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(SetSize(const tbe::Vector2f&)));
-    connect(WaterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(SetUvRepeat(const tbe::Vector2f&)));
-    connect(WaterTab.speed, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(SetSpeed(double)));
-    connect(WaterTab.blend, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(SetBlend(double)));
+    connect(WaterTab.deform, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetDeform(double)));
+    connect(WaterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(waterSetSize(const tbe::Vector2f&)));
+    connect(WaterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(waterSetUvRepeat(const tbe::Vector2f&)));
+    connect(WaterTab.speed, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetSpeed(double)));
+    connect(WaterTab.blend, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetBlend(double)));
 
     // Particles ---------------------------------------------------------------
 
@@ -61,13 +73,34 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     ParticlesTab.add = uinterface->node_particles_add;
     ParticlesTab.del = uinterface->node_particles_del;
 
-    connect(ParticlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(SetGravity(const tbe::Vector3f&)));
-    connect(ParticlesTab.freemove, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(SetFreemove(double)));
-    connect(ParticlesTab.lifeinit, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(SetLifeinit(double)));
-    connect(ParticlesTab.lifedown, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(SetLifedown(double)));
-    connect(ParticlesTab.number, SIGNAL(valueChanged(int)), m_qnodebind, SLOT(SetNumber(int)));
-    connect(ParticlesTab.texture, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(SetTexture(const QString&)));
-    connect(ParticlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qnodebind, SLOT(SetContinousMode(int)));
+    connect(ParticlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(particleSetGravity(const tbe::Vector3f&)));
+    connect(ParticlesTab.freemove, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetFreemove(double)));
+    connect(ParticlesTab.lifeinit, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetLifeinit(double)));
+    connect(ParticlesTab.lifedown, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetLifedown(double)));
+    connect(ParticlesTab.number, SIGNAL(valueChanged(int)), m_qnodebind, SLOT(particleSetNumber(int)));
+    connect(ParticlesTab.texture, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(particleSetTexture(const QString&)));
+    connect(ParticlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qnodebind, SLOT(particleSetContinousMode(int)));
+
+    // Lights ------------------------------------------------------------------
+
+    LighTab.type = uinterface->node_light_type;
+
+    LighTab.ambiant = new QVectorBox(this, uinterface->node_light_ambiant_x, uinterface->node_light_ambiant_y, uinterface->node_light_ambiant_z);
+    LighTab.diffuse = new QVectorBox(this, uinterface->node_light_diffuse_x, uinterface->node_light_diffuse_y, uinterface->node_light_diffuse_z);
+    LighTab.specular = new QVectorBox(this, uinterface->node_light_specular_x, uinterface->node_light_specular_y, uinterface->node_light_specular_z);
+
+    LighTab.radius = uinterface->node_light_radius;
+
+    LighTab.add = uinterface->node_light_add;
+    LighTab.del = uinterface->node_light_del;
+
+    connect(LighTab.type, SIGNAL(activated(int)), m_qnodebind, SLOT(lightSetType(int)));
+    connect(LighTab.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetAmbiant(const tbe::Vector3f&)));
+    connect(LighTab.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetDiffuse(const tbe::Vector3f&)));
+    connect(LighTab.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetSpecular(const tbe::Vector3f&)));
+    connect(LighTab.radius, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(lightSetRadius(double)));
+    connect(LighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
+    connect(LighTab.del, SIGNAL(clicked()), this, SLOT(guiLightDelete()));
 
     // Nodes liste -------------------------------------------------------------
 
@@ -81,7 +114,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     m_nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_nodesListView->setModel(m_nodesListModel);
 
-    connect(m_nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiMeshSelect(const QModelIndex&)));
+    connect(m_nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
 
     // -------------------------------------------------------------------------
 
@@ -90,6 +123,44 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
 
 QNodesManager::~QNodesManager()
 {
+}
+
+void QNodesManager::guiSelect(const QModelIndex& index)
+{
+    using namespace tbe::scene;
+
+    QStandardItem* item = m_nodesListModel->itemFromIndex(index);
+
+    // NOTE Conversion to NodeType fail (return 0)
+    int type = item->data(ContentType).toInt();
+
+    switch(type)
+    {
+        case IsMesh:
+        {
+            Mesh* mesh = item->data().value<Mesh*>();
+            meshSelect(mesh, false);
+            emit notifyMeshSelect(mesh);
+        }
+            break;
+        case IsParticles:
+        {
+            // ParticlesEmiter* pemiter = item->data().value<ParticlesEmiter*>();
+        }
+            break;
+        case IsWater:
+        {
+            // Water* water = item->data().value<Water*>();
+        }
+            break;
+        case IsLight:
+        {
+            Light* light = item->data().value<Light*>();
+            lightSelect(light, false);
+            emit notifyLightSelect(light);
+        }
+            break;
+    }
 }
 
 void QNodesManager::guiMeshNew()
@@ -125,15 +196,9 @@ void QNodesManager::guiMeshClone()
     emit notifyMeshClone(m_qnodebind->getCurmesh());
 }
 
-void QNodesManager::guiMeshSelect(const QModelIndex& index)
+void QNodesManager::guiMeshDelete()
 {
-    using namespace tbe::scene;
 
-    Mesh* mesh = m_nodesListModel->itemFromIndex(index)->data().value<Mesh*>();
-
-    meshSelect(mesh);
-
-    emit notifyMeshSelect(mesh);
 }
 
 void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
@@ -161,9 +226,11 @@ void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
 
     QStandardItem* itid = new QStandardItem(QString("Mesh"));
     itid->setData(userdata);
+    itid->setData(IsMesh, ContentType);
 
     QStandardItem* itname = new QStandardItem(mesh->GetName().c_str());
     itname->setData(userdata);
+    itname->setData(IsMesh, ContentType);
 
     QList<QStandardItem*> items;
     items << itid << itname;
@@ -177,7 +244,7 @@ void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
     m_nodesListView->resizeColumnToContents(1);
 }
 
-void QNodesManager::meshSelect(tbe::scene::Mesh* mesh)
+void QNodesManager::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 {
     m_selectedNode = mesh;
 
@@ -186,24 +253,104 @@ void QNodesManager::meshSelect(tbe::scene::Mesh* mesh)
     NodeTab.name->setText(mesh->GetName().c_str());
     NodeTab.pos->setValue(mesh->GetPos());
 
-    int count = m_nodesListModel->rowCount();
-
-    for(int i = 0; i < count; i++)
+    if(upList)
     {
-        using namespace tbe::scene;
+        int count = m_nodesListModel->rowCount();
 
-        QStandardItem* item = m_nodesListModel->item(i);
-
-        if(mesh == item->data().value<Mesh*>())
+        for(int i = 0; i < count; i++)
         {
-            while(item->parent())
-                item = item->parent();
+            using namespace tbe::scene;
 
-            m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
-            break;
+            QStandardItem* item = m_nodesListModel->item(i);
+
+            if(item->data(ContentType).value<NodeType > () == IsMesh)
+                if(item->data().value<Mesh*>() == mesh)
+                {
+                    while(item->parent())
+                        item = item->parent();
+
+                    m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
+                    break;
+                }
         }
     }
+}
 
+void QNodesManager::guiLightNew()
+{
+}
+
+void QNodesManager::guiLightClone()
+{
+
+}
+
+void QNodesManager::guiLightDelete()
+{
+}
+
+void QNodesManager::lightAdd(tbe::scene::Light* light)
+{
+    using namespace tbe::scene;
+
+    QString strtype = (light->GetType() == Light::POINT) ? "Point" : "Diri";
+
+    QVariant userData;
+    userData.setValue(light);
+
+    QStandardItem* itemType = new QStandardItem(strtype);
+    itemType->setData(userData);
+    itemType->setData(IsLight, ContentType);
+
+    QStandardItem* itemName = new QStandardItem(light->GetName().c_str());
+    itemName->setData(userData);
+    itemName->setData(IsLight, ContentType);
+
+    QList<QStandardItem*> items;
+    items << itemType << itemName;
+
+    m_nodesListModel->appendRow(items);
+
+    m_nodesListView->resizeColumnToContents(0);
+    m_nodesListView->resizeColumnToContents(1);
+}
+
+void QNodesManager::lightSelect(tbe::scene::Light* light, bool upList)
+{
+    m_selectedNode = light;
+
+    m_qnodebind->setCurlight(light);
+
+    NodeTab.name->setText(light->GetName().c_str());
+    NodeTab.pos->setValue(light->GetPos());
+
+    LighTab.type->setCurrentIndex((int)light->GetType());
+    LighTab.ambiant->setValue(vec43(light->GetAmbient()));
+    LighTab.diffuse->setValue(vec43(light->GetDiffuse()));
+    LighTab.specular->setValue(vec43(light->GetSpecular()));
+    LighTab.radius->setValue(light->GetRadius());
+
+    if(upList)
+    {
+        int count = m_nodesListModel->rowCount();
+
+        for(int i = 0; i < count; i++)
+        {
+            using namespace tbe::scene;
+
+            QStandardItem* item = m_nodesListModel->item(i);
+
+            if(item->data(ContentType).value<NodeType > () == IsLight)
+                if(item->data().value<Light*>() == light)
+                {
+                    while(item->parent())
+                        item = item->parent();
+
+                    m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
+                    break;
+                }
+        }
+    }
 }
 
 void QNodesManager::updateList()
@@ -217,7 +364,21 @@ void QNodesManager::updateList()
         QStandardItem* item = m_nodesListModel->item(i);
         QStandardItem* itemName = m_nodesListModel->item(i, 1);
 
-        Mesh* mesh = item->data().value<Mesh*>();
-        itemName->setText(mesh->GetName().c_str());
+        Node* node;
+
+        if(item->data().canConvert<Light*>())
+            node = item->data().value<Light*>();
+
+        else if(item->data().canConvert<Mesh*>())
+            node = item->data().value<Mesh*>();
+
+        else if(item->data().canConvert<ParticlesEmiter*>())
+            node = item->data().value<ParticlesEmiter*>();
+
+        else if(item->data().canConvert<Water*>())
+            node = item->data().value<Water*>();
+
+        itemName->setText(node->GetName().c_str());
     }
 }
+

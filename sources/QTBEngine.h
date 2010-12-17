@@ -43,6 +43,10 @@ public slots:
     void meshSelect(tbe::scene::Mesh* mesh);
     void meshClone(tbe::scene::Mesh* mesh);
 
+    void lightAdd(tbe::scene::Light* light);
+    void lightSelect(tbe::scene::Light* light);
+    void lightClone(tbe::scene::Light* light);
+
     void fillTextInfo(QLabel* label);
 
     void pauseRendring();
@@ -57,6 +61,9 @@ public slots:
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
     void notifyMeshSelect(tbe::scene::Mesh*);
+
+    void notifyLightAdd(tbe::scene::Light*);
+    void notifyLightSelect(tbe::scene::Light*);
 
     void notifyInitFog(tbe::scene::Fog*);
     void notifyInitSkybox(tbe::scene::SkyBox*);
@@ -74,6 +81,7 @@ private:
     tbe::scene::OrbitalCamera* m_orbcamera;
 
     tbe::scene::MeshParallelScene* m_meshScene;
+    tbe::scene::LightParallelScene* m_lightScene;
     tbe::scene::ParticlesParallelScene* m_particlesScene;
     tbe::scene::WaterParallelScene* m_waterScene;
 
@@ -90,6 +98,8 @@ private:
 
     tbe::scene::Node::Array m_nodes;
     tbe::scene::Mesh::Array m_meshs;
+
+    tbe::scene::Light::Array m_lights;
 };
 
 #endif	/* QTBENGINE_H */

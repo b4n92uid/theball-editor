@@ -34,6 +34,8 @@ signals:
     void fogApply(tbe::Vector4f, float, float);
     void fogClear();
 
+    void sceneAmbiantUpdate(const tbe::Vector3f& value);
+
     void pauseRendring();
     void resumeRendring();
 

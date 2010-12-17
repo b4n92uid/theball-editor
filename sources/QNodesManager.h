@@ -23,12 +23,21 @@ public:
     virtual ~QNodesManager();
 
 public slots:
+    void guiSelect(const QModelIndex& index);
+
     void guiMeshNew();
-    void guiMeshSelect(const QModelIndex& index);
     void guiMeshClone();
+    void guiMeshDelete();
+
+    void guiLightNew();
+    void guiLightClone();
+    void guiLightDelete();
 
     void meshAdd(tbe::scene::Mesh* mesh);
-    void meshSelect(tbe::scene::Mesh* mesh);
+    void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
+
+    void lightAdd(tbe::scene::Light* light);
+    void lightSelect(tbe::scene::Light* light, bool upList = true);
 
     void updateList();
 
@@ -36,6 +45,10 @@ signals:
     void notifyMeshAdd(tbe::scene::Mesh* mesh);
     void notifyMeshClone(tbe::scene::Mesh* mesh);
     void notifyMeshSelect(tbe::scene::Mesh* mesh);
+
+    void notifyLightNew(tbe::scene::Light* light);
+    void notifyLightDelete(tbe::scene::Light* light);
+    void notifyLightSelect(tbe::scene::Light* light);
 
     void pauseRendring();
     void resumeRendring();
@@ -48,6 +61,19 @@ private:
         QVectorBox* pos;
 
     } NodeTab;
+
+    struct
+    {
+        QComboBox* type;
+        QVectorBox* ambiant;
+        QVectorBox* diffuse;
+        QVectorBox* specular;
+        QDoubleSpinBox* radius;
+
+        QPushButton* add;
+        QPushButton* del;
+
+    } LighTab;
 
     struct
     {
