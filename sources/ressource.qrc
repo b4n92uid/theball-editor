@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RCC>
   <qresource prefix="Icons">
+    <file>../icons/icon.ico</file>
     <file>../icons/accept.png</file>
     <file>../icons/explore.png</file>
     <file>../icons/add.png</file>
