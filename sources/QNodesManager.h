@@ -45,10 +45,12 @@ signals:
     void notifyMeshAdd(tbe::scene::Mesh* mesh);
     void notifyMeshClone(tbe::scene::Mesh* mesh);
     void notifyMeshSelect(tbe::scene::Mesh* mesh);
+    void notifyMeshDelete(tbe::scene::Mesh* mesh);
 
     void notifyLightNew(tbe::scene::Light* light);
-    void notifyLightDelete(tbe::scene::Light* light);
+    void notifyLightClone(tbe::scene::Light* light);
     void notifyLightSelect(tbe::scene::Light* light);
+    void notifyLightDelete(tbe::scene::Light* light);
 
     void pauseRendring();
     void resumeRendring();
@@ -71,6 +73,7 @@ private:
         QDoubleSpinBox* radius;
 
         QPushButton* add;
+        QPushButton* clone;
         QPushButton* del;
 
     } LighTab;
@@ -92,6 +95,7 @@ private:
         QDoubleSpinBox* blend;
 
         QPushButton* add;
+        QPushButton* clone;
         QPushButton* del;
 
         QMap<QObject*, QString> sourcMap;
@@ -109,6 +113,7 @@ private:
         QCheckBox* continiousmode;
 
         QPushButton* add;
+        QPushButton* clone;
         QPushButton* del;
 
         QMap<QObject*, QString> sourcMap;

@@ -53,6 +53,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     WaterTab.speed = uinterface->node_water_speed;
     WaterTab.blend = uinterface->node_water_blend;
     WaterTab.add = uinterface->node_water_add;
+    WaterTab.clone = uinterface->node_water_clone;
     WaterTab.del = uinterface->node_water_del;
 
     connect(WaterTab.deform, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetDeform(double)));
@@ -71,6 +72,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     ParticlesTab.texture = new QBrowsEdit(this, uinterface->node_particles_texture, uinterface->node_particles_texture_browse);
     ParticlesTab.continiousmode = uinterface->node_particles_continousmide;
     ParticlesTab.add = uinterface->node_particles_add;
+    ParticlesTab.clone = uinterface->node_particles_clone;
     ParticlesTab.del = uinterface->node_particles_del;
 
     connect(ParticlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(particleSetGravity(const tbe::Vector3f&)));
@@ -92,6 +94,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     LighTab.radius = uinterface->node_light_radius;
 
     LighTab.add = uinterface->node_light_add;
+    LighTab.clone = uinterface->node_light_clone;
     LighTab.del = uinterface->node_light_del;
 
     connect(LighTab.type, SIGNAL(activated(int)), m_qnodebind, SLOT(lightSetType(int)));
@@ -100,6 +103,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     connect(LighTab.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetSpecular(const tbe::Vector3f&)));
     connect(LighTab.radius, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(lightSetRadius(double)));
     connect(LighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
+    connect(LighTab.clone, SIGNAL(clicked()), this, SLOT(guiLightClone()));
     connect(LighTab.del, SIGNAL(clicked()), this, SLOT(guiLightDelete()));
 
     // Nodes liste -------------------------------------------------------------
@@ -278,11 +282,19 @@ void QNodesManager::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 
 void QNodesManager::guiLightNew()
 {
+    using namespace tbe::scene;
+
+    Light* light = new Light;
+
+    lightAdd(light);
+    lightSelect(light);
+
+    emit notifyLightNew(light);
 }
 
 void QNodesManager::guiLightClone()
 {
-
+    emit notifyLightClone(m_qnodebind->getCurlight());
 }
 
 void QNodesManager::guiLightDelete()
@@ -293,12 +305,10 @@ void QNodesManager::lightAdd(tbe::scene::Light* light)
 {
     using namespace tbe::scene;
 
-    QString strtype = (light->GetType() == Light::POINT) ? "Point" : "Diri";
-
     QVariant userData;
     userData.setValue(light);
 
-    QStandardItem* itemType = new QStandardItem(strtype);
+    QStandardItem* itemType = new QStandardItem("Light");
     itemType->setData(userData);
     itemType->setData(IsLight, ContentType);
 

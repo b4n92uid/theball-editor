@@ -352,6 +352,12 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 meshSelect(mesh);
                 emit notifyMeshSelect(mesh);
             }
+
+            else if(Light * light = tools::find(m_lights, m_selectedNode->GetParent()))
+            {
+                lightSelect(light);
+                emit notifyLightSelect(light);
+            }
         }
 
         if(ev->key() == Qt::Key_C)
@@ -360,6 +366,9 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
                 meshClone(mesh);
+
+            else if(Light * light = tools::find(m_lights, m_selectedNode))
+                lightClone(light);
         }
 
         if(ev->key() == Qt::Key_F)
