@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfaceOqa220.ui'
+** Form generated from reading UI file 'interfaceBy3904.ui'
 **
-** Created: Fri 17. Dec 17:33:01 2010
+** Created: Sat 18. Dec 17:30:29 2010
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEOQA220_H
-#define INTERFACEOQA220_H
+#ifndef INTERFACEBY3904_H
+#define INTERFACEBY3904_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -137,16 +137,16 @@ public:
     QLabel *label_23;
     QDoubleSpinBox *node_particles_lifeinit;
     QLabel *label_24;
-    QDoubleSpinBox *node_particles_lifedown;
     QLabel *label_25;
-    QHBoxLayout *horizontalLayout;
-    QSpinBox *node_particles_number;
-    QPushButton *node_particles_build;
     QLabel *label_26;
     QHBoxLayout *horizontalLayout_23;
     QLineEdit *node_particles_texture;
     QPushButton *node_particles_texture_browse;
     QCheckBox *node_particles_continousmide;
+    QDoubleSpinBox *node_particles_lifedown;
+    QHBoxLayout *horizontalLayout;
+    QSpinBox *node_particles_number;
+    QPushButton *node_particles_build;
     QHBoxLayout *horizontalLayout_25;
     QPushButton *node_particles_add;
     QPushButton *node_particles_clone;
@@ -157,9 +157,9 @@ public:
     QGroupBox *groupBox_6;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout_22;
-    QDoubleSpinBox *light_scene_x;
-    QDoubleSpinBox *light_scene_y;
-    QDoubleSpinBox *light_scene_z;
+    QDoubleSpinBox *env_ambient_x;
+    QDoubleSpinBox *env_ambient_y;
+    QDoubleSpinBox *env_ambient_z;
     QGroupBox *skybox_enable;
     QFormLayout *formLayout_5;
     QLabel *label_13;
@@ -420,16 +420,25 @@ public:
         horizontalLayout_26->setObjectName(QString::fromUtf8("horizontalLayout_26"));
         node_light_add = new QPushButton(tab_2);
         node_light_add->setObjectName(QString::fromUtf8("node_light_add"));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/Icons/icons/add.png"), QSize(), QIcon::Normal, QIcon::Off);
+        node_light_add->setIcon(icon);
 
         horizontalLayout_26->addWidget(node_light_add);
 
         node_light_clone = new QPushButton(tab_2);
         node_light_clone->setObjectName(QString::fromUtf8("node_light_clone"));
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/Icons/icons/page_copy.png"), QSize(), QIcon::Normal, QIcon::Off);
+        node_light_clone->setIcon(icon1);
 
         horizontalLayout_26->addWidget(node_light_clone);
 
         node_light_del = new QPushButton(tab_2);
         node_light_del->setObjectName(QString::fromUtf8("node_light_del"));
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/Icons/icons/cross.png"), QSize(), QIcon::Normal, QIcon::Off);
+        node_light_del->setIcon(icon2);
 
         horizontalLayout_26->addWidget(node_light_del);
 
@@ -449,16 +458,19 @@ public:
         horizontalLayout_18->setObjectName(QString::fromUtf8("horizontalLayout_18"));
         node_mesh_add = new QPushButton(tab_4);
         node_mesh_add->setObjectName(QString::fromUtf8("node_mesh_add"));
+        node_mesh_add->setIcon(icon);
 
         horizontalLayout_18->addWidget(node_mesh_add);
 
         node_mesh_clone = new QPushButton(tab_4);
         node_mesh_clone->setObjectName(QString::fromUtf8("node_mesh_clone"));
+        node_mesh_clone->setIcon(icon1);
 
         horizontalLayout_18->addWidget(node_mesh_clone);
 
         node_mesh_del = new QPushButton(tab_4);
         node_mesh_del->setObjectName(QString::fromUtf8("node_mesh_del"));
+        node_mesh_del->setIcon(icon2);
 
         horizontalLayout_18->addWidget(node_mesh_del);
 
@@ -559,16 +571,19 @@ public:
         horizontalLayout_24->setObjectName(QString::fromUtf8("horizontalLayout_24"));
         node_water_add = new QPushButton(tab_5);
         node_water_add->setObjectName(QString::fromUtf8("node_water_add"));
+        node_water_add->setIcon(icon);
 
         horizontalLayout_24->addWidget(node_water_add);
 
         node_water_clone = new QPushButton(tab_5);
         node_water_clone->setObjectName(QString::fromUtf8("node_water_clone"));
+        node_water_clone->setIcon(icon1);
 
         horizontalLayout_24->addWidget(node_water_clone);
 
         node_water_del = new QPushButton(tab_5);
         node_water_del->setObjectName(QString::fromUtf8("node_water_del"));
+        node_water_del->setIcon(icon2);
 
         horizontalLayout_24->addWidget(node_water_del);
 
@@ -640,38 +655,10 @@ public:
 
         formLayout_7->setWidget(3, QFormLayout::LabelRole, label_24);
 
-        node_particles_lifedown = new QDoubleSpinBox(widget);
-        node_particles_lifedown->setObjectName(QString::fromUtf8("node_particles_lifedown"));
-        node_particles_lifedown->setSingleStep(0.1);
-
-        formLayout_7->setWidget(3, QFormLayout::FieldRole, node_particles_lifedown);
-
         label_25 = new QLabel(widget);
         label_25->setObjectName(QString::fromUtf8("label_25"));
 
         formLayout_7->setWidget(4, QFormLayout::LabelRole, label_25);
-
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        node_particles_number = new QSpinBox(widget);
-        node_particles_number->setObjectName(QString::fromUtf8("node_particles_number"));
-
-        horizontalLayout->addWidget(node_particles_number);
-
-        node_particles_build = new QPushButton(widget);
-        node_particles_build->setObjectName(QString::fromUtf8("node_particles_build"));
-        QSizePolicy sizePolicy1(QSizePolicy::Ignored, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(node_particles_build->sizePolicy().hasHeightForWidth());
-        node_particles_build->setSizePolicy(sizePolicy1);
-
-        horizontalLayout->addWidget(node_particles_build);
-
-        horizontalLayout->setStretch(0, 5);
-        horizontalLayout->setStretch(1, 1);
-
-        formLayout_7->setLayout(4, QFormLayout::FieldRole, horizontalLayout);
 
         label_26 = new QLabel(widget);
         label_26->setObjectName(QString::fromUtf8("label_26"));
@@ -687,8 +674,14 @@ public:
 
         node_particles_texture_browse = new QPushButton(widget);
         node_particles_texture_browse->setObjectName(QString::fromUtf8("node_particles_texture_browse"));
+        QSizePolicy sizePolicy1(QSizePolicy::Ignored, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(node_particles_texture_browse->sizePolicy().hasHeightForWidth());
         node_particles_texture_browse->setSizePolicy(sizePolicy1);
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/Icons/icons/explore.png"), QSize(), QIcon::Normal, QIcon::Off);
+        node_particles_texture_browse->setIcon(icon3);
 
         horizontalLayout_23->addWidget(node_particles_texture_browse);
 
@@ -702,6 +695,34 @@ public:
 
         formLayout_7->setWidget(6, QFormLayout::FieldRole, node_particles_continousmide);
 
+        node_particles_lifedown = new QDoubleSpinBox(widget);
+        node_particles_lifedown->setObjectName(QString::fromUtf8("node_particles_lifedown"));
+        node_particles_lifedown->setSingleStep(0.1);
+
+        formLayout_7->setWidget(3, QFormLayout::FieldRole, node_particles_lifedown);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        node_particles_number = new QSpinBox(widget);
+        node_particles_number->setObjectName(QString::fromUtf8("node_particles_number"));
+
+        horizontalLayout->addWidget(node_particles_number);
+
+        node_particles_build = new QPushButton(widget);
+        node_particles_build->setObjectName(QString::fromUtf8("node_particles_build"));
+        sizePolicy1.setHeightForWidth(node_particles_build->sizePolicy().hasHeightForWidth());
+        node_particles_build->setSizePolicy(sizePolicy1);
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/Icons/icons/cog.png"), QSize(), QIcon::Normal, QIcon::Off);
+        node_particles_build->setIcon(icon4);
+
+        horizontalLayout->addWidget(node_particles_build);
+
+        horizontalLayout->setStretch(0, 5);
+        horizontalLayout->setStretch(1, 1);
+
+        formLayout_7->setLayout(4, QFormLayout::FieldRole, horizontalLayout);
+
 
         verticalLayout_4->addWidget(widget);
 
@@ -709,16 +730,19 @@ public:
         horizontalLayout_25->setObjectName(QString::fromUtf8("horizontalLayout_25"));
         node_particles_add = new QPushButton(tab_6);
         node_particles_add->setObjectName(QString::fromUtf8("node_particles_add"));
+        node_particles_add->setIcon(icon);
 
         horizontalLayout_25->addWidget(node_particles_add);
 
         node_particles_clone = new QPushButton(tab_6);
         node_particles_clone->setObjectName(QString::fromUtf8("node_particles_clone"));
+        node_particles_clone->setIcon(icon1);
 
         horizontalLayout_25->addWidget(node_particles_clone);
 
         node_particles_del = new QPushButton(tab_6);
         node_particles_del->setObjectName(QString::fromUtf8("node_particles_del"));
+        node_particles_del->setIcon(icon2);
 
         horizontalLayout_25->addWidget(node_particles_del);
 
@@ -747,20 +771,23 @@ public:
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         horizontalLayout_22 = new QHBoxLayout();
         horizontalLayout_22->setObjectName(QString::fromUtf8("horizontalLayout_22"));
-        light_scene_x = new QDoubleSpinBox(groupBox_6);
-        light_scene_x->setObjectName(QString::fromUtf8("light_scene_x"));
+        env_ambient_x = new QDoubleSpinBox(groupBox_6);
+        env_ambient_x->setObjectName(QString::fromUtf8("env_ambient_x"));
+        env_ambient_x->setSingleStep(0.1);
 
-        horizontalLayout_22->addWidget(light_scene_x);
+        horizontalLayout_22->addWidget(env_ambient_x);
 
-        light_scene_y = new QDoubleSpinBox(groupBox_6);
-        light_scene_y->setObjectName(QString::fromUtf8("light_scene_y"));
+        env_ambient_y = new QDoubleSpinBox(groupBox_6);
+        env_ambient_y->setObjectName(QString::fromUtf8("env_ambient_y"));
+        env_ambient_y->setSingleStep(0.1);
 
-        horizontalLayout_22->addWidget(light_scene_y);
+        horizontalLayout_22->addWidget(env_ambient_y);
 
-        light_scene_z = new QDoubleSpinBox(groupBox_6);
-        light_scene_z->setObjectName(QString::fromUtf8("light_scene_z"));
+        env_ambient_z = new QDoubleSpinBox(groupBox_6);
+        env_ambient_z->setObjectName(QString::fromUtf8("env_ambient_z"));
+        env_ambient_z->setSingleStep(0.1);
 
-        horizontalLayout_22->addWidget(light_scene_z);
+        horizontalLayout_22->addWidget(env_ambient_z);
 
 
         verticalLayout->addLayout(horizontalLayout_22);
@@ -791,6 +818,7 @@ public:
         skybox_front_browse->setObjectName(QString::fromUtf8("skybox_front_browse"));
         sizePolicy1.setHeightForWidth(skybox_front_browse->sizePolicy().hasHeightForWidth());
         skybox_front_browse->setSizePolicy(sizePolicy1);
+        skybox_front_browse->setIcon(icon3);
 
         horizontalLayout_16->addWidget(skybox_front_browse);
 
@@ -815,6 +843,7 @@ public:
         skybox_back_browse->setObjectName(QString::fromUtf8("skybox_back_browse"));
         sizePolicy1.setHeightForWidth(skybox_back_browse->sizePolicy().hasHeightForWidth());
         skybox_back_browse->setSizePolicy(sizePolicy1);
+        skybox_back_browse->setIcon(icon3);
 
         horizontalLayout_15->addWidget(skybox_back_browse);
 
@@ -839,6 +868,7 @@ public:
         skybox_top_browse->setObjectName(QString::fromUtf8("skybox_top_browse"));
         sizePolicy1.setHeightForWidth(skybox_top_browse->sizePolicy().hasHeightForWidth());
         skybox_top_browse->setSizePolicy(sizePolicy1);
+        skybox_top_browse->setIcon(icon3);
 
         horizontalLayout_14->addWidget(skybox_top_browse);
 
@@ -863,6 +893,7 @@ public:
         skybox_bottom_browse->setObjectName(QString::fromUtf8("skybox_bottom_browse"));
         sizePolicy1.setHeightForWidth(skybox_bottom_browse->sizePolicy().hasHeightForWidth());
         skybox_bottom_browse->setSizePolicy(sizePolicy1);
+        skybox_bottom_browse->setIcon(icon3);
 
         horizontalLayout_4->addWidget(skybox_bottom_browse);
 
@@ -887,6 +918,7 @@ public:
         skybox_left_browse->setObjectName(QString::fromUtf8("skybox_left_browse"));
         sizePolicy1.setHeightForWidth(skybox_left_browse->sizePolicy().hasHeightForWidth());
         skybox_left_browse->setSizePolicy(sizePolicy1);
+        skybox_left_browse->setIcon(icon3);
 
         horizontalLayout_6->addWidget(skybox_left_browse);
 
@@ -911,6 +943,7 @@ public:
         skybox_right_browse->setObjectName(QString::fromUtf8("skybox_right_browse"));
         sizePolicy1.setHeightForWidth(skybox_right_browse->sizePolicy().hasHeightForWidth());
         skybox_right_browse->setSizePolicy(sizePolicy1);
+        skybox_right_browse->setIcon(icon3);
 
         horizontalLayout_5->addWidget(skybox_right_browse);
 
@@ -923,6 +956,9 @@ public:
         horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
         skybox_apply = new QPushButton(skybox_enable);
         skybox_apply->setObjectName(QString::fromUtf8("skybox_apply"));
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/Icons/icons/accept.png"), QSize(), QIcon::Normal, QIcon::Off);
+        skybox_apply->setIcon(icon5);
 
         horizontalLayout_13->addWidget(skybox_apply);
 
@@ -1070,10 +1106,10 @@ public:
         label_23->setText(QApplication::translate("mainWindow", "LifeInit", 0, QApplication::UnicodeUTF8));
         label_24->setText(QApplication::translate("mainWindow", "LifeDown", 0, QApplication::UnicodeUTF8));
         label_25->setText(QApplication::translate("mainWindow", "Number", 0, QApplication::UnicodeUTF8));
-        node_particles_build->setText(QApplication::translate("mainWindow", "B", 0, QApplication::UnicodeUTF8));
         label_26->setText(QApplication::translate("mainWindow", "Texture", 0, QApplication::UnicodeUTF8));
-        node_particles_texture_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        node_particles_texture_browse->setText(QString());
         node_particles_continousmide->setText(QApplication::translate("mainWindow", "Continous Mode", 0, QApplication::UnicodeUTF8));
+        node_particles_build->setText(QString());
         node_particles_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
         node_particles_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_particles_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
@@ -1082,17 +1118,17 @@ public:
         groupBox_6->setTitle(QApplication::translate("mainWindow", "Ambient de la scene", 0, QApplication::UnicodeUTF8));
         skybox_enable->setTitle(QApplication::translate("mainWindow", "Skybox", 0, QApplication::UnicodeUTF8));
         label_13->setText(QApplication::translate("mainWindow", "Devant", 0, QApplication::UnicodeUTF8));
-        skybox_front_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        skybox_front_browse->setText(QString());
         label_14->setText(QApplication::translate("mainWindow", "Deriere", 0, QApplication::UnicodeUTF8));
-        skybox_back_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        skybox_back_browse->setText(QString());
         label_22->setText(QApplication::translate("mainWindow", "Haut", 0, QApplication::UnicodeUTF8));
-        skybox_top_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        skybox_top_browse->setText(QString());
         label_27->setText(QApplication::translate("mainWindow", "Bas", 0, QApplication::UnicodeUTF8));
-        skybox_bottom_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        skybox_bottom_browse->setText(QString());
         label_28->setText(QApplication::translate("mainWindow", "Gauche", 0, QApplication::UnicodeUTF8));
-        skybox_left_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        skybox_left_browse->setText(QString());
         label_29->setText(QApplication::translate("mainWindow", "Droite", 0, QApplication::UnicodeUTF8));
-        skybox_right_browse->setText(QApplication::translate("mainWindow", "...", 0, QApplication::UnicodeUTF8));
+        skybox_right_browse->setText(QString());
         skybox_apply->setText(QApplication::translate("mainWindow", "Apliquer", 0, QApplication::UnicodeUTF8));
         fog_enable->setTitle(QApplication::translate("mainWindow", "Fog", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("mainWindow", "Couleur", 0, QApplication::UnicodeUTF8));
@@ -1110,4 +1146,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEOQA220_H
+#endif // INTERFACEBY3904_H

@@ -13,10 +13,10 @@ int main(int argc, char *argv[])
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-    // initialize resources, if needed
-    // Q_INIT_RESOURCE(resfile);
-
     QApplication app(argc, argv);
+
+    QApplication::setOrganizationName("b4n92uid software");
+    QApplication::setApplicationName("theBall Editor");
 
     MainWindow window;
     window.showMaximized();
