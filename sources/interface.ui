@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>theBall Editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="ressource.qrc">
+    <normaloff>:/Icons/icons/icon.ico</normaloff>:/Icons/icons/icon.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="8,0">
     <property name="sizeConstraint">
@@ -21,9 +25,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_8" stretch="9,0">
       <item>
-       <widget class="QTBEngine" name="glwidget" native="true">
-        <zorder></zorder>
-       </widget>
+       <widget class="QTBEngine" name="glwidget" native="true"/>
       </item>
       <item>
        <widget class="QGroupBox" name="groupBox_5">
