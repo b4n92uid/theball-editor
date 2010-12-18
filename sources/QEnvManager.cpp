@@ -12,6 +12,9 @@ QEnvManager::QEnvManager(QWidget* parent, Ui_mainWindow* uinterface) : QObject(p
 {
     m_parent = parent;
 
+    m_sceneAmbiant = new QVectorBox(this, uinterface->env_ambient_x, uinterface->env_ambient_y, uinterface->env_ambient_z);
+    connect(m_sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SIGNAL(sceneAmbiantUpdate(const tbe::Vector3f&)));
+
     skybox.apply = uinterface->skybox_apply;
     skybox.enable = uinterface->skybox_enable;
 
@@ -62,7 +65,7 @@ void QEnvManager::fogChanged(bool stat)
 {
     if(stat)
     {
-        emit fogApply(vec34(fog.color->getValue()),
+        emit fogApply(vec34(fog.color->value()),
                       (float)fog.start->value(),
                       (float)fog.end->value());
     }
@@ -96,4 +99,9 @@ void QEnvManager::skyboxInit(tbe::scene::SkyBox* tbesky)
 
     connect(skybox.enable, SIGNAL(clicked(bool)), this, SLOT(skyboxChanged(bool)));
     connect(skybox.apply, SIGNAL(clicked()), this, SLOT(skyboxChanged()));
+}
+
+void QEnvManager::ambiantInit(const tbe::Vector3f& value)
+{
+    m_sceneAmbiant->setValue(value);
 }

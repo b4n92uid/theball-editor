@@ -237,6 +237,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
     else if(ev->button() == Qt::MiddleButton)
     {
         m_axe->SetPos(m_curCursor3D);
+        m_orbcamera->SetCenter(m_curCursor3D);
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -443,6 +444,7 @@ void QTBEngine::loadScene(const QString& filename)
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
+    emit notifyInitAmbiant(vec43(m_sceneManager->GetAmbientLight()));
 }
 
 void QTBEngine::fillTextInfo(QLabel* label)
@@ -570,4 +572,9 @@ void QTBEngine::fogApply(tbe::Vector4f color, float start, float end)
 void QTBEngine::fogClear()
 {
     m_fog->Clear();
+}
+
+void QTBEngine::sceneAmbiant(const tbe::Vector3f& value)
+{
+    m_sceneManager->SetAmbientLight(vec34(value));
 }
