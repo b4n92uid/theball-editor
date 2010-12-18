@@ -26,6 +26,7 @@ public slots:
 
     void fogInit(tbe::scene::Fog* tbefog);
     void skyboxInit(tbe::scene::SkyBox* tbesky);
+    void ambiantInit(const tbe::Vector3f& value);
 
 signals:
     void skyboxApply(const QStringList&);
@@ -34,7 +35,7 @@ signals:
     void fogApply(tbe::Vector4f, float, float);
     void fogClear();
 
-    void sceneAmbiantUpdate(const tbe::Vector3f& value);
+    void sceneAmbiantUpdate(const tbe::Vector3f&);
 
     void pauseRendring();
     void resumeRendring();
@@ -57,6 +58,8 @@ private:
         QGroupBox* enable;
 
     } fog;
+
+    QVectorBox* m_sceneAmbiant;
 
     QWidget* m_parent;
 };

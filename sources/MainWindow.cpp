@@ -50,6 +50,9 @@ MainWindow::MainWindow()
     connect(m_nodsManager, SIGNAL(notifyLightNew(tbe::scene::Light*)),
             m_tbeWidget, SLOT(lightAdd(tbe::scene::Light*)));
 
+    connect(m_nodsManager, SIGNAL(notifyLightClone(tbe::scene::Light*)),
+            m_tbeWidget, SLOT(lightClone(tbe::scene::Light*)));
+
     connect(m_nodsManager, SIGNAL(notifyLightSelect(tbe::scene::Light*)),
             m_tbeWidget, SLOT(lightSelect(tbe::scene::Light*)));
 
@@ -60,7 +63,10 @@ MainWindow::MainWindow()
     connect(m_nodsManager, SIGNAL(resumeRendring()),
             m_tbeWidget, SLOT(resumeRendring()));
 
-    // Envirenment -------------------------------------------------------------
+    // Environment -------------------------------------------------------------
+
+    connect(m_envManager, SIGNAL(sceneAmbiantUpdate(const tbe::Vector3f&)),
+            m_tbeWidget, SLOT(sceneAmbiant(const tbe::Vector3f&)));
 
     connect(m_envManager, SIGNAL(skyboxApply(const QStringList&)),
             m_tbeWidget, SLOT(skyboxApply(const QStringList&)));
@@ -74,17 +80,20 @@ MainWindow::MainWindow()
     connect(m_envManager, SIGNAL(fogClear()),
             m_tbeWidget, SLOT(fogClear()));
 
+    connect(m_envManager, SIGNAL(pauseRendring()),
+            m_tbeWidget, SLOT(pauseRendring()));
+
+    connect(m_envManager, SIGNAL(resumeRendring()),
+            m_tbeWidget, SLOT(resumeRendring()));
+
     connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)),
             m_envManager, SLOT(fogInit(tbe::scene::Fog*)));
 
     connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)),
             m_envManager, SLOT(skyboxInit(tbe::scene::SkyBox*)));
 
-    connect(m_envManager, SIGNAL(pauseRendring()),
-            m_tbeWidget, SLOT(pauseRendring()));
-
-    connect(m_envManager, SIGNAL(resumeRendring()),
-            m_tbeWidget, SLOT(resumeRendring()));
+    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)),
+            m_envManager, SLOT(ambiantInit(const tbe::Vector3f&)));
 
 
     m_timer = new QTimer(this);

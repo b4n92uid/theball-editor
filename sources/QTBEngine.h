@@ -47,6 +47,8 @@ public slots:
     void lightSelect(tbe::scene::Light* light);
     void lightClone(tbe::scene::Light* light);
 
+    void sceneAmbiant(const tbe::Vector3f& value);
+
     void fillTextInfo(QLabel* label);
 
     void pauseRendring();
@@ -65,6 +67,7 @@ signals:
     void notifyLightAdd(tbe::scene::Light*);
     void notifyLightSelect(tbe::scene::Light*);
 
+    void notifyInitAmbiant(const tbe::Vector3f&);
     void notifyInitFog(tbe::scene::Fog*);
     void notifyInitSkybox(tbe::scene::SkyBox*);
 
