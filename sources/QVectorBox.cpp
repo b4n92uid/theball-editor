@@ -26,7 +26,7 @@ QVectorBox::~QVectorBox()
 {
 }
 
-tbe::Vector3f QVectorBox::getValue()
+tbe::Vector3f QVectorBox::value()
 {
     return tbe::Vector3f(m_x->value(), m_y->value(), m_z->value());
 }
@@ -40,5 +40,5 @@ void QVectorBox::setValue(const tbe::Vector3f& value)
 
 void QVectorBox::componentValueChanged(double d)
 {
-    emit valueChanged(getValue());
+    emit valueChanged(value());
 }
