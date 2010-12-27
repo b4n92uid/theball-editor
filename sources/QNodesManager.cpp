@@ -21,11 +21,14 @@ Q_DECLARE_METATYPE(tbe::scene::ParticlesEmiter*)
 Q_DECLARE_METATYPE(tbe::scene::Light*)
 Q_DECLARE_METATYPE(NodeType)
 
+typedef QList<QStandardItem*> QItemsList;
+
 QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObject(parent)
 {
     m_qnodebind = new QNodeBinders(this);
 
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SIGNAL(notifyLightSelect(tbe::scene::Light*)));
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateList()));
 
     // Node --------------------------------------------------------------------
@@ -44,6 +47,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
 
     connect(MeshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(MeshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
+    connect(MeshTab.del, SIGNAL(clicked()), this, SLOT(guiMeshDelete()));
 
     // Water -------------------------------------------------------------------
 
@@ -102,6 +106,7 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     connect(LighTab.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetDiffuse(const tbe::Vector3f&)));
     connect(LighTab.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetSpecular(const tbe::Vector3f&)));
     connect(LighTab.radius, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(lightSetRadius(double)));
+
     connect(LighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
     connect(LighTab.clone, SIGNAL(clicked()), this, SLOT(guiLightClone()));
     connect(LighTab.del, SIGNAL(clicked()), this, SLOT(guiLightDelete()));
@@ -119,10 +124,6 @@ QNodesManager::QNodesManager(QObject* parent, Ui_mainWindow* uinterface) : QObje
     m_nodesListView->setModel(m_nodesListModel);
 
     connect(m_nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
-
-    // -------------------------------------------------------------------------
-
-    m_selectedNode = NULL;
 }
 
 QNodesManager::~QNodesManager()
@@ -186,10 +187,10 @@ void QNodesManager::guiMeshNew()
         else if(filename.endsWith("obj"))
             mesh = new OBJMesh(filename.toStdString());
 
-        emit notifyMeshAdd(mesh);
-
         meshAdd(mesh);
         meshSelect(mesh);
+
+        emit notifyMeshNew(mesh);
     }
 
     emit resumeRendring();
@@ -197,12 +198,24 @@ void QNodesManager::guiMeshNew()
 
 void QNodesManager::guiMeshClone()
 {
-    emit notifyMeshClone(m_qnodebind->getCurmesh());
+    if(m_qnodebind->getCurmesh())
+        emit notifyMeshClone(m_qnodebind->getCurmesh());
 }
 
 void QNodesManager::guiMeshDelete()
 {
+    if(tbe::scene::Mesh * mesh = m_qnodebind->getCurmesh())
+    {
+        QStandardItem* item = mesh->GetUserData().GetValue<QStandardItem*> ();
+        QStandardItem* parent = item->parent();
 
+        if(parent)
+            parent->removeRow(item->row());
+        else
+            m_nodesListModel->removeRow(item->row());
+
+        emit notifyMeshDelete(mesh);
+    }
 }
 
 void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
@@ -236,7 +249,7 @@ void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
     itname->setData(userdata);
     itname->setData(IsMesh, ContentType);
 
-    QList<QStandardItem*> items;
+    QItemsList items;
     items << itid << itname;
 
     if(parent)
@@ -244,39 +257,26 @@ void QNodesManager::meshAdd(tbe::scene::Mesh* mesh)
     else
         m_nodesListModel->appendRow(items);
 
+    mesh->SetUserData(itid);
+
     m_nodesListView->resizeColumnToContents(0);
     m_nodesListView->resizeColumnToContents(1);
 }
 
 void QNodesManager::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 {
-    m_selectedNode = mesh;
-
     m_qnodebind->setCurmesh(mesh);
+
+    if(!mesh)
+        return;
 
     NodeTab.name->setText(mesh->GetName().c_str());
     NodeTab.pos->setValue(mesh->GetPos());
 
     if(upList)
     {
-        int count = m_nodesListModel->rowCount();
-
-        for(int i = 0; i < count; i++)
-        {
-            using namespace tbe::scene;
-
-            QStandardItem* item = m_nodesListModel->item(i);
-
-            if(item->data(ContentType).value<NodeType > () == IsMesh)
-                if(item->data().value<Mesh*>() == mesh)
-                {
-                    while(item->parent())
-                        item = item->parent();
-
-                    m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
-                    break;
-                }
-        }
+        QStandardItem* item = mesh->GetUserData().GetValue<QStandardItem*> ();
+        m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
     }
 }
 
@@ -294,11 +294,24 @@ void QNodesManager::guiLightNew()
 
 void QNodesManager::guiLightClone()
 {
-    emit notifyLightClone(m_qnodebind->getCurlight());
+    if(m_qnodebind->getCurlight())
+        emit notifyLightClone(m_qnodebind->getCurlight());
 }
 
 void QNodesManager::guiLightDelete()
 {
+    if(tbe::scene::Light * light = m_qnodebind->getCurlight())
+    {
+        QStandardItem* item = light->GetUserData().GetValue<QStandardItem*> ();
+        QStandardItem* parent = item->parent();
+
+        if(parent)
+            parent->removeRow(item->row());
+        else
+            m_nodesListModel->removeRow(item->row());
+
+        emit notifyLightDelete(m_qnodebind->getCurlight());
+    }
 }
 
 void QNodesManager::lightAdd(tbe::scene::Light* light)
@@ -316,10 +329,12 @@ void QNodesManager::lightAdd(tbe::scene::Light* light)
     itemName->setData(userData);
     itemName->setData(IsLight, ContentType);
 
-    QList<QStandardItem*> items;
+    QItemsList items;
     items << itemType << itemName;
 
     m_nodesListModel->appendRow(items);
+
+    light->SetUserData(itemType);
 
     m_nodesListView->resizeColumnToContents(0);
     m_nodesListView->resizeColumnToContents(1);
@@ -327,9 +342,10 @@ void QNodesManager::lightAdd(tbe::scene::Light* light)
 
 void QNodesManager::lightSelect(tbe::scene::Light* light, bool upList)
 {
-    m_selectedNode = light;
-
     m_qnodebind->setCurlight(light);
+
+    if(!light)
+        return;
 
     NodeTab.name->setText(light->GetName().c_str());
     NodeTab.pos->setValue(light->GetPos());
@@ -342,24 +358,8 @@ void QNodesManager::lightSelect(tbe::scene::Light* light, bool upList)
 
     if(upList)
     {
-        int count = m_nodesListModel->rowCount();
-
-        for(int i = 0; i < count; i++)
-        {
-            using namespace tbe::scene;
-
-            QStandardItem* item = m_nodesListModel->item(i);
-
-            if(item->data(ContentType).value<NodeType > () == IsLight)
-                if(item->data().value<Light*>() == light)
-                {
-                    while(item->parent())
-                        item = item->parent();
-
-                    m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
-                    break;
-                }
-        }
+        QStandardItem* item = light->GetUserData().GetValue<QStandardItem*> ();
+        m_nodesListView->setCurrentIndex(m_nodesListModel->indexFromItem(item));
     }
 }
 
@@ -374,7 +374,7 @@ void QNodesManager::updateList()
         QStandardItem* item = m_nodesListModel->item(i);
         QStandardItem* itemName = m_nodesListModel->item(i, 1);
 
-        Node* node;
+        Node* node = NULL;
 
         if(item->data().canConvert<Light*>())
             node = item->data().value<Light*>();

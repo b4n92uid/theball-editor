@@ -228,6 +228,7 @@ void QNodeBinders::lightSetType(int type)
     if(m_curlight)
     {
         m_curlight->SetType((tbe::scene::Light::Type)type);
+        emit notifyUpdate(m_curlight);
     }
 }
 
@@ -236,6 +237,7 @@ void QNodeBinders::lightSetAmbiant(const tbe::Vector3f& value)
     if(m_curlight)
     {
         m_curlight->SetAmbient(vec34(value));
+        emit notifyUpdate(m_curlight);
     }
 }
 
@@ -244,6 +246,7 @@ void QNodeBinders::lightSetDiffuse(const tbe::Vector3f& value)
     if(m_curlight)
     {
         m_curlight->SetDiffuse(vec34(value));
+        emit notifyUpdate(m_curlight);
     }
 }
 
@@ -252,6 +255,7 @@ void QNodeBinders::lightSetSpecular(const tbe::Vector3f& value)
     if(m_curlight)
     {
         m_curlight->SetSpecular(vec34(value));
+        emit notifyUpdate(m_curlight);
     }
 }
 
@@ -260,5 +264,6 @@ void QNodeBinders::lightSetRadius(double value)
     if(m_curlight)
     {
         m_curlight->SetRadius(value);
+        emit notifyUpdate(m_curlight);
     }
 }

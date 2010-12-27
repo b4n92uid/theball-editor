@@ -30,9 +30,9 @@ public slots:
     void openSceneDialog();
     void openScene(const QString& filename);
 
-    void saveScene();
     void saveSceneDialog();
     void saveScene(const QString& filename);
+    void saveScene();
 
     void updateGui();
 

@@ -20,7 +20,10 @@ int main(int argc, char *argv[])
 
     MainWindow window;
     window.showMaximized();
+
+    #ifdef _DEBUG
     window.openScene("D:\\projets\\cpp\\tbengine\\demo\\bin\\medias\\scene.ballscene");
+    #endif
 
     return app.exec();
 }

@@ -31,8 +31,11 @@ MainWindow::MainWindow()
     connect(m_tbeWidget, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)),
             m_nodsManager, SLOT(meshSelect(tbe::scene::Mesh*)));
 
-    connect(m_nodsManager, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)),
+    connect(m_nodsManager, SIGNAL(notifyMeshNew(tbe::scene::Mesh*)),
             m_tbeWidget, SLOT(meshAdd(tbe::scene::Mesh*)));
+
+    connect(m_nodsManager, SIGNAL(notifyMeshDelete(tbe::scene::Mesh*)),
+            m_tbeWidget, SLOT(meshDelete(tbe::scene::Mesh*)));
 
     connect(m_nodsManager, SIGNAL(notifyMeshClone(tbe::scene::Mesh*)),
             m_tbeWidget, SLOT(meshClone(tbe::scene::Mesh*)));
@@ -52,6 +55,9 @@ MainWindow::MainWindow()
 
     connect(m_nodsManager, SIGNAL(notifyLightClone(tbe::scene::Light*)),
             m_tbeWidget, SLOT(lightClone(tbe::scene::Light*)));
+
+    connect(m_nodsManager, SIGNAL(notifyLightDelete(tbe::scene::Light*)),
+            m_tbeWidget, SLOT(lightDelete(tbe::scene::Light*)));
 
     connect(m_nodsManager, SIGNAL(notifyLightSelect(tbe::scene::Light*)),
             m_tbeWidget, SLOT(lightSelect(tbe::scene::Light*)));

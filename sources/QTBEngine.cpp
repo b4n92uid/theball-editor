@@ -360,6 +360,17 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             }
         }
 
+        if(ev->key() == Qt::Key_Delete)
+        {
+            using namespace tbe::scene;
+
+            if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
+                meshDelete(mesh);
+
+            else if(Light * light = tools::find(m_lights, m_selectedNode))
+                lightDelete(light);
+        }
+
         if(ev->key() == Qt::Key_C)
         {
             using namespace tbe::scene;
@@ -438,8 +449,7 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyMeshAdd(*it);
     }
 
-    m_axe = new Axes(4, 4);
-    m_meshScene->RegisterMesh(m_axe);
+    m_axe = new Axes(m_meshScene,4, 4);
 
     m_lightScene = scenefile.GetLightScene();
 
@@ -451,6 +461,7 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyLightAdd(*it);
     }
 
+    emit notifyInitScenes(&scenefile);
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
     emit notifyInitAmbiant(vec43(m_sceneManager->GetAmbientLight()));
@@ -498,18 +509,31 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 {
     m_selectedNode = mesh;
 
-    m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
-    m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    if(m_selectedNode)
+    {
+        m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
+        m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    }
 }
 
 void QTBEngine::meshAdd(tbe::scene::Mesh* mesh)
 {
-    m_meshScene->RegisterMesh(mesh);
-
     m_meshs.push_back(mesh);
     m_nodes.push_back(mesh);
 
     meshSelect(mesh);
+}
+
+void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
+{
+    tools::erase(m_nodes, mesh);
+    tools::erase(m_meshs, mesh);
+
+    delete mesh;
+
+    meshSelect(NULL);
+
+    emit notifyMeshSelect(NULL);
 }
 
 void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
@@ -525,20 +549,33 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
 void QTBEngine::lightAdd(tbe::scene::Light* light)
 {
-    m_lightScene->Register(light);
-
     m_lights.push_back(light);
     m_nodes.push_back(light);
 
     lightSelect(light);
 }
 
+void QTBEngine::lightDelete(tbe::scene::Light* light)
+{
+    tools::erase(m_nodes, light);
+    tools::erase(m_lights, light);
+
+    delete light;
+
+    lightSelect(NULL);
+
+    emit notifyLightSelect(NULL);
+}
+
 void QTBEngine::lightSelect(tbe::scene::Light* light)
 {
     m_selectedNode = light;
 
-    m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
-    m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    if(m_selectedNode)
+    {
+        m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
+        m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    }
 }
 
 void QTBEngine::lightClone(tbe::scene::Light* light)
