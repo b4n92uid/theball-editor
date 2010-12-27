@@ -42,7 +42,7 @@ public slots:
     void updateList();
 
 signals:
-    void notifyMeshAdd(tbe::scene::Mesh* mesh);
+    void notifyMeshNew(tbe::scene::Mesh* mesh);
     void notifyMeshClone(tbe::scene::Mesh* mesh);
     void notifyMeshSelect(tbe::scene::Mesh* mesh);
     void notifyMeshDelete(tbe::scene::Mesh* mesh);
@@ -122,8 +122,6 @@ private:
 
     QTreeView* m_nodesListView;
     QStandardItemModel* m_nodesListModel;
-
-    tbe::scene::Node* m_selectedNode;
 
     QNodeBinders* m_qnodebind;
 };

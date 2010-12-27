@@ -23,6 +23,8 @@ public:
     void loadScene(const QString& filename);
     void saveScene(const QString& filename);
 
+    void fillTextInfo(QLabel* label);
+
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
@@ -40,16 +42,16 @@ protected:
 
 public slots:
     void meshAdd(tbe::scene::Mesh* mesh);
+    void meshDelete(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh);
     void meshClone(tbe::scene::Mesh* mesh);
 
     void lightAdd(tbe::scene::Light* light);
+    void lightDelete(tbe::scene::Light* mesh);
     void lightSelect(tbe::scene::Light* light);
     void lightClone(tbe::scene::Light* light);
 
     void sceneAmbiant(const tbe::Vector3f& value);
-
-    void fillTextInfo(QLabel* label);
 
     void pauseRendring();
     void resumeRendring();
