@@ -36,6 +36,8 @@ MainWindow::MainWindow()
 
     m_infoText = m_uinterface.infoText;
 
+    nodesGui.attribTab = m_uinterface.attribTab;
+
     // Node --------------------------------------------------------------------
 
     m_qnodebind = new QNodeBinders(this);
@@ -234,22 +236,26 @@ void MainWindow::guiSelect(const QModelIndex& index)
         {
             Mesh* mesh = item->data().value<Mesh*>();
             meshSelect(mesh, false);
+            nodesGui.attribTab->setCurrentIndex(1);
         }
             break;
         case IsParticles:
         {
             // ParticlesEmiter* pemiter = item->data().value<ParticlesEmiter*>();
+            nodesGui.attribTab->setCurrentIndex(3);
         }
             break;
         case IsWater:
         {
             // Water* water = item->data().value<Water*>();
+            nodesGui.attribTab->setCurrentIndex(2);
         }
             break;
         case IsLight:
         {
             Light* light = item->data().value<Light*>();
             lightSelect(light, false);
+            nodesGui.attribTab->setCurrentIndex(0);
         }
             break;
     }
@@ -356,6 +362,8 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
     }
 
     m_tbeWidget->meshSelect(mesh);
+
+    nodesGui.attribTab->setCurrentIndex(1);
 }
 
 void MainWindow::guiLightNew()
@@ -437,6 +445,10 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
         QStandardItem* item = light->GetUserData().GetValue<QStandardItem*> ();
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
+
+    m_tbeWidget->lightSelect(light);
+
+    nodesGui.attribTab->setCurrentIndex(0);
 }
 
 void MainWindow::updateList()
