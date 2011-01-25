@@ -79,6 +79,7 @@ private:
     tbe::Device* m_device;
     tbe::EventManager* m_eventManager;
 
+    tbe::scene::Node* m_rootNode;
     tbe::scene::SceneManager* m_sceneManager;
     tbe::scene::SkyBox* m_skybox;
     tbe::scene::Fog* m_fog;

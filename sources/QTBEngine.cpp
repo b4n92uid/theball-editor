@@ -563,6 +563,8 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
     Mesh* newmesh = new Mesh(*mesh);
 
+    mesh->GetParent()->AddChild(newmesh);
+
     meshAdd(newmesh);
 
     emit notifyMeshAdd(newmesh);
@@ -609,6 +611,8 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
     using namespace tbe::scene;
 
     Light* newlight = new Light(*light);
+
+    light->GetParent()->AddChild(newlight);
 
     lightAdd(newlight);
 
