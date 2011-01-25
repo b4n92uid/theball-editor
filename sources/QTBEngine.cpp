@@ -8,6 +8,8 @@
 #include "QTBEngine.h"
 #include "Tools.h"
 
+#include <QDebug>
+
 using namespace tbe;
 
 inline void translate(int& c)
@@ -207,7 +209,7 @@ struct SelectionSort
 
     bool operator()(const tbe::scene::Node* node1, const tbe::scene::Node * node2)
     {
-        if(node1->HasParent())
+        if(!node1->GetParent()->IsRoot())
             return false;
         else if(type == 1)
             return (node1->GetPos() - cameraPos) < (node2->GetPos() - cameraPos);
@@ -343,7 +345,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     else
     {
-        if(ev->key() == Qt::Key_P && m_selectedNode->HasParent())
+        if(ev->key() == Qt::Key_P && !m_selectedNode->GetParent()->IsRoot())
         {
             using namespace tbe::scene;
 
@@ -449,7 +451,9 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyMeshAdd(*it);
     }
 
-    m_axe = new Axes(m_meshScene,4, 4);
+
+    m_axe = new Axes(m_meshScene, 4, 4);
+    m_sceneManager->GetRootNode()->AddChild(m_axe);
 
     m_lightScene = scenefile.GetLightScene();
 
@@ -461,10 +465,11 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyLightAdd(*it);
     }
 
-    emit notifyInitScenes(&scenefile);
+
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
     emit notifyInitAmbiant(vec43(m_sceneManager->GetAmbientLight()));
+
 }
 
 void QTBEngine::fillTextInfo(QLabel* label)
@@ -482,7 +487,7 @@ void QTBEngine::fillTextInfo(QLabel* label)
         text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
 
 
-        if(m_selectedNode->HasParent())
+        if(!m_selectedNode->GetParent()->IsRoot())
         {
             using namespace tbe::scene;
 
@@ -503,6 +508,22 @@ void QTBEngine::fillTextInfo(QLabel* label)
     }
 
     label->setText(text);
+}
+
+tbe::scene::Mesh* QTBEngine::meshNew(const QString& filename)
+{
+    using namespace tbe;
+    using namespace scene;
+
+    Mesh* mesh = NULL;
+
+    if(filename.endsWith("ball3d"))
+        mesh = new Ball3DMesh(m_meshScene, filename.toStdString());
+
+    else if(filename.endsWith("obj"))
+        mesh = new OBJMesh(m_meshScene, filename.toStdString());
+
+    return mesh;
 }
 
 void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
@@ -545,6 +566,11 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
     meshAdd(newmesh);
 
     emit notifyMeshAdd(newmesh);
+}
+
+tbe::scene::Light* QTBEngine::lightNew()
+{
+    return new scene::Light(m_lightScene);
 }
 
 void QTBEngine::lightAdd(tbe::scene::Light* light)
