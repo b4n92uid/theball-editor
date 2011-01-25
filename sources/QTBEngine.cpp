@@ -72,6 +72,8 @@ void QTBEngine::initializeGL()
     m_sceneManager->AddCamera(m_ffcamera);
     m_sceneManager->AddCamera(m_orbcamera);
 
+    m_rootNode = m_sceneManager->GetRootNode();
+
     m_camera = m_orbcamera;
 
     m_updateTimer = new QTimer(this);
@@ -523,6 +525,8 @@ tbe::scene::Mesh* QTBEngine::meshNew(const QString& filename)
     else if(filename.endsWith("obj"))
         mesh = new OBJMesh(m_meshScene, filename.toStdString());
 
+    m_rootNode->AddChild(mesh);
+
     return mesh;
 }
 
@@ -572,7 +576,10 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
 tbe::scene::Light* QTBEngine::lightNew()
 {
-    return new scene::Light(m_lightScene);
+    scene::Light* light = new scene::Light(m_lightScene);
+    m_rootNode->AddChild(light);
+
+    return light;
 }
 
 void QTBEngine::lightAdd(tbe::scene::Light* light)
