@@ -132,6 +132,8 @@ private:
         QLineEdit* name;
         QVectorBox* pos;
 
+        QTabWidget* attribTab;
+
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
 
