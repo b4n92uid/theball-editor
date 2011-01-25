@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfacePA3508.ui'
+** Form generated from reading UI file 'interfaceHH3328.ui'
 **
-** Created: Sat 18. Dec 22:49:11 2010
+** Created: Tue 25. Jan 21:54:51 2011
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEPA3508_H
-#define INTERFACEPA3508_H
+#ifndef INTERFACEHH3328_H
+#define INTERFACEHH3328_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -64,7 +64,7 @@ public:
     QDoubleSpinBox *node_pos_x;
     QDoubleSpinBox *node_pos_y;
     QDoubleSpinBox *node_pos_z;
-    QTabWidget *tabWidget_2;
+    QTabWidget *attribTab;
     QWidget *tab_2;
     QVBoxLayout *verticalLayout_5;
     QWidget *widget_4;
@@ -305,8 +305,8 @@ public:
 
         verticalLayout_3->addWidget(groupBox);
 
-        tabWidget_2 = new QTabWidget(tab);
-        tabWidget_2->setObjectName(QString::fromUtf8("tabWidget_2"));
+        attribTab = new QTabWidget(tab);
+        attribTab->setObjectName(QString::fromUtf8("attribTab"));
         tab_2 = new QWidget();
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         verticalLayout_5 = new QVBoxLayout(tab_2);
@@ -448,7 +448,7 @@ public:
 
         verticalLayout_5->addLayout(horizontalLayout_26);
 
-        tabWidget_2->addTab(tab_2, QString());
+        attribTab->addTab(tab_2, QString());
         tab_4 = new QWidget();
         tab_4->setObjectName(QString::fromUtf8("tab_4"));
         verticalLayout_10 = new QVBoxLayout(tab_4);
@@ -480,7 +480,7 @@ public:
 
         verticalLayout_10->addLayout(horizontalLayout_18);
 
-        tabWidget_2->addTab(tab_4, QString());
+        attribTab->addTab(tab_4, QString());
         tab_5 = new QWidget();
         tab_5->setObjectName(QString::fromUtf8("tab_5"));
         verticalLayout_6 = new QVBoxLayout(tab_5);
@@ -593,7 +593,7 @@ public:
 
         verticalLayout_6->addLayout(horizontalLayout_24);
 
-        tabWidget_2->addTab(tab_5, QString());
+        attribTab->addTab(tab_5, QString());
         tab_6 = new QWidget();
         tab_6->setObjectName(QString::fromUtf8("tab_6"));
         verticalLayout_4 = new QVBoxLayout(tab_6);
@@ -752,9 +752,9 @@ public:
 
         verticalLayout_4->addLayout(horizontalLayout_25);
 
-        tabWidget_2->addTab(tab_6, QString());
+        attribTab->addTab(tab_6, QString());
 
-        verticalLayout_3->addWidget(tabWidget_2);
+        verticalLayout_3->addWidget(attribTab);
 
         node_list = new QTreeView(tab);
         node_list->setObjectName(QString::fromUtf8("node_list"));
@@ -1059,7 +1059,7 @@ public:
         retranslateUi(mainWindow);
 
         tabWidget->setCurrentIndex(0);
-        tabWidget_2->setCurrentIndex(0);
+        attribTab->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(mainWindow);
@@ -1090,11 +1090,11 @@ public:
         node_light_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
         node_light_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_light_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_2), QApplication::translate("mainWindow", "Lumier", 0, QApplication::UnicodeUTF8));
+        attribTab->setTabText(attribTab->indexOf(tab_2), QApplication::translate("mainWindow", "Lumier", 0, QApplication::UnicodeUTF8));
         node_mesh_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
         node_mesh_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_mesh_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_4), QApplication::translate("mainWindow", "Mesh", 0, QApplication::UnicodeUTF8));
+        attribTab->setTabText(attribTab->indexOf(tab_4), QApplication::translate("mainWindow", "Mesh", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("mainWindow", "Deform", 0, QApplication::UnicodeUTF8));
         label_18->setText(QApplication::translate("mainWindow", "Size", 0, QApplication::UnicodeUTF8));
         label_17->setText(QApplication::translate("mainWindow", "Uv repeat", 0, QApplication::UnicodeUTF8));
@@ -1103,7 +1103,7 @@ public:
         node_water_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
         node_water_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_water_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_5), QApplication::translate("mainWindow", "Water", 0, QApplication::UnicodeUTF8));
+        attribTab->setTabText(attribTab->indexOf(tab_5), QApplication::translate("mainWindow", "Water", 0, QApplication::UnicodeUTF8));
         label_20->setText(QApplication::translate("mainWindow", "Gravity", 0, QApplication::UnicodeUTF8));
         label_21->setText(QApplication::translate("mainWindow", "FreeMove", 0, QApplication::UnicodeUTF8));
         label_23->setText(QApplication::translate("mainWindow", "LifeInit", 0, QApplication::UnicodeUTF8));
@@ -1116,7 +1116,7 @@ public:
         node_particles_add->setText(QApplication::translate("mainWindow", "Ajouter", 0, QApplication::UnicodeUTF8));
         node_particles_clone->setText(QApplication::translate("mainWindow", "Cloner", 0, QApplication::UnicodeUTF8));
         node_particles_del->setText(QApplication::translate("mainWindow", "Effacer", 0, QApplication::UnicodeUTF8));
-        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_6), QApplication::translate("mainWindow", "Particles", 0, QApplication::UnicodeUTF8));
+        attribTab->setTabText(attribTab->indexOf(tab_6), QApplication::translate("mainWindow", "Particles", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("mainWindow", "Noeuds", 0, QApplication::UnicodeUTF8));
         groupBox_6->setTitle(QApplication::translate("mainWindow", "Ambient de la scene", 0, QApplication::UnicodeUTF8));
         skybox_enable->setTitle(QApplication::translate("mainWindow", "Skybox", 0, QApplication::UnicodeUTF8));
@@ -1149,4 +1149,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEPA3508_H
+#endif // INTERFACEHH3328_H
