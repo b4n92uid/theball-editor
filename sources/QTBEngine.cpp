@@ -264,7 +264,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         foreach(Mesh* node, m_meshs)
         {
-            if(node->GetAbsolutAabb().Add(0.5).IsInner(m_curCursor3D))
+            if(node->GetAbsolutAabb().Add(Vector3f(0.5f)).IsInner(m_curCursor3D))
             {
                 meshSelect(node);
                 emit notifyMeshSelect(node);

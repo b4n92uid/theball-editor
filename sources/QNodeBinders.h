@@ -27,8 +27,8 @@ public:
     void setCurmesh(tbe::scene::Mesh* curmesh);
     tbe::scene::Mesh* getCurmesh() const;
 
-    void setCurparticles(tbe::scene::ParticlesEmiter* curparticles);
-    tbe::scene::ParticlesEmiter* getCurparticles() const;
+    void setCurparticles(tbe::scene::BurningEmitter* curparticles);
+    tbe::scene::BurningEmitter* getCurparticles() const;
 
     void setCurwater(tbe::scene::Water* curwater);
     tbe::scene::Water* getCurwater() const;
@@ -37,7 +37,7 @@ signals:
     void notifyUpdate(tbe::scene::Node*);
     void notifyUpdate(tbe::scene::Light*);
     void notifyUpdate(tbe::scene::Mesh*);
-    void notifyUpdate(tbe::scene::ParticlesEmiter*);
+    void notifyUpdate(tbe::scene::BurningEmitter*);
     void notifyUpdate(tbe::scene::Water*);
 
 public slots:
@@ -69,7 +69,7 @@ public slots:
 private:
     tbe::scene::Node* m_curNode;
     tbe::scene::Mesh* m_curmesh;
-    tbe::scene::ParticlesEmiter* m_curparticles;
+    tbe::scene::BurningEmitter* m_curparticles;
     tbe::scene::Light* m_curlight;
     tbe::scene::Water* m_curwater;
 };

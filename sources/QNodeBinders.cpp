@@ -73,7 +73,7 @@ tbe::scene::Water* QNodeBinders::getCurwater() const
     return m_curwater;
 }
 
-void QNodeBinders::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
+void QNodeBinders::setCurparticles(tbe::scene::BurningEmitter* curparticles)
 {
     m_curNode = m_curparticles = curparticles;
     m_curmesh = NULL;
@@ -83,7 +83,7 @@ void QNodeBinders::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
     emit notifyUpdate(m_curparticles);
 }
 
-tbe::scene::ParticlesEmiter* QNodeBinders::getCurparticles() const
+tbe::scene::BurningEmitter* QNodeBinders::getCurparticles() const
 {
     return m_curparticles;
 }
@@ -263,7 +263,7 @@ void QNodeBinders::lightSetRadius(double value)
 {
     if(m_curlight)
     {
-        m_curlight->SetRadius(value);
+        m_curlight->SetRadius((float)value);
         emit notifyUpdate(m_curlight);
     }
 }
