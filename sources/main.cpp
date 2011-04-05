@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     window.showMaximized();
 
     #ifdef _DEBUG
-    window.openScene("D:\\projets\\cpp\\tbengine\\demo\\bin\\medias\\landscape.scene");
+    window.openScene("D:\\projets\\cpp\\tbengine\\demos\\bin\\medias\\landscape.scene");
     #endif
 
     return app.exec();

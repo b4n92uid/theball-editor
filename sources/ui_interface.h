@@ -1,14 +1,14 @@
 /********************************************************************************
-** Form generated from reading UI file 'interfaceHH3328.ui'
+** Form generated from reading UI file 'interface.ui'
 **
-** Created: Tue 25. Jan 21:54:51 2011
+** Created: Mon 4. Apr 23:55:53 2011
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef INTERFACEHH3328_H
-#define INTERFACEHH3328_H
+#ifndef UI_INTERFACE_H
+#define UI_INTERFACE_H
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -1149,4 +1149,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // INTERFACEHH3328_H
+#endif // UI_INTERFACE_H

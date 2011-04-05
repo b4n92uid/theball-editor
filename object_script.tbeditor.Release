@@ -1,0 +1,16 @@
+INPUT(
+./build/release/MainWindow.o
+./build/release/QVectorBox.o
+./build/release/QVector2Box.o
+./build/release/QTBEngine.o
+./build/release/QNodeBinders.o
+./build/release/QBrowsEdit.o
+./build/release/main.o
+./build/release/moc_MainWindow.o
+./build/release/moc_QVectorBox.o
+./build/release/moc_QVector2Box.o
+./build/release/moc_QTBEngine.o
+./build/release/moc_QNodeBinders.o
+./build/release/moc_QBrowsEdit.o
+./build/release/qrc_ressource.o
+);

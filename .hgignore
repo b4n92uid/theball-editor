@@ -1,11 +1,3 @@
-#### DIRS
 build
-dist
-nbproject
-
-#### FILES
-Makefile
-.dep.inc
-tbeditor_resource.rc
-object_script.tbeditor
-release.lnk
+debug
+release
