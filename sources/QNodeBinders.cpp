@@ -92,7 +92,7 @@ void QNodeBinders::nodeSetName(const QString& s)
 {
     if(m_curNode)
     {
-        m_curNode->SetName(s.toStdString());
+        m_curNode->setName(s.toStdString());
         emit notifyUpdate(m_curNode);
     }
 }
@@ -101,7 +101,7 @@ void QNodeBinders::nodeSetPos(const tbe::Vector3f& v)
 {
     if(m_curNode)
     {
-        m_curNode->SetPos(v);
+        m_curNode->setPos(v);
         emit notifyUpdate(m_curNode);
     }
 }
@@ -110,7 +110,7 @@ void QNodeBinders::nodeSetMatrix(const tbe::Matrix4f& m)
 {
     if(m_curNode)
     {
-        m_curNode->SetMatrix(m);
+        m_curNode->setMatrix(m);
         emit notifyUpdate(m_curNode);
     }
 }
@@ -119,7 +119,7 @@ void QNodeBinders::waterSetDeform(double v)
 {
     if(m_curwater)
     {
-        m_curwater->SetDeform(v);
+        m_curwater->setDeform(v);
         emit notifyUpdate(m_curwater);
     }
 }
@@ -128,7 +128,7 @@ void QNodeBinders::waterSetSize(const tbe::Vector2f& v)
 {
     if(m_curwater)
     {
-        m_curwater->SetSize(v);
+        m_curwater->setSize(v);
         emit notifyUpdate(m_curwater);
     }
 }
@@ -137,7 +137,7 @@ void QNodeBinders::waterSetUvRepeat(const tbe::Vector2f& v)
 {
     if(m_curwater)
     {
-        m_curwater->SetUvRepeat(v);
+        m_curwater->setUvRepeat(v);
         emit notifyUpdate(m_curwater);
     }
 }
@@ -146,7 +146,7 @@ void QNodeBinders::waterSetSpeed(double v)
 {
     if(m_curwater)
     {
-        m_curwater->SetSpeed(v);
+        m_curwater->setSpeed(v);
         emit notifyUpdate(m_curwater);
     }
 }
@@ -155,7 +155,7 @@ void QNodeBinders::waterSetBlend(double v)
 {
     if(m_curwater)
     {
-        m_curwater->SetBlend(v);
+        m_curwater->setBlend(v);
         emit notifyUpdate(m_curwater);
     }
 }
@@ -164,7 +164,7 @@ void QNodeBinders::particleSetGravity(const tbe::Vector3f& v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetGravity(v);
+        m_curparticles->setGravity(v);
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -173,7 +173,7 @@ void QNodeBinders::particleSetFreemove(double v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetFreeMove(v);
+        m_curparticles->setFreeMove(v);
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -182,7 +182,7 @@ void QNodeBinders::particleSetLifeinit(double v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetLifeInit(v);
+        m_curparticles->setLifeInit(v);
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -191,7 +191,7 @@ void QNodeBinders::particleSetLifedown(double v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetLifeDown(v);
+        m_curparticles->setLifeDown(v);
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -200,7 +200,7 @@ void QNodeBinders::particleSetNumber(int v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetNumber(v);
+        m_curparticles->setNumber(v);
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -209,7 +209,7 @@ void QNodeBinders::particleSetTexture(const QString& v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetTexture(v.toStdString());
+        m_curparticles->setTexture(v.toStdString());
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -218,7 +218,7 @@ void QNodeBinders::particleSetContinousMode(int v)
 {
     if(m_curparticles)
     {
-        m_curparticles->SetContinousMode(v);
+        m_curparticles->setContinousMode(v);
         emit notifyUpdate(m_curparticles);
     }
 }
@@ -227,7 +227,7 @@ void QNodeBinders::lightSetType(int type)
 {
     if(m_curlight)
     {
-        m_curlight->SetType((tbe::scene::Light::Type)type);
+        m_curlight->setType((tbe::scene::Light::Type)type);
         emit notifyUpdate(m_curlight);
     }
 }
@@ -236,7 +236,7 @@ void QNodeBinders::lightSetAmbiant(const tbe::Vector3f& value)
 {
     if(m_curlight)
     {
-        m_curlight->SetAmbient(vec34(value));
+        m_curlight->setAmbient(vec34(value));
         emit notifyUpdate(m_curlight);
     }
 }
@@ -245,7 +245,7 @@ void QNodeBinders::lightSetDiffuse(const tbe::Vector3f& value)
 {
     if(m_curlight)
     {
-        m_curlight->SetDiffuse(vec34(value));
+        m_curlight->setDiffuse(vec34(value));
         emit notifyUpdate(m_curlight);
     }
 }
@@ -254,7 +254,7 @@ void QNodeBinders::lightSetSpecular(const tbe::Vector3f& value)
 {
     if(m_curlight)
     {
-        m_curlight->SetSpecular(vec34(value));
+        m_curlight->setSpecular(vec34(value));
         emit notifyUpdate(m_curlight);
     }
 }
@@ -263,7 +263,7 @@ void QNodeBinders::lightSetRadius(double value)
 {
     if(m_curlight)
     {
-        m_curlight->SetRadius((float)value);
+        m_curlight->setRadius((float)value);
         emit notifyUpdate(m_curlight);
     }
 }

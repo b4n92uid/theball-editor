@@ -56,23 +56,23 @@ QTBEngine::~QTBEngine()
 void QTBEngine::initializeGL()
 {
     m_device = new Device;
-    m_device->Init();
+    m_device->init();
 
-    m_sceneManager = m_device->GetSceneManager();
-    m_eventManager = m_device->GetEventManager();
+    m_sceneManager = m_device->getSceneManager();
+    m_eventManager = m_device->getEventManager();
 
-    m_fog = m_sceneManager->GetFog();
-    m_skybox = m_sceneManager->GetSkybox();
+    m_fog = m_sceneManager->getFog();
+    m_skybox = m_sceneManager->getSkybox();
 
     using namespace scene;
 
     m_ffcamera = new FreeFlyCamera;
     m_orbcamera = new OrbitalCamera;
 
-    m_sceneManager->AddCamera(m_ffcamera);
-    m_sceneManager->AddCamera(m_orbcamera);
+    m_sceneManager->addCamera(m_ffcamera);
+    m_sceneManager->addCamera(m_orbcamera);
 
-    m_rootNode = m_sceneManager->GetRootNode();
+    m_rootNode = m_sceneManager->getRootNode();
 
     m_camera = m_orbcamera;
 
@@ -93,7 +93,7 @@ void QTBEngine::resumeRendring()
 
 void QTBEngine::resizeGL(int w, int h)
 {
-    m_device->SetViewportSize(Vector2i(w, h));
+    m_device->setViewportSize(Vector2i(w, h));
 }
 
 void QTBEngine::moveApply()
@@ -106,8 +106,8 @@ void QTBEngine::moveApply()
     if(!m_eventManager->keyState[EventManager::KEY_LSHIFT])
         return;
 
-    Vector3f pos = m_selectedNode->GetPos();
-    Matrix4f matrix = m_selectedNode->GetMatrix();
+    Vector3f pos = m_selectedNode->getPos();
+    Matrix4f matrix = m_selectedNode->getMatrix();
 
     // Rotation ----------------------------------------------------------------
 
@@ -116,22 +116,22 @@ void QTBEngine::moveApply()
     if(m_eventManager->notify == EventManager::EVENT_KEY_DOWN)
     {
         if(m_eventManager->keyState['a'])
-            matrix.SetRotateX(-rotateSpeed);
+            matrix.setRotateX(-rotateSpeed);
 
         if(m_eventManager->keyState['z'])
-            matrix.SetRotateX(rotateSpeed);
+            matrix.setRotateX(rotateSpeed);
 
         if(m_eventManager->keyState['q'])
-            matrix.SetRotateY(-rotateSpeed);
+            matrix.setRotateY(-rotateSpeed);
 
         if(m_eventManager->keyState['s'])
-            matrix.SetRotateY(rotateSpeed);
+            matrix.setRotateY(rotateSpeed);
 
         if(m_eventManager->keyState['w'])
-            matrix.SetRotateZ(-rotateSpeed);
+            matrix.setRotateZ(-rotateSpeed);
 
         if(m_eventManager->keyState['x'])
-            matrix.SetRotateZ(rotateSpeed);
+            matrix.setRotateZ(rotateSpeed);
     }
 
     // In the gride ------------------------------------------------------------
@@ -139,11 +139,11 @@ void QTBEngine::moveApply()
     if(m_eventManager->keyState['g'])
         tools::round(pos, Vector3f(1));
 
-    matrix.SetPos(pos);
+    matrix.setPos(pos);
 
-    m_selectedNode->SetMatrix(matrix);
+    m_selectedNode->setMatrix(matrix);
 
-    m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+    m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
 
     // Movement ----------------------------------------------------------------
 
@@ -153,13 +153,13 @@ void QTBEngine::moveApply()
 
         Vector2f mousePosRel = m_eventManager->mousePosRel;
 
-        Vector3f target = m_camera->GetTarget();
+        Vector3f target = m_camera->getTarget();
         target.y = 0;
-        target.Normalize();
+        target.normalize();
 
-        Vector3f left = m_camera->GetLeft();
+        Vector3f left = m_camera->getLeft();
         left.y = 0;
-        left.Normalize();
+        left.normalize();
 
         Vector3f transform;
 
@@ -174,14 +174,14 @@ void QTBEngine::moveApply()
             transform.y = 0;
         }
 
-        transform += m_selectedNode->GetPos();
+        transform += m_selectedNode->getPos();
 
-        m_selectedNode->SetPos(transform);
+        m_selectedNode->setPos(transform);
 
-        Vector3f abs = m_selectedNode->GetAbsoluteMatrix().GetPos();
+        Vector3f abs = m_selectedNode->getAbsoluteMatrix().getPos();
 
-        m_axe->SetPos(abs);
-        m_orbcamera->SetCenter(abs);
+        m_axe->setPos(abs);
+        m_orbcamera->setCenter(abs);
 
     }
 
@@ -198,10 +198,10 @@ void QTBEngine::paintGL()
 {
     moveApply();
 
-    m_device->BeginScene();
-    m_sceneManager->Render();
-    m_curCursor3D = m_sceneManager->ScreenToWorld(m_curCursorPos);
-    m_device->EndScene();
+    m_device->beginScene();
+    m_sceneManager->render();
+    m_curCursor3D = m_sceneManager->screenToWorld(m_curCursorPos);
+    m_device->endScene();
 }
 
 struct SelectionSort
@@ -211,12 +211,12 @@ struct SelectionSort
 
     bool operator()(const tbe::scene::Node* node1, const tbe::scene::Node * node2)
     {
-        if(!node1->GetParent()->IsRoot())
+        if(!node1->getParent()->isRoot())
             return false;
         else if(type == 1)
-            return (node1->GetPos() - cameraPos) < (node2->GetPos() - cameraPos);
+            return (node1->getPos() - cameraPos) < (node2->getPos() - cameraPos);
         else if(type == 2)
-            return node1->GetAabb().GetSize() < node2->GetAabb().GetSize();
+            return node1->getAabb().getSize() < node2->getAabb().getSize();
         else
             return false;
     }
@@ -240,8 +240,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
-        m_axe->SetPos(m_curCursor3D);
-        m_orbcamera->SetCenter(m_curCursor3D);
+        m_axe->setPos(m_curCursor3D);
+        m_orbcamera->setCenter(m_curCursor3D);
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -254,7 +254,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         m_selectedNode = NULL;
 
         SelectionSort sortfunc;
-        sortfunc.cameraPos = m_camera->GetPos();
+        sortfunc.cameraPos = m_camera->getPos();
 
         sortfunc.type = 1;
         std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
@@ -264,7 +264,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         foreach(Mesh* node, m_meshs)
         {
-            if(node->GetAbsolutAabb().Add(Vector3f(0.5f)).IsInner(m_curCursor3D))
+            if(node->getAbsolutAabb().add(Vector3f(0.5f)).isInner(m_curCursor3D))
             {
                 meshSelect(node);
                 emit notifyMeshSelect(node);
@@ -304,7 +304,7 @@ void QTBEngine::wheelEvent(QWheelEvent* ev)
     else
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_DOWN] = 1;
 
-    m_camera->OnEvent(m_eventManager);
+    m_camera->onEvent(m_eventManager);
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 
@@ -327,7 +327,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     if(m_grabCamera)
     {
-        m_camera->OnEvent(m_eventManager);
+        m_camera->onEvent(m_eventManager);
     }
 
     if(m_eventManager->keyState[EventManager::KEY_LSHIFT])
@@ -347,17 +347,17 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     else
     {
-        if(ev->key() == Qt::Key_P && !m_selectedNode->GetParent()->IsRoot())
+        if(ev->key() == Qt::Key_P && !m_selectedNode->getParent()->isRoot())
         {
             using namespace tbe::scene;
 
-            if(Mesh * mesh = tools::find(m_meshs, m_selectedNode->GetParent()))
+            if(Mesh * mesh = tools::find(m_meshs, m_selectedNode->getParent()))
             {
                 meshSelect(mesh);
                 emit notifyMeshSelect(mesh);
             }
 
-            else if(Light * light = tools::find(m_lights, m_selectedNode->GetParent()))
+            else if(Light * light = tools::find(m_lights, m_selectedNode->getParent()))
             {
                 lightSelect(light);
                 emit notifyLightSelect(light);
@@ -388,23 +388,23 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_F)
         {
-            m_meshScene->SetInFloor(m_selectedNode);
+            m_meshScene->setInFloor(m_selectedNode);
         }
 
         if(ev->key() == Qt::Key_E)
         {
-            m_meshScene->SetInFloor(m_selectedNode);
+            m_meshScene->setInFloor(m_selectedNode);
 
-            Vector3f adjust = m_selectedNode->GetPos();
-            adjust.y += -m_selectedNode->GetAabb().min.y;
+            Vector3f adjust = m_selectedNode->getPos();
+            adjust.y += -m_selectedNode->getAabb().min.y;
 
-            m_selectedNode->SetPos(adjust);
+            m_selectedNode->setPos(adjust);
         }
 
         else if(ev->key() == Qt::Key_V)
         {
             swapcontainer(m_camera, m_ffcamera, m_orbcamera);
-            m_sceneManager->SetCurCamera(m_camera);
+            m_sceneManager->setCurCamera(m_camera);
         }
     }
 
@@ -435,17 +435,17 @@ void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
-    m_sceneManager->ClearParallelScenes();
+    m_sceneManager->clearParallelScenes();
 
-    m_fog->Clear();
-    m_skybox->Clear();
+    m_fog->clear();
+    m_skybox->clear();
 
     SceneParser scenefile(m_sceneManager);
-    scenefile.LoadScene(filename.toStdString());
+    scenefile.loadScene(filename.toStdString());
 
-    m_meshScene = scenefile.GetMeshScene();
+    m_meshScene = scenefile.getMeshScene();
 
-    for(Iterator<Mesh*> it = m_meshScene->GetIterator(); it; it++)
+    for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
         m_meshs.push_back(*it);
         m_nodes.push_back(*it);
@@ -455,11 +455,11 @@ void QTBEngine::loadScene(const QString& filename)
 
 
     m_axe = new Axes(m_meshScene, 4, 4);
-    m_sceneManager->GetRootNode()->AddChild(m_axe);
+    m_sceneManager->getRootNode()->addChild(m_axe);
 
-    m_lightScene = scenefile.GetLightScene();
+    m_lightScene = scenefile.getLightScene();
 
-    for(Iterator<Light*> it = m_lightScene->GetIterator(); it; it++)
+    for(Iterator<Light*> it = m_lightScene->iterator(); it; it++)
     {
         m_lights.push_back(*it);
         m_nodes.push_back(*it);
@@ -470,7 +470,7 @@ void QTBEngine::loadScene(const QString& filename)
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
-    emit notifyInitAmbiant(vec43(m_sceneManager->GetAmbientLight()));
+    emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 
 }
 
@@ -482,21 +482,21 @@ void QTBEngine::fillTextInfo(QLabel* label)
 
     if(m_selectedNode)
     {
-        QString name = m_selectedNode->GetName().c_str();
-        tbe::Vector3f pos = m_selectedNode->GetPos();
+        QString name = m_selectedNode->getName().c_str();
+        tbe::Vector3f pos = m_selectedNode->getPos();
 
         text += QString("Node: %1\n").arg(name);
         text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
 
 
-        if(!m_selectedNode->GetParent()->IsRoot())
+        if(!m_selectedNode->getParent()->isRoot())
         {
             using namespace tbe::scene;
 
-            Node* parent = m_selectedNode->GetParent();
+            Node* parent = m_selectedNode->getParent();
 
-            QString name = parent->GetName().c_str();
-            tbe::Vector3f pos = parent->GetPos();
+            QString name = parent->getName().c_str();
+            tbe::Vector3f pos = parent->getPos();
 
             text += "\n\n";
             text += QString("Parent: %1\n").arg(name);
@@ -525,7 +525,7 @@ tbe::scene::Mesh* QTBEngine::meshNew(const QString& filename)
     else if(filename.endsWith("obj"))
         mesh = new OBJMesh(m_meshScene, filename.toStdString());
 
-    m_rootNode->AddChild(mesh);
+    m_rootNode->addChild(mesh);
 
     return mesh;
 }
@@ -536,8 +536,8 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 
     if(m_selectedNode)
     {
-        m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
-        m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+        m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
     }
 }
 
@@ -567,7 +567,7 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
     Mesh* newmesh = new Mesh(*mesh);
 
-    mesh->GetParent()->AddChild(newmesh);
+    mesh->getParent()->addChild(newmesh);
 
     meshAdd(newmesh);
 
@@ -577,7 +577,7 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 tbe::scene::Light* QTBEngine::lightNew()
 {
     scene::Light* light = new scene::Light(m_lightScene);
-    m_rootNode->AddChild(light);
+    m_rootNode->addChild(light);
 
     return light;
 }
@@ -608,8 +608,8 @@ void QTBEngine::lightSelect(tbe::scene::Light* light)
 
     if(m_selectedNode)
     {
-        m_orbcamera->SetCenter(m_selectedNode->GetAbsoluteMatrix().GetPos());
-        m_axe->SetPos(m_selectedNode->GetAbsoluteMatrix().GetPos());
+        m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
     }
 }
 
@@ -619,7 +619,7 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
 
     Light* newlight = new Light(*light);
 
-    light->GetParent()->AddChild(newlight);
+    light->getParent()->addChild(newlight);
 
     lightAdd(newlight);
 
@@ -633,31 +633,31 @@ void QTBEngine::skyboxApply(const QStringList& texs)
     for(unsigned i = 0; i < 6; i++)
         skytex[i] = texs[i].toStdString();
 
-    m_skybox->SetTextures(skytex);
+    m_skybox->setTextures(skytex);
 
-    m_skybox->SetEnable(true);
+    m_skybox->setEnable(true);
 }
 
 void QTBEngine::skyboxClear()
 {
-    m_skybox->Clear();
+    m_skybox->clear();
 }
 
 void QTBEngine::fogApply(tbe::Vector4f color, float start, float end)
 {
-    m_fog->SetColor(color);
-    m_fog->SetStart(start);
-    m_fog->SetEnd(end);
+    m_fog->setColor(color);
+    m_fog->setStart(start);
+    m_fog->setEnd(end);
 
-    m_fog->SetEnable(true);
+    m_fog->setEnable(true);
 }
 
 void QTBEngine::fogClear()
 {
-    m_fog->Clear();
+    m_fog->clear();
 }
 
 void QTBEngine::sceneAmbiant(const tbe::Vector3f& value)
 {
-    m_sceneManager->SetAmbientLight(vec34(value));
+    m_sceneManager->setAmbientLight(vec34(value));
 }
