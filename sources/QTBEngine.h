@@ -42,16 +42,25 @@ protected:
 
 public slots:
     tbe::scene::Mesh* meshNew(const QString& filename);
+
     void meshAdd(tbe::scene::Mesh* mesh);
     void meshDelete(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh);
     void meshClone(tbe::scene::Mesh* mesh);
 
-    tbe::scene::Light*lightNew();
+    tbe::scene::Light* lightNew();
+
     void lightAdd(tbe::scene::Light* light);
-    void lightDelete(tbe::scene::Light* mesh);
+    void lightDelete(tbe::scene::Light* light);
     void lightSelect(tbe::scene::Light* light);
     void lightClone(tbe::scene::Light* light);
+
+    tbe::scene::ParticlesEmiter* particlesNew();
+
+    void particlesAdd(tbe::scene::ParticlesEmiter* particles);
+    void particlesDelete(tbe::scene::ParticlesEmiter* particles);
+    void particlesSelect(tbe::scene::ParticlesEmiter* particles);
+    void particlesClone(tbe::scene::ParticlesEmiter* particles);
 
     void sceneAmbiant(const tbe::Vector3f& value);
 
@@ -70,6 +79,9 @@ signals:
 
     void notifyLightAdd(tbe::scene::Light*);
     void notifyLightSelect(tbe::scene::Light*);
+
+    void notifyParticlesAdd(tbe::scene::ParticlesEmiter*);
+    void notifyParticlesSelect(tbe::scene::ParticlesEmiter*);
 
     void notifyInitAmbiant(const tbe::Vector3f&);
     void notifyInitFog(tbe::scene::Fog*);
@@ -106,8 +118,8 @@ private:
 
     tbe::scene::Node::Array m_nodes;
     tbe::scene::Mesh::Array m_meshs;
-
     tbe::scene::Light::Array m_lights;
+    tbe::scene::ParticlesEmiter::Array m_particles;
 };
 
 #endif	/* QTBENGINE_H */

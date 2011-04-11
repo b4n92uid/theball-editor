@@ -429,6 +429,10 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
 void QTBEngine::saveScene(const QString& filename)
 {
+    using namespace scene;
+
+    SceneParser scenefile(m_sceneManager);
+    scenefile.saveScene(filename.toStdString());
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -453,10 +457,6 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyMeshAdd(*it);
     }
 
-
-    m_axe = new Axes(m_meshScene, 4, 4);
-    m_sceneManager->getRootNode()->addChild(m_axe);
-
     m_lightScene = scenefile.getLightScene();
 
     for(Iterator<Light*> it = m_lightScene->iterator(); it; it++)
@@ -467,6 +467,18 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyLightAdd(*it);
     }
 
+    m_particlesScene = scenefile.getParticlesScene();
+
+    for(Iterator<ParticlesEmiter*> it = m_particlesScene->iterator(); it; it++)
+    {
+        m_particles.push_back(*it);
+        m_nodes.push_back(*it);
+
+        emit notifyParticlesAdd(*it);
+    }
+
+    m_axe = new Axes(m_meshScene, 4, 4);
+    m_sceneManager->getRootNode()->addChild(m_axe);
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
@@ -624,6 +636,59 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
     lightAdd(newlight);
 
     emit notifyLightAdd(newlight);
+}
+
+tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
+{
+
+    scene::ParticlesEmiter* light = new scene::ParticlesEmiter(m_particlesScene);
+    m_rootNode->addChild(light);
+
+    return light;
+}
+
+void QTBEngine::particlesAdd(tbe::scene::ParticlesEmiter* particles)
+{
+    m_particles.push_back(particles);
+    m_nodes.push_back(particles);
+
+    particlesSelect(particles);
+}
+
+void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
+{
+    tools::erase(m_nodes, particles);
+    tools::erase(m_particles, particles);
+
+    delete particles;
+
+    particlesSelect(NULL);
+
+    emit notifyParticlesSelect(NULL);
+}
+
+void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
+{
+    m_selectedNode = particles;
+
+    if(m_selectedNode)
+    {
+        m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
+    }
+}
+
+void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
+{
+    using namespace tbe::scene;
+
+    ParticlesEmiter* newparticles = new ParticlesEmiter(*particles);
+
+    particles->getParent()->addChild(newparticles);
+
+    particlesAdd(newparticles);
+
+    emit notifyParticlesAdd(newparticles);
 }
 
 void QTBEngine::skyboxApply(const QStringList& texs)
