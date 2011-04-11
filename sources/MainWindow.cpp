@@ -288,7 +288,7 @@ void MainWindow::guiMeshDelete()
 {
     if(tbe::scene::Mesh * mesh = m_qnodebind->getCurmesh())
     {
-        QStandardItem* item = mesh->GetUserData().GetValue<QStandardItem*> ();
+        QStandardItem* item = mesh->getUserData().getValue<QStandardItem*> ();
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -308,12 +308,12 @@ void MainWindow::meshAdd(tbe::scene::Mesh* mesh)
 
     int count = nodesGui.nodesListModel->rowCount();
 
-    if(!mesh->GetParent()->IsRoot())
+    if(!mesh->getParent()->isRoot())
         for(int i = 0; i < count; i++)
         {
             QStandardItem* item = nodesGui.nodesListModel->item(i);
 
-            if(item && mesh->GetParent() == item->data().value<Mesh*>())
+            if(item && mesh->getParent() == item->data().value<Mesh*>())
             {
                 parent = item;
                 break;
@@ -327,7 +327,7 @@ void MainWindow::meshAdd(tbe::scene::Mesh* mesh)
     itid->setData(userdata);
     itid->setData(IsMesh, ContentType);
 
-    QStandardItem* itname = new QStandardItem(mesh->GetName().c_str());
+    QStandardItem* itname = new QStandardItem(mesh->getName().c_str());
     itname->setData(userdata);
     itname->setData(IsMesh, ContentType);
 
@@ -339,7 +339,7 @@ void MainWindow::meshAdd(tbe::scene::Mesh* mesh)
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    mesh->SetUserData(itid);
+    mesh->setUserData(itid);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
@@ -352,12 +352,12 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
     if(!mesh)
         return;
 
-    nodesGui.name->setText(mesh->GetName().c_str());
-    nodesGui.pos->setValue(mesh->GetPos());
+    nodesGui.name->setText(mesh->getName().c_str());
+    nodesGui.pos->setValue(mesh->getPos());
 
     if(upList)
     {
-        QStandardItem* item = mesh->GetUserData().GetValue<QStandardItem*> ();
+        QStandardItem* item = mesh->getUserData().getValue<QStandardItem*> ();
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -386,7 +386,7 @@ void MainWindow::guiLightDelete()
 {
     if(tbe::scene::Light * light = m_qnodebind->getCurlight())
     {
-        QStandardItem* item = light->GetUserData().GetValue<QStandardItem*> ();
+        QStandardItem* item = light->getUserData().getValue<QStandardItem*> ();
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -409,7 +409,7 @@ void MainWindow::lightAdd(tbe::scene::Light* light)
     itemType->setData(userData);
     itemType->setData(IsLight, ContentType);
 
-    QStandardItem* itemName = new QStandardItem(light->GetName().c_str());
+    QStandardItem* itemName = new QStandardItem(light->getName().c_str());
     itemName->setData(userData);
     itemName->setData(IsLight, ContentType);
 
@@ -418,7 +418,7 @@ void MainWindow::lightAdd(tbe::scene::Light* light)
 
     nodesGui.nodesListModel->appendRow(items);
 
-    light->SetUserData(itemType);
+    light->setUserData(itemType);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
@@ -431,18 +431,18 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
     if(!light)
         return;
 
-    nodesGui.name->setText(light->GetName().c_str());
-    nodesGui.pos->setValue(light->GetPos());
+    nodesGui.name->setText(light->getName().c_str());
+    nodesGui.pos->setValue(light->getPos());
 
-    nodesGui.lighTab.type->setCurrentIndex((int)light->GetType());
-    nodesGui.lighTab.ambiant->setValue(vec43(light->GetAmbient()));
-    nodesGui.lighTab.diffuse->setValue(vec43(light->GetDiffuse()));
-    nodesGui.lighTab.specular->setValue(vec43(light->GetSpecular()));
-    nodesGui.lighTab.radius->setValue(light->GetRadius());
+    nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
+    nodesGui.lighTab.ambiant->setValue(vec43(light->getAmbient()));
+    nodesGui.lighTab.diffuse->setValue(vec43(light->getDiffuse()));
+    nodesGui.lighTab.specular->setValue(vec43(light->getSpecular()));
+    nodesGui.lighTab.radius->setValue(light->getRadius());
 
     if(upList)
     {
-        QStandardItem* item = light->GetUserData().GetValue<QStandardItem*> ();
+        QStandardItem* item = light->getUserData().getValue<QStandardItem*> ();
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -476,7 +476,7 @@ void MainWindow::updateList()
         else if(item->data().canConvert<Water*>())
             node = item->data().value<Water*>();
 
-        itemName->setText(node->GetName().c_str());
+        itemName->setText(node->getName().c_str());
     }
 }
 
@@ -516,10 +516,10 @@ void MainWindow::ambiantScene(const tbe::Vector3f& value)
 
 void MainWindow::fogInit(tbe::scene::Fog* fog)
 {
-    envGui.fog.enable->setChecked(fog->IsEnable());
-    envGui.fog.color->setValue(vec43(fog->GetColor()));
-    envGui.fog.start->setValue(fog->GetStart());
-    envGui.fog.end->setValue(fog->GetEnd());
+    envGui.fog.enable->setChecked(fog->isEnable());
+    envGui.fog.color->setValue(vec43(fog->getColor()));
+    envGui.fog.start->setValue(fog->getStart());
+    envGui.fog.end->setValue(fog->getEnd());
 
     connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(fogApply(bool)));
     connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(fogApply()));
@@ -529,12 +529,12 @@ void MainWindow::fogInit(tbe::scene::Fog* fog)
 
 void MainWindow::skyboxInit(tbe::scene::SkyBox* sky)
 {
-    tbe::Texture* texs = sky->GetTextures();
+    tbe::Texture* texs = sky->getTextures();
 
     for(unsigned i = 0; i < 6; i++)
-        this->envGui.skybox.textures[i]->setOpenFileName(texs[i].GetFilename().c_str());
+        this->envGui.skybox.textures[i]->setOpenFileName(texs[i].getFilename().c_str());
 
-    envGui.skybox.enable->setChecked(sky->IsEnable());
+    envGui.skybox.enable->setChecked(sky->isEnable());
 
     connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(skyboxApply(bool)));
     connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(skyboxApply()));
