@@ -64,8 +64,6 @@ void QNodeBinders::setCurwater(tbe::scene::Water* curwater)
     m_curmesh = NULL;
     m_curparticles = NULL;
     m_curlight = NULL;
-
-    emit notifyUpdate(m_curwater);
 }
 
 tbe::scene::Water* QNodeBinders::getCurwater() const
@@ -73,17 +71,15 @@ tbe::scene::Water* QNodeBinders::getCurwater() const
     return m_curwater;
 }
 
-void QNodeBinders::setCurparticles(tbe::scene::BurningEmitter* curparticles)
+void QNodeBinders::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
 {
     m_curNode = m_curparticles = curparticles;
     m_curmesh = NULL;
     m_curwater = NULL;
     m_curlight = NULL;
-
-    emit notifyUpdate(m_curparticles);
 }
 
-tbe::scene::BurningEmitter* QNodeBinders::getCurparticles() const
+tbe::scene::ParticlesEmiter* QNodeBinders::getCurparticles() const
 {
     return m_curparticles;
 }
@@ -219,6 +215,15 @@ void QNodeBinders::particleSetContinousMode(int v)
     if(m_curparticles)
     {
         m_curparticles->setContinousMode(v);
+        emit notifyUpdate(m_curparticles);
+    }
+}
+
+void QNodeBinders::particleBuild()
+{
+    if(m_curparticles)
+    {
+        m_curparticles->build();
         emit notifyUpdate(m_curparticles);
     }
 }

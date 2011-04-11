@@ -38,12 +38,16 @@ MainWindow::MainWindow()
 
     nodesGui.attribTab = m_uinterface.attribTab;
 
+    connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
+    connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
+
     // Node --------------------------------------------------------------------
 
     m_qnodebind = new QNodeBinders(this);
 
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateList()));
 
     nodesGui.name = m_uinterface.node_name;
@@ -88,6 +92,7 @@ MainWindow::MainWindow()
     nodesGui.particlesTab.number = m_uinterface.node_particles_number;
     nodesGui.particlesTab.texture = new QBrowsEdit(this, m_uinterface.node_particles_texture, m_uinterface.node_particles_texture_browse);
     nodesGui.particlesTab.continiousmode = m_uinterface.node_particles_continousmide;
+    nodesGui.particlesTab.build = m_uinterface.node_particles_build;
     nodesGui.particlesTab.add = m_uinterface.node_particles_add;
     nodesGui.particlesTab.clone = m_uinterface.node_particles_clone;
     nodesGui.particlesTab.del = m_uinterface.node_particles_del;
@@ -99,6 +104,7 @@ MainWindow::MainWindow()
     connect(nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), m_qnodebind, SLOT(particleSetNumber(int)));
     connect(nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(particleSetTexture(const QString&)));
     connect(nodesGui.particlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qnodebind, SLOT(particleSetContinousMode(int)));
+    connect(nodesGui.particlesTab.build, SIGNAL(clicked()), m_qnodebind, SLOT(particleBuild()));
 
     // -------- Lights
 
@@ -144,10 +150,13 @@ MainWindow::MainWindow()
     connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)), this, SLOT(lightAdd(tbe::scene::Light*)));
     connect(m_tbeWidget, SIGNAL(notifyLightSelect(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
 
+    connect(m_tbeWidget, SIGNAL(notifyParticlesAdd(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesAdd(tbe::scene::ParticlesEmiter*)));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
+
     // Environment -------------------------------------------------------------
 
     envGui.sceneAmbiant = new QVectorBox(this, m_uinterface.env_ambient_x, m_uinterface.env_ambient_y, m_uinterface.env_ambient_z);
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(ambiantInit(const tbe::Vector3f&)));
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(ambiantScene(const tbe::Vector3f&)));
 
     envGui.skybox.apply = m_uinterface.skybox_apply;
     envGui.skybox.enable = m_uinterface.skybox_enable;
@@ -166,7 +175,7 @@ MainWindow::MainWindow()
 
     connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fogInit(tbe::scene::Fog*)));
     connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxInit(tbe::scene::SkyBox*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiantInit(const tbe::Vector3f&)));
+    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiantScene(const tbe::Vector3f&)));
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
@@ -232,6 +241,14 @@ void MainWindow::guiSelect(const QModelIndex& index)
 
     switch(type)
     {
+        case IsLight:
+        {
+            Light* light = item->data().value<Light*>();
+            lightSelect(light, false);
+            nodesGui.attribTab->setCurrentIndex(0);
+        }
+            break;
+
         case IsMesh:
         {
             Mesh* mesh = item->data().value<Mesh*>();
@@ -239,23 +256,19 @@ void MainWindow::guiSelect(const QModelIndex& index)
             nodesGui.attribTab->setCurrentIndex(1);
         }
             break;
-        case IsParticles:
-        {
-            // ParticlesEmiter* pemiter = item->data().value<ParticlesEmiter*>();
-            nodesGui.attribTab->setCurrentIndex(3);
-        }
-            break;
+
         case IsWater:
         {
             // Water* water = item->data().value<Water*>();
             nodesGui.attribTab->setCurrentIndex(2);
         }
             break;
-        case IsLight:
+
+        case IsParticles:
         {
-            Light* light = item->data().value<Light*>();
-            lightSelect(light, false);
-            nodesGui.attribTab->setCurrentIndex(0);
+            ParticlesEmiter* pemiter = item->data().value<ParticlesEmiter*>();
+            particlesSelect(pemiter, false);
+            nodesGui.attribTab->setCurrentIndex(3);
         }
             break;
     }
@@ -394,7 +407,39 @@ void MainWindow::guiLightDelete()
         else
             nodesGui.nodesListModel->removeRow(item->row());
 
-        m_tbeWidget->lightDelete(m_qnodebind->getCurlight());
+        m_tbeWidget->lightDelete(light);
+    }
+}
+
+void MainWindow::guiParticlesNew()
+{
+    using namespace tbe::scene;
+
+    ParticlesEmiter* particles = m_tbeWidget->particlesNew();
+
+    particlesAdd(particles);
+    particlesSelect(particles);
+}
+
+void MainWindow::guiParticlesClone()
+{
+    if(m_qnodebind->getCurparticles())
+        m_tbeWidget->particlesClone(m_qnodebind->getCurparticles());
+}
+
+void MainWindow::guiParticlesDelete()
+{
+    if(tbe::scene::ParticlesEmiter * particles = m_qnodebind->getCurparticles())
+    {
+        QStandardItem* item = particles->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* parent = item->parent();
+
+        if(parent)
+            parent->removeRow(item->row());
+        else
+            nodesGui.nodesListModel->removeRow(item->row());
+
+        m_tbeWidget->particlesDelete(particles);
     }
 }
 
@@ -449,6 +494,64 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
     m_tbeWidget->lightSelect(light);
 
     nodesGui.attribTab->setCurrentIndex(0);
+}
+
+void MainWindow::particlesAdd(tbe::scene::ParticlesEmiter* particles)
+{
+    using namespace tbe::scene;
+
+    QVariant userData;
+    userData.setValue(particles);
+
+    QStandardItem* itemType = new QStandardItem("Particles");
+    itemType->setData(userData);
+    itemType->setData(IsParticles, ContentType);
+
+    QStandardItem* itemName = new QStandardItem(particles->getName().c_str());
+    itemName->setData(userData);
+    itemName->setData(IsParticles, ContentType);
+
+    QItemsList items;
+    items << itemType << itemName;
+
+    if(!particles->getParent()->getUserData().isNull())
+        particles->getParent()->getUserData().getValue<QStandardItem*>()->appendRow(items);
+    else
+        nodesGui.nodesListModel->appendRow(items);
+
+        particles->setUserData(itemType);
+
+    nodesGui.nodesListView->resizeColumnToContents(0);
+    nodesGui.nodesListView->resizeColumnToContents(1);
+}
+
+void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
+{
+    m_qnodebind->setCurparticles(particles);
+
+    if(!particles)
+        return;
+
+    nodesGui.name->setText(particles->getName().c_str());
+    nodesGui.pos->setValue(particles->getPos());
+
+    nodesGui.particlesTab.gravity->setValue(particles->getGravity());
+    nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());
+    nodesGui.particlesTab.lifeinit->setValue(particles->getLifeInit());
+    nodesGui.particlesTab.lifedown->setValue(particles->getLifeDown());
+    nodesGui.particlesTab.number->setValue(particles->getNumber());
+    nodesGui.particlesTab.texture->setOpenFileName(particles->getTexture().getFilename().c_str());
+    nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
+
+    if(upList)
+    {
+        QStandardItem* item = particles->getUserData().getValue<QStandardItem*> ();
+        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
+    }
+
+    m_tbeWidget->particlesSelect(particles);
+
+    nodesGui.attribTab->setCurrentIndex(3);
 }
 
 void MainWindow::updateList()

@@ -1,4 +1,4 @@
-build
 debug
+ignore
 release
 ui_*

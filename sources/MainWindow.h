@@ -24,10 +24,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
     MainWindow();
     virtual ~MainWindow();
 
 public slots:
+
     void openSceneDialog();
     void openScene(const QString& filename);
 
@@ -50,12 +52,18 @@ public slots: // ------------------------------------------------- Node manager
     void guiLightClone();
     void guiLightDelete();
 
+    void guiParticlesNew();
+    void guiParticlesClone();
+    void guiParticlesDelete();
+
     void meshAdd(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
 
     void lightAdd(tbe::scene::Light* light);
     void lightSelect(tbe::scene::Light* light, bool upList = true);
 
+    void particlesAdd(tbe::scene::ParticlesEmiter* particles);
+    void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
 
 public slots: // -------------------------------------------------- Env manager
 
@@ -67,6 +75,10 @@ public slots: // -------------------------------------------------- Env manager
 
     void ambiantScene(const tbe::Vector3f& value);
 
+signals:
+
+    void pauseRendring();
+    void resumeRendring();
 
 private:
 
@@ -120,6 +132,8 @@ private:
             QSpinBox* number;
             QBrowsEdit* texture;
             QCheckBox* continiousmode;
+
+            QPushButton* build;
 
             QPushButton* add;
             QPushButton* clone;
