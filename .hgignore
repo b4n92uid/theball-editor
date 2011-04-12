@@ -4,9 +4,9 @@ debug
 release
 private
 
+object_script.tbeditor
+
 syntax: glob
-
 ui_*
-
 *.bash
 *.mk

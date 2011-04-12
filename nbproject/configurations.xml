@@ -58,6 +58,7 @@
         <uiDir>sources</uiDir>
         <defs>
           <Elem>CONFIG += console</Elem>
+          <Elem>RC_FILE += ../sources/ressource.rc</Elem>
         </defs>
       </qt>
       <compileType>
@@ -93,6 +94,9 @@
         <mocDir>build</mocDir>
         <rccDir>build</rccDir>
         <uiDir>sources</uiDir>
+        <defs>
+          <Elem>RC_FILE += ../sources/ressource.rc</Elem>
+        </defs>
       </qt>
       <compileType>
         <cTool>
