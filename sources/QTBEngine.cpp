@@ -51,6 +51,7 @@ QTBEngine::QTBEngine(QWidget* parent)
 
 QTBEngine::~QTBEngine()
 {
+    delete scenefile;
 }
 
 void QTBEngine::initializeGL()
@@ -60,6 +61,8 @@ void QTBEngine::initializeGL()
 
     m_sceneManager = m_device->getSceneManager();
     m_eventManager = m_device->getEventManager();
+
+    scenefile = new scene::SceneParser(m_sceneManager);
 
     m_fog = m_sceneManager->getFog();
     m_skybox = m_sceneManager->getSkybox();
@@ -431,8 +434,10 @@ void QTBEngine::saveScene(const QString& filename)
 {
     using namespace scene;
 
-    SceneParser scenefile(m_sceneManager);
-    scenefile.saveScene(filename.toStdString());
+    scenefile->archive(m_rootNode);
+    scenefile->exclude(m_axe);
+
+    scenefile->saveScene(filename.toStdString());
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -444,10 +449,9 @@ void QTBEngine::loadScene(const QString& filename)
     m_fog->clear();
     m_skybox->clear();
 
-    SceneParser scenefile(m_sceneManager);
-    scenefile.loadScene(filename.toStdString());
+    scenefile->loadScene(filename.toStdString());
 
-    m_meshScene = scenefile.getMeshScene();
+    m_meshScene = scenefile->getMeshScene();
 
     for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
@@ -457,7 +461,7 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyMeshAdd(*it);
     }
 
-    m_lightScene = scenefile.getLightScene();
+    m_lightScene = scenefile->getLightScene();
 
     for(Iterator<Light*> it = m_lightScene->iterator(); it; it++)
     {
@@ -467,7 +471,7 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyLightAdd(*it);
     }
 
-    m_particlesScene = scenefile.getParticlesScene();
+    m_particlesScene = scenefile->getParticlesScene();
 
     for(Iterator<ParticlesEmiter*> it = m_particlesScene->iterator(); it; it++)
     {
@@ -640,7 +644,6 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
 
 tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
 {
-
     scene::ParticlesEmiter* light = new scene::ParticlesEmiter(m_particlesScene);
     m_rootNode->addChild(light);
 

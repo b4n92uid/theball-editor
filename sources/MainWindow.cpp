@@ -205,6 +205,8 @@ void MainWindow::openScene(const QString& filename)
     QDir::setCurrent(filei.path());
 
     m_tbeWidget->loadScene(filename);
+
+    m_filename = filename;
 }
 
 void MainWindow::saveSceneDialog()

@@ -41,27 +41,36 @@ public slots:
 
 public slots: // ------------------------------------------------- Node manager
 
+    // On nodes list item select
     void guiSelect(const QModelIndex& index);
+
+    // Update node info box
     void updateList();
 
+    // Mesh GUI Buttons
     void guiMeshNew();
     void guiMeshClone();
     void guiMeshDelete();
 
+    // Light GUI Buttons
     void guiLightNew();
     void guiLightClone();
     void guiLightDelete();
 
+    // Particles GUI Buttons
     void guiParticlesNew();
     void guiParticlesClone();
     void guiParticlesDelete();
 
+    // Registre & Select mesh infos on GUI
     void meshAdd(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
 
+    // Registre & Select light infos on GUI
     void lightAdd(tbe::scene::Light* light);
     void lightSelect(tbe::scene::Light* light, bool upList = true);
 
+    // Registre & Select particles infos on GUI
     void particlesAdd(tbe::scene::ParticlesEmiter* particles);
     void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
 
