@@ -11,8 +11,7 @@ TEMPLATE = app
 
 INCLUDEPATH += D:\projets\cpp\tbengine\sources
 
-LIBS += D:/projets/cpp/tbengine/dist/Debug/MinGW-Windows/libtbengine.a \
-        D:/librairies/cpp/devil/DevIL-SDK-x86-1.7.8/lib/DevIL.lib \
+LIBS += D:/librairies/cpp/devil/DevIL-SDK-x86-1.7.8/lib/DevIL.lib \
         D:/librairies/cpp/freetype/freetype-2.3.9/objs/.libs/libfreetype.a \
         -lopengl32 \
         -lglu32

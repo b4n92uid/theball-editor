@@ -1,4 +1,12 @@
-debug
 ignore
+build
+debug
 release
+private
+
+syntax: glob
+
 ui_*
+
+*.bash
+*.mk
