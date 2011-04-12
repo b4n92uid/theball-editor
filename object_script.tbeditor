@@ -6,8 +6,8 @@ INPUT(
 ./build/Debug/MinGW-Windows/MainWindow.o
 ./build/Debug/MinGW-Windows/QTBEngine.o
 ./build/Debug/MinGW-Windows/QVector2Box.o
-./build/Debug/MinGW-Windows/moc_QNodeBinders.o
 ./build/Debug/MinGW-Windows/moc_QVector2Box.o
+./build/Debug/MinGW-Windows/moc_QNodeBinders.o
 ./build/Debug/MinGW-Windows/moc_QBrowsEdit.o
 ./build/Debug/MinGW-Windows/moc_MainWindow.o
 ./build/Debug/MinGW-Windows/moc_QVectorBox.o

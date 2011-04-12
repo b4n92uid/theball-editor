@@ -21,3 +21,4 @@ QMAKE_CXX = g++.exe
 DEFINES += 
 INCLUDEPATH += /D/projets/cpp/tbengine/sources 
 LIBS += D:/projets/cpp/tbengine/dist/Release/MinGW-Windows/libtbengine.a D:/librairies/cpp/devil/DevIL-SDK-x86-1.7.8/lib/DevIL.lib D:/librairies/cpp/freetype/freetype-2.3.9/objs/.libs/libfreetype.a -lopengl32 -lglu32  
+RC_FILE += ../sources/ressource.rc
