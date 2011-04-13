@@ -16,10 +16,6 @@ QVectorBox::QVectorBox(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QD
     connect(m_x, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
     connect(m_y, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
     connect(m_z, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
-
-    m_x->setSingleStep(0.1);
-    m_y->setSingleStep(0.1);
-    m_z->setSingleStep(0.1);
 }
 
 QVectorBox::~QVectorBox()
