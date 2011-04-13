@@ -60,7 +60,7 @@
        <attribute name="title">
         <string>Noeuds</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
@@ -92,21 +92,30 @@
              <item>
               <widget class="QDoubleSpinBox" name="node_pos_x">
                <property name="minimum">
-                <double>-99.000000000000000</double>
+                <double>-1024.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>1024.000000000000000</double>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="node_pos_y">
                <property name="minimum">
-                <double>-99.000000000000000</double>
+                <double>-1024.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>1024.000000000000000</double>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="node_pos_z">
                <property name="minimum">
-                <double>-99.000000000000000</double>
+                <double>-1024.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>1024.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -165,13 +174,25 @@
                <item row="1" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_19">
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_ambiant_x"/>
+                  <widget class="QDoubleSpinBox" name="node_light_ambiant_x">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_ambiant_y"/>
+                  <widget class="QDoubleSpinBox" name="node_light_ambiant_y">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_ambiant_z"/>
+                  <widget class="QDoubleSpinBox" name="node_light_ambiant_z">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -185,13 +206,25 @@
                <item row="2" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_20">
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_diffuse_x"/>
+                  <widget class="QDoubleSpinBox" name="node_light_diffuse_x">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_diffuse_y"/>
+                  <widget class="QDoubleSpinBox" name="node_light_diffuse_y">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_diffuse_z"/>
+                  <widget class="QDoubleSpinBox" name="node_light_diffuse_z">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -205,13 +238,25 @@
                <item row="3" column="1">
                 <layout class="QHBoxLayout" name="horizontalLayout_21">
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_specular_x"/>
+                  <widget class="QDoubleSpinBox" name="node_light_specular_x">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_specular_y"/>
+                  <widget class="QDoubleSpinBox" name="node_light_specular_y">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="node_light_specular_z"/>
+                  <widget class="QDoubleSpinBox" name="node_light_specular_z">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -223,7 +268,11 @@
                 </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="node_light_radius"/>
+                <widget class="QDoubleSpinBox" name="node_light_radius">
+                 <property name="maximum">
+                  <double>64.000000000000000</double>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -504,6 +553,9 @@
                    <property name="minimum">
                     <double>-99.000000000000000</double>
                    </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -511,12 +563,18 @@
                    <property name="minimum">
                     <double>-99.000000000000000</double>
                    </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QDoubleSpinBox" name="node_particles_gravity_z">
                    <property name="minimum">
                     <double>-99.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -684,6 +742,67 @@
         <item>
          <widget class="QTreeView" name="node_list"/>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_up">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Icons/icons/arrow_up.png</normaloff>:/Icons/icons/arrow_up.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_down">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Icons/icons/arrow_down.png</normaloff>:/Icons/icons/arrow_down.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_makeparent">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Icons/icons/arrow_left.png</normaloff>:/Icons/icons/arrow_left.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_makechild">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Icons/icons/arrow_right.png</normaloff>:/Icons/icons/arrow_right.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_3">
@@ -704,6 +823,9 @@
             <layout class="QHBoxLayout" name="horizontalLayout_22">
              <item>
               <widget class="QDoubleSpinBox" name="env_ambient_x">
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
                <property name="singleStep">
                 <double>0.100000000000000</double>
                </property>
@@ -711,6 +833,9 @@
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="env_ambient_y">
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
                <property name="singleStep">
                 <double>0.100000000000000</double>
                </property>
@@ -718,6 +843,9 @@
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="env_ambient_z">
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
                <property name="singleStep">
                 <double>0.100000000000000</double>
                </property>
@@ -975,13 +1103,25 @@
            <item row="0" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_17">
              <item>
-              <widget class="QDoubleSpinBox" name="fog_x"/>
+              <widget class="QDoubleSpinBox" name="fog_x">
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="fog_y"/>
+              <widget class="QDoubleSpinBox" name="fog_y">
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="fog_z"/>
+              <widget class="QDoubleSpinBox" name="fog_z">
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -994,6 +1134,9 @@
            </item>
            <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="fog_start">
+             <property name="maximum">
+              <double>1024.000000000000000</double>
+             </property>
              <property name="singleStep">
               <double>0.100000000000000</double>
              </property>
@@ -1008,6 +1151,12 @@
            </item>
            <item row="2" column="1">
             <widget class="QDoubleSpinBox" name="fog_end">
+             <property name="prefix">
+              <string/>
+             </property>
+             <property name="maximum">
+              <double>1024.000000000000000</double>
+             </property>
              <property name="singleStep">
               <double>0.100000000000000</double>
              </property>
@@ -1086,6 +1235,79 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>node_name</tabstop>
+  <tabstop>node_pos_x</tabstop>
+  <tabstop>node_pos_y</tabstop>
+  <tabstop>node_pos_z</tabstop>
+  <tabstop>node_list</tabstop>
+  <tabstop>attribTab</tabstop>
+  <tabstop>node_light_type</tabstop>
+  <tabstop>node_light_ambiant_x</tabstop>
+  <tabstop>node_light_ambiant_y</tabstop>
+  <tabstop>node_light_ambiant_z</tabstop>
+  <tabstop>node_light_diffuse_x</tabstop>
+  <tabstop>node_light_diffuse_y</tabstop>
+  <tabstop>node_light_diffuse_z</tabstop>
+  <tabstop>node_light_specular_x</tabstop>
+  <tabstop>node_light_specular_y</tabstop>
+  <tabstop>node_light_specular_z</tabstop>
+  <tabstop>node_light_radius</tabstop>
+  <tabstop>node_light_add</tabstop>
+  <tabstop>node_light_clone</tabstop>
+  <tabstop>node_light_del</tabstop>
+  <tabstop>node_water_deform</tabstop>
+  <tabstop>node_water_size_x</tabstop>
+  <tabstop>node_water_size_y</tabstop>
+  <tabstop>node_water_uvrepeat_x</tabstop>
+  <tabstop>node_water_uvrepeat_y</tabstop>
+  <tabstop>node_water_speed</tabstop>
+  <tabstop>node_water_blend</tabstop>
+  <tabstop>node_water_add</tabstop>
+  <tabstop>node_water_clone</tabstop>
+  <tabstop>node_water_del</tabstop>
+  <tabstop>node_particles_gravity_x</tabstop>
+  <tabstop>node_particles_gravity_y</tabstop>
+  <tabstop>node_particles_gravity_z</tabstop>
+  <tabstop>node_particles_freemove</tabstop>
+  <tabstop>node_particles_lifeinit</tabstop>
+  <tabstop>node_particles_lifedown</tabstop>
+  <tabstop>node_particles_number</tabstop>
+  <tabstop>node_particles_build</tabstop>
+  <tabstop>node_particles_texture</tabstop>
+  <tabstop>node_particles_texture_browse</tabstop>
+  <tabstop>node_particles_continousmide</tabstop>
+  <tabstop>node_particles_add</tabstop>
+  <tabstop>node_particles_clone</tabstop>
+  <tabstop>node_particles_del</tabstop>
+  <tabstop>env_ambient_x</tabstop>
+  <tabstop>env_ambient_y</tabstop>
+  <tabstop>env_ambient_z</tabstop>
+  <tabstop>skybox_enable</tabstop>
+  <tabstop>skybox_front</tabstop>
+  <tabstop>skybox_front_browse</tabstop>
+  <tabstop>skybox_back</tabstop>
+  <tabstop>skybox_back_browse</tabstop>
+  <tabstop>skybox_top</tabstop>
+  <tabstop>skybox_top_browse</tabstop>
+  <tabstop>skybox_bottom</tabstop>
+  <tabstop>skybox_bottom_browse</tabstop>
+  <tabstop>skybox_left</tabstop>
+  <tabstop>skybox_left_browse</tabstop>
+  <tabstop>skybox_right</tabstop>
+  <tabstop>skybox_right_browse</tabstop>
+  <tabstop>skybox_apply</tabstop>
+  <tabstop>fog_enable</tabstop>
+  <tabstop>fog_x</tabstop>
+  <tabstop>fog_y</tabstop>
+  <tabstop>fog_z</tabstop>
+  <tabstop>fog_start</tabstop>
+  <tabstop>fog_end</tabstop>
+  <tabstop>node_mesh_add</tabstop>
+  <tabstop>node_mesh_del</tabstop>
+  <tabstop>node_mesh_clone</tabstop>
+ </tabstops>
  <resources>
   <include location="ressource.qrc"/>
  </resources>

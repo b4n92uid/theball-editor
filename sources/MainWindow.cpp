@@ -53,6 +53,24 @@ MainWindow::MainWindow()
     nodesGui.name = m_uinterface.node_name;
     nodesGui.pos = new QVectorBox(this, m_uinterface.node_pos_x, m_uinterface.node_pos_y, m_uinterface.node_pos_z);
 
+    nodesGui.nodeUp = m_uinterface.node_list_up;
+    nodesGui.nodeDown = m_uinterface.node_list_down;
+    nodesGui.nodeRight = m_uinterface.node_list_makechild;
+    nodesGui.nodeLeft = m_uinterface.node_list_makeparent;
+
+    QSignalMapper* nodeMoveBind = new QSignalMapper(this);
+    nodeMoveBind->setMapping(nodesGui.nodeUp, 1);
+    nodeMoveBind->setMapping(nodesGui.nodeDown, 2);
+    nodeMoveBind->setMapping(nodesGui.nodeLeft, 3);
+    nodeMoveBind->setMapping(nodesGui.nodeRight, 4);
+
+    connect(nodesGui.nodeUp, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
+    connect(nodesGui.nodeDown, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
+    connect(nodesGui.nodeLeft, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
+    connect(nodesGui.nodeRight, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
+
+    connect(nodeMoveBind, SIGNAL(mapped(int)), this, SLOT(scopeNode(int)));
+
     connect(nodesGui.name, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(nodeSetName(const QString&)));
     connect(nodesGui.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(nodeSetPos(const tbe::Vector3f&)));
 
@@ -519,7 +537,7 @@ void MainWindow::particlesAdd(tbe::scene::ParticlesEmiter* particles)
     else
         nodesGui.nodesListModel->appendRow(items);
 
-        particles->setUserData(itemType);
+    particles->setUserData(itemType);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
@@ -552,6 +570,44 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
     m_tbeWidget->particlesSelect(particles);
 
     nodesGui.attribTab->setCurrentIndex(3);
+}
+
+void MainWindow::scopeNode(int move)
+{
+    using namespace tbe::scene;
+
+    QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(nodesGui.nodesListView->currentIndex());
+
+    int currRow = item->row();
+
+    QList<QStandardItem*> row = nodesGui.nodesListModel->takeRow(currRow);
+
+    if(move == 1) // Up
+    {
+        currRow = std::max(currRow - 1, 0);
+        nodesGui.nodesListModel->insertRow(currRow, row);
+
+        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->index(currRow, 0));
+    }
+    else if(move == 2) // Down
+    {
+        int rowCount = nodesGui.nodesListModel->rowCount();
+        currRow = std::min(currRow + 1, rowCount);
+        nodesGui.nodesListModel->insertRow(currRow, row);
+
+        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->index(currRow, 0));
+    }
+    else if(move == 3) // Left
+    {
+        Node* parent = item->parent()->data().value<Node*>();
+        Node* curr = item->data().value<Node*>();
+    }
+    else if(move == 4) // Right
+    {
+        Node* prev = nodesGui.nodesListModel->item(currRow - 1)->data().value<Node*>();
+        Node* curr = item->data().value<Node*>();
+    }
+
 }
 
 void MainWindow::updateList()

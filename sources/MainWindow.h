@@ -47,6 +47,8 @@ public slots: // ------------------------------------------------- Node manager
     // Update node info box
     void updateList();
 
+    void scopeNode(int move);
+
     // Mesh GUI Buttons
     void guiMeshNew();
     void guiMeshClone();
@@ -156,6 +158,8 @@ private:
         QVectorBox* pos;
 
         QTabWidget* attribTab;
+
+        QPushButton *nodeUp, *nodeDown, *nodeLeft, *nodeRight;
 
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
