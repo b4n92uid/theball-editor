@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>../icons/vcard.png</file>
+    <file>../icons/arrow_out.png</file>
+    <file>../icons/disk.png</file>
+    <file>../icons/folder_page_white.png</file>
+    <file>../icons/page_white_star.png</file>
     <file>../icons/arrow_down.png</file>
     <file>../icons/arrow_left.png</file>
     <file>../icons/arrow_right.png</file>

@@ -1197,33 +1197,223 @@
     <property name="title">
      <string>Fichier</string>
     </property>
+    <addaction name="actionNouvelle_scene"/>
     <addaction name="actionOuvrire"/>
+    <addaction name="separator"/>
     <addaction name="actionEnregistrer"/>
     <addaction name="actionEnregistrer_sous"/>
     <addaction name="separator"/>
     <addaction name="actionQuitter"/>
    </widget>
+   <widget class="QMenu" name="menuEdition">
+    <property name="title">
+     <string>Edition</string>
+    </property>
+    <widget class="QMenu" name="menuMesh">
+     <property name="title">
+      <string>Mesh</string>
+     </property>
+     <addaction name="actionAjouter"/>
+     <addaction name="actionCloner"/>
+     <addaction name="actionEffacer"/>
+    </widget>
+    <widget class="QMenu" name="menuLumiere">
+     <property name="title">
+      <string>Lumiere</string>
+     </property>
+     <addaction name="actionAjouter_3"/>
+     <addaction name="actionCloner_2"/>
+     <addaction name="actionEffacer_3"/>
+    </widget>
+    <widget class="QMenu" name="menuWater">
+     <property name="title">
+      <string>Water</string>
+     </property>
+     <addaction name="actionAjouter_2"/>
+     <addaction name="actionCloner_3"/>
+     <addaction name="actionEffacer_4"/>
+    </widget>
+    <widget class="QMenu" name="menuParticles">
+     <property name="title">
+      <string>Particles</string>
+     </property>
+     <addaction name="actionAjouter_4"/>
+     <addaction name="actionCloner_4"/>
+     <addaction name="actionEffacer_2"/>
+    </widget>
+    <addaction name="menuMesh"/>
+    <addaction name="menuLumiere"/>
+    <addaction name="menuWater"/>
+    <addaction name="menuParticles"/>
+    <addaction name="separator"/>
+    <addaction name="actionD_placer_en_haut"/>
+    <addaction name="actionD_placer_en_bas"/>
+    <addaction name="actionD_placer_a_gauche"/>
+    <addaction name="actionD_placer_a_droite"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>?</string>
+    </property>
+    <addaction name="actionA_Prpos"/>
+   </widget>
+   <widget class="QMenu" name="menuAffichage">
+    <property name="title">
+     <string>Affichage</string>
+    </property>
+    <addaction name="actionRendue_plein_fenete"/>
+   </widget>
    <addaction name="menuFichier"/>
+   <addaction name="menuEdition"/>
+   <addaction name="menuAffichage"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOuvrire">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Icons/icons/folder_page_white.png</normaloff>:/Icons/icons/folder_page_white.png</iconset>
+   </property>
    <property name="text">
-    <string>Ouvrire</string>
+    <string>Charger une scene...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionEnregistrer">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Icons/icons/disk.png</normaloff>:/Icons/icons/disk.png</iconset>
+   </property>
    <property name="text">
     <string>Enregistrer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionEnregistrer_sous">
    <property name="text">
     <string>Enregistrer sous...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionQuitter">
    <property name="text">
     <string>Quitter</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAjouter">
+   <property name="text">
+    <string>Ajouter</string>
+   </property>
+  </action>
+  <action name="actionAjouter_2">
+   <property name="text">
+    <string>Ajouter</string>
+   </property>
+  </action>
+  <action name="actionAjouter_3">
+   <property name="text">
+    <string>Ajouter</string>
+   </property>
+  </action>
+  <action name="actionAjouter_4">
+   <property name="text">
+    <string>Ajouter</string>
+   </property>
+  </action>
+  <action name="actionA_Prpos">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Icons/icons/vcard.png</normaloff>:/Icons/icons/vcard.png</iconset>
+   </property>
+   <property name="text">
+    <string>A Propos</string>
+   </property>
+  </action>
+  <action name="actionNouvelle_scene">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Icons/icons/page_white_star.png</normaloff>:/Icons/icons/page_white_star.png</iconset>
+   </property>
+   <property name="text">
+    <string>Nouvelle scene</string>
+   </property>
+  </action>
+  <action name="actionCloner">
+   <property name="text">
+    <string>Cloner</string>
+   </property>
+  </action>
+  <action name="actionEffacer">
+   <property name="text">
+    <string>Effacer</string>
+   </property>
+  </action>
+  <action name="actionCloner_2">
+   <property name="text">
+    <string>Cloner</string>
+   </property>
+  </action>
+  <action name="actionCloner_3">
+   <property name="text">
+    <string>Cloner</string>
+   </property>
+  </action>
+  <action name="actionCloner_4">
+   <property name="text">
+    <string>Cloner</string>
+   </property>
+  </action>
+  <action name="actionEffacer_2">
+   <property name="text">
+    <string>Effacer</string>
+   </property>
+  </action>
+  <action name="actionEffacer_3">
+   <property name="text">
+    <string>Effacer</string>
+   </property>
+  </action>
+  <action name="actionEffacer_4">
+   <property name="text">
+    <string>Effacer</string>
+   </property>
+  </action>
+  <action name="actionD_placer_en_bas">
+   <property name="text">
+    <string>Déplacer en bas</string>
+   </property>
+  </action>
+  <action name="actionD_placer_a_gauche">
+   <property name="text">
+    <string>Déplacer a gauche</string>
+   </property>
+  </action>
+  <action name="actionD_placer_en_haut">
+   <property name="text">
+    <string>Déplacer en haut</string>
+   </property>
+  </action>
+  <action name="actionD_placer_a_droite">
+   <property name="text">
+    <string>Déplacer a droite</string>
+   </property>
+  </action>
+  <action name="actionRendue_plein_fenete">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Icons/icons/arrow_out.png</normaloff>:/Icons/icons/arrow_out.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rendue plein fenêtre</string>
    </property>
   </action>
  </widget>
