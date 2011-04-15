@@ -181,6 +181,10 @@ void MainWindow::initConnections()
     connect(nodesGui.particlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qnodebind, SLOT(particleSetContinousMode(int)));
     connect(nodesGui.particlesTab.build, SIGNAL(clicked()), m_qnodebind, SLOT(particleBuild()));
 
+    connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
+    connect(nodesGui.particlesTab.clone, SIGNAL(clicked()), this, SLOT(guiParticlesClone()));
+    connect(nodesGui.particlesTab.del, SIGNAL(clicked()), this, SLOT(guiParticlesDelete()));
+
     connect(nodesGui.lighTab.type, SIGNAL(activated(int)), m_qnodebind, SLOT(lightSetType(int)));
     connect(nodesGui.lighTab.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetAmbiant(const tbe::Vector3f&)));
     connect(nodesGui.lighTab.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetDiffuse(const tbe::Vector3f&)));
@@ -311,14 +315,21 @@ void MainWindow::guiMeshNew()
 {
     m_tbeWidget->pauseRendring();
 
-    QString filename = QFileDialog::getOpenFileName(qobject_cast<QWidget*>(parent()));
+    QString filename = QFileDialog::getOpenFileName(parentWidget());
 
     if(!filename.isNull())
     {
-        tbe::scene::Mesh* mesh = m_tbeWidget->meshNew(filename);
+        try
+        {
+            tbe::scene::Mesh* mesh = m_tbeWidget->meshNew(filename);
 
-        meshRegister(mesh);
-        meshSelect(mesh);
+            meshRegister(mesh);
+            meshSelect(mesh);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::critical(parentWidget(), "Errur d'ouverture", e.what());
+        }
     }
 
     m_tbeWidget->resumeRendring();
@@ -344,72 +355,6 @@ void MainWindow::guiMeshDelete()
 
         m_tbeWidget->meshDelete(mesh);
     }
-}
-
-void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
-{
-    using namespace tbe::scene;
-
-    QStandardItem* parent = NULL;
-
-    int count = nodesGui.nodesListModel->rowCount();
-
-    if(!mesh->getParent()->isRoot())
-        for(int i = 0; i < count; i++)
-        {
-            QStandardItem* item = nodesGui.nodesListModel->item(i);
-
-            if(item && mesh->getParent() == item->data().value<Mesh*>())
-            {
-                parent = item;
-                break;
-            }
-        }
-
-    QVariant userdata;
-    userdata.setValue<Mesh*>(mesh);
-
-    QStandardItem* itid = new QStandardItem(QString("Mesh"));
-    itid->setData(userdata);
-    itid->setData(IsMesh, ContentType);
-
-    QStandardItem* itname = new QStandardItem(mesh->getName().c_str());
-    itname->setData(userdata);
-    itname->setData(IsMesh, ContentType);
-
-    QItemsList items;
-    items << itid << itname;
-
-    if(parent)
-        parent->appendRow(items);
-    else
-        nodesGui.nodesListModel->appendRow(items);
-
-    mesh->setUserData(itid);
-
-    nodesGui.nodesListView->resizeColumnToContents(0);
-    nodesGui.nodesListView->resizeColumnToContents(1);
-}
-
-void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
-{
-    m_qnodebind->setCurmesh(mesh);
-
-    if(!mesh)
-        return;
-
-    nodesGui.name->setText(mesh->getName().c_str());
-    nodesGui.pos->setValue(mesh->getPos());
-
-    if(upList)
-    {
-        QStandardItem* item = mesh->getUserData().getValue<QStandardItem*> ();
-        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
-    }
-
-    m_tbeWidget->meshSelect(mesh);
-
-    nodesGui.attribTab->setCurrentIndex(1);
 }
 
 void MainWindow::guiLightNew()
@@ -476,6 +421,74 @@ void MainWindow::guiParticlesDelete()
     }
 }
 
+void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
+{
+    using namespace tbe::scene;
+
+    QStandardItem* parent = NULL;
+
+    int count = nodesGui.nodesListModel->rowCount();
+
+    if(!mesh->getParent()->isRoot())
+        for(int i = 0; i < count; i++)
+        {
+            QStandardItem* item = nodesGui.nodesListModel->item(i);
+
+            if(item && mesh->getParent() == item->data().value<Mesh*>())
+            {
+                parent = item;
+                break;
+            }
+        }
+
+    QVariant userdata;
+    userdata.setValue<Mesh*>(mesh);
+
+    QStandardItem* itid = new QStandardItem(QString("Mesh"));
+    itid->setData(userdata);
+    itid->setData(IsMesh, ContentType);
+
+    QStandardItem* itname = new QStandardItem(mesh->getName().c_str());
+    itname->setData(userdata);
+    itname->setData(IsMesh, ContentType);
+
+    QItemsList items;
+    items << itid << itname;
+
+    if(parent)
+        parent->appendRow(items);
+    else
+        nodesGui.nodesListModel->appendRow(items);
+
+    mesh->setUserData(itid);
+
+    m_tbeWidget->meshRegister(mesh);
+
+    nodesGui.nodesListView->resizeColumnToContents(0);
+    nodesGui.nodesListView->resizeColumnToContents(1);
+}
+
+void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
+{
+    m_qnodebind->setCurmesh(mesh);
+
+    if(!mesh)
+        return;
+
+    nodesGui.name->setText(mesh->getName().c_str());
+    nodesGui.pos->setValue(mesh->getPos());
+
+    if(upList)
+    {
+        QStandardItem* item = mesh->getUserData().getValue<QStandardItem*> ();
+        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
+    }
+
+    m_tbeWidget->meshSelect(mesh);
+
+    nodesGui.attribTab->setCurrentIndex(1);
+}
+
 void MainWindow::lightRegister(tbe::scene::Light* light)
 {
     using namespace tbe::scene;
@@ -497,6 +510,8 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
     nodesGui.nodesListModel->appendRow(items);
 
     light->setUserData(itemType);
+
+    m_tbeWidget->lightRegister(light);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
@@ -553,6 +568,8 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
         nodesGui.nodesListModel->appendRow(items);
 
     particles->setUserData(itemType);
+
+    m_tbeWidget->particlesRegister(particles);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);

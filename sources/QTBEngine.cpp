@@ -51,23 +51,36 @@ QTBEngine::QTBEngine(QWidget* parent)
 
 QTBEngine::~QTBEngine()
 {
-    delete scenefile;
+    delete m_sceneParser;
 }
 
 void QTBEngine::initializeGL()
 {
+    using namespace tbe;
+    using namespace tbe::scene;
+
     m_device = new Device;
     m_device->init();
 
     m_sceneManager = m_device->getSceneManager();
     m_eventManager = m_device->getEventManager();
 
-    scenefile = new scene::SceneParser(m_sceneManager);
+    m_lightScene = new LightParallelScene;
+    m_sceneManager->addParallelScene(m_lightScene);
+
+    m_meshScene = new MeshParallelScene;
+    m_sceneManager->addParallelScene(m_meshScene);
+
+    m_particlesScene = new ParticlesParallelScene;
+    m_sceneManager->addParallelScene(m_particlesScene);
+
+    m_sceneParser = new scene::SceneParser(m_sceneManager);
+    m_sceneParser->setLightScene(m_lightScene);
+    m_sceneParser->setMeshScene(m_meshScene);
+    m_sceneParser->setParticlesScene(m_particlesScene);
 
     m_fog = m_sceneManager->getFog();
     m_skybox = m_sceneManager->getSkybox();
-
-    using namespace scene;
 
     m_ffcamera = new FreeFlyCamera;
     m_orbcamera = new OrbitalCamera;
@@ -76,6 +89,9 @@ void QTBEngine::initializeGL()
     m_sceneManager->addCamera(m_orbcamera);
 
     m_rootNode = m_sceneManager->getRootNode();
+
+    m_axe = new Axes(m_meshScene, 4, 4);
+    m_rootNode->addChild(m_axe);
 
     m_camera = m_orbcamera;
 
@@ -434,10 +450,10 @@ void QTBEngine::saveScene(const QString& filename)
 {
     using namespace scene;
 
-    scenefile->archive(m_rootNode);
-    scenefile->exclude(m_axe);
+    m_sceneParser->archive(m_rootNode);
+    m_sceneParser->exclude(m_axe);
 
-    scenefile->saveScene(filename.toStdString());
+    m_sceneParser->saveScene(filename.toStdString());
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -449,9 +465,7 @@ void QTBEngine::loadScene(const QString& filename)
     m_fog->clear();
     m_skybox->clear();
 
-    scenefile->loadScene(filename.toStdString());
-
-    m_meshScene = scenefile->getMeshScene();
+    m_sceneParser->loadScene(filename.toStdString());
 
     for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
@@ -461,8 +475,6 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyMeshAdd(*it);
     }
 
-    m_lightScene = scenefile->getLightScene();
-
     for(Iterator<Light*> it = m_lightScene->iterator(); it; it++)
     {
         m_lights.push_back(*it);
@@ -471,8 +483,6 @@ void QTBEngine::loadScene(const QString& filename)
         emit notifyLightAdd(*it);
     }
 
-    m_particlesScene = scenefile->getParticlesScene();
-
     for(Iterator<ParticlesEmiter*> it = m_particlesScene->iterator(); it; it++)
     {
         m_particles.push_back(*it);
@@ -480,9 +490,6 @@ void QTBEngine::loadScene(const QString& filename)
 
         emit notifyParticlesAdd(*it);
     }
-
-    m_axe = new Axes(m_meshScene, 4, 4);
-    m_sceneManager->getRootNode()->addChild(m_axe);
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
@@ -545,6 +552,9 @@ tbe::scene::Mesh* QTBEngine::meshNew(const QString& filename)
 
     else if(filename.endsWith("obj"))
         mesh = new OBJMesh(m_meshScene, filename.toStdString());
+
+    else
+        throw Exception("Format du fichier non reconnue \"%s\"", filename.toStdString().c_str());
 
     m_rootNode->addChild(mesh);
 
