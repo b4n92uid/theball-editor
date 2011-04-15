@@ -490,6 +490,11 @@ void QTBEngine::loadScene(const QString& filename)
 
 }
 
+tbe::scene::Node* QTBEngine::rootNode()
+{
+    return m_rootNode;
+}
+
 void QTBEngine::fillTextInfo(QLabel* label)
 {
     QString text;
@@ -557,7 +562,7 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
     }
 }
 
-void QTBEngine::meshAdd(tbe::scene::Mesh* mesh)
+void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
 {
     m_meshs.push_back(mesh);
     m_nodes.push_back(mesh);
@@ -585,7 +590,7 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
     mesh->getParent()->addChild(newmesh);
 
-    meshAdd(newmesh);
+    meshRegister(newmesh);
 
     emit notifyMeshAdd(newmesh);
 }
@@ -598,7 +603,7 @@ tbe::scene::Light* QTBEngine::lightNew()
     return light;
 }
 
-void QTBEngine::lightAdd(tbe::scene::Light* light)
+void QTBEngine::lightRegister(tbe::scene::Light* light)
 {
     m_lights.push_back(light);
     m_nodes.push_back(light);
@@ -637,7 +642,7 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
 
     light->getParent()->addChild(newlight);
 
-    lightAdd(newlight);
+    lightRegister(newlight);
 
     emit notifyLightAdd(newlight);
 }
@@ -650,7 +655,7 @@ tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
     return light;
 }
 
-void QTBEngine::particlesAdd(tbe::scene::ParticlesEmiter* particles)
+void QTBEngine::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 {
     m_particles.push_back(particles);
     m_nodes.push_back(particles);
@@ -689,7 +694,7 @@ void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
 
     particles->getParent()->addChild(newparticles);
 
-    particlesAdd(newparticles);
+    particlesRegister(newparticles);
 
     emit notifyParticlesAdd(newparticles);
 }

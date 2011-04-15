@@ -28,6 +28,9 @@ public:
     MainWindow();
     virtual ~MainWindow();
 
+    void initWidgets();
+    void initConnections();
+
 public slots:
 
     void openSceneDialog();
@@ -45,7 +48,7 @@ public slots: // ------------------------------------------------- Node manager
     void guiSelect(const QModelIndex& index);
 
     // Update node info box
-    void updateList();
+    void updateNodeInfo(tbe::scene::Node*);
 
     void scopeNode(int move);
 
@@ -65,16 +68,18 @@ public slots: // ------------------------------------------------- Node manager
     void guiParticlesDelete();
 
     // Registre & Select mesh infos on GUI
-    void meshAdd(tbe::scene::Mesh* mesh);
+    void meshRegister(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
 
     // Registre & Select light infos on GUI
-    void lightAdd(tbe::scene::Light* light);
+    void lightRegister(tbe::scene::Light* light);
     void lightSelect(tbe::scene::Light* light, bool upList = true);
 
     // Registre & Select particles infos on GUI
-    void particlesAdd(tbe::scene::ParticlesEmiter* particles);
+    void particlesRegister(tbe::scene::ParticlesEmiter* particles);
     void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
+
+    static tbe::scene::Node* itemNode(QStandardItem* item);
 
 public slots: // -------------------------------------------------- Env manager
 
@@ -84,7 +89,7 @@ public slots: // -------------------------------------------------- Env manager
     void fogInit(tbe::scene::Fog* tbefog);
     void fogApply(bool enable = true);
 
-    void ambiantScene(const tbe::Vector3f& value);
+    void sceneAmbiant(const tbe::Vector3f& value);
 
 signals:
 

@@ -25,6 +25,8 @@ public:
 
     void fillTextInfo(QLabel* label);
 
+    tbe::scene::Node* rootNode();
+
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
@@ -45,26 +47,26 @@ public slots:
     // Create new mesh on engine
     tbe::scene::Mesh* meshNew(const QString& filename);
 
-    void meshAdd(tbe::scene::Mesh* mesh);       // Register mesh on engine
-    void meshDelete(tbe::scene::Mesh* mesh);    // Delete mesh from engine
-    void meshSelect(tbe::scene::Mesh* mesh);    // Select mesh on engine
-    void meshClone(tbe::scene::Mesh* mesh);     // Clone mesh on engine
+    void meshRegister(tbe::scene::Mesh* mesh); // Register mesh on engine
+    void meshDelete(tbe::scene::Mesh* mesh); // Delete mesh from engine
+    void meshSelect(tbe::scene::Mesh* mesh); // Select mesh on engine
+    void meshClone(tbe::scene::Mesh* mesh); // Clone mesh on engine
 
     // Create new light on engine
     tbe::scene::Light* lightNew();
 
-    void lightAdd(tbe::scene::Light* light);    // Register light on engin
+    void lightRegister(tbe::scene::Light* light); // Register light on engin
     void lightDelete(tbe::scene::Light* light); // Delete light from engin
     void lightSelect(tbe::scene::Light* light); // Select light on engine
-    void lightClone(tbe::scene::Light* light);  // Clone light on engine
+    void lightClone(tbe::scene::Light* light); // Clone light on engine
 
     // Create new particles on engine
     tbe::scene::ParticlesEmiter* particlesNew();
 
-    void particlesAdd(tbe::scene::ParticlesEmiter* particles);      // Register particles on engin
-    void particlesDelete(tbe::scene::ParticlesEmiter* particles);   // Delete particles from engin
-    void particlesSelect(tbe::scene::ParticlesEmiter* particles);   // Select particles on engine
-    void particlesClone(tbe::scene::ParticlesEmiter* particles);    // Clone particles on engine
+    void particlesRegister(tbe::scene::ParticlesEmiter* particles); // Register particles on engin
+    void particlesDelete(tbe::scene::ParticlesEmiter* particles); // Delete particles from engin
+    void particlesSelect(tbe::scene::ParticlesEmiter* particles); // Select particles on engine
+    void particlesClone(tbe::scene::ParticlesEmiter* particles); // Clone particles on engine
 
     // Setting scene ambiant light
     void sceneAmbiant(const tbe::Vector3f& value);

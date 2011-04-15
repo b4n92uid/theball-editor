@@ -19,6 +19,8 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("theBall Editor");
 
     MainWindow window;
+    window.initWidgets();
+    window.initConnections();
     window.showMaximized();
 
     #ifdef _DEBUG
