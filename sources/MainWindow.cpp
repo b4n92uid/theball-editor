@@ -25,7 +25,7 @@ Q_DECLARE_METATYPE(NodeType)
 
 MainWindow::MainWindow()
 {
-
+    somethingChange(false);
 }
 
 MainWindow::~MainWindow()
@@ -135,6 +135,19 @@ void MainWindow::initWidgets()
 
 void MainWindow::initConnections()
 {
+    /*
+     * Modification
+     * ------------
+     * Gui mod -> Node binder -> Engine
+     * Engine mod -> Gui display
+     *
+     * Allocation
+     * ----------
+     * Engine new -> Gui register -> Engine register
+     * Gui new -> Gui register -> Engine register
+     *
+     */
+
     connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
     connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
     connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
@@ -204,12 +217,15 @@ void MainWindow::initConnections()
 
     connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)), this, SLOT(meshRegister(tbe::scene::Mesh*)));
     connect(m_tbeWidget, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
+    connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
 
     connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)), this, SLOT(lightRegister(tbe::scene::Light*)));
     connect(m_tbeWidget, SIGNAL(notifyLightSelect(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
+    connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
 
     connect(m_tbeWidget, SIGNAL(notifyParticlesAdd(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesRegister(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
 
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(sceneAmbiant(const tbe::Vector3f&)));
 
@@ -220,6 +236,12 @@ void MainWindow::initConnections()
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
     m_timer->start(16);
+
+    // Change notify
+
+    connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(somethingChange()));
+    connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(somethingChange()));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(somethingChange()));
 }
 
 void MainWindow::openSceneDialog()
@@ -247,6 +269,8 @@ void MainWindow::openScene(const QString& filename)
     nodesGui.nodesListModel->invisibleRootItem()->setData(IsUnknown, ContentType);
 
     m_filename = filename;
+
+    somethingChange(false);
 }
 
 void MainWindow::saveSceneDialog()
@@ -265,6 +289,28 @@ void MainWindow::saveScene()
 void MainWindow::saveScene(const QString& filename)
 {
     m_tbeWidget->saveScene(filename);
+
+    somethingChange(false);
+}
+
+void MainWindow::somethingChange(bool stat)
+{
+    m_somethingChange = stat;
+
+    if(!m_filename.isEmpty())
+    {
+        if(m_somethingChange)
+            setWindowTitle(QString("%1 - * [%2]").arg(QApplication::applicationName()).arg(m_filename));
+        else
+            setWindowTitle(QString("%1 - [%2]").arg(QApplication::applicationName()).arg(m_filename));
+    }
+    else
+    {
+        if(m_somethingChange)
+            setWindowTitle(QString("%1 - * [Nouvelle scene]").arg(QApplication::applicationName()));
+        else
+            setWindowTitle(QString("%1 - [Nouvelle scene]").arg(QApplication::applicationName()));
+    }
 }
 
 void MainWindow::about()
