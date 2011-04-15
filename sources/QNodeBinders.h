@@ -43,6 +43,8 @@ signals:
 public slots:
     void nodeSetName(const QString& s);
     void nodeSetPos(const tbe::Vector3f& v);
+    void nodeSetRotation(const tbe::Vector3f& v);
+    void nodeSetScale(const tbe::Vector3f& v);
     void nodeSetMatrix(const tbe::Matrix4f& m);
 
     void waterSetDeform(double v);

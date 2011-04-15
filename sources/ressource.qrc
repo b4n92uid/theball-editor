@@ -17,5 +17,8 @@
     <file>../icons/cog.png</file>
     <file>../icons/cross.png</file>
     <file>../icons/page_copy.png</file>
+    <file>../icons/mesh.png</file>
+    <file>../icons/light.png</file>
+    <file>../icons/particles.png</file>
   </qresource>
 </RCC>
