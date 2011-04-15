@@ -460,7 +460,7 @@ void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
-    m_sceneManager->clearParallelScenes();
+    m_sceneManager->clearParallelScenes(false);
 
     m_fog->clear();
     m_skybox->clear();

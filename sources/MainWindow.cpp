@@ -136,6 +136,7 @@ void MainWindow::initConnections()
     connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
     connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
     connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
+    connect(m_uinterface.actionA_Propos, SIGNAL(triggered()), this, SLOT(about()));
     connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
@@ -260,6 +261,17 @@ void MainWindow::saveScene()
 void MainWindow::saveScene(const QString& filename)
 {
     m_tbeWidget->saveScene(filename);
+}
+
+void MainWindow::about()
+{
+    QDialog* aboutdlg = new QDialog(this);
+
+    Ui::About ctor;
+    ctor.setupUi(aboutdlg);
+
+    aboutdlg->open();
+    aboutdlg->raise();
 }
 
 void MainWindow::updateGui()
