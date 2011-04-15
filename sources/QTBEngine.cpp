@@ -210,6 +210,9 @@ void QTBEngine::moveApply()
     else if(Light * light = tools::find(m_lights, m_selectedNode))
         emit notifyLightSelect(light);
 
+    else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
+        emit notifyParticlesSelect(particles);
+
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 }
 

@@ -48,6 +48,8 @@ void MainWindow::initWidgets()
 
     nodesGui.name = m_uinterface.node_name;
     nodesGui.pos = new QVectorBox(this, m_uinterface.node_pos_x, m_uinterface.node_pos_y, m_uinterface.node_pos_z);
+    nodesGui.rot = new QVectorBox(this, m_uinterface.node_rot_x, m_uinterface.node_rot_y, m_uinterface.node_rot_z);
+    nodesGui.scl = new QVectorBox(this, m_uinterface.node_scl_x, m_uinterface.node_scl_y, m_uinterface.node_scl_z);
 
     nodesGui.nodeUp = m_uinterface.node_list_up;
     nodesGui.nodeDown = m_uinterface.node_list_down;
@@ -162,6 +164,8 @@ void MainWindow::initConnections()
 
     connect(nodesGui.name, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(nodeSetName(const QString&)));
     connect(nodesGui.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(nodeSetPos(const tbe::Vector3f&)));
+    connect(nodesGui.rot, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(nodeSetRotation(const tbe::Vector3f&)));
+    connect(nodesGui.scl, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(nodeSetScale(const tbe::Vector3f&)));
 
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
@@ -457,6 +461,7 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     userdata.setValue<Mesh*>(mesh);
 
     QStandardItem* itid = new QStandardItem(QString("Mesh"));
+    itid->setIcon(QIcon(":/Icons/icons/mesh.png"));
     itid->setData(userdata);
     itid->setData(IsMesh, ContentType);
 
@@ -489,6 +494,8 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 
     nodesGui.name->setText(mesh->getName().c_str());
     nodesGui.pos->setValue(mesh->getPos());
+    nodesGui.scl->setValue(mesh->getMatrix().getScale());
+    nodesGui.rot->setValue(mesh->getMatrix().getRotate());
 
     if(upList)
     {
@@ -511,6 +518,7 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
     QStandardItem* itemType = new QStandardItem("Light");
     itemType->setData(userData);
     itemType->setData(IsLight, ContentType);
+    itemType->setIcon(QIcon(":/Icons/icons/light.png"));
 
     QStandardItem* itemName = new QStandardItem(light->getName().c_str());
     itemName->setData(userData);
@@ -538,6 +546,8 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 
     nodesGui.name->setText(light->getName().c_str());
     nodesGui.pos->setValue(light->getPos());
+    nodesGui.scl->setValue(light->getMatrix().getScale());
+    nodesGui.rot->setValue(light->getMatrix().getRotate());
 
     nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
     nodesGui.lighTab.ambiant->setValue(vec43(light->getAmbient()));
@@ -566,6 +576,7 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     QStandardItem* itemType = new QStandardItem("Particles");
     itemType->setData(userData);
     itemType->setData(IsParticles, ContentType);
+    itemType->setIcon(QIcon(":/Icons/icons/particles.png"));
 
     QStandardItem* itemName = new QStandardItem(particles->getName().c_str());
     itemName->setData(userData);
@@ -596,6 +607,8 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
 
     nodesGui.name->setText(particles->getName().c_str());
     nodesGui.pos->setValue(particles->getPos());
+    nodesGui.scl->setValue(particles->getMatrix().getScale());
+    nodesGui.rot->setValue(particles->getMatrix().getRotate());
 
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
     nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());

@@ -164,6 +164,8 @@ private:
 
         QLineEdit* name;
         QVectorBox* pos;
+        QVectorBox* rot;
+        QVectorBox* scl;
 
         QTabWidget* attribTab;
 
