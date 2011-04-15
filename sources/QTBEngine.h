@@ -112,7 +112,7 @@ private:
     tbe::scene::ParticlesParallelScene* m_particlesScene;
     tbe::scene::WaterParallelScene* m_waterScene;
 
-    tbe::scene::SceneParser* scenefile;
+    tbe::scene::SceneParser* m_sceneParser;
 
     QTimer* m_updateTimer;
 
