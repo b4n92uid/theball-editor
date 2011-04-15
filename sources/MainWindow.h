@@ -45,6 +45,8 @@ public slots:
     
     void about();
 
+    void somethingChange(bool stat = true);
+
 public slots: // ------------------------------------------------- Node manager
 
     // On nodes list item select
@@ -211,6 +213,8 @@ private:
     QTimer* m_timer;
 
     Ui_mainWindow m_uinterface;
+
+    bool m_somethingChange;
 };
 
 #endif	/* MAINWINDOW_H */

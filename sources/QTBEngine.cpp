@@ -205,13 +205,13 @@ void QTBEngine::moveApply()
     }
 
     if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
-        emit notifyMeshSelect(mesh);
+        emit notifyMeshUpdate(mesh);
 
     else if(Light * light = tools::find(m_lights, m_selectedNode))
-        emit notifyLightSelect(light);
+        emit notifyLightUpdate(light);
 
     else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
-        emit notifyParticlesSelect(particles);
+        emit notifyParticlesUpdate(particles);
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 }
