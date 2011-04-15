@@ -25,12 +25,16 @@ Q_DECLARE_METATYPE(NodeType)
 
 MainWindow::MainWindow()
 {
-    m_uinterface.setupUi(this);
 
-    connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
-    connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
-    connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
-    connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
+
+MainWindow::~MainWindow()
+{
+}
+
+void MainWindow::initWidgets()
+{
+    m_uinterface.setupUi(this);
 
     m_tbeWidget = m_uinterface.glwidget;
 
@@ -38,17 +42,9 @@ MainWindow::MainWindow()
 
     nodesGui.attribTab = m_uinterface.attribTab;
 
-    connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
-    connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
-
     // Node --------------------------------------------------------------------
 
     m_qnodebind = new QNodeBinders(this);
-
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateList()));
 
     nodesGui.name = m_uinterface.node_name;
     nodesGui.pos = new QVectorBox(this, m_uinterface.node_pos_x, m_uinterface.node_pos_y, m_uinterface.node_pos_z);
@@ -57,6 +53,98 @@ MainWindow::MainWindow()
     nodesGui.nodeDown = m_uinterface.node_list_down;
     nodesGui.nodeRight = m_uinterface.node_list_makechild;
     nodesGui.nodeLeft = m_uinterface.node_list_makeparent;
+
+    // -------- Mesh
+
+    nodesGui.meshTab.add = m_uinterface.node_mesh_add;
+    nodesGui.meshTab.clone = m_uinterface.node_mesh_clone;
+    nodesGui.meshTab.del = m_uinterface.node_mesh_del;
+
+    // -------- Water
+
+    nodesGui.waterTab.deform = m_uinterface.node_water_deform;
+    nodesGui.waterTab.size = new QVector2Box(this, m_uinterface.node_water_size_x, m_uinterface.node_water_size_y);
+    nodesGui.waterTab.uvrepeat = new QVector2Box(this, m_uinterface.node_water_uvrepeat_x, m_uinterface.node_water_uvrepeat_y);
+    nodesGui.waterTab.speed = m_uinterface.node_water_speed;
+    nodesGui.waterTab.blend = m_uinterface.node_water_blend;
+    nodesGui.waterTab.add = m_uinterface.node_water_add;
+    nodesGui.waterTab.clone = m_uinterface.node_water_clone;
+    nodesGui.waterTab.del = m_uinterface.node_water_del;
+
+    // -------- Particles
+
+    nodesGui.particlesTab.gravity = new QVectorBox(this, m_uinterface.node_particles_gravity_x, m_uinterface.node_particles_gravity_y, m_uinterface.node_particles_gravity_z);
+    nodesGui.particlesTab.freemove = m_uinterface.node_particles_freemove;
+    nodesGui.particlesTab.lifeinit = m_uinterface.node_particles_lifeinit;
+    nodesGui.particlesTab.lifedown = m_uinterface.node_particles_lifedown;
+    nodesGui.particlesTab.number = m_uinterface.node_particles_number;
+    nodesGui.particlesTab.texture = new QBrowsEdit(this, m_uinterface.node_particles_texture, m_uinterface.node_particles_texture_browse);
+    nodesGui.particlesTab.continiousmode = m_uinterface.node_particles_continousmide;
+    nodesGui.particlesTab.build = m_uinterface.node_particles_build;
+    nodesGui.particlesTab.add = m_uinterface.node_particles_add;
+    nodesGui.particlesTab.clone = m_uinterface.node_particles_clone;
+    nodesGui.particlesTab.del = m_uinterface.node_particles_del;
+
+    // -------- Lights
+
+    nodesGui.lighTab.type = m_uinterface.node_light_type;
+
+    nodesGui.lighTab.ambiant = new QVectorBox(this, m_uinterface.node_light_ambiant_x, m_uinterface.node_light_ambiant_y, m_uinterface.node_light_ambiant_z);
+    nodesGui.lighTab.diffuse = new QVectorBox(this, m_uinterface.node_light_diffuse_x, m_uinterface.node_light_diffuse_y, m_uinterface.node_light_diffuse_z);
+    nodesGui.lighTab.specular = new QVectorBox(this, m_uinterface.node_light_specular_x, m_uinterface.node_light_specular_y, m_uinterface.node_light_specular_z);
+
+    nodesGui.lighTab.radius = m_uinterface.node_light_radius;
+
+    nodesGui.lighTab.add = m_uinterface.node_light_add;
+    nodesGui.lighTab.clone = m_uinterface.node_light_clone;
+    nodesGui.lighTab.del = m_uinterface.node_light_del;
+
+    // Nodes liste -------------------------------------------------------------
+
+    QStringList headerLabels;
+    headerLabels << "Type" << "Nom";
+
+    nodesGui.nodesListModel = new QStandardItemModel(this);
+    nodesGui.nodesListModel->setHorizontalHeaderLabels(headerLabels);
+
+    nodesGui.nodesListView = m_uinterface.node_list;
+    nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    nodesGui.nodesListView->setModel(nodesGui.nodesListModel);
+
+    // Environment -------------------------------------------------------------
+
+    envGui.sceneAmbiant = new QVectorBox(this, m_uinterface.env_ambient_x, m_uinterface.env_ambient_y, m_uinterface.env_ambient_z);
+
+    envGui.skybox.apply = m_uinterface.skybox_apply;
+    envGui.skybox.enable = m_uinterface.skybox_enable;
+
+    envGui.skybox.textures[0] = new QBrowsEdit(this, m_uinterface.skybox_front, m_uinterface.skybox_front_browse);
+    envGui.skybox.textures[1] = new QBrowsEdit(this, m_uinterface.skybox_back, m_uinterface.skybox_back_browse);
+    envGui.skybox.textures[2] = new QBrowsEdit(this, m_uinterface.skybox_left, m_uinterface.skybox_left_browse);
+    envGui.skybox.textures[3] = new QBrowsEdit(this, m_uinterface.skybox_right, m_uinterface.skybox_right_browse);
+    envGui.skybox.textures[4] = new QBrowsEdit(this, m_uinterface.skybox_top, m_uinterface.skybox_top_browse);
+    envGui.skybox.textures[5] = new QBrowsEdit(this, m_uinterface.skybox_bottom, m_uinterface.skybox_bottom_browse);
+
+    envGui.fog.color = new QVectorBox(this, m_uinterface.fog_x, m_uinterface.fog_y, m_uinterface.fog_z);
+    envGui.fog.start = m_uinterface.fog_start;
+    envGui.fog.end = m_uinterface.fog_end;
+    envGui.fog.enable = m_uinterface.fog_enable;
+}
+
+void MainWindow::initConnections()
+{
+    connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
+    connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
+    connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
+    connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+    connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
+    connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
+
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateNodeInfo(tbe::scene::Node*)));
 
     QSignalMapper* nodeMoveBind = new QSignalMapper(this);
     nodeMoveBind->setMapping(nodesGui.nodeUp, 1);
@@ -74,46 +162,15 @@ MainWindow::MainWindow()
     connect(nodesGui.name, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(nodeSetName(const QString&)));
     connect(nodesGui.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(nodeSetPos(const tbe::Vector3f&)));
 
-    // -------- Mesh
-
-    nodesGui.meshTab.add = m_uinterface.node_mesh_add;
-    nodesGui.meshTab.clone = m_uinterface.node_mesh_clone;
-    nodesGui.meshTab.del = m_uinterface.node_mesh_del;
-
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
     connect(nodesGui.meshTab.del, SIGNAL(clicked()), this, SLOT(guiMeshDelete()));
-
-    // -------- Water
-
-    nodesGui.waterTab.deform = m_uinterface.node_water_deform;
-    nodesGui.waterTab.size = new QVector2Box(this, m_uinterface.node_water_size_x, m_uinterface.node_water_size_y);
-    nodesGui.waterTab.uvrepeat = new QVector2Box(this, m_uinterface.node_water_uvrepeat_x, m_uinterface.node_water_uvrepeat_y);
-    nodesGui.waterTab.speed = m_uinterface.node_water_speed;
-    nodesGui.waterTab.blend = m_uinterface.node_water_blend;
-    nodesGui.waterTab.add = m_uinterface.node_water_add;
-    nodesGui.waterTab.clone = m_uinterface.node_water_clone;
-    nodesGui.waterTab.del = m_uinterface.node_water_del;
 
     connect(nodesGui.waterTab.deform, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetDeform(double)));
     connect(nodesGui.waterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(waterSetSize(const tbe::Vector2f&)));
     connect(nodesGui.waterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(waterSetUvRepeat(const tbe::Vector2f&)));
     connect(nodesGui.waterTab.speed, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetSpeed(double)));
     connect(nodesGui.waterTab.blend, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetBlend(double)));
-
-    // -------- Particles
-
-    nodesGui.particlesTab.gravity = new QVectorBox(this, m_uinterface.node_particles_gravity_x, m_uinterface.node_particles_gravity_y, m_uinterface.node_particles_gravity_z);
-    nodesGui.particlesTab.freemove = m_uinterface.node_particles_freemove;
-    nodesGui.particlesTab.lifeinit = m_uinterface.node_particles_lifeinit;
-    nodesGui.particlesTab.lifedown = m_uinterface.node_particles_lifedown;
-    nodesGui.particlesTab.number = m_uinterface.node_particles_number;
-    nodesGui.particlesTab.texture = new QBrowsEdit(this, m_uinterface.node_particles_texture, m_uinterface.node_particles_texture_browse);
-    nodesGui.particlesTab.continiousmode = m_uinterface.node_particles_continousmide;
-    nodesGui.particlesTab.build = m_uinterface.node_particles_build;
-    nodesGui.particlesTab.add = m_uinterface.node_particles_add;
-    nodesGui.particlesTab.clone = m_uinterface.node_particles_clone;
-    nodesGui.particlesTab.del = m_uinterface.node_particles_del;
 
     connect(nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(particleSetGravity(const tbe::Vector3f&)));
     connect(nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetFreemove(double)));
@@ -123,20 +180,6 @@ MainWindow::MainWindow()
     connect(nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), m_qnodebind, SLOT(particleSetTexture(const QString&)));
     connect(nodesGui.particlesTab.continiousmode, SIGNAL(stateChanged(int)), m_qnodebind, SLOT(particleSetContinousMode(int)));
     connect(nodesGui.particlesTab.build, SIGNAL(clicked()), m_qnodebind, SLOT(particleBuild()));
-
-    // -------- Lights
-
-    nodesGui.lighTab.type = m_uinterface.node_light_type;
-
-    nodesGui.lighTab.ambiant = new QVectorBox(this, m_uinterface.node_light_ambiant_x, m_uinterface.node_light_ambiant_y, m_uinterface.node_light_ambiant_z);
-    nodesGui.lighTab.diffuse = new QVectorBox(this, m_uinterface.node_light_diffuse_x, m_uinterface.node_light_diffuse_y, m_uinterface.node_light_diffuse_z);
-    nodesGui.lighTab.specular = new QVectorBox(this, m_uinterface.node_light_specular_x, m_uinterface.node_light_specular_y, m_uinterface.node_light_specular_z);
-
-    nodesGui.lighTab.radius = m_uinterface.node_light_radius;
-
-    nodesGui.lighTab.add = m_uinterface.node_light_add;
-    nodesGui.lighTab.clone = m_uinterface.node_light_clone;
-    nodesGui.lighTab.del = m_uinterface.node_light_del;
 
     connect(nodesGui.lighTab.type, SIGNAL(activated(int)), m_qnodebind, SLOT(lightSetType(int)));
     connect(nodesGui.lighTab.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(lightSetAmbiant(const tbe::Vector3f&)));
@@ -148,60 +191,26 @@ MainWindow::MainWindow()
     connect(nodesGui.lighTab.clone, SIGNAL(clicked()), this, SLOT(guiLightClone()));
     connect(nodesGui.lighTab.del, SIGNAL(clicked()), this, SLOT(guiLightDelete()));
 
-    // Nodes liste -------------------------------------------------------------
-
-    QStringList headerLabels;
-    headerLabels << "Type" << "Nom";
-
-    nodesGui.nodesListModel = new QStandardItemModel(this);
-    nodesGui.nodesListModel->setHorizontalHeaderLabels(headerLabels);
-
-    nodesGui.nodesListView = m_uinterface.node_list;
-    nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    nodesGui.nodesListView->setModel(nodesGui.nodesListModel);
-
     connect(nodesGui.nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
 
-    connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)), this, SLOT(meshAdd(tbe::scene::Mesh*)));
+    connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)), this, SLOT(meshRegister(tbe::scene::Mesh*)));
     connect(m_tbeWidget, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
 
-    connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)), this, SLOT(lightAdd(tbe::scene::Light*)));
+    connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)), this, SLOT(lightRegister(tbe::scene::Light*)));
     connect(m_tbeWidget, SIGNAL(notifyLightSelect(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
 
-    connect(m_tbeWidget, SIGNAL(notifyParticlesAdd(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesAdd(tbe::scene::ParticlesEmiter*)));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesAdd(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesRegister(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
 
-    // Environment -------------------------------------------------------------
-
-    envGui.sceneAmbiant = new QVectorBox(this, m_uinterface.env_ambient_x, m_uinterface.env_ambient_y, m_uinterface.env_ambient_z);
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(ambiantScene(const tbe::Vector3f&)));
-
-    envGui.skybox.apply = m_uinterface.skybox_apply;
-    envGui.skybox.enable = m_uinterface.skybox_enable;
-
-    envGui.skybox.textures[0] = new QBrowsEdit(this, m_uinterface.skybox_front, m_uinterface.skybox_front_browse);
-    envGui.skybox.textures[1] = new QBrowsEdit(this, m_uinterface.skybox_back, m_uinterface.skybox_back_browse);
-    envGui.skybox.textures[2] = new QBrowsEdit(this, m_uinterface.skybox_left, m_uinterface.skybox_left_browse);
-    envGui.skybox.textures[3] = new QBrowsEdit(this, m_uinterface.skybox_right, m_uinterface.skybox_right_browse);
-    envGui.skybox.textures[4] = new QBrowsEdit(this, m_uinterface.skybox_top, m_uinterface.skybox_top_browse);
-    envGui.skybox.textures[5] = new QBrowsEdit(this, m_uinterface.skybox_bottom, m_uinterface.skybox_bottom_browse);
-
-    envGui.fog.color = new QVectorBox(this, m_uinterface.fog_x, m_uinterface.fog_y, m_uinterface.fog_z);
-    envGui.fog.start = m_uinterface.fog_start;
-    envGui.fog.end = m_uinterface.fog_end;
-    envGui.fog.enable = m_uinterface.fog_enable;
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(sceneAmbiant(const tbe::Vector3f&)));
 
     connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fogInit(tbe::scene::Fog*)));
     connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxInit(tbe::scene::SkyBox*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiantScene(const tbe::Vector3f&)));
+    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiant(const tbe::Vector3f&)));
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
     m_timer->start(16);
-}
-
-MainWindow::~MainWindow()
-{
 }
 
 void MainWindow::openSceneDialog()
@@ -221,6 +230,12 @@ void MainWindow::openScene(const QString& filename)
     QDir::setCurrent(QFileInfo(filename).path());
 
     m_tbeWidget->loadScene(filename);
+
+    QVariant rootUserData;
+    rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
+
+    nodesGui.nodesListModel->invisibleRootItem()->setData(rootUserData);
+    nodesGui.nodesListModel->invisibleRootItem()->setData(IsUnknown, ContentType);
 
     m_filename = filename;
 }
@@ -302,7 +317,7 @@ void MainWindow::guiMeshNew()
     {
         tbe::scene::Mesh* mesh = m_tbeWidget->meshNew(filename);
 
-        meshAdd(mesh);
+        meshRegister(mesh);
         meshSelect(mesh);
     }
 
@@ -331,7 +346,7 @@ void MainWindow::guiMeshDelete()
     }
 }
 
-void MainWindow::meshAdd(tbe::scene::Mesh* mesh)
+void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
 {
     using namespace tbe::scene;
 
@@ -403,7 +418,7 @@ void MainWindow::guiLightNew()
 
     Light* light = m_tbeWidget->lightNew();
 
-    lightAdd(light);
+    lightRegister(light);
     lightSelect(light);
 }
 
@@ -435,7 +450,7 @@ void MainWindow::guiParticlesNew()
 
     ParticlesEmiter* particles = m_tbeWidget->particlesNew();
 
-    particlesAdd(particles);
+    particlesRegister(particles);
     particlesSelect(particles);
 }
 
@@ -461,7 +476,7 @@ void MainWindow::guiParticlesDelete()
     }
 }
 
-void MainWindow::lightAdd(tbe::scene::Light* light)
+void MainWindow::lightRegister(tbe::scene::Light* light)
 {
     using namespace tbe::scene;
 
@@ -514,7 +529,7 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
     nodesGui.attribTab->setCurrentIndex(0);
 }
 
-void MainWindow::particlesAdd(tbe::scene::ParticlesEmiter* particles)
+void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 {
     using namespace tbe::scene;
 
@@ -574,69 +589,76 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
 
 void MainWindow::scopeNode(int move)
 {
-    using namespace tbe::scene;
-
     QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(nodesGui.nodesListView->currentIndex());
+    QStandardItem* parent = item->parent() ? item->parent() : nodesGui.nodesListModel->invisibleRootItem();
 
     int currRow = item->row();
 
-    QList<QStandardItem*> row = nodesGui.nodesListModel->takeRow(currRow);
+    QList<QStandardItem*> row = parent->takeRow(currRow);
 
     if(move == 1) // Up
     {
         currRow = std::max(currRow - 1, 0);
-        nodesGui.nodesListModel->insertRow(currRow, row);
+        parent->insertRow(currRow, row);
 
-        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->index(currRow, 0));
+        nodesGui.nodesListView->setCurrentIndex(item->index());
     }
     else if(move == 2) // Down
     {
-        int rowCount = nodesGui.nodesListModel->rowCount();
-        currRow = std::min(currRow + 1, rowCount);
-        nodesGui.nodesListModel->insertRow(currRow, row);
+        currRow = std::min(currRow + 1, parent->rowCount());
+        parent->insertRow(currRow, row);
 
-        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->index(currRow, 0));
+        nodesGui.nodesListView->setCurrentIndex(item->index());
     }
     else if(move == 3) // Left
     {
-        Node* parent = item->parent()->data().value<Node*>();
-        Node* curr = item->data().value<Node*>();
+        if(parent != nodesGui.nodesListModel->invisibleRootItem())
+        {
+            QStandardItem* host = parent->parent()
+                    ? parent->parent()
+                    : nodesGui.nodesListModel->invisibleRootItem();
+
+            host->insertRow(parent->row() + 1, row);
+
+            tbe::scene::Node* parentNode = itemNode(host);
+            tbe::scene::Node* currNode = itemNode(item);
+
+            currNode->setParent(parentNode);
+        }
+        else
+            parent->insertRow(currRow, row);
+
+        nodesGui.nodesListView->setCurrentIndex(item->index());
     }
     else if(move == 4) // Right
     {
-        Node* prev = nodesGui.nodesListModel->item(currRow - 1)->data().value<Node*>();
-        Node* curr = item->data().value<Node*>();
+        if(currRow > 0)
+        {
+            QStandardItem* host = parent->child(currRow - 1);
+
+            host->appendRow(row);
+
+            tbe::scene::Node* parentNode = itemNode(host);
+            tbe::scene::Node* currNode = itemNode(item);
+
+            currNode->setParent(parentNode);
+        }
+        else
+            parent->insertRow(currRow, row);
+
+        nodesGui.nodesListView->setCurrentIndex(item->index());
     }
 
 }
 
-void MainWindow::updateList()
+void MainWindow::updateNodeInfo(tbe::scene::Node* node)
 {
-    int count = nodesGui.nodesListModel->rowCount();
+    QStandardItem* itemType = node->getUserData().getValue<QStandardItem*>();
+    QStandardItem* itemName = itemType->parent()
+            ? itemType->parent()->child(itemType->row(), 1)
+            : nodesGui.nodesListModel->item(itemType->row(), 1);
 
-    for(int i = 0; i < count; i++)
-    {
-        using namespace tbe::scene;
-
-        QStandardItem* item = nodesGui.nodesListModel->item(i);
-        QStandardItem* itemName = nodesGui.nodesListModel->item(i, 1);
-
-        Node* node = NULL;
-
-        if(item->data().canConvert<Light*>())
-            node = item->data().value<Light*>();
-
-        else if(item->data().canConvert<Mesh*>())
-            node = item->data().value<Mesh*>();
-
-        else if(item->data().canConvert<ParticlesEmiter*>())
-            node = item->data().value<ParticlesEmiter*>();
-
-        else if(item->data().canConvert<Water*>())
-            node = item->data().value<Water*>();
-
-        itemName->setText(node->getName().c_str());
-    }
+    itemName->setText(node->getName().c_str());
 }
 
 void MainWindow::skyboxApply(bool enable)
@@ -668,7 +690,7 @@ void MainWindow::fogApply(bool enable)
         m_tbeWidget->fogClear();
 }
 
-void MainWindow::ambiantScene(const tbe::Vector3f& value)
+void MainWindow::sceneAmbiant(const tbe::Vector3f& value)
 {
     envGui.sceneAmbiant->setValue(value);
 }
@@ -697,4 +719,29 @@ void MainWindow::skyboxInit(tbe::scene::SkyBox* sky)
 
     connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(skyboxApply(bool)));
     connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(skyboxApply()));
+}
+
+tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)
+{
+    int type = item->data(ContentType).toInt();
+
+    switch(type)
+    {
+        case IsLight:
+            return item->data().value<tbe::scene::Light*>();
+
+        case IsMesh:
+            return item->data().value<tbe::scene::Mesh*>();
+
+        case IsWater:
+            return item->data().value<tbe::scene::Water*>();
+
+        case IsParticles:
+            return item->data().value<tbe::scene::ParticlesEmiter*>();
+
+        case IsUnknown:
+            return item->data().value<tbe::scene::Node*>();
+
+        default: return NULL;
+    }
 }
