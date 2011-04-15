@@ -1364,7 +1364,7 @@
     <property name="title">
      <string>?</string>
     </property>
-    <addaction name="actionA_Prpos"/>
+    <addaction name="actionA_Propos"/>
    </widget>
    <widget class="QMenu" name="menuAffichage">
     <property name="title">
@@ -1438,13 +1438,16 @@
     <string>Ajouter</string>
    </property>
   </action>
-  <action name="actionA_Prpos">
+  <action name="actionA_Propos">
    <property name="icon">
     <iconset resource="ressource.qrc">
      <normaloff>:/Icons/icons/vcard.png</normaloff>:/Icons/icons/vcard.png</iconset>
    </property>
    <property name="text">
     <string>A Propos</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
    </property>
   </action>
   <action name="actionNouvelle_scene">

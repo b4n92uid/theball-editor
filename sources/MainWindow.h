@@ -12,6 +12,7 @@
 #include <Tbe.h>
 
 #include "ui_interface.h"
+#include "ui_about.h"
 
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
@@ -41,6 +42,8 @@ public slots:
     void saveScene();
 
     void updateGui();
+    
+    void about();
 
 public slots: // ------------------------------------------------- Node manager
 
