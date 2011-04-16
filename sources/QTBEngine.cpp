@@ -663,7 +663,7 @@ void QTBEngine::lightSelect(tbe::scene::Light* light)
 
     if(m_selectedNode)
     {
-        m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
         m_axe->setSize(0.5);
     }
@@ -716,7 +716,7 @@ void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
 
     if(m_selectedNode)
     {
-        m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
         m_axe->setSize(0.5);
     }
