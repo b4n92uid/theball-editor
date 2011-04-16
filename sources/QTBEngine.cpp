@@ -90,14 +90,23 @@ void QTBEngine::initializeGL()
 
     m_rootNode = m_sceneManager->getRootNode();
 
-    m_axe = new Axes(m_meshScene, 4, 4);
-    m_rootNode->addChild(m_axe);
-
     m_camera = m_orbcamera;
+
+    setupSelection();
 
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
     m_updateTimer->start(16);
+}
+
+void QTBEngine::setupSelection()
+{
+    using namespace scene;
+
+    m_axe = new Box(m_meshScene, 1);
+    m_axe->getMaterial("main")->enable(Material::COLOR | Material::BLEND_MOD);
+    m_axe->applyColor("main", Vector4f(0, 0, 1, 0.25));
+    m_rootNode->addChild(m_axe);
 }
 
 void QTBEngine::pauseRendring()
@@ -220,6 +229,11 @@ void QTBEngine::paintGL()
 {
     moveApply();
 
+    Vector3f campos = m_orbcamera->getCenter();
+
+    if(m_centerTarget - campos > 0.01)
+        m_orbcamera->setCenter(campos + (m_centerTarget - campos) / 8.0f);
+
     m_device->beginScene();
     m_sceneManager->render();
     m_curCursor3D = m_sceneManager->screenToWorld(m_curCursorPos);
@@ -262,8 +276,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
-        m_axe->setPos(m_curCursor3D);
-        m_orbcamera->setCenter(m_curCursor3D);
+        // m_axe->setPos(m_curCursor3D);
+        m_centerTarget = m_curCursor3D;
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -498,6 +512,7 @@ void QTBEngine::loadScene(const QString& filename)
     emit notifyInitSkybox(m_skybox);
     emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 
+    setupSelection();
 }
 
 tbe::scene::Node* QTBEngine::rootNode()
@@ -515,9 +530,13 @@ void QTBEngine::fillTextInfo(QLabel* label)
     {
         QString name = m_selectedNode->getName().c_str();
         tbe::Vector3f pos = m_selectedNode->getPos();
+        tbe::AABB aabb = m_selectedNode->getAabb();
 
         text += QString("Node: %1\n").arg(name);
-        text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
+        text += QString("|_Pos: %1 %2 %3\n").arg(pos.x).arg(pos.y).arg(pos.z);
+        text += QString("|_Aabb: (%1,%2,%3) (%4,%5,%6)")
+                .arg(aabb.min.x).arg(aabb.min.y).arg(aabb.min.z)
+                .arg(aabb.max.x).arg(aabb.max.y).arg(aabb.max.z);
 
 
         if(!m_selectedNode->getParent()->isRoot())
@@ -570,8 +589,10 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 
     if(m_selectedNode)
     {
-        m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
-        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
+        // m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
+        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos() + m_selectedNode->getAabb().getCenter());
+        m_axe->setSize(m_selectedNode->getAabb().getSize() / 2.0f + 0.01f);
     }
 }
 
@@ -644,6 +665,7 @@ void QTBEngine::lightSelect(tbe::scene::Light* light)
     {
         m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_axe->setSize(0.5);
     }
 }
 
@@ -696,6 +718,7 @@ void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
     {
         m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
+        m_axe->setSize(0.5);
     }
 }
 
