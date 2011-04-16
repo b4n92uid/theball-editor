@@ -73,7 +73,7 @@
         </ccTool>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>D:/projets/cpp/tbengine/dist/Release/MinGW-Windows/libtbengine.a</linkerLibFileItem>
+            <linkerLibFileItem>D:/projets/cpp/tbengine/dist/Debug/MinGW-Windows/libtbengine.a</linkerLibFileItem>
             <linkerLibFileItem>D:/librairies/cpp/devil/DevIL-SDK-x86-1.7.8/lib/DevIL.lib</linkerLibFileItem>
             <linkerLibFileItem>D:/librairies/cpp/freetype/freetype-2.3.9/objs/.libs/libfreetype.a</linkerLibFileItem>
             <linkerLibLibItem>opengl32</linkerLibLibItem>
