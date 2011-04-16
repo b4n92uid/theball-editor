@@ -284,6 +284,8 @@ void MainWindow::saveSceneDialog()
 void MainWindow::saveScene()
 {
     saveScene(m_filename);
+
+    statusBar()->showMessage("Scene enregistrer...", 2000);
 }
 
 void MainWindow::saveScene(const QString& filename)
