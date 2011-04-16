@@ -42,6 +42,8 @@ protected:
 
     void moveApply();
 
+    void setupSelection();
+
 public slots:
 
     // Create new mesh on engine
@@ -125,8 +127,10 @@ private:
     tbe::Vector2i m_curCursorPos;
     tbe::Vector3f m_curCursor3D;
 
+    tbe::Vector3f m_centerTarget;
+
     tbe::scene::Node* m_selectedNode;
-    tbe::scene::Mesh* m_axe;
+    tbe::scene::Box* m_axe;
 
     tbe::scene::Node::Array m_nodes;
     tbe::scene::Mesh::Array m_meshs;
