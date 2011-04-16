@@ -106,6 +106,7 @@ void QTBEngine::setupSelection()
     m_axe = new Box(m_meshScene, 1);
     m_axe->getMaterial("main")->enable(Material::COLOR | Material::BLEND_MOD);
     m_axe->applyColor("main", Vector4f(0, 0, 1, 0.25));
+    m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
 }
 
@@ -298,7 +299,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         sortfunc.type = 2;
         std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
-        foreach(Mesh* node, m_meshs)
+        foreach(Mesh * node, m_meshs)
         {
             if(node->getAbsolutAabb().add(Vector3f(0.5f)).isInner(m_curCursor3D))
             {
@@ -512,6 +513,8 @@ void QTBEngine::loadScene(const QString& filename)
     emit notifyInitSkybox(m_skybox);
     emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 
+    m_selectedNode = NULL;
+
     setupSelection();
 }
 
@@ -594,6 +597,8 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos() + m_selectedNode->getAabb().getCenter());
         m_axe->setSize(m_selectedNode->getAabb().getSize() / 2.0f + 0.01f);
     }
+
+    m_axe->setEnable(m_selectedNode);
 }
 
 void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
@@ -667,6 +672,8 @@ void QTBEngine::lightSelect(tbe::scene::Light* light)
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
         m_axe->setSize(0.5);
     }
+
+    m_axe->setEnable(m_selectedNode);
 }
 
 void QTBEngine::lightClone(tbe::scene::Light* light)
@@ -718,8 +725,10 @@ void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
     {
         m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
-        m_axe->setSize(0.5);
+        m_axe->setSize(Vector3f(0.5, 1, 0.5));
     }
+
+    m_axe->setEnable(m_selectedNode);
 }
 
 void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
