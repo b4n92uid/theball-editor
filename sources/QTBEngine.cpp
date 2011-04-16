@@ -307,6 +307,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 break;
             }
         }
+
+        m_axe->setEnable(m_selectedNode);
     }
 }
 
