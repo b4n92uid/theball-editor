@@ -12,6 +12,7 @@
 #include <QPoint>
 #include <QPointF>
 #include <QSize>
+#include <QDebug>
 
 inline tbe::Vector2i qstovec(QSize size)
 {
@@ -26,6 +27,16 @@ inline tbe::Vector2i qptovec(QPoint size)
 inline tbe::Vector2f qpftovec(QPointF point)
 {
     return tbe::Vector2f(point.x(), point.y());
+}
+
+QDebug operator<<(QDebug d, const tbe::Vector3f& vec)
+{
+    return d << vec.x << "," << vec.y << "," << vec.z;
+}
+
+QDebug operator<<(QDebug d, const tbe::AABB& aabb)
+{
+    return d << aabb.min << aabb.max;
 }
 
 #endif	/* TOOLS_H */
