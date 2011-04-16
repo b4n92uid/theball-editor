@@ -277,7 +277,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
-        // m_axe->setPos(m_curCursor3D);
         m_centerTarget = m_curCursor3D;
     }
 
@@ -592,7 +591,6 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 
     if(m_selectedNode)
     {
-        // m_orbcamera->setCenter(m_selectedNode->getAbsoluteMatrix().getPos());
         m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
         m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos() + m_selectedNode->getAabb().getCenter());
         m_axe->setSize(m_selectedNode->getAabb().getSize() / 2.0f + 0.01f);

@@ -42,12 +42,14 @@ public slots:
     void saveScene();
 
     void updateGui();
-    
+
     void about();
 
     void somethingChange(bool stat = true);
 
 public slots: // ------------------------------------------------- Node manager
+
+    void closeEvent(QCloseEvent *event);
 
     // On nodes list item select
     void guiSelect(const QModelIndex& index);

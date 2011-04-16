@@ -244,6 +244,31 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(somethingChange()));
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(m_somethingChange)
+    {
+        QMessageBox::StandardButton answer =
+                QMessageBox::warning(this, "Enregistrer ?",
+                                     "La scene a été modifier\nVous-les vous enregistrer avant de quitter ?",
+                                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+        if(answer == QMessageBox::Yes)
+        {
+            saveScene();
+            event->accept();
+        }
+
+        else if(answer == QMessageBox::No)
+            event->accept();
+
+        else if(answer == QMessageBox::Cancel)
+            event->ignore();
+    }
+    else
+        event->accept();
+}
+
 void MainWindow::openSceneDialog()
 {
     m_tbeWidget->pauseRendring();
@@ -283,9 +308,10 @@ void MainWindow::saveSceneDialog()
 
 void MainWindow::saveScene()
 {
-    saveScene(m_filename);
-
-    statusBar()->showMessage("Scene enregistrer...", 2000);
+    if(m_filename.isEmpty())
+        saveSceneDialog();
+    else
+        saveScene(m_filename);
 }
 
 void MainWindow::saveScene(const QString& filename)
@@ -293,6 +319,8 @@ void MainWindow::saveScene(const QString& filename)
     m_tbeWidget->saveScene(filename);
 
     somethingChange(false);
+
+    statusBar()->showMessage("Scene enregistrer...", 2000);
 }
 
 void MainWindow::somethingChange(bool stat)
