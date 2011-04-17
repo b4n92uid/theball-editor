@@ -99,6 +99,23 @@ void QTBEngine::initializeGL()
     m_updateTimer->start(16);
 }
 
+void QTBEngine::placeSelection()
+{
+    if(!m_axe)
+        return;
+
+    AABB selAabb = m_selectedNode->getAabb();
+
+    if(!selAabb.max || !selAabb.min)
+        selAabb = 0.5;
+
+    m_axe->setMatrix(m_selectedNode->getAbsoluteMatrix());
+    m_axe->setPos(m_selectedNode->getAbsoluteMatrix() * selAabb.getCenter());
+    m_axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
+
+    m_axe->setEnable(m_selectedNode);
+}
+
 void QTBEngine::setupSelection()
 {
     using namespace scene;
@@ -172,8 +189,6 @@ void QTBEngine::moveApply()
 
     m_selectedNode->setMatrix(matrix);
 
-    m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
-
     // Movement ----------------------------------------------------------------
 
     if(m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
@@ -209,7 +224,6 @@ void QTBEngine::moveApply()
 
         Vector3f abs = m_selectedNode->getAbsoluteMatrix().getPos();
 
-        m_axe->setPos(abs);
         m_orbcamera->setCenter(abs);
 
     }
@@ -224,6 +238,8 @@ void QTBEngine::moveApply()
         emit notifyParticlesUpdate(particles);
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
+
+    placeSelection();
 }
 
 void QTBEngine::paintGL()
@@ -307,8 +323,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 break;
             }
         }
-
-        m_axe->setEnable(m_selectedNode);
     }
 }
 
@@ -479,7 +493,10 @@ void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
-    m_sceneManager->clearParallelScenes(false);
+    //    m_sceneManager->clearParallelScenes(false);
+    m_rootNode->clearAllChild();
+
+    m_axe = NULL;
 
     m_fog->clear();
     m_skybox->clear();
@@ -594,11 +611,9 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
     if(m_selectedNode)
     {
         m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
-        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos() + m_selectedNode->getAabb().getCenter());
-        m_axe->setSize(m_selectedNode->getAabb().getSize() / 2.0f + 0.01f);
-    }
 
-    m_axe->setEnable(m_selectedNode);
+        placeSelection();
+    }
 }
 
 void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
@@ -669,11 +684,9 @@ void QTBEngine::lightSelect(tbe::scene::Light* light)
     if(m_selectedNode)
     {
         m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
-        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
-        m_axe->setSize(0.5);
-    }
 
-    m_axe->setEnable(m_selectedNode);
+        placeSelection();
+    }
 }
 
 void QTBEngine::lightClone(tbe::scene::Light* light)
@@ -724,11 +737,9 @@ void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
     if(m_selectedNode)
     {
         m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
-        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos());
-        m_axe->setSize(Vector3f(0.5, 1, 0.5));
-    }
 
-    m_axe->setEnable(m_selectedNode);
+        placeSelection();
+    }
 }
 
 void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
