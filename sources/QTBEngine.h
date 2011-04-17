@@ -44,6 +44,8 @@ protected:
 
     void setupSelection();
 
+    void placeSelection();
+
 public slots:
 
     // Create new mesh on engine
