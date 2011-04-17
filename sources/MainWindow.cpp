@@ -76,6 +76,7 @@ void MainWindow::initWidgets()
     // -------- Particles
 
     nodesGui.particlesTab.gravity = new QVectorBox(this, m_uinterface.node_particles_gravity_x, m_uinterface.node_particles_gravity_y, m_uinterface.node_particles_gravity_z);
+    nodesGui.particlesTab.boxsize = new QVectorBox(this, m_uinterface.node_particles_boxsize_x, m_uinterface.node_particles_boxsize_y, m_uinterface.node_particles_boxsize_z);
     nodesGui.particlesTab.freemove = m_uinterface.node_particles_freemove;
     nodesGui.particlesTab.lifeinit = m_uinterface.node_particles_lifeinit;
     nodesGui.particlesTab.lifedown = m_uinterface.node_particles_lifedown;
@@ -191,6 +192,7 @@ void MainWindow::initConnections()
     connect(nodesGui.waterTab.blend, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetBlend(double)));
 
     connect(nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(particleSetGravity(const tbe::Vector3f&)));
+    connect(nodesGui.particlesTab.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), m_qnodebind, SLOT(particleSetBoxsize(const tbe::Vector3f&)));
     connect(nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetFreemove(double)));
     connect(nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetLifeinit(double)));
     connect(nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(particleSetLifedown(double)));

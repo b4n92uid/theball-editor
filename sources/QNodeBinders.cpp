@@ -183,6 +183,15 @@ void QNodeBinders::particleSetGravity(const tbe::Vector3f& v)
     }
 }
 
+void QNodeBinders::particleSetBoxsize(const tbe::Vector3f& v)
+{
+    if(m_curparticles)
+    {
+        m_curparticles->setBoxSize(v);
+        emit notifyUpdate(m_curparticles);
+    }
+}
+
 void QNodeBinders::particleSetFreemove(double v)
 {
     if(m_curparticles)

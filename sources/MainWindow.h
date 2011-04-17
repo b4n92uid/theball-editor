@@ -149,6 +149,7 @@ private:
         struct
         {
             QVectorBox* gravity;
+            QVectorBox* boxsize;
             QDoubleSpinBox* freemove;
             QDoubleSpinBox* lifeinit;
             QDoubleSpinBox* lifedown;

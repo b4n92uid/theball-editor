@@ -54,6 +54,7 @@ public slots:
     void waterSetBlend(double v);
 
     void particleSetGravity(const tbe::Vector3f& v);
+    void particleSetBoxsize(const tbe::Vector3f& v);
     void particleSetFreemove(double v);
     void particleSetLifeinit(double v);
     void particleSetLifedown(double v);
