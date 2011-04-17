@@ -285,6 +285,8 @@ void MainWindow::openScene(const QString& filename)
 {
     QDir::setCurrent(QFileInfo(filename).path());
 
+    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+
     m_tbeWidget->loadScene(filename);
 
     QVariant rootUserData;
@@ -485,10 +487,17 @@ void MainWindow::guiParticlesNew()
 {
     using namespace tbe::scene;
 
-    ParticlesEmiter* particles = m_tbeWidget->particlesNew();
+    try
+    {
+        ParticlesEmiter* particles = m_tbeWidget->particlesNew();
 
-    particlesRegister(particles);
-    particlesSelect(particles);
+        particlesRegister(particles);
+        particlesSelect(particles);
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::critical(parentWidget(), "Errur de création", e.what());
+    }
 }
 
 void MainWindow::guiParticlesClone()
