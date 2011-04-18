@@ -275,6 +275,11 @@ struct SelectionSort
     }
 };
 
+void QTBEngine::enterEvent(QEvent * event)
+{
+    setFocus();
+}
+
 void QTBEngine::mousePressEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
@@ -323,6 +328,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 break;
             }
         }
+
+        m_axe->setEnable(m_selectedNode);
     }
 }
 
