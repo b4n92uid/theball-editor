@@ -496,22 +496,37 @@ void QTBEngine::saveScene(const QString& filename)
     m_sceneParser->saveScene(filename.toStdString());
 }
 
+void QTBEngine::newScene()
+{
+    m_rootNode->clearAllChild();
+    m_sceneManager->clearParallelScenes(false);
+
+    m_nodes.clear();
+    m_meshs.clear();
+    m_particles.clear();
+    m_lights.clear();
+
+    m_fog->clear();
+    m_skybox->clear();
+
+    m_axe = NULL;
+
+    setupSelection();
+}
+
 void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
-    //    m_sceneManager->clearParallelScenes(false);
-    m_rootNode->clearAllChild();
-
-    m_axe = NULL;
-
-    m_fog->clear();
-    m_skybox->clear();
+    newScene();
 
     m_sceneParser->loadScene(filename.toStdString());
 
     for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
+        if(m_axe == *it)
+            continue;
+
         m_meshs.push_back(*it);
         m_nodes.push_back(*it);
 
@@ -539,8 +554,9 @@ void QTBEngine::loadScene(const QString& filename)
     emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 
     m_selectedNode = NULL;
+    m_centerTarget = 0;
 
-    setupSelection();
+    m_axe->setEnable(false);
 }
 
 tbe::scene::Node* QTBEngine::rootNode()
