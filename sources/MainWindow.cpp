@@ -149,10 +149,12 @@ void MainWindow::initConnections()
      *
      */
 
+    connect(m_uinterface.actionNouvelle_scene, SIGNAL(triggered()), this, SLOT(newScene()));
     connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
     connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
     connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
     connect(m_uinterface.actionA_Propos, SIGNAL(triggered()), this, SLOT(about()));
+    connect(m_uinterface.actionRendue_plein_fenete, SIGNAL(triggered(bool)), this, SLOT(toggleFullWidget(bool)));
     connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
@@ -271,6 +273,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->accept();
 }
 
+void MainWindow::newScene()
+{
+    m_tbeWidget->newScene();
+
+    m_filename.clear();
+
+    somethingChange(false);
+
+    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+}
+
 void MainWindow::openSceneDialog()
 {
     m_tbeWidget->pauseRendring();
@@ -287,7 +300,7 @@ void MainWindow::openScene(const QString& filename)
 {
     QDir::setCurrent(QFileInfo(filename).path());
 
-    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+    newScene();
 
     m_tbeWidget->loadScene(filename);
 
@@ -848,6 +861,12 @@ void MainWindow::skyboxInit(tbe::scene::SkyBox* sky)
 
     connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(skyboxApply(bool)));
     connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(skyboxApply()));
+}
+
+void MainWindow::toggleFullWidget(bool full)
+{
+    m_uinterface.propertyTab->setVisible(full);
+    m_uinterface.infoBox->setVisible(full);
 }
 
 tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)

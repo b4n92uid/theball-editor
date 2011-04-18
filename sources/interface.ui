@@ -28,7 +28,7 @@
        <widget class="QTBEngine" name="glwidget" native="true"/>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_5">
+       <widget class="QGroupBox" name="infoBox">
         <property name="title">
          <string>Informations</string>
         </property>
@@ -46,7 +46,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="propertyTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -1535,6 +1535,9 @@
    <property name="text">
     <string>Nouvelle scene</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionCloner">
    <property name="text">
@@ -1597,12 +1600,18 @@
    </property>
   </action>
   <action name="actionRendue_plein_fenete">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressource.qrc">
      <normaloff>:/Icons/icons/arrow_out.png</normaloff>:/Icons/icons/arrow_out.png</iconset>
    </property>
    <property name="text">
     <string>Rendue plein fenêtre</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
  </widget>
@@ -1615,7 +1624,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>propertyTab</tabstop>
   <tabstop>node_name</tabstop>
   <tabstop>node_pos_x</tabstop>
   <tabstop>node_pos_y</tabstop>

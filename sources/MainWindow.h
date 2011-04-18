@@ -34,6 +34,10 @@ public:
 
 public slots:
 
+    void toggleFullWidget(bool full = true);
+
+    void newScene();
+
     void openSceneDialog();
     void openScene(const QString& filename);
 
