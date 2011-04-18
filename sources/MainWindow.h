@@ -53,6 +53,8 @@ public slots:
 
 public slots: // ------------------------------------------------- Node manager
 
+    bool leaveSafely();
+
     void closeEvent(QCloseEvent *event);
 
     // On nodes list item select

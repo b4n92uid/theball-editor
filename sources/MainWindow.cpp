@@ -248,7 +248,7 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(somethingChange()));
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+bool MainWindow::leaveSafely()
 {
     if(m_somethingChange)
     {
@@ -260,22 +260,37 @@ void MainWindow::closeEvent(QCloseEvent *event)
         if(answer == QMessageBox::Yes)
         {
             saveScene();
-            event->accept();
+            return true;
         }
 
         else if(answer == QMessageBox::No)
-            event->accept();
+            return true;
 
         else if(answer == QMessageBox::Cancel)
-            event->ignore();
+            return false;
+
+        else
+            return false;
     }
     else
+        return true;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(leaveSafely())
         event->accept();
+
+    else
+        event->ignore();
 }
 
 void MainWindow::newScene()
 {
-    m_tbeWidget->newScene();
+    if(!leaveSafely())
+        return;
+
+    m_tbeWidget->clearScene();
 
     m_filename.clear();
 
@@ -298,9 +313,18 @@ void MainWindow::openSceneDialog()
 
 void MainWindow::openScene(const QString& filename)
 {
+    if(!leaveSafely())
+        return;
+
     QDir::setCurrent(QFileInfo(filename).path());
 
-    newScene();
+    m_tbeWidget->clearScene();
+
+    m_filename.clear();
+
+    somethingChange(false);
+
+    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
     m_tbeWidget->loadScene(filename);
 

@@ -20,7 +20,7 @@ public:
     QTBEngine(QWidget* parent);
     ~QTBEngine();
 
-    void newScene();
+    void clearScene();
 
     void loadScene(const QString& filename);
     void saveScene(const QString& filename);
