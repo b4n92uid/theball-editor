@@ -496,7 +496,7 @@ void QTBEngine::saveScene(const QString& filename)
     m_sceneParser->saveScene(filename.toStdString());
 }
 
-void QTBEngine::newScene()
+void QTBEngine::clearScene()
 {
     m_rootNode->clearAllChild();
     m_sceneManager->clearParallelScenes(false);
@@ -518,7 +518,7 @@ void QTBEngine::loadScene(const QString& filename)
 {
     using namespace scene;
 
-    newScene();
+    clearScene();
 
     m_sceneParser->loadScene(filename.toStdString());
 
