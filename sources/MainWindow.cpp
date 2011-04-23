@@ -160,9 +160,9 @@ void MainWindow::initConnections()
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
 
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
-    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SLOT(meshUpdate(tbe::scene::Mesh*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightUpdate(tbe::scene::Light*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateNodeInfo(tbe::scene::Node*)));
 
     QSignalMapper* nodeMoveBind = new QSignalMapper(this);
@@ -221,15 +221,15 @@ void MainWindow::initConnections()
 
     connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)), this, SLOT(meshRegister(tbe::scene::Mesh*)));
     connect(m_tbeWidget, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
-    connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
+    connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(meshUpdate(tbe::scene::Mesh*)));
 
     connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)), this, SLOT(lightRegister(tbe::scene::Light*)));
     connect(m_tbeWidget, SIGNAL(notifyLightSelect(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
-    connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
+    connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(lightUpdate(tbe::scene::Light*)));
 
     connect(m_tbeWidget, SIGNAL(notifyParticlesAdd(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesRegister(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
-    connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
 
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(sceneAmbiant(const tbe::Vector3f&)));
 
@@ -561,6 +561,24 @@ void MainWindow::guiParticlesDelete()
     }
 }
 
+void MainWindow::nodeUpdate(tbe::scene::Node* node)
+{
+    nodesGui.name->blockSignals(true);
+    nodesGui.pos->blockSignals(true);
+    nodesGui.scl->blockSignals(true);
+    nodesGui.rot->blockSignals(true);
+
+    nodesGui.name->setText(node->getName().c_str());
+    nodesGui.pos->setValue(node->getPos());
+    nodesGui.scl->setValue(node->getMatrix().getScale());
+    nodesGui.rot->setValue(node->getMatrix().getRotate().getEuler());
+
+    nodesGui.name->blockSignals(false);
+    nodesGui.pos->blockSignals(false);
+    nodesGui.scl->blockSignals(false);
+    nodesGui.rot->blockSignals(false);
+}
+
 void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
 {
     using namespace tbe::scene;
@@ -609,17 +627,16 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     nodesGui.nodesListView->resizeColumnToContents(1);
 }
 
-void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
+void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 {
     m_qnodebind->setCurmesh(mesh);
 
-    if(!mesh)
-        return;
+    nodeUpdate(mesh);
+}
 
-    nodesGui.name->setText(mesh->getName().c_str());
-    nodesGui.pos->setValue(mesh->getPos());
-    nodesGui.scl->setValue(mesh->getMatrix().getScale());
-    nodesGui.rot->setValue(mesh->getMatrix().getRotate());
+void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
+{
+    meshUpdate(mesh);
 
     if(upList)
     {
@@ -661,23 +678,22 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
     nodesGui.nodesListView->resizeColumnToContents(1);
 }
 
-void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
+void MainWindow::lightUpdate(tbe::scene::Light* light)
 {
     m_qnodebind->setCurlight(light);
 
-    if(!light)
-        return;
-
-    nodesGui.name->setText(light->getName().c_str());
-    nodesGui.pos->setValue(light->getPos());
-    nodesGui.scl->setValue(light->getMatrix().getScale());
-    nodesGui.rot->setValue(light->getMatrix().getRotate());
+    nodeUpdate(light);
 
     nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
     nodesGui.lighTab.ambiant->setValue(vec43(light->getAmbient()));
     nodesGui.lighTab.diffuse->setValue(vec43(light->getDiffuse()));
     nodesGui.lighTab.specular->setValue(vec43(light->getSpecular()));
     nodesGui.lighTab.radius->setValue(light->getRadius());
+}
+
+void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
+{
+    lightUpdate(light);
 
     if(upList)
     {
@@ -722,17 +738,11 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     nodesGui.nodesListView->resizeColumnToContents(1);
 }
 
-void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
+void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 {
     m_qnodebind->setCurparticles(particles);
 
-    if(!particles)
-        return;
-
-    nodesGui.name->setText(particles->getName().c_str());
-    nodesGui.pos->setValue(particles->getPos());
-    nodesGui.scl->setValue(particles->getMatrix().getScale());
-    nodesGui.rot->setValue(particles->getMatrix().getRotate());
+    nodeUpdate(particles);
 
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
     nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());
@@ -741,6 +751,11 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
     nodesGui.particlesTab.number->setValue(particles->getNumber());
     nodesGui.particlesTab.texture->setOpenFileName(particles->getTexture().getFilename().c_str());
     nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
+}
+
+void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
+{
+    particlesUpdate(particles);
 
     if(upList)
     {
