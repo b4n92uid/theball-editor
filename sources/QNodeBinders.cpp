@@ -106,7 +106,7 @@ void QNodeBinders::nodeSetRotation(const tbe::Vector3f& v)
 {
     if(m_curNode)
     {
-        m_curNode->getMatrix().setRotate(v * M_PI / 180.0f);
+        m_curNode->getMatrix().setRotate(tbe::Quaternion(v));
         emit notifyUpdate(m_curNode);
     }
 }
@@ -120,7 +120,7 @@ void QNodeBinders::nodeSetScale(const tbe::Vector3f& v)
     }
 }
 
-void QNodeBinders::nodeSetMatrix(const tbe::Matrix4f& m)
+void QNodeBinders::nodeSetMatrix(const tbe::Matrix4& m)
 {
     if(m_curNode)
     {

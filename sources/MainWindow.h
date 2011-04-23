@@ -80,17 +80,22 @@ public slots: // ------------------------------------------------- Node manager
     void guiParticlesClone();
     void guiParticlesDelete();
 
+    void nodeUpdate(tbe::scene::Node* node);
+
     // Registre & Select mesh infos on GUI
     void meshRegister(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
+    void meshUpdate(tbe::scene::Mesh* mesh);
 
     // Registre & Select light infos on GUI
     void lightRegister(tbe::scene::Light* light);
     void lightSelect(tbe::scene::Light* light, bool upList = true);
+    void lightUpdate(tbe::scene::Light* light);
 
     // Registre & Select particles infos on GUI
     void particlesRegister(tbe::scene::ParticlesEmiter* particles);
     void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
+    void particlesUpdate(tbe::scene::ParticlesEmiter* particles);
 
     static tbe::scene::Node* itemNode(QStandardItem* item);
 

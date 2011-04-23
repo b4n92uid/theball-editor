@@ -152,42 +152,41 @@ void QTBEngine::moveApply()
     if(!m_eventManager->keyState[EventManager::KEY_LSHIFT])
         return;
 
-    Vector3f pos = m_selectedNode->getPos();
-    Matrix4f matrix = m_selectedNode->getMatrix();
+    Vector3f position = m_selectedNode->getMatrix().getPos();
+    Quaternion rotation = m_selectedNode->getMatrix().getRotate();
+    Vector3f scale = m_selectedNode->getMatrix().getScale();
 
     // Rotation ----------------------------------------------------------------
 
-    float rotateSpeed = 5 * M_PI / 180;
-
     if(m_eventManager->notify == EventManager::EVENT_KEY_DOWN)
     {
+        Quaternion apply;
+
+        float angle = M_PI / 8;
+
+        if(m_eventManager->keyState[EventManager::KEY_LCTRL])
+            angle = M_PI / 2;
+
         if(m_eventManager->keyState['a'])
-            matrix.setRotateX(-rotateSpeed);
+            apply.setAxisAngle(angle, Vector3f::X());
 
         if(m_eventManager->keyState['z'])
-            matrix.setRotateX(rotateSpeed);
+            apply.setAxisAngle(-angle, Vector3f::X());
 
         if(m_eventManager->keyState['q'])
-            matrix.setRotateY(-rotateSpeed);
+            apply.setAxisAngle(angle, Vector3f::Y());
 
         if(m_eventManager->keyState['s'])
-            matrix.setRotateY(rotateSpeed);
+            apply.setAxisAngle(-angle, Vector3f::Y());
 
         if(m_eventManager->keyState['w'])
-            matrix.setRotateZ(-rotateSpeed);
+            apply.setAxisAngle(angle, Vector3f::Z());
 
         if(m_eventManager->keyState['x'])
-            matrix.setRotateZ(rotateSpeed);
+            apply.setAxisAngle(-angle, Vector3f::Z());
+
+        rotation = apply * rotation;
     }
-
-    // In the gride ------------------------------------------------------------
-
-    if(m_eventManager->keyState['g'])
-        tools::round(pos, Vector3f(1));
-
-    matrix.setPos(pos);
-
-    m_selectedNode->setMatrix(matrix);
 
     // Movement ----------------------------------------------------------------
 
@@ -218,15 +217,17 @@ void QTBEngine::moveApply()
             transform.y = 0;
         }
 
-        transform += m_selectedNode->getPos();
-
-        m_selectedNode->setPos(transform);
-
-        Vector3f abs = m_selectedNode->getAbsoluteMatrix().getPos();
-
-        m_orbcamera->setCenter(abs);
-
+        position += transform;
     }
+
+    Matrix4 apply;
+    apply.setPos(position);
+    apply.setScale(scale);
+    apply.setRotate(rotation);
+
+    m_selectedNode->setMatrix(apply);
+
+    m_centerTarget = position;
 
     if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
         emit notifyMeshUpdate(mesh);
@@ -443,6 +444,24 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             else if(Light * light = tools::find(m_lights, m_selectedNode))
                 lightClone(light);
+        }
+
+        if(ev->key() == Qt::Key_R)
+        {
+            m_selectedNode->getMatrix().setRotate(0);
+        }
+
+        if(ev->key() == Qt::Key_S)
+        {
+            m_selectedNode->getMatrix().setScale(1);
+        }
+
+        if(ev->key() == Qt::Key_G)
+        {
+            Vector3f pos = m_selectedNode->getPos();
+            tools::round(pos, Vector3f(1));
+
+            m_selectedNode->setPos(pos);
         }
 
         if(ev->key() == Qt::Key_F)
