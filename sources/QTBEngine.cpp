@@ -576,6 +576,10 @@ void QTBEngine::loadScene(const QString& filename)
     m_centerTarget = 0;
 
     m_axe->setEnable(false);
+
+    emit notifyInitFog(m_fog);
+    emit notifyInitSkybox(m_skybox);
+    emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 }
 
 tbe::scene::Node* QTBEngine::rootNode()
