@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="69">
-  <logicalFolder name="root" displayName="root" projectFiles="true">
-    <logicalFolder name="SourceFiles"
-                   displayName="Class"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+<configurationDescriptor version="79">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="SourceFiles" displayName="Class" projectFiles="true">
       <itemPath>sources/MainWindow.cpp</itemPath>
       <itemPath>sources/MainWindow.h</itemPath>
       <itemPath>sources/QNodeBinders.cpp</itemPath>
@@ -14,8 +11,7 @@
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
-                   projectFiles="true"
-                   kind="SOURCE_LOGICAL_FOLDER">
+                   projectFiles="true">
       <itemPath>sources/about.ui</itemPath>
       <itemPath>sources/interface.ui</itemPath>
       <itemPath>sources/ressource.qrc</itemPath>
@@ -47,9 +43,8 @@
   <confs>
     <conf name="Debug" type="4">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>MinGW|MinGW</compilerSet>
-        <platform>3</platform>
       </toolsSet>
       <qt>
         <destdir>debug</destdir>
@@ -84,9 +79,8 @@
     </conf>
     <conf name="Release" type="4">
       <toolsSet>
-        <developmentServer>localhost</developmentServer>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>MinGW|MinGW</compilerSet>
-        <platform>3</platform>
       </toolsSet>
       <qt>
         <destdir>release</destdir>
