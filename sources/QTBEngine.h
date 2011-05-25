@@ -48,9 +48,10 @@ protected:
 
     void setupSelection();
 
-    void placeSelection();
 
 public slots:
+
+    void placeSelection();
 
     // Create new mesh on engine
     tbe::scene::Mesh* meshNew(const QString& filename);
