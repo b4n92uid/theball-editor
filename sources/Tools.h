@@ -29,12 +29,12 @@ inline tbe::Vector2f qpftovec(QPointF point)
     return tbe::Vector2f(point.x(), point.y());
 }
 
-QDebug operator<<(QDebug d, const tbe::Vector3f& vec)
+inline QDebug operator<<(QDebug d, const tbe::Vector3f& vec)
 {
     return d << vec.x << "," << vec.y << "," << vec.z;
 }
 
-QDebug operator<<(QDebug d, const tbe::AABB& aabb)
+inline QDebug operator<<(QDebug d, const tbe::AABB& aabb)
 {
     return d << aabb.min << aabb.max;
 }

@@ -164,6 +164,8 @@ void MainWindow::initConnections()
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightUpdate(tbe::scene::Light*)));
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
     connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateNodeInfo(tbe::scene::Node*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), m_tbeWidget, SLOT(updateNodeInfo(tbe::scene::Node*)));
+    connect(m_qnodebind, SIGNAL(notifyUpdate(tbe::scene::Node*)), m_tbeWidget, SLOT(placeSelection()));
 
     QSignalMapper* nodeMoveBind = new QSignalMapper(this);
     nodeMoveBind->setMapping(nodesGui.nodeUp, 1);
