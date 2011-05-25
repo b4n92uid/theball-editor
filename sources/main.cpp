@@ -27,9 +27,10 @@ int main(int argc, char *argv[])
     window.initWidgets();
     window.initConnections();
     window.showMaximized();
+    window.newScene();
 
     #ifdef _DEBUG
-    window.openScene("D:\\projets\\cpp\\tbengine\\demos\\bin\\medias\\landscape.scene");
+    window.openScene("D:\\projets\\cpp\\theball\\dist\\Release\\MinGW-Windows\\data\\prototype");
     #endif
 
     return app.exec();

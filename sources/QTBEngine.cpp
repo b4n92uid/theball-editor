@@ -531,6 +531,10 @@ void QTBEngine::clearScene()
     m_axe = NULL;
 
     setupSelection();
+
+    emit notifyInitFog(m_fog);
+    emit notifyInitSkybox(m_skybox);
+    emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -567,10 +571,6 @@ void QTBEngine::loadScene(const QString& filename)
 
         emit notifyParticlesAdd(*it);
     }
-
-    emit notifyInitFog(m_fog);
-    emit notifyInitSkybox(m_skybox);
-    emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
 
     m_selectedNode = NULL;
     m_centerTarget = 0;
@@ -802,7 +802,8 @@ void QTBEngine::skyboxApply(const QStringList& texs)
     Texture skytex[6];
 
     for(unsigned i = 0; i < 6; i++)
-        skytex[i] = texs[i].toStdString();
+        if(!texs[i].isEmpty())
+            skytex[i] = texs[i].toStdString();
 
     m_skybox->setTextures(skytex);
 
