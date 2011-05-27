@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QTBEngine.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 4 décembre 2010, 13:30
  */
 
@@ -322,7 +322,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         foreach(Mesh * node, m_meshs)
         {
-            if(node->getAbsolutAabb().add(Vector3f(0.5f)).isInner(m_curCursor3D))
+            if(node->Mesh::getAbsolutAabb().add(Vector3f(0.5f)).isInner(m_curCursor3D))
             {
                 meshSelect(node);
                 emit notifyMeshSelect(node);
