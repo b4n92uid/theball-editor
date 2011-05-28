@@ -845,6 +845,7 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
     nodeUpdate(particles);
 
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
+    nodesGui.particlesTab.boxsize->setValue(particles->getBoxSize());
     nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());
     nodesGui.particlesTab.lifeinit->setValue(particles->getLifeInit());
     nodesGui.particlesTab.lifedown->setValue(particles->getLifeDown());
