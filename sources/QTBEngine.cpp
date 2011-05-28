@@ -833,6 +833,11 @@ void QTBEngine::fogClear()
     m_fog->clear();
 }
 
+tbe::scene::SceneParser* QTBEngine::getSceneParser() const
+{
+    return m_sceneParser;
+}
+
 void QTBEngine::sceneAmbiant(const tbe::Vector3f& value)
 {
     m_sceneManager->setAmbientLight(vec34(value));

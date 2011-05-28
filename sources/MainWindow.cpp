@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   MainWindow.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 3 décembre 2010, 17:20
  */
 
@@ -41,6 +41,23 @@ void MainWindow::initWidgets()
     m_infoText = m_uinterface.infoText;
 
     nodesGui.attribTab = m_uinterface.attribTab;
+
+    // Générale ----------------------------------------------------------------
+
+    genGui.title = m_uinterface.gen_title;
+    genGui.author = m_uinterface.gen_author;
+
+    genGui.additionalModel = new QStandardItemModel(this);
+    genGui.additionalModel->setHorizontalHeaderLabels(QStringList() << "Clé" << "Valeur");
+
+    genGui.additionalView = m_uinterface.gen_additional;
+    genGui.additionalView->setModel(genGui.additionalModel);
+    genGui.additionalView->verticalHeader()->hide();
+    genGui.additionalView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+
+    genGui.addField = m_uinterface.gen_addfield;
+    genGui.delField = m_uinterface.gen_delfield;
+    genGui.clearFields = m_uinterface.gen_clearfields;
 
     // Node --------------------------------------------------------------------
 
@@ -328,6 +345,30 @@ void MainWindow::openScene(const QString& filename)
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
     m_tbeWidget->loadScene(filename);
+
+    using namespace tbe::scene;
+
+    SceneParser* sceneParser = m_tbeWidget->getSceneParser();
+
+    genGui.title->setText(sceneParser->getSceneName().c_str());
+    genGui.author->setText(sceneParser->getAuthorName().c_str());
+
+    genGui.additionalModel->clear();
+
+    const SceneParser::AttribMap addfields = sceneParser->additionalFields();
+
+    for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
+    {
+        QStandardItem* key = new QStandardItem;
+        key->setText(it->first.c_str());
+
+        QStandardItem* value = new QStandardItem;
+        value->setText(it->second.c_str());
+
+        genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
+    }
+
+    genGui.additionalView->resizeRowsToContents();
 
     QVariant rootUserData;
     rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
