@@ -34,6 +34,9 @@ public:
 
 public slots:
 
+    void buildFileHistory();
+    void pushFileHistory(const QString& filepath);
+
     void toggleFullWidget(bool full = true);
 
     void newScene();
@@ -241,6 +244,10 @@ private:
     QTimer* m_timer;
 
     Ui_mainWindow m_uinterface;
+
+    QSettings* m_config;
+
+    QSignalMapper* m_historyMapping;
 
     bool m_somethingChange;
 };
