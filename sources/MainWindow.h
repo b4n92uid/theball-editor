@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MainWindow.h
  * Author: b4n92uid
  *
@@ -215,6 +215,20 @@ private:
         QVectorBox* sceneAmbiant;
 
     } envGui;
+
+    struct
+    {
+        QLineEdit* title;
+        QLineEdit* author;
+
+        QTableView* additionalView;
+        QStandardItemModel* additionalModel;
+
+        QPushButton* addField;
+        QPushButton* delField;
+        QPushButton* clearFields;
+
+    } genGui;
 
     QNodeBinders* m_qnodebind;
 

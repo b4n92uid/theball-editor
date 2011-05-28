@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   QTBEngine.h
  * Author: b4n92uid
  *
@@ -88,6 +88,8 @@ public slots:
 
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
+
+    tbe::scene::SceneParser* getSceneParser() const;
 
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);

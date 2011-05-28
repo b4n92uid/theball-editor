@@ -29,9 +29,10 @@ int main(int argc, char *argv[])
     window.showMaximized();
     window.newScene();
 
-    #ifdef _DEBUG
-    window.openScene("D:\\projets\\cpp\\theball\\dist\\Release\\MinGW-Windows\\data\\prototype");
-    #endif
+    if(argc > 1)
+    {
+        window.openScene(argv[1]);
+    }
 
     return app.exec();
 }
