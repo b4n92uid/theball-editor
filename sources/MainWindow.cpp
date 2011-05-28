@@ -32,6 +32,56 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::buildFileHistory()
+{
+    QMenu* filehistory = m_uinterface.actionDernier_fichiers->menu();
+
+    if(!filehistory)
+    {
+        filehistory = new QMenu(this);
+        m_uinterface.actionDernier_fichiers->setMenu(filehistory);
+    }
+
+    filehistory->clear();
+
+    QStringList history = m_config->value("history").toStringList();
+
+    if(history.isEmpty())
+    {
+        filehistory->setEnabled(false);
+    }
+    else
+    {
+
+        foreach(QString filepath, history)
+        {
+            QAction* act = filehistory->addAction(filepath);
+
+            connect(act, SIGNAL(triggered()), m_historyMapping, SLOT(map()));
+            m_historyMapping->setMapping(act, filepath);
+        }
+
+        connect(m_historyMapping, SIGNAL(mapped(const QString&)), this, SLOT(openScene(const QString&)));
+    }
+}
+
+void MainWindow::pushFileHistory(const QString& filepath)
+{
+    QStringList history = m_config->value("history").toStringList();
+
+    if(history.count(filepath))
+        history.removeAll(filepath);
+
+    history << filepath;
+
+    if(history.count() > 16)
+        history.pop_front();
+
+    m_config->setValue("history", history);
+
+    buildFileHistory();
+}
+
 void MainWindow::initWidgets()
 {
     m_uinterface.setupUi(this);
@@ -41,6 +91,12 @@ void MainWindow::initWidgets()
     m_infoText = m_uinterface.infoText;
 
     nodesGui.attribTab = m_uinterface.attribTab;
+
+    m_config = new QSettings(this);
+
+    m_historyMapping = new QSignalMapper(this);
+
+    buildFileHistory();
 
     // Générale ----------------------------------------------------------------
 
@@ -348,12 +404,14 @@ void MainWindow::openScene(const QString& filename)
 
     using namespace tbe::scene;
 
+    pushFileHistory(filename);
+
     SceneParser* sceneParser = m_tbeWidget->getSceneParser();
 
     genGui.title->setText(sceneParser->getSceneName().c_str());
     genGui.author->setText(sceneParser->getAuthorName().c_str());
 
-    genGui.additionalModel->clear();
+    genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
 
     const SceneParser::AttribMap addfields = sceneParser->additionalFields();
 

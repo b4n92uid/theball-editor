@@ -1493,6 +1493,7 @@
     </property>
     <addaction name="actionNouvelle_scene"/>
     <addaction name="actionOuvrire"/>
+    <addaction name="actionDernier_fichiers"/>
     <addaction name="separator"/>
     <addaction name="actionEnregistrer"/>
     <addaction name="actionEnregistrer_sous"/>
@@ -1720,6 +1721,11 @@
    </property>
    <property name="shortcut">
     <string>F11</string>
+   </property>
+  </action>
+  <action name="actionDernier_fichiers">
+   <property name="text">
+    <string>Dernier fichiers</string>
    </property>
   </action>
  </widget>
