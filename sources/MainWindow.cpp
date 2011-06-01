@@ -108,14 +108,26 @@ void MainWindow::initWidgets()
 
     genGui.additionalView = m_uinterface.gen_additional;
     genGui.additionalView->setModel(genGui.additionalModel);
-    genGui.additionalView->verticalHeader()->hide();
-    genGui.additionalView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    genGui.additionalView->setRootIsDecorated(false);
+    genGui.additionalView->header()->setResizeMode(QHeaderView::Stretch);
 
     genGui.addField = m_uinterface.gen_addfield;
     genGui.delField = m_uinterface.gen_delfield;
     genGui.clearFields = m_uinterface.gen_clearfields;
 
     // Node --------------------------------------------------------------------
+
+    nodesGui.additionalModel = new QStandardItemModel(this);
+    nodesGui.additionalModel->setHorizontalHeaderLabels(QStringList() << "Clé" << "Valeur");
+
+    nodesGui.additionalView = m_uinterface.node_additional;
+    nodesGui.additionalView->setModel(nodesGui.additionalModel);
+    nodesGui.additionalView->setRootIsDecorated(false);
+    nodesGui.additionalView->header()->setResizeMode(QHeaderView::Stretch);
+
+    nodesGui.addField = m_uinterface.node_addfield;
+    nodesGui.delField = m_uinterface.node_delfield;
+    nodesGui.clearFields = m_uinterface.node_clearfields;
 
     m_qnodebind = new QNodeBinders(this);
 
@@ -185,6 +197,7 @@ void MainWindow::initWidgets()
 
     nodesGui.nodesListView = m_uinterface.node_list;
     nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    nodesGui.nodesListView->header()->setResizeMode(QHeaderView::Stretch);
     nodesGui.nodesListView->setModel(nodesGui.nodesListModel);
 
     // Environment -------------------------------------------------------------
@@ -248,6 +261,10 @@ void MainWindow::initConnections()
     nodeMoveBind->setMapping(nodesGui.nodeDown, 2);
     nodeMoveBind->setMapping(nodesGui.nodeLeft, 3);
     nodeMoveBind->setMapping(nodesGui.nodeRight, 4);
+
+    connect(nodesGui.addField, SIGNAL(clicked()), this, SLOT(guiAddNodeField()));
+    connect(nodesGui.delField, SIGNAL(clicked()), this, SLOT(guiDelNodeField()));
+    connect(nodesGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearNodeField()));
 
     connect(nodesGui.nodeUp, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
     connect(nodesGui.nodeDown, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
@@ -429,8 +446,6 @@ void MainWindow::openScene(const QString& filename)
 
         genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
     }
-
-    genGui.additionalView->resizeRowsToContents();
 
     QVariant rootUserData;
     rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
@@ -688,7 +703,25 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
     nodesGui.scl->blockSignals(false);
     nodesGui.rot->blockSignals(false);
 
-    somethingChange(true);
+    using namespace tbe;
+
+    const Any::Map userData = node->getUserDatas();
+
+    nodesGui.additionalModel->removeRows(0, nodesGui.additionalModel->rowCount());
+
+    for(Any::Map::const_iterator it = userData.begin(); it != userData.end(); it++)
+    {
+        if(it->first == "QStandardItem")
+            continue;
+
+        QList<QStandardItem*> newfield;
+
+        newfield
+                << new QStandardItem(it->first.c_str())
+                << new QStandardItem(it->second.getValue<std::string > ().c_str());
+
+        nodesGui.additionalModel->appendRow(newfield);
+    }
 }
 
 void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
@@ -737,6 +770,8 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
+
+    somethingChange(true);
 }
 
 void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
@@ -744,8 +779,6 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
     m_qnodebind->setCurmesh(mesh);
 
     nodeUpdate(mesh);
-
-    somethingChange(true);
 }
 
 void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
@@ -790,6 +823,8 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
+
+    somethingChange(true);
 }
 
 void MainWindow::lightUpdate(tbe::scene::Light* light)
@@ -850,6 +885,8 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
+
+    somethingChange(true);
 }
 
 void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
@@ -1058,7 +1095,6 @@ void MainWindow::guiAddSceneField()
             << new QStandardItem("[nouvelle valeur]");
 
     genGui.additionalModel->appendRow(newfield);
-    genGui.additionalView->resizeRowsToContents();
 
     somethingChange(true);
 }
@@ -1066,20 +1102,63 @@ void MainWindow::guiAddSceneField()
 void MainWindow::guiDelSceneField()
 {
     QModelIndex i = genGui.additionalView->currentIndex();
-    int row = genGui.additionalModel->itemFromIndex(i)->row();
-    genGui.additionalModel->removeRow(row);
+
+    if(i.isValid())
+        genGui.additionalModel->removeRow(i.row());
 
     somethingChange(true);
 }
 
 void MainWindow::guiClearSceneField()
 {
+    if(genGui.additionalModel->rowCount() <= 0)
+        return;
+
+
     int re = QMessageBox::warning(this, "Question ?", "Effacer tout les champs ?",
                                   QMessageBox::Yes | QMessageBox::No);
 
     if(re == QMessageBox::Yes)
     {
         genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
+        somethingChange(true);
+    }
+}
+
+void MainWindow::guiAddNodeField()
+{
+    QList<QStandardItem*> newfield;
+
+    newfield
+            << new QStandardItem("[nouvelle clé]")
+            << new QStandardItem("[nouvelle valeur]");
+
+    nodesGui.additionalModel->appendRow(newfield);
+
+    somethingChange(true);
+}
+
+void MainWindow::guiDelNodeField()
+{
+    QModelIndex i = nodesGui.additionalView->currentIndex();
+
+    if(i.isValid())
+        nodesGui.additionalModel->removeRow(i.row());
+
+    somethingChange(true);
+}
+
+void MainWindow::guiClearNodeField()
+{
+    if(nodesGui.additionalModel->rowCount() <= 0)
+        return;
+
+    int re = QMessageBox::warning(this, "Question ?", "Effacer tout les champs ?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if(re == QMessageBox::Yes)
+    {
+        nodesGui.additionalModel->removeRows(0, nodesGui.additionalModel->rowCount());
         somethingChange(true);
     }
 }

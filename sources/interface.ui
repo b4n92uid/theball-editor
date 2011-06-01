@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>779</width>
+    <width>784</width>
     <height>730</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <normaloff>:/Icons/icons/icon.ico</normaloff>:/Icons/icons/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="8,0">
+   <layout class="QHBoxLayout" name="horizontalLayout_7">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
@@ -97,7 +97,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QTableView" name="gen_additional"/>
+            <widget class="QTreeView" name="gen_additional"/>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_28">
@@ -158,7 +158,7 @@
        <attribute name="title">
         <string>Noeuds</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,1,0">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,1,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
@@ -332,13 +332,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Champs additionnelle</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QTabWidget" name="attribTab">
           <property name="enabled">
            <bool>true</bool>
@@ -351,6 +344,9 @@
           </property>
           <property name="currentIndex">
            <number>0</number>
+          </property>
+          <property name="usesScrollButtons">
+           <bool>false</bool>
           </property>
           <property name="documentMode">
            <bool>true</bool>
@@ -1037,6 +1033,53 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tab_8">
+           <attribute name="title">
+            <string>[Champs]</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QTreeView" name="node_additional"/>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_29">
+              <item>
+               <widget class="QPushButton" name="node_addfield">
+                <property name="text">
+                 <string>Ajouter</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ressource.qrc">
+                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_delfield">
+                <property name="text">
+                 <string>Supprimer</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ressource.qrc">
+                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_clearfields">
+                <property name="text">
+                 <string>Suppr. Tout</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ressource.qrc">
+                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
         <item>
@@ -1508,7 +1551,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>779</width>
+     <width>784</width>
      <height>20</height>
     </rect>
    </property>

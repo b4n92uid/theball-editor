@@ -72,6 +72,10 @@ public slots: // ------------------------------------------------- Node manager
     void guiDelSceneField();
     void guiClearSceneField();
 
+    void guiAddNodeField();
+    void guiDelNodeField();
+    void guiClearNodeField();
+
     // Mesh GUI Buttons
     void guiMeshNew();
     void guiMeshClone();
@@ -194,6 +198,10 @@ private:
 
         QPushButton *nodeUp, *nodeDown, *nodeLeft, *nodeRight;
 
+        QTreeView* additionalView;
+        QStandardItemModel* additionalModel;
+        QPushButton *addField, *delField, *clearFields;
+
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
 
@@ -228,7 +236,7 @@ private:
         QLineEdit* title;
         QLineEdit* author;
 
-        QTableView* additionalView;
+        QTreeView* additionalView;
         QStandardItemModel* additionalModel;
 
         QPushButton* addField;
