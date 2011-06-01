@@ -686,7 +686,7 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 {
     using namespace tbe::scene;
 
-    Mesh* newmesh = new Mesh(*mesh);
+    Mesh* newmesh = mesh->clone();
 
     mesh->getParent()->addChild(newmesh);
 
@@ -739,7 +739,7 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
 {
     using namespace tbe::scene;
 
-    Light* newlight = new Light(*light);
+    Light* newlight = light->clone();
 
     light->getParent()->addChild(newlight);
 
@@ -792,7 +792,7 @@ void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
 {
     using namespace tbe::scene;
 
-    ParticlesEmiter* newparticles = new ParticlesEmiter(*particles);
+    ParticlesEmiter* newparticles = particles->clone();
 
     particles->getParent()->addChild(newparticles);
 
