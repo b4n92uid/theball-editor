@@ -222,6 +222,10 @@ void MainWindow::initConnections()
      *
      */
 
+    connect(genGui.addField, SIGNAL(clicked()), this, SLOT(guiAddSceneField()));
+    connect(genGui.delField, SIGNAL(clicked()), this, SLOT(guiDelSceneField()));
+    connect(genGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearSceneField()));
+
     connect(m_uinterface.actionNouvelle_scene, SIGNAL(triggered()), this, SLOT(newScene()));
     connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
     connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
@@ -578,7 +582,7 @@ void MainWindow::guiMeshDelete()
 {
     if(tbe::scene::Mesh * mesh = m_qnodebind->getCurmesh())
     {
-        QStandardItem* item = mesh->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* item = mesh->getUserData("QStandardItem").getValue<QStandardItem*> ();
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -587,6 +591,8 @@ void MainWindow::guiMeshDelete()
             nodesGui.nodesListModel->removeRow(item->row());
 
         m_tbeWidget->meshDelete(mesh);
+
+        somethingChange(true);
     }
 }
 
@@ -610,7 +616,7 @@ void MainWindow::guiLightDelete()
 {
     if(tbe::scene::Light * light = m_qnodebind->getCurlight())
     {
-        QStandardItem* item = light->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* item = light->getUserData("QStandardItem").getValue<QStandardItem*> ();
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -619,6 +625,8 @@ void MainWindow::guiLightDelete()
             nodesGui.nodesListModel->removeRow(item->row());
 
         m_tbeWidget->lightDelete(light);
+
+        somethingChange(true);
     }
 }
 
@@ -649,7 +657,7 @@ void MainWindow::guiParticlesDelete()
 {
     if(tbe::scene::ParticlesEmiter * particles = m_qnodebind->getCurparticles())
     {
-        QStandardItem* item = particles->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* item = particles->getUserData("QStandardItem").getValue<QStandardItem*> ();
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -658,6 +666,8 @@ void MainWindow::guiParticlesDelete()
             nodesGui.nodesListModel->removeRow(item->row());
 
         m_tbeWidget->particlesDelete(particles);
+
+        somethingChange(true);
     }
 }
 
@@ -677,6 +687,8 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
     nodesGui.pos->blockSignals(false);
     nodesGui.scl->blockSignals(false);
     nodesGui.rot->blockSignals(false);
+
+    somethingChange(true);
 }
 
 void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
@@ -719,7 +731,7 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    mesh->setUserData(itid);
+    mesh->setUserData("QStandardItem", itid);
 
     m_tbeWidget->meshRegister(mesh);
 
@@ -732,6 +744,8 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
     m_qnodebind->setCurmesh(mesh);
 
     nodeUpdate(mesh);
+
+    somethingChange(true);
 }
 
 void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
@@ -740,7 +754,7 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 
     if(upList)
     {
-        QStandardItem* item = mesh->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* item = mesh->getUserData("QStandardItem").getValue<QStandardItem*> ();
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -770,7 +784,7 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
 
     nodesGui.nodesListModel->appendRow(items);
 
-    light->setUserData(itemType);
+    light->setUserData("QStandardItem", itemType);
 
     m_tbeWidget->lightRegister(light);
 
@@ -797,7 +811,7 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 
     if(upList)
     {
-        QStandardItem* item = light->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* item = light->getUserData("QStandardItem").getValue<QStandardItem*> ();
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -825,12 +839,12 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     QItemsList items;
     items << itemType << itemName;
 
-    if(!particles->getParent()->getUserData().isNull())
-        particles->getParent()->getUserData().getValue<QStandardItem*>()->appendRow(items);
+    if(particles->getParent()->hasUserData("QStandardItem"))
+        particles->getParent()->getUserData("QStandardItem").getValue<QStandardItem*>()->appendRow(items);
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    particles->setUserData(itemType);
+    particles->setUserData("QStandardItem", itemType);
 
     m_tbeWidget->particlesRegister(particles);
 
@@ -860,7 +874,7 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
 
     if(upList)
     {
-        QStandardItem* item = particles->getUserData().getValue<QStandardItem*> ();
+        QStandardItem* item = particles->getUserData("QStandardItem").getValue<QStandardItem*> ();
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -931,11 +945,12 @@ void MainWindow::scopeNode(int move)
         nodesGui.nodesListView->setCurrentIndex(item->index());
     }
 
+    somethingChange(true);
 }
 
 void MainWindow::updateNodeInfo(tbe::scene::Node* node)
 {
-    QStandardItem* itemType = node->getUserData().getValue<QStandardItem*>();
+    QStandardItem* itemType = node->getUserData("QStandardItem").getValue<QStandardItem*>();
     QStandardItem* itemName = itemType->parent()
             ? itemType->parent()->child(itemType->row(), 1)
             : nodesGui.nodesListModel->item(itemType->row(), 1);
@@ -1031,5 +1046,40 @@ tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)
             return item->data().value<tbe::scene::Node*>();
 
         default: return NULL;
+    }
+}
+
+void MainWindow::guiAddSceneField()
+{
+    QList<QStandardItem*> newfield;
+
+    newfield
+            << new QStandardItem("[nouvelle clé]")
+            << new QStandardItem("[nouvelle valeur]");
+
+    genGui.additionalModel->appendRow(newfield);
+    genGui.additionalView->resizeRowsToContents();
+
+    somethingChange(true);
+}
+
+void MainWindow::guiDelSceneField()
+{
+    QModelIndex i = genGui.additionalView->currentIndex();
+    int row = genGui.additionalModel->itemFromIndex(i)->row();
+    genGui.additionalModel->removeRow(row);
+
+    somethingChange(true);
+}
+
+void MainWindow::guiClearSceneField()
+{
+    int re = QMessageBox::warning(this, "Question ?", "Effacer tout les champs ?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if(re == QMessageBox::Yes)
+    {
+        genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
+        somethingChange(true);
     }
 }
