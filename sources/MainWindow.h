@@ -68,6 +68,10 @@ public slots: // ------------------------------------------------- Node manager
 
     void scopeNode(int move);
 
+    void guiAddSceneField();
+    void guiDelSceneField();
+    void guiClearSceneField();
+
     // Mesh GUI Buttons
     void guiMeshNew();
     void guiMeshClone();
