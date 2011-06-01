@@ -75,6 +75,7 @@ public slots: // ------------------------------------------------- Node manager
     void guiAddNodeField();
     void guiDelNodeField();
     void guiClearNodeField();
+    void guiChangeNodeField(QStandardItem*);
 
     // Mesh GUI Buttons
     void guiMeshNew();
@@ -204,6 +205,8 @@ private:
 
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
+
+        QMap<tbe::scene::Node*, QStandardItem*> listBinder;
 
     } nodesGui;
 

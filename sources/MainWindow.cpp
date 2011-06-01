@@ -209,10 +209,10 @@ void MainWindow::initWidgets()
 
     envGui.skybox.textures[0] = new QBrowsEdit(this, m_uinterface.skybox_front, m_uinterface.skybox_front_browse);
     envGui.skybox.textures[1] = new QBrowsEdit(this, m_uinterface.skybox_back, m_uinterface.skybox_back_browse);
-    envGui.skybox.textures[2] = new QBrowsEdit(this, m_uinterface.skybox_left, m_uinterface.skybox_left_browse);
-    envGui.skybox.textures[3] = new QBrowsEdit(this, m_uinterface.skybox_right, m_uinterface.skybox_right_browse);
-    envGui.skybox.textures[4] = new QBrowsEdit(this, m_uinterface.skybox_top, m_uinterface.skybox_top_browse);
-    envGui.skybox.textures[5] = new QBrowsEdit(this, m_uinterface.skybox_bottom, m_uinterface.skybox_bottom_browse);
+    envGui.skybox.textures[2] = new QBrowsEdit(this, m_uinterface.skybox_top, m_uinterface.skybox_top_browse);
+    envGui.skybox.textures[3] = new QBrowsEdit(this, m_uinterface.skybox_bottom, m_uinterface.skybox_bottom_browse);
+    envGui.skybox.textures[4] = new QBrowsEdit(this, m_uinterface.skybox_left, m_uinterface.skybox_left_browse);
+    envGui.skybox.textures[5] = new QBrowsEdit(this, m_uinterface.skybox_right, m_uinterface.skybox_right_browse);
 
     envGui.fog.color = new QVectorBox(this, m_uinterface.fog_x, m_uinterface.fog_y, m_uinterface.fog_z);
     envGui.fog.start = m_uinterface.fog_start;
@@ -261,6 +261,8 @@ void MainWindow::initConnections()
     nodeMoveBind->setMapping(nodesGui.nodeDown, 2);
     nodeMoveBind->setMapping(nodesGui.nodeLeft, 3);
     nodeMoveBind->setMapping(nodesGui.nodeRight, 4);
+
+    connect(nodesGui.additionalModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(guiChangeNodeField(QStandardItem*)));
 
     connect(nodesGui.addField, SIGNAL(clicked()), this, SLOT(guiAddNodeField()));
     connect(nodesGui.delField, SIGNAL(clicked()), this, SLOT(guiDelNodeField()));
@@ -408,54 +410,61 @@ void MainWindow::openSceneDialog()
 
 void MainWindow::openScene(const QString& filename)
 {
+    using namespace tbe::scene;
+
     if(!leaveSafely())
         return;
 
-    QDir::setCurrent(QFileInfo(filename).path());
-
-    m_tbeWidget->clearScene();
-
-    m_filename.clear();
-
-    somethingChange(false);
-
-    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
-
-    m_tbeWidget->loadScene(filename);
-
-    using namespace tbe::scene;
-
-    pushFileHistory(filename);
-
-    SceneParser* sceneParser = m_tbeWidget->getSceneParser();
-
-    genGui.title->setText(sceneParser->getSceneName().c_str());
-    genGui.author->setText(sceneParser->getAuthorName().c_str());
-
-    genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
-
-    const SceneParser::AttribMap addfields = sceneParser->additionalFields();
-
-    for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
+    try
     {
-        QStandardItem* key = new QStandardItem;
-        key->setText(it->first.c_str());
+        m_tbeWidget->clearScene();
 
-        QStandardItem* value = new QStandardItem;
-        value->setText(it->second.c_str());
+        m_filename.clear();
 
-        genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
+        nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+
+        somethingChange(false);
+
+        m_tbeWidget->loadScene(filename);
+
+        QDir::setCurrent(QFileInfo(filename).path());
+
+        pushFileHistory(filename);
+
+        SceneParser* sceneParser = m_tbeWidget->getSceneParser();
+
+        genGui.title->setText(sceneParser->getSceneName().c_str());
+        genGui.author->setText(sceneParser->getAuthorName().c_str());
+
+        genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
+
+        const SceneParser::AttribMap addfields = sceneParser->additionalFields();
+
+        for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
+        {
+            QStandardItem* key = new QStandardItem;
+            key->setText(it->first.c_str());
+
+            QStandardItem* value = new QStandardItem;
+            value->setText(it->second.c_str());
+
+            genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
+        }
+
+        QVariant rootUserData;
+        rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
+
+        nodesGui.nodesListModel->invisibleRootItem()->setData(rootUserData);
+        nodesGui.nodesListModel->invisibleRootItem()->setData(IsUnknown, ContentType);
+
+        m_filename = filename;
+
+        somethingChange(false);
     }
-
-    QVariant rootUserData;
-    rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
-
-    nodesGui.nodesListModel->invisibleRootItem()->setData(rootUserData);
-    nodesGui.nodesListModel->invisibleRootItem()->setData(IsUnknown, ContentType);
-
-    m_filename = filename;
-
-    somethingChange(false);
+    catch(std::exception& e)
+    {
+        QMessageBox::critical(this, "Erreur de chargement", e.what());
+    }
 }
 
 void MainWindow::saveSceneDialog()
@@ -463,7 +472,10 @@ void MainWindow::saveSceneDialog()
     QString filename = QFileDialog::getSaveFileName(this);
 
     if(!filename.isNull())
+    {
         saveScene(filename);
+        openScene(filename);
+    }
 }
 
 void MainWindow::saveScene()
@@ -476,6 +488,22 @@ void MainWindow::saveScene()
 
 void MainWindow::saveScene(const QString& filename)
 {
+    tbe::scene::SceneParser* sceneParser = m_tbeWidget->getSceneParser();
+
+    sceneParser->setSceneName(genGui.title->text().toStdString());
+    sceneParser->setAuthorName(genGui.author->text().toStdString());
+
+    sceneParser->clearAdditional();
+
+    int count = genGui.additionalModel->rowCount();
+    for(int i = 0; i < count; i++)
+    {
+        std::string key = genGui.additionalModel->item(i, 0)->text().toStdString();
+        std::string value = genGui.additionalModel->item(i, 1)->text().toStdString();
+
+        sceneParser->setAdditional(key, value);
+    }
+
     m_tbeWidget->saveScene(filename);
 
     somethingChange(false);
@@ -597,7 +625,7 @@ void MainWindow::guiMeshDelete()
 {
     if(tbe::scene::Mesh * mesh = m_qnodebind->getCurmesh())
     {
-        QStandardItem* item = mesh->getUserData("QStandardItem").getValue<QStandardItem*> ();
+        QStandardItem* item = nodesGui.listBinder[mesh];
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -631,7 +659,7 @@ void MainWindow::guiLightDelete()
 {
     if(tbe::scene::Light * light = m_qnodebind->getCurlight())
     {
-        QStandardItem* item = light->getUserData("QStandardItem").getValue<QStandardItem*> ();
+        QStandardItem* item = nodesGui.listBinder[light];
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -672,7 +700,7 @@ void MainWindow::guiParticlesDelete()
 {
     if(tbe::scene::ParticlesEmiter * particles = m_qnodebind->getCurparticles())
     {
-        QStandardItem* item = particles->getUserData("QStandardItem").getValue<QStandardItem*> ();
+        QStandardItem* item = nodesGui.listBinder[particles];
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -688,6 +716,9 @@ void MainWindow::guiParticlesDelete()
 
 void MainWindow::nodeUpdate(tbe::scene::Node* node)
 {
+    if(!node)
+        return;
+
     nodesGui.name->blockSignals(true);
     nodesGui.pos->blockSignals(true);
     nodesGui.scl->blockSignals(true);
@@ -711,9 +742,6 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
 
     for(Any::Map::const_iterator it = userData.begin(); it != userData.end(); it++)
     {
-        if(it->first == "QStandardItem")
-            continue;
-
         QList<QStandardItem*> newfield;
 
         newfield
@@ -764,7 +792,7 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    mesh->setUserData("QStandardItem", itid);
+    nodesGui.listBinder[mesh] = itid;
 
     m_tbeWidget->meshRegister(mesh);
 
@@ -778,6 +806,9 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 {
     m_qnodebind->setCurmesh(mesh);
 
+    if(!mesh)
+        return;
+
     nodeUpdate(mesh);
 }
 
@@ -787,7 +818,7 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 
     if(upList)
     {
-        QStandardItem* item = mesh->getUserData("QStandardItem").getValue<QStandardItem*> ();
+        QStandardItem* item = nodesGui.listBinder[mesh];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -817,7 +848,7 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
 
     nodesGui.nodesListModel->appendRow(items);
 
-    light->setUserData("QStandardItem", itemType);
+    nodesGui.listBinder[light] = itemType;
 
     m_tbeWidget->lightRegister(light);
 
@@ -830,6 +861,9 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
 void MainWindow::lightUpdate(tbe::scene::Light* light)
 {
     m_qnodebind->setCurlight(light);
+
+    if(!light)
+        return;
 
     nodeUpdate(light);
 
@@ -846,7 +880,7 @@ void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 
     if(upList)
     {
-        QStandardItem* item = light->getUserData("QStandardItem").getValue<QStandardItem*> ();
+        QStandardItem* item = nodesGui.listBinder[light];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -874,12 +908,12 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     QItemsList items;
     items << itemType << itemName;
 
-    if(particles->getParent()->hasUserData("QStandardItem"))
-        particles->getParent()->getUserData("QStandardItem").getValue<QStandardItem*>()->appendRow(items);
+    if(nodesGui.listBinder.count(particles->getParent()))
+        nodesGui.listBinder[particles->getParent()]->appendRow(items);
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    particles->setUserData("QStandardItem", itemType);
+    nodesGui.listBinder[particles] = itemType;
 
     m_tbeWidget->particlesRegister(particles);
 
@@ -892,6 +926,9 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 {
     m_qnodebind->setCurparticles(particles);
+
+    if(!particles)
+        return;
 
     nodeUpdate(particles);
 
@@ -911,7 +948,7 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
 
     if(upList)
     {
-        QStandardItem* item = particles->getUserData("QStandardItem").getValue<QStandardItem*> ();
+        QStandardItem* item = nodesGui.listBinder[particles];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
@@ -987,7 +1024,7 @@ void MainWindow::scopeNode(int move)
 
 void MainWindow::updateNodeInfo(tbe::scene::Node* node)
 {
-    QStandardItem* itemType = node->getUserData("QStandardItem").getValue<QStandardItem*>();
+    QStandardItem* itemType = nodesGui.listBinder[node];
     QStandardItem* itemName = itemType->parent()
             ? itemType->parent()->child(itemType->row(), 1)
             : nodesGui.nodesListModel->item(itemType->row(), 1);
@@ -1143,9 +1180,15 @@ void MainWindow::guiDelNodeField()
     QModelIndex i = nodesGui.additionalView->currentIndex();
 
     if(i.isValid())
+    {
+        QString key = nodesGui.additionalModel->item(i.row(), 0)->text();
+
+        m_qnodebind->getCurNode()->delUserData(key.toStdString());
+
         nodesGui.additionalModel->removeRow(i.row());
 
-    somethingChange(true);
+        somethingChange(true);
+    }
 }
 
 void MainWindow::guiClearNodeField()
@@ -1158,7 +1201,25 @@ void MainWindow::guiClearNodeField()
 
     if(re == QMessageBox::Yes)
     {
+        m_qnodebind->getCurNode()->clearUserData();
         nodesGui.additionalModel->removeRows(0, nodesGui.additionalModel->rowCount());
         somethingChange(true);
+    }
+}
+
+void MainWindow::guiChangeNodeField(QStandardItem* item)
+{
+    if(item->column() == 0)
+    {
+        QStandardItem* value = nodesGui.additionalModel->item(item->row(), 1);
+
+        m_qnodebind->getCurNode()->delUserData(item->text().toStdString());
+        m_qnodebind->getCurNode()->setUserData(item->text().toStdString(), value->text().toStdString());
+    }
+    else if(item->column() == 1)
+    {
+        QStandardItem* key = nodesGui.additionalModel->item(item->row(), 0);
+        m_qnodebind->getCurNode()->setUserData(key->text().toStdString(), item->text().toStdString());
+
     }
 }
