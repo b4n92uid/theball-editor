@@ -106,8 +106,13 @@ void QTBEngine::placeSelection()
 
     AABB selAabb = m_selectedNode->getAabb();
 
-    if(!selAabb.max || !selAabb.min)
+    if(selAabb.max < 0.0001 && selAabb.min < 0.0001)
+    {
         selAabb = 0.5;
+        m_axe->applyColor("main", Vector4f(1, 0, 0, 0.25));
+    }
+    else
+        m_axe->applyColor("main", Vector4f(0, 0, 1, 0.25));
 
     m_axe->setMatrix(m_selectedNode->getAbsoluteMatrix());
     m_axe->setPos(m_selectedNode->getAbsoluteMatrix() * selAabb.getCenter());
@@ -227,7 +232,7 @@ void QTBEngine::moveApply()
 
     m_selectedNode->setMatrix(apply);
 
-    m_centerTarget = position;
+    m_centerTarget = m_selectedNode->getAbsoluteMatrix() * m_selectedNode->getAabb().getCenter();
 
     if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
         emit notifyMeshUpdate(mesh);
@@ -690,8 +695,6 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
     mesh->getParent()->addChild(newmesh);
 
-    meshRegister(newmesh);
-
     emit notifyMeshAdd(newmesh);
 }
 
@@ -743,8 +746,6 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
 
     light->getParent()->addChild(newlight);
 
-    lightRegister(newlight);
-
     emit notifyLightAdd(newlight);
 }
 
@@ -795,8 +796,6 @@ void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
     ParticlesEmiter* newparticles = particles->clone();
 
     particles->getParent()->addChild(newparticles);
-
-    particlesRegister(newparticles);
 
     emit notifyParticlesAdd(newparticles);
 }
