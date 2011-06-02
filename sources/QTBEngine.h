@@ -134,6 +134,7 @@ private:
     QTimer* m_updateTimer;
 
     bool m_grabCamera;
+    bool m_gridEnable;
 
     tbe::Vector2i m_lastCursorPos;
     tbe::Vector2i m_curCursorPos;
