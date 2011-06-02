@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QNodeBinders.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 7 décembre 2010, 21:00
  */
 

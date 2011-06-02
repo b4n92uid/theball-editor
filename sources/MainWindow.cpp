@@ -334,6 +334,8 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxInit(tbe::scene::SkyBox*)));
     connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiant(const tbe::Vector3f&)));
 
+    connect(m_tbeWidget, SIGNAL(notifyListRebuild()), this, SLOT(clearNodeList()));
+
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
     m_timer->start(16);
@@ -1222,4 +1224,9 @@ void MainWindow::guiChangeNodeField(QStandardItem* item)
         m_qnodebind->getCurNode()->setUserData(key->text().toStdString(), item->text().toStdString());
 
     }
+}
+
+void MainWindow::clearNodeList()
+{
+    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 }
