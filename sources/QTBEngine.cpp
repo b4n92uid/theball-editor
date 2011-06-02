@@ -44,6 +44,8 @@ QTBEngine::QTBEngine(QWidget* parent)
 
     m_selectedNode = NULL;
 
+    m_gridEnable = false;
+
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     setCursor(Qt::OpenHandCursor);
@@ -197,32 +199,48 @@ void QTBEngine::moveApply()
 
     if(m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
     {
-        float moveSpeed = 0.01;
-
-        Vector2f mousePosRel = m_eventManager->mousePosRel;
-
-        Vector3f target = m_camera->getTarget();
-        target.y = 0;
-        target.normalize();
-
-        Vector3f left = m_camera->getLeft();
-        left.y = 0;
-        left.normalize();
-
-        Vector3f transform;
-
-        if(m_eventManager->keyState[EventManager::KEY_LALT])
+        if(m_gridEnable)
         {
-            transform.y -= mousePosRel.y * moveSpeed;
+            if(m_eventManager->keyState[EventManager::KEY_LALT])
+            {
+                // Vertical gride move
+            }
+            else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
+            {
+                position.x = m_curCursor3D.x;
+                position.z = m_curCursor3D.z;
+                tools::round(position, Vector3f(1));
+            }
         }
         else
         {
-            transform = -left * mousePosRel.x * moveSpeed;
-            transform -= target * mousePosRel.y * moveSpeed;
-            transform.y = 0;
-        }
+            float moveSpeed = 0.01;
 
-        position += transform;
+            Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+            Vector3f target = m_camera->getTarget();
+            target.y = 0;
+            target.normalize();
+
+            Vector3f left = m_camera->getLeft();
+            left.y = 0;
+            left.normalize();
+
+            Vector3f transform;
+
+            if(m_eventManager->keyState[EventManager::KEY_LALT])
+            {
+                transform.y -= mousePosRel.y * moveSpeed;
+            }
+            else
+            {
+                transform = -left * mousePosRel.x * moveSpeed;
+                transform -= target * mousePosRel.y * moveSpeed;
+                transform.y = 0;
+            }
+
+            position += transform;
+        }
     }
 
     Matrix4 apply;
@@ -232,7 +250,8 @@ void QTBEngine::moveApply()
 
     m_selectedNode->setMatrix(apply);
 
-    m_centerTarget = m_selectedNode->getAbsoluteMatrix() * m_selectedNode->getAabb().getCenter();
+    if(!m_gridEnable)
+        m_centerTarget = m_selectedNode->getAbsoluteMatrix() * m_selectedNode->getAabb().getCenter();
 
     if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
         emit notifyMeshUpdate(mesh);
@@ -397,7 +416,8 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     if(m_eventManager->keyState[EventManager::KEY_LSHIFT])
     {
-        QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+        if(!m_gridEnable)
+            QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
 }
 
@@ -407,7 +427,10 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Shift)
     {
-        setCursor(Qt::BlankCursor);
+        if(m_gridEnable)
+            setCursor(Qt::ClosedHandCursor);
+        else
+            setCursor(Qt::BlankCursor);
     }
 
     else
@@ -463,10 +486,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_G)
         {
-            Vector3f pos = m_selectedNode->getPos();
-            tools::round(pos, Vector3f(1));
-
-            m_selectedNode->setPos(pos);
+            m_gridEnable = !m_gridEnable;
         }
 
         if(ev->key() == Qt::Key_F)
