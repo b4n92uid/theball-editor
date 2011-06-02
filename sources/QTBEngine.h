@@ -29,6 +29,8 @@ public:
 
     tbe::scene::Node* rootNode();
 
+    tbe::scene::SceneParser* getSceneParser() const;
+
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
@@ -47,7 +49,6 @@ protected:
     void moveApply();
 
     void setupSelection();
-
 
 public slots:
 
@@ -89,7 +90,7 @@ public slots:
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
 
-    tbe::scene::SceneParser* getSceneParser() const;
+    void rebuildList();
 
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
@@ -107,6 +108,8 @@ signals:
     void notifyInitAmbiant(const tbe::Vector3f&);
     void notifyInitFog(tbe::scene::Fog*);
     void notifyInitSkybox(tbe::scene::SkyBox*);
+
+    void notifyListRebuild();
 
 private:
     tbe::Device* m_device;

@@ -54,6 +54,8 @@ public slots:
 
     void somethingChange(bool stat = true);
 
+    void clearNodeList();
+
 public slots: // ------------------------------------------------- Node manager
 
     bool leaveSafely();
