@@ -21,6 +21,7 @@ Q_DECLARE_METATYPE(tbe::scene::Mesh*)
 Q_DECLARE_METATYPE(tbe::scene::Water*)
 Q_DECLARE_METATYPE(tbe::scene::ParticlesEmiter*)
 Q_DECLARE_METATYPE(tbe::scene::Light*)
+Q_DECLARE_METATYPE(tbe::scene::Material*)
 Q_DECLARE_METATYPE(NodeType)
 
 MainWindow::MainWindow()
@@ -146,6 +147,20 @@ void MainWindow::initWidgets()
     nodesGui.meshTab.add = m_uinterface.node_mesh_add;
     nodesGui.meshTab.clone = m_uinterface.node_mesh_clone;
     nodesGui.meshTab.del = m_uinterface.node_mesh_del;
+
+    nodesGui.meshTab.texture = new QBrowsEdit(this, m_uinterface.node_mesh_texture, m_uinterface.node_mesh_texture_browse);
+
+    nodesGui.meshTab.opacity = m_uinterface.node_mesh_opacity;
+
+    nodesGui.meshTab.textured = m_uinterface.node_mesh_textured;
+    nodesGui.meshTab.lighted = m_uinterface.node_mesh_lighted;
+    nodesGui.meshTab.alphablend = m_uinterface.node_mesh_alphablend;
+
+    nodesGui.meshTab.materialsModel = new QStandardItemModel(this);
+    nodesGui.meshTab.materialsModel->setHorizontalHeaderLabels(QStringList() << "Materiaux");
+
+    nodesGui.meshTab.materialsView = m_uinterface.node_mesh_materials;
+    nodesGui.meshTab.materialsView->setModel(nodesGui.meshTab.materialsModel);
 
     // -------- Water
 
@@ -283,6 +298,16 @@ void MainWindow::initConnections()
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
     connect(nodesGui.meshTab.del, SIGNAL(clicked()), this, SLOT(guiMeshDelete()));
+
+    connect(nodesGui.meshTab.textured, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetTextured(bool)));
+    connect(nodesGui.meshTab.lighted, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetLighted(bool)));
+    connect(nodesGui.meshTab.alphablend, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetAlphaBlend(bool)));
+
+    connect(nodesGui.meshTab.opacity, SIGNAL(valueChanged(double)), this, SLOT(guiMeshSetOpacity(double)));
+
+    connect(nodesGui.meshTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(guiMeshSetTexture(const QString&)));
+
+    connect(nodesGui.meshTab.materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(guiMeshMaterialSelected(const QModelIndex &)));
 
     connect(nodesGui.waterTab.deform, SIGNAL(valueChanged(double)), m_qnodebind, SLOT(waterSetDeform(double)));
     connect(nodesGui.waterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_qnodebind, SLOT(waterSetSize(const tbe::Vector2f&)));
@@ -821,12 +846,39 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
     if(upList)
     {
         QStandardItem* item = nodesGui.listBinder[mesh];
-        nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
+        nodesGui.nodesListView->
+                setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
     m_tbeWidget->meshSelect(mesh);
 
     nodesGui.attribTab->setCurrentIndex(1);
+
+    using namespace tbe::scene;
+
+    nodesGui.meshTab.materialsModel->
+            removeRows(0, nodesGui.meshTab.materialsModel->rowCount());
+
+    Material::Array matarr = mesh->getAllMaterial();
+
+    foreach(Material* mat, matarr)
+    {
+        QVariant data;
+        data.setValue<Material*>(mat);
+
+        QStandardItem* item = new QStandardItem(mat->getName().c_str());
+        item->setData(data);
+
+        nodesGui.meshTab.materialsModel->appendRow(item);
+    }
+
+    nodesGui.meshTab.opacity->setValue(mesh->getOpacity());
+
+    QModelIndex index = nodesGui.meshTab.materialsModel->index(0, 0);
+
+    nodesGui.meshTab.materialsView->setCurrentIndex(index);
+    guiMeshMaterialSelected(index);
+
 }
 
 void MainWindow::lightRegister(tbe::scene::Light* light)
@@ -1229,4 +1281,77 @@ void MainWindow::guiChangeNodeField(QStandardItem* item)
 void MainWindow::clearNodeList()
 {
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+}
+
+void MainWindow::guiMeshSetTexture(const QString& path)
+{
+    using namespace tbe::scene;
+
+    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
+    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
+    Material* mat = item->data().value<Material*>();
+
+    mat->setTexture(path.toStdString());
+}
+
+void MainWindow::guiMeshSetOpacity(double value)
+{
+    m_qnodebind->getCurmesh()->setOpacity((float)value);
+}
+
+void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
+{
+    using namespace tbe::scene;
+
+    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
+
+    Material* mat = item->data().value<Material*>();
+
+    nodesGui.meshTab.texture->setOpenFileName(mat->getTexture().getFilename().c_str());
+
+    nodesGui.meshTab.textured->setChecked(mat->isEnable(Material::TEXTURE));
+    nodesGui.meshTab.lighted->setChecked(mat->isEnable(Material::LIGHT));
+    nodesGui.meshTab.alphablend->setChecked(mat->isEnable(Material::BLEND_MOD));
+}
+
+void MainWindow::guiMeshSetTextured(bool stat)
+{
+    using namespace tbe::scene;
+
+    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
+    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
+    Material* mat = item->data().value<Material*>();
+
+    if(stat)
+        mat->enable(Material::TEXTURE);
+    else
+        mat->disable(Material::TEXTURE);
+}
+
+void MainWindow::guiMeshSetLighted(bool stat)
+{
+    using namespace tbe::scene;
+
+    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
+    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
+    Material* mat = item->data().value<Material*>();
+
+    if(stat)
+        mat->enable(Material::LIGHT);
+    else
+        mat->disable(Material::LIGHT);
+}
+
+void MainWindow::guiMeshSetAlphaBlend(bool stat)
+{
+    using namespace tbe::scene;
+
+    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
+    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
+    Material* mat = item->data().value<Material*>();
+
+    if(stat)
+        mat->enable(Material::BLEND_MOD);
+    else
+        mat->disable(Material::BLEND_MOD);
 }

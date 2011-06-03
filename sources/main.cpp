@@ -10,6 +10,14 @@
 
 int main(int argc, char *argv[])
 {
+    using namespace std;
+
+    #ifndef _DEBUG
+    ofstream log("tbeditor.log");
+    streambuf* defaultCout = cout.rdbuf();
+    cout.rdbuf(log.rdbuf());
+    #endif
+
     QApplication app(argc, argv);
 
     QTranslator translator;
@@ -34,5 +42,12 @@ int main(int argc, char *argv[])
         window.openScene(argv[1]);
     }
 
-    return app.exec();
+    int ret = app.exec();
+
+    #ifndef _DEBUG
+    cout.rdbuf(defaultCout);
+    log.close();
+    #endif
+
+    return ret;
 }

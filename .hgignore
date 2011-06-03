@@ -10,3 +10,4 @@ syntax: glob
 ui_*
 **.bash
 **.mk
+**.log
