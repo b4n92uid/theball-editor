@@ -32,10 +32,17 @@ public:
     void initWidgets();
     void initConnections();
 
-public slots:
 
-    void buildFileHistory();
+protected:
+
     void pushFileHistory(const QString& filepath);
+    void buildFileHistory();
+
+    bool leaveSafely();
+
+    tbe::scene::Node* itemNode(QStandardItem* item);
+
+public slots:
 
     void toggleFullWidget(bool full = true);
 
@@ -48,27 +55,27 @@ public slots:
     void saveScene(const QString& filename);
     void saveScene();
 
-    void updateGui();
+    void updateInfoBox();
 
     void about();
 
-    void somethingChange(bool stat = true);
+    void notifyChanges(bool stat = true);
 
     void clearNodeList();
 
-public slots: // ------------------------------------------------- Node manager
-
-    bool leaveSafely();
-
     void closeEvent(QCloseEvent *event);
 
-    // On nodes list item select
-    void guiSelect(const QModelIndex& index);
+public slots: // Node manager
 
     // Update node info box
     void updateNodeInfo(tbe::scene::Node*);
 
+    // On nodes list item select
+    void guiSelect(const QModelIndex& index);
+
     void scopeNode(int move);
+
+    // -------- GUI -> NODE
 
     void guiAddSceneField();
     void guiDelSceneField();
@@ -84,11 +91,10 @@ public slots: // ------------------------------------------------- Node manager
     void guiMeshClone();
     void guiMeshDelete();
 
-    void guiMeshSetTexture(const QString&);
-
-    void guiMeshSetOpacity(double value);
-
     void guiMeshMaterialSelected(const QModelIndex& index);
+
+    void guiMeshSetTexture(const QString&);
+    void guiMeshSetOpacity(double value);
 
     void guiMeshSetTextured(bool stat);
     void guiMeshSetLighted(bool stat);
@@ -103,6 +109,8 @@ public slots: // ------------------------------------------------- Node manager
     void guiParticlesNew();
     void guiParticlesClone();
     void guiParticlesDelete();
+
+    // -------- NODE -> GUI
 
     void nodeUpdate(tbe::scene::Node* node);
 
@@ -121,17 +129,19 @@ public slots: // ------------------------------------------------- Node manager
     void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
     void particlesUpdate(tbe::scene::ParticlesEmiter* particles);
 
-    static tbe::scene::Node* itemNode(QStandardItem* item);
+public slots: // Env manager
 
-public slots: // -------------------------------------------------- Env manager
+    // -------- GUI -> MANAGER
 
-    void skyboxInit(tbe::scene::SkyBox* tbesky);
-    void skyboxApply(bool enable = true);
+    void guiSkyboxApply(bool enable = true);
+    void guiFogApply(bool enable = true);
 
-    void fogInit(tbe::scene::Fog* tbefog);
-    void fogApply(bool enable = true);
+    // -------- MANAGER -> GUI
 
-    void sceneAmbiant(const tbe::Vector3f& value);
+    void skyboxRegister(tbe::scene::SkyBox* tbesky);
+    void fogRegister(tbe::scene::Fog* tbefog);
+
+    void sceneAmbiantUpdate(const tbe::Vector3f& value);
 
 signals:
 
@@ -229,7 +239,7 @@ private:
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
 
-        QMap<tbe::scene::Node*, QStandardItem*> listBinder;
+        QMap<tbe::scene::Node*, QStandardItem*> nodeItemBinder;
 
     } nodesGui;
 

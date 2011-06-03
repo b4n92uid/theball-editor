@@ -84,15 +84,11 @@ void QTBEngine::initializeGL()
     m_fog = m_sceneManager->getFog();
     m_skybox = m_sceneManager->getSkybox();
 
-    m_ffcamera = new FreeFlyCamera;
-    m_orbcamera = new OrbitalCamera;
+    m_camera = new OrbitalCamera;
 
-    m_sceneManager->addCamera(m_ffcamera);
-    m_sceneManager->addCamera(m_orbcamera);
+    m_sceneManager->addCamera(m_camera);
 
     m_rootNode = m_sceneManager->getRootNode();
-
-    m_camera = m_orbcamera;
 
     setupSelection();
 
@@ -245,8 +241,8 @@ void QTBEngine::moveApply()
 
     Matrix4 apply;
     apply.setPos(position);
-    apply.setScale(scale);
     apply.setRotate(rotation);
+    apply.setScale(scale);
 
     m_selectedNode->setMatrix(apply);
 
@@ -271,10 +267,10 @@ void QTBEngine::paintGL()
 {
     moveApply();
 
-    Vector3f campos = m_orbcamera->getCenter();
+    Vector3f campos = m_camera->getCenter();
 
     if(m_centerTarget - campos > 0.01)
-        m_orbcamera->setCenter(campos + (m_centerTarget - campos) / 8.0f);
+        m_camera->setCenter(campos + (m_centerTarget - campos) / 8.0f);
 
     m_device->beginScene();
     m_sceneManager->render();
@@ -323,7 +319,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
-        m_centerTarget = m_curCursor3D;
+        if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
+            m_centerTarget = m_curCursor3D;
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -450,6 +447,12 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 lightSelect(light);
                 emit notifyLightSelect(light);
             }
+
+            else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode->getParent()))
+            {
+                particlesSelect(particles);
+                emit notifyParticlesSelect(particles);
+            }
         }
 
         if(ev->key() == Qt::Key_Delete)
@@ -472,6 +475,14 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             else if(Light * light = tools::find(m_lights, m_selectedNode))
                 lightClone(light);
+
+            else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
+                particlesClone(particles);
+        }
+
+        if(ev->key() == Qt::Key_V)
+        {
+            m_centerTarget = 0;
         }
 
         if(ev->key() == Qt::Key_R)
@@ -504,10 +515,25 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_selectedNode->setPos(adjust);
         }
 
-        else if(ev->key() == Qt::Key_V)
+        else if(ev->key() == Qt::Key_1)
         {
-            swapcontainer(m_camera, m_ffcamera, m_orbcamera);
-            m_sceneManager->setCurCamera(m_camera);
+            m_camera->setAngle(0, 0);
+            m_camera->setTarget(Vector3f(0, 0, 1));
+            m_camera->setCenter(m_centerTarget);
+        }
+
+        else if(ev->key() == Qt::Key_3)
+        {
+            m_camera->setAngle(0, 90);
+            m_camera->setTarget(Vector3f(1, 0, 0));
+            m_camera->setCenter(m_centerTarget);
+        }
+
+        else if(ev->key() == Qt::Key_7)
+        {
+            m_camera->setAngle(-90, 0);
+            m_camera->setTarget(Vector3f(0, -1, 0.1));
+            m_camera->setCenter(m_centerTarget);
         }
     }
 
@@ -878,7 +904,7 @@ tbe::scene::SceneParser* QTBEngine::getSceneParser() const
     return m_sceneParser;
 }
 
-void QTBEngine::sceneAmbiant(const tbe::Vector3f& value)
+void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 {
     m_sceneManager->setAmbientLight(vec34(value));
 }
