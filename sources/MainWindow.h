@@ -84,6 +84,16 @@ public slots: // ------------------------------------------------- Node manager
     void guiMeshClone();
     void guiMeshDelete();
 
+    void guiMeshSetTexture(const QString&);
+
+    void guiMeshSetOpacity(double value);
+
+    void guiMeshMaterialSelected(const QModelIndex& index);
+
+    void guiMeshSetTextured(bool stat);
+    void guiMeshSetLighted(bool stat);
+    void guiMeshSetAlphaBlend(bool stat);
+
     // Light GUI Buttons
     void guiLightNew();
     void guiLightClone();
@@ -152,6 +162,17 @@ private:
             QPushButton* add;
             QPushButton* clone;
             QPushButton* del;
+
+            QBrowsEdit* texture;
+
+            QCheckBox* lighted;
+            QCheckBox* textured;
+            QCheckBox* alphablend;
+
+            QDoubleSpinBox* opacity;
+
+            QListView* materialsView;
+            QStandardItemModel* materialsModel;
 
         } meshTab;
 
