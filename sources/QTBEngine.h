@@ -79,7 +79,7 @@ public slots:
     void particlesClone(tbe::scene::ParticlesEmiter* particles); // Clone particles on engine
 
     // Setting scene ambiant light
-    void sceneAmbiant(const tbe::Vector3f& value);
+    void setSceneAmbiant(const tbe::Vector3f& value);
 
     void pauseRendring();
     void resumeRendring();
@@ -120,9 +120,7 @@ private:
     tbe::scene::SkyBox* m_skybox;
     tbe::scene::Fog* m_fog;
 
-    tbe::scene::UserCamera* m_camera;
-    tbe::scene::FreeFlyCamera* m_ffcamera;
-    tbe::scene::OrbitalCamera* m_orbcamera;
+    tbe::scene::OrbitalCamera* m_camera;
 
     tbe::scene::MeshParallelScene* m_meshScene;
     tbe::scene::LightParallelScene* m_lightScene;

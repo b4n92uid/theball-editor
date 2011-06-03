@@ -26,7 +26,7 @@ Q_DECLARE_METATYPE(NodeType)
 
 MainWindow::MainWindow()
 {
-    somethingChange(false);
+    notifyChanges(false);
 }
 
 MainWindow::~MainWindow()
@@ -353,23 +353,23 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
 
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(sceneAmbiant(const tbe::Vector3f&)));
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(setSceneAmbiant(const tbe::Vector3f&)));
 
-    connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fogInit(tbe::scene::Fog*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxInit(tbe::scene::SkyBox*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiant(const tbe::Vector3f&)));
+    connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fogRegister(tbe::scene::Fog*)));
+    connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxRegister(tbe::scene::SkyBox*)));
+    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiantUpdate(const tbe::Vector3f&)));
 
     connect(m_tbeWidget, SIGNAL(notifyListRebuild()), this, SLOT(clearNodeList()));
 
     m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateGui()));
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
     m_timer->start(16);
 
     // Change notify
 
-    connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(somethingChange()));
-    connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(somethingChange()));
-    connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(somethingChange()));
+    connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(notifyChanges()));
+    connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(notifyChanges()));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(notifyChanges()));
 }
 
 bool MainWindow::leaveSafely()
@@ -418,7 +418,7 @@ void MainWindow::newScene()
 
     m_filename.clear();
 
-    somethingChange(false);
+    notifyChanges(false);
 
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 }
@@ -450,7 +450,7 @@ void MainWindow::openScene(const QString& filename)
 
         nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
-        somethingChange(false);
+        notifyChanges(false);
 
         m_tbeWidget->loadScene(filename);
 
@@ -486,7 +486,7 @@ void MainWindow::openScene(const QString& filename)
 
         m_filename = filename;
 
-        somethingChange(false);
+        notifyChanges(false);
     }
     catch(std::exception& e)
     {
@@ -533,12 +533,12 @@ void MainWindow::saveScene(const QString& filename)
 
     m_tbeWidget->saveScene(filename);
 
-    somethingChange(false);
+    notifyChanges(false);
 
     statusBar()->showMessage("Scene enregistrer...", 2000);
 }
 
-void MainWindow::somethingChange(bool stat)
+void MainWindow::notifyChanges(bool stat)
 {
     m_somethingChange = stat;
 
@@ -569,7 +569,7 @@ void MainWindow::about()
     aboutdlg->raise();
 }
 
-void MainWindow::updateGui()
+void MainWindow::updateInfoBox()
 {
     m_tbeWidget->fillTextInfo(m_infoText);
 }
@@ -652,7 +652,7 @@ void MainWindow::guiMeshDelete()
 {
     if(tbe::scene::Mesh * mesh = m_qnodebind->getCurmesh())
     {
-        QStandardItem* item = nodesGui.listBinder[mesh];
+        QStandardItem* item = nodesGui.nodeItemBinder[mesh];
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -662,7 +662,7 @@ void MainWindow::guiMeshDelete()
 
         m_tbeWidget->meshDelete(mesh);
 
-        somethingChange(true);
+        notifyChanges(true);
     }
 }
 
@@ -686,7 +686,7 @@ void MainWindow::guiLightDelete()
 {
     if(tbe::scene::Light * light = m_qnodebind->getCurlight())
     {
-        QStandardItem* item = nodesGui.listBinder[light];
+        QStandardItem* item = nodesGui.nodeItemBinder[light];
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -696,7 +696,7 @@ void MainWindow::guiLightDelete()
 
         m_tbeWidget->lightDelete(light);
 
-        somethingChange(true);
+        notifyChanges(true);
     }
 }
 
@@ -727,7 +727,7 @@ void MainWindow::guiParticlesDelete()
 {
     if(tbe::scene::ParticlesEmiter * particles = m_qnodebind->getCurparticles())
     {
-        QStandardItem* item = nodesGui.listBinder[particles];
+        QStandardItem* item = nodesGui.nodeItemBinder[particles];
         QStandardItem* parent = item->parent();
 
         if(parent)
@@ -737,7 +737,7 @@ void MainWindow::guiParticlesDelete()
 
         m_tbeWidget->particlesDelete(particles);
 
-        somethingChange(true);
+        notifyChanges(true);
     }
 }
 
@@ -819,40 +819,19 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    nodesGui.listBinder[mesh] = itid;
+    nodesGui.nodeItemBinder[mesh] = itid;
 
     m_tbeWidget->meshRegister(mesh);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 {
-    m_qnodebind->setCurmesh(mesh);
-
-    if(!mesh)
-        return;
-
     nodeUpdate(mesh);
-}
-
-void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
-{
-    meshUpdate(mesh);
-
-    if(upList)
-    {
-        QStandardItem* item = nodesGui.listBinder[mesh];
-        nodesGui.nodesListView->
-                setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
-    }
-
-    m_tbeWidget->meshSelect(mesh);
-
-    nodesGui.attribTab->setCurrentIndex(1);
 
     using namespace tbe::scene;
 
@@ -878,7 +857,27 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 
     nodesGui.meshTab.materialsView->setCurrentIndex(index);
     guiMeshMaterialSelected(index);
+}
 
+void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
+{
+    m_qnodebind->setCurmesh(mesh);
+
+    if(!mesh)
+        return;
+
+    if(upList)
+    {
+        QStandardItem* item = nodesGui.nodeItemBinder[mesh];
+        nodesGui.nodesListView->
+                setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
+    }
+
+    m_tbeWidget->meshSelect(mesh);
+
+    nodesGui.attribTab->setCurrentIndex(1);
+
+    meshUpdate(mesh);
 }
 
 void MainWindow::lightRegister(tbe::scene::Light* light)
@@ -902,23 +901,18 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
 
     nodesGui.nodesListModel->appendRow(items);
 
-    nodesGui.listBinder[light] = itemType;
+    nodesGui.nodeItemBinder[light] = itemType;
 
     m_tbeWidget->lightRegister(light);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::lightUpdate(tbe::scene::Light* light)
 {
-    m_qnodebind->setCurlight(light);
-
-    if(!light)
-        return;
-
     nodeUpdate(light);
 
     nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
@@ -930,17 +924,22 @@ void MainWindow::lightUpdate(tbe::scene::Light* light)
 
 void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 {
-    lightUpdate(light);
+    m_qnodebind->setCurlight(light);
+
+    if(!light)
+        return;
 
     if(upList)
     {
-        QStandardItem* item = nodesGui.listBinder[light];
+        QStandardItem* item = nodesGui.nodeItemBinder[light];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
     m_tbeWidget->lightSelect(light);
 
     nodesGui.attribTab->setCurrentIndex(0);
+
+    lightUpdate(light);
 }
 
 void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
@@ -962,28 +961,23 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     QItemsList items;
     items << itemType << itemName;
 
-    if(nodesGui.listBinder.count(particles->getParent()))
-        nodesGui.listBinder[particles->getParent()]->appendRow(items);
+    if(nodesGui.nodeItemBinder.count(particles->getParent()))
+        nodesGui.nodeItemBinder[particles->getParent()]->appendRow(items);
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    nodesGui.listBinder[particles] = itemType;
+    nodesGui.nodeItemBinder[particles] = itemType;
 
     m_tbeWidget->particlesRegister(particles);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 {
-    m_qnodebind->setCurparticles(particles);
-
-    if(!particles)
-        return;
-
     nodeUpdate(particles);
 
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
@@ -998,17 +992,22 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 
 void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
 {
-    particlesUpdate(particles);
+    m_qnodebind->setCurparticles(particles);
+
+    if(!particles)
+        return;
 
     if(upList)
     {
-        QStandardItem* item = nodesGui.listBinder[particles];
+        QStandardItem* item = nodesGui.nodeItemBinder[particles];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
     m_tbeWidget->particlesSelect(particles);
 
     nodesGui.attribTab->setCurrentIndex(3);
+
+    particlesUpdate(particles);
 }
 
 void MainWindow::scopeNode(int move)
@@ -1073,12 +1072,12 @@ void MainWindow::scopeNode(int move)
         nodesGui.nodesListView->setCurrentIndex(item->index());
     }
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::updateNodeInfo(tbe::scene::Node* node)
 {
-    QStandardItem* itemType = nodesGui.listBinder[node];
+    QStandardItem* itemType = nodesGui.nodeItemBinder[node];
     QStandardItem* itemName = itemType->parent()
             ? itemType->parent()->child(itemType->row(), 1)
             : nodesGui.nodesListModel->item(itemType->row(), 1);
@@ -1086,7 +1085,7 @@ void MainWindow::updateNodeInfo(tbe::scene::Node* node)
     itemName->setText(node->getName().c_str());
 }
 
-void MainWindow::skyboxApply(bool enable)
+void MainWindow::guiSkyboxApply(bool enable)
 {
     if(enable)
     {
@@ -1105,7 +1104,7 @@ void MainWindow::skyboxApply(bool enable)
     }
 }
 
-void MainWindow::fogApply(bool enable)
+void MainWindow::guiFogApply(bool enable)
 {
     if(enable)
         m_tbeWidget->fogApply(vec34(envGui.fog.color->value()),
@@ -1115,25 +1114,25 @@ void MainWindow::fogApply(bool enable)
         m_tbeWidget->fogClear();
 }
 
-void MainWindow::sceneAmbiant(const tbe::Vector3f& value)
+void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
 {
     envGui.sceneAmbiant->setValue(value);
 }
 
-void MainWindow::fogInit(tbe::scene::Fog* fog)
+void MainWindow::fogRegister(tbe::scene::Fog* fog)
 {
     envGui.fog.enable->setChecked(fog->isEnable());
     envGui.fog.color->setValue(vec43(fog->getColor()));
     envGui.fog.start->setValue(fog->getStart());
     envGui.fog.end->setValue(fog->getEnd());
 
-    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(fogApply(bool)));
-    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(fogApply()));
-    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(fogApply()));
-    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(fogApply()));
+    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
+    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogApply()));
+    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
+    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
 }
 
-void MainWindow::skyboxInit(tbe::scene::SkyBox* sky)
+void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
 {
     tbe::Texture* texs = sky->getTextures();
 
@@ -1142,8 +1141,8 @@ void MainWindow::skyboxInit(tbe::scene::SkyBox* sky)
 
     envGui.skybox.enable->setChecked(sky->isEnable());
 
-    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(skyboxApply(bool)));
-    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(skyboxApply()));
+    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxApply(bool)));
+    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxApply()));
 }
 
 void MainWindow::toggleFullWidget(bool full)
@@ -1187,7 +1186,7 @@ void MainWindow::guiAddSceneField()
 
     genGui.additionalModel->appendRow(newfield);
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::guiDelSceneField()
@@ -1197,7 +1196,7 @@ void MainWindow::guiDelSceneField()
     if(i.isValid())
         genGui.additionalModel->removeRow(i.row());
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::guiClearSceneField()
@@ -1212,7 +1211,7 @@ void MainWindow::guiClearSceneField()
     if(re == QMessageBox::Yes)
     {
         genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
-        somethingChange(true);
+        notifyChanges(true);
     }
 }
 
@@ -1226,7 +1225,7 @@ void MainWindow::guiAddNodeField()
 
     nodesGui.additionalModel->appendRow(newfield);
 
-    somethingChange(true);
+    notifyChanges(true);
 }
 
 void MainWindow::guiDelNodeField()
@@ -1241,7 +1240,7 @@ void MainWindow::guiDelNodeField()
 
         nodesGui.additionalModel->removeRow(i.row());
 
-        somethingChange(true);
+        notifyChanges(true);
     }
 }
 
@@ -1257,7 +1256,7 @@ void MainWindow::guiClearNodeField()
     {
         m_qnodebind->getCurNode()->clearUserData();
         nodesGui.additionalModel->removeRows(0, nodesGui.additionalModel->rowCount());
-        somethingChange(true);
+        notifyChanges(true);
     }
 }
 
@@ -1351,7 +1350,7 @@ void MainWindow::guiMeshSetAlphaBlend(bool stat)
     Material* mat = item->data().value<Material*>();
 
     if(stat)
-        mat->enable(Material::BLEND_MOD);
+        mat->enable(Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
     else
-        mat->disable(Material::BLEND_MOD);
+        mat->disable(Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
 }
