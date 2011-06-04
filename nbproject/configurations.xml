@@ -14,6 +14,7 @@
                    projectFiles="true">
       <itemPath>sources/about.ui</itemPath>
       <itemPath>sources/interface.ui</itemPath>
+      <itemPath>sources/matedit.ui</itemPath>
       <itemPath>sources/ressource.qrc</itemPath>
       <itemPath>sources/ressource.rc</itemPath>
     </logicalFolder>

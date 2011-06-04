@@ -96,14 +96,17 @@ signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
     void notifyMeshSelect(tbe::scene::Mesh*);
     void notifyMeshUpdate(tbe::scene::Mesh*);
+    void notifyMeshDelete(tbe::scene::Mesh*);
 
     void notifyLightAdd(tbe::scene::Light*);
     void notifyLightSelect(tbe::scene::Light*);
     void notifyLightUpdate(tbe::scene::Light*);
+    void notifyLightDelete(tbe::scene::Light*);
 
     void notifyParticlesAdd(tbe::scene::ParticlesEmiter*);
     void notifyParticlesSelect(tbe::scene::ParticlesEmiter*);
     void notifyParticlesUpdate(tbe::scene::ParticlesEmiter*);
+    void notifyParticlesDelete(tbe::scene::ParticlesEmiter*);
 
     void notifyInitAmbiant(const tbe::Vector3f&);
     void notifyInitFog(tbe::scene::Fog*);

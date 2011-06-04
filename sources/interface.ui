@@ -597,100 +597,14 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <layout class="QFormLayout" name="formLayout_9">
-              <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-              </property>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_36">
+             <layout class="QVBoxLayout" name="verticalLayout_11">
+              <item>
+               <widget class="QListView" name="node_mesh_materials"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_mesh_editmat">
                 <property name="text">
-                 <string>Opacité</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QDoubleSpinBox" name="node_mesh_opacity">
-                <property name="maximum">
-                 <double>1.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QListView" name="node_mesh_materials">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-                  <horstretch>0</horstretch>
-                  <verstretch>1</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <layout class="QHBoxLayout" name="horizontalLayout_34">
-                <item>
-                 <widget class="QCheckBox" name="node_mesh_lighted">
-                  <property name="text">
-                   <string>Eclairer</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="node_mesh_textured">
-                  <property name="text">
-                   <string>Texturé</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="node_mesh_alphablend">
-                  <property name="text">
-                   <string>Alpha blending</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="2" column="1">
-               <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="6,1">
-                <item>
-                 <widget class="QLineEdit" name="node_mesh_texture"/>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="node_mesh_texture_browse">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="ressource.qrc">
-                    <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_34">
-                <property name="text">
-                 <string>Texture</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_35">
-                <property name="text">
-                 <string>Mat.</string>
+                 <string>Editeur de materiau</string>
                 </property>
                </widget>
               </item>
@@ -734,6 +648,8 @@
              </layout>
             </item>
            </layout>
+           <zorder>formLayoutWidget</zorder>
+           <zorder>groupBox</zorder>
           </widget>
           <widget class="QWidget" name="tab_5">
            <attribute name="title">

@@ -737,6 +737,8 @@ void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
     tools::erase(m_nodes, mesh);
     tools::erase(m_meshs, mesh);
 
+    emit notifyMeshDelete(mesh);
+
     delete mesh;
 
     meshSelect(NULL);
@@ -779,6 +781,8 @@ void QTBEngine::lightDelete(tbe::scene::Light* light)
 {
     tools::erase(m_nodes, light);
     tools::erase(m_lights, light);
+
+    emit notifyLightDelete(light);
 
     delete light;
 
@@ -834,6 +838,8 @@ void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
 {
     tools::erase(m_nodes, particles);
     tools::erase(m_particles, particles);
+
+    emit particlesDelete(particles);
 
     delete particles;
 

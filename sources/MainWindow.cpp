@@ -22,6 +22,7 @@ Q_DECLARE_METATYPE(tbe::scene::Water*)
 Q_DECLARE_METATYPE(tbe::scene::ParticlesEmiter*)
 Q_DECLARE_METATYPE(tbe::scene::Light*)
 Q_DECLARE_METATYPE(tbe::scene::Material*)
+Q_DECLARE_METATYPE(tbe::Texture)
 Q_DECLARE_METATYPE(NodeType)
 
 MainWindow::MainWindow()
@@ -148,16 +149,16 @@ void MainWindow::initWidgets()
     nodesGui.meshTab.clone = m_uinterface.node_mesh_clone;
     nodesGui.meshTab.del = m_uinterface.node_mesh_del;
 
-    nodesGui.meshTab.texture = new QBrowsEdit(this, m_uinterface.node_mesh_texture, m_uinterface.node_mesh_texture_browse);
+    nodesGui.meshTab.openmatedit = m_uinterface.node_mesh_editmat;
 
-    nodesGui.meshTab.opacity = m_uinterface.node_mesh_opacity;
+    nodesGui.meshTab.textureModel = new QStandardItemModel(this);
 
-    nodesGui.meshTab.textured = m_uinterface.node_mesh_textured;
-    nodesGui.meshTab.lighted = m_uinterface.node_mesh_lighted;
-    nodesGui.meshTab.alphablend = m_uinterface.node_mesh_alphablend;
+    nodesGui.meshTab.matedit = new QDialog(this);
+
+    nodesGui.meshTab.mateditui.setupUi(nodesGui.meshTab.matedit);
+    nodesGui.meshTab.mateditui.textureView->setModel(nodesGui.meshTab.textureModel);
 
     nodesGui.meshTab.materialsModel = new QStandardItemModel(this);
-    nodesGui.meshTab.materialsModel->setHorizontalHeaderLabels(QStringList() << "Materiaux");
 
     nodesGui.meshTab.materialsView = m_uinterface.node_mesh_materials;
     nodesGui.meshTab.materialsView->setModel(nodesGui.meshTab.materialsModel);
@@ -299,13 +300,24 @@ void MainWindow::initConnections()
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
     connect(nodesGui.meshTab.del, SIGNAL(clicked()), this, SLOT(guiMeshDelete()));
 
-    connect(nodesGui.meshTab.textured, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetTextured(bool)));
-    connect(nodesGui.meshTab.lighted, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetLighted(bool)));
-    connect(nodesGui.meshTab.alphablend, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetAlphaBlend(bool)));
+    connect(nodesGui.meshTab.mateditui.textured, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetTextured(bool)));
+    connect(nodesGui.meshTab.mateditui.lighted, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetLighted(bool)));
+    connect(nodesGui.meshTab.mateditui.alphablend, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetAlphaBlend(bool)));
 
-    connect(nodesGui.meshTab.opacity, SIGNAL(valueChanged(double)), this, SLOT(guiMeshSetOpacity(double)));
+    connect(nodesGui.meshTab.mateditui.opacity, SIGNAL(valueChanged(double)), this, SLOT(guiMeshSetOpacity(double)));
 
-    connect(nodesGui.meshTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(guiMeshSetTexture(const QString&)));
+    connect(nodesGui.meshTab.openmatedit, SIGNAL(clicked()), nodesGui.meshTab.matedit, SLOT(show()));
+
+    connect(nodesGui.meshTab.mateditui.add, SIGNAL(clicked()), this, SLOT(guiMeshAddTexture()));
+    connect(nodesGui.meshTab.mateditui.del, SIGNAL(clicked()), this, SLOT(guiMeshDelTexture()));
+    connect(nodesGui.meshTab.mateditui.up, SIGNAL(clicked()), this, SLOT(guiMeshTextureUp()));
+    connect(nodesGui.meshTab.mateditui.down, SIGNAL(clicked()), this, SLOT(guiMeshTextureDown()));
+
+    connect(nodesGui.meshTab.mateditui.additive, SIGNAL(clicked()), this, SLOT(guiMeshTextureSetBlendMode()));
+    connect(nodesGui.meshTab.mateditui.modulate, SIGNAL(clicked()), this, SLOT(guiMeshTextureSetBlendMode()));
+    connect(nodesGui.meshTab.mateditui.replace, SIGNAL(clicked()), this, SLOT(guiMeshTextureSetBlendMode()));
+
+    connect(nodesGui.meshTab.mateditui.textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(guiMeshTextureSelected(const QModelIndex &)));
 
     connect(nodesGui.meshTab.materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(guiMeshMaterialSelected(const QModelIndex &)));
 
@@ -344,14 +356,17 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyMeshAdd(tbe::scene::Mesh*)), this, SLOT(meshRegister(tbe::scene::Mesh*)));
     connect(m_tbeWidget, SIGNAL(notifyMeshSelect(tbe::scene::Mesh*)), this, SLOT(meshSelect(tbe::scene::Mesh*)));
     connect(m_tbeWidget, SIGNAL(notifyMeshUpdate(tbe::scene::Mesh*)), this, SLOT(meshUpdate(tbe::scene::Mesh*)));
+    connect(m_tbeWidget, SIGNAL(notifyMeshDelete(tbe::scene::Mesh*)), this, SLOT(meshDelete(tbe::scene::Mesh*)));
 
     connect(m_tbeWidget, SIGNAL(notifyLightAdd(tbe::scene::Light*)), this, SLOT(lightRegister(tbe::scene::Light*)));
     connect(m_tbeWidget, SIGNAL(notifyLightSelect(tbe::scene::Light*)), this, SLOT(lightSelect(tbe::scene::Light*)));
     connect(m_tbeWidget, SIGNAL(notifyLightUpdate(tbe::scene::Light*)), this, SLOT(lightUpdate(tbe::scene::Light*)));
+    connect(m_tbeWidget, SIGNAL(notifyLightDelete(tbe::scene::Light*)), this, SLOT(lightDelete(tbe::scene::Light*)));
 
     connect(m_tbeWidget, SIGNAL(notifyParticlesAdd(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesRegister(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
+    connect(m_tbeWidget, SIGNAL(notifyParticlesDelete(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesDelete(tbe::scene::ParticlesEmiter*)));
 
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(setSceneAmbiant(const tbe::Vector3f&)));
 
@@ -652,17 +667,9 @@ void MainWindow::guiMeshDelete()
 {
     if(tbe::scene::Mesh * mesh = m_qnodebind->getCurmesh())
     {
-        QStandardItem* item = nodesGui.nodeItemBinder[mesh];
-        QStandardItem* parent = item->parent();
-
-        if(parent)
-            parent->removeRow(item->row());
-        else
-            nodesGui.nodesListModel->removeRow(item->row());
-
         m_tbeWidget->meshDelete(mesh);
 
-        notifyChanges(true);
+        meshDelete(mesh);
     }
 }
 
@@ -686,15 +693,9 @@ void MainWindow::guiLightDelete()
 {
     if(tbe::scene::Light * light = m_qnodebind->getCurlight())
     {
-        QStandardItem* item = nodesGui.nodeItemBinder[light];
-        QStandardItem* parent = item->parent();
-
-        if(parent)
-            parent->removeRow(item->row());
-        else
-            nodesGui.nodesListModel->removeRow(item->row());
-
         m_tbeWidget->lightDelete(light);
+
+        lightDelete(light);
 
         notifyChanges(true);
     }
@@ -727,15 +728,9 @@ void MainWindow::guiParticlesDelete()
 {
     if(tbe::scene::ParticlesEmiter * particles = m_qnodebind->getCurparticles())
     {
-        QStandardItem* item = nodesGui.nodeItemBinder[particles];
-        QStandardItem* parent = item->parent();
-
-        if(parent)
-            parent->removeRow(item->row());
-        else
-            nodesGui.nodesListModel->removeRow(item->row());
-
         m_tbeWidget->particlesDelete(particles);
+
+        particlesDelete(particles);
 
         notifyChanges(true);
     }
@@ -829,6 +824,19 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     notifyChanges(true);
 }
 
+void MainWindow::meshDelete(tbe::scene::Mesh* mesh)
+{
+    QStandardItem* item = nodesGui.nodeItemBinder[mesh];
+    QStandardItem* parent = item->parent();
+
+    if(parent)
+        parent->removeRow(item->row());
+    else
+        nodesGui.nodesListModel->removeRow(item->row());
+
+    notifyChanges(true);
+}
+
 void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 {
     nodeUpdate(mesh);
@@ -851,7 +859,7 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
         nodesGui.meshTab.materialsModel->appendRow(item);
     }
 
-    nodesGui.meshTab.opacity->setValue(mesh->getOpacity());
+    nodesGui.meshTab.mateditui.opacity->setValue(mesh->getOpacity());
 
     QModelIndex index = nodesGui.meshTab.materialsModel->index(0, 0);
 
@@ -922,6 +930,17 @@ void MainWindow::lightUpdate(tbe::scene::Light* light)
     nodesGui.lighTab.radius->setValue(light->getRadius());
 }
 
+void MainWindow::lightDelete(tbe::scene::Light* light)
+{
+    QStandardItem* item = nodesGui.nodeItemBinder[light];
+    QStandardItem* parent = item->parent();
+
+    if(parent)
+        parent->removeRow(item->row());
+    else
+        nodesGui.nodesListModel->removeRow(item->row());
+}
+
 void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 {
     m_qnodebind->setCurlight(light);
@@ -988,6 +1007,17 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
     nodesGui.particlesTab.number->setValue(particles->getNumber());
     nodesGui.particlesTab.texture->setOpenFileName(particles->getTexture().getFilename().c_str());
     nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
+}
+
+void MainWindow::particlesDelete(tbe::scene::ParticlesEmiter* particles)
+{
+    QStandardItem* item = nodesGui.nodeItemBinder[particles];
+    QStandardItem* parent = item->parent();
+
+    if(parent)
+        parent->removeRow(item->row());
+    else
+        nodesGui.nodesListModel->removeRow(item->row());
 }
 
 void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
@@ -1282,15 +1312,99 @@ void MainWindow::clearNodeList()
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 }
 
-void MainWindow::guiMeshSetTexture(const QString& path)
+void MainWindow::setSelectedTexture(tbe::Texture tex)
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    QModelIndex index = nodesGui.meshTab.mateditui.textureView->currentIndex();
+
+    mat->setTexture(tex, index.row());
+}
+
+tbe::Texture MainWindow::getSelectedTexture()
+{
+    using namespace tbe;
+
+    QModelIndex index = nodesGui.meshTab.mateditui.textureView->currentIndex();
+
+    return nodesGui.meshTab.textureModel
+            ->itemFromIndex(index)->data().value<Texture > ();
+}
+
+tbe::scene::Material* MainWindow::getSelectedMaterial()
 {
     using namespace tbe::scene;
 
     QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
-    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
-    Material* mat = item->data().value<Material*>();
 
-    mat->setTexture(path.toStdString());
+    return nodesGui.meshTab.materialsModel
+            ->itemFromIndex(index)->data().value<Material*>();
+}
+
+void MainWindow::guiMeshTextureSelected(const QModelIndex& index)
+{
+    using namespace tbe;
+
+    Texture tex = getSelectedTexture();
+
+    if(tex.getMulTexBlend() == Texture::MODULATE)
+        nodesGui.meshTab.mateditui.modulate->setChecked(true);
+    else if(tex.getMulTexBlend() == Texture::ADDITIVE)
+        nodesGui.meshTab.mateditui.additive->setChecked(true);
+    else if(tex.getMulTexBlend() == Texture::REPLACE)
+        nodesGui.meshTab.mateditui.replace->setChecked(true);
+
+    setSelectedTexture(tex);
+}
+
+void MainWindow::guiMeshAddTexture()
+{
+    using namespace tbe;
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    QStringList paths = QFileDialog::getOpenFileNames(this);
+
+    int offset = mat->getTexturesCount();
+
+    for(int i = 0; i < paths.size(); i++)
+    {
+        Texture tex(paths[i].toStdString(), true);
+
+        QVariant data;
+        data.setValue(tex);
+
+        QStandardItem* item = new QStandardItem(paths[i]);
+        item->setData(data);
+
+        nodesGui.meshTab.textureModel->appendRow(item);
+        mat->setTexture(tex, offset + i);
+    }
+}
+
+void MainWindow::guiMeshDelTexture()
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    QModelIndex index = nodesGui.meshTab.mateditui.textureView->currentIndex();
+    mat->dropTexture(index.row());
+
+    nodesGui.meshTab.textureModel->removeRow(index.row());
+}
+
+void MainWindow::guiMeshTextureUp()
+{
+    using namespace tbe::scene;
+}
+
+void MainWindow::guiMeshTextureDown()
+{
+    using namespace tbe::scene;
 }
 
 void MainWindow::guiMeshSetOpacity(double value)
@@ -1298,28 +1412,71 @@ void MainWindow::guiMeshSetOpacity(double value)
     m_qnodebind->getCurmesh()->setOpacity((float)value);
 }
 
+void MainWindow::guiMeshTextureSetBlendMode()
+{
+    using namespace tbe;
+    using namespace scene;
+
+    Texture tex = getSelectedTexture();
+
+    Material* mat = getSelectedMaterial();
+
+    if(nodesGui.meshTab.mateditui.modulate->isChecked())
+        tex.setMulTexBlend(Texture::MODULATE);
+
+    else if(nodesGui.meshTab.mateditui.additive->isChecked())
+        tex.setMulTexBlend(Texture::ADDITIVE);
+
+    else if(nodesGui.meshTab.mateditui.replace->isChecked())
+        tex.setMulTexBlend(Texture::REPLACE);
+
+    int slot = nodesGui.meshTab.mateditui.textureView
+            ->currentIndex().row();
+
+    mat->setTexture(tex, slot);
+}
+
 void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
 {
+    using namespace tbe;
     using namespace tbe::scene;
 
-    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
+    Material* mat = getSelectedMaterial();
 
-    Material* mat = item->data().value<Material*>();
+    nodesGui.meshTab.textureModel->
+            removeRows(0, nodesGui.meshTab.textureModel->rowCount());
 
-    nodesGui.meshTab.texture->setOpenFileName(mat->getTexture().getFilename().c_str());
+    unsigned count = mat->getTexturesCount();
+    for(unsigned i = 0; i < count; i++)
+    {
+        QString path = mat->getTexture(i).getFilename().c_str();
 
-    nodesGui.meshTab.textured->setChecked(mat->isEnable(Material::TEXTURE));
-    nodesGui.meshTab.lighted->setChecked(mat->isEnable(Material::LIGHT));
-    nodesGui.meshTab.alphablend->setChecked(mat->isEnable(Material::BLEND_MOD));
+        Texture tex(path.toStdString(), true);
+
+        QVariant data;
+        data.setValue(tex);
+
+        QStandardItem* item = new QStandardItem(path);
+        item->setData(data);
+
+        nodesGui.meshTab.textureModel->appendRow(item);
+    }
+
+    nodesGui.meshTab.mateditui.textured->setChecked(mat->isEnable(Material::TEXTURE));
+    nodesGui.meshTab.mateditui.lighted->setChecked(mat->isEnable(Material::LIGHT));
+    nodesGui.meshTab.mateditui.alphablend->setChecked(mat->isEnable(Material::BLEND_MOD));
+
+    QModelIndex first = nodesGui.meshTab.textureModel->index(0, 0);
+
+    nodesGui.meshTab.mateditui.textureView->setCurrentIndex(first);
+    guiMeshTextureSelected(first);
 }
 
 void MainWindow::guiMeshSetTextured(bool stat)
 {
     using namespace tbe::scene;
 
-    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
-    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
-    Material* mat = item->data().value<Material*>();
+    Material* mat = getSelectedMaterial();
 
     if(stat)
         mat->enable(Material::TEXTURE);
@@ -1331,9 +1488,7 @@ void MainWindow::guiMeshSetLighted(bool stat)
 {
     using namespace tbe::scene;
 
-    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
-    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
-    Material* mat = item->data().value<Material*>();
+    Material* mat = getSelectedMaterial();
 
     if(stat)
         mat->enable(Material::LIGHT);
@@ -1345,9 +1500,7 @@ void MainWindow::guiMeshSetAlphaBlend(bool stat)
 {
     using namespace tbe::scene;
 
-    QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
-    QStandardItem* item = nodesGui.meshTab.materialsModel->itemFromIndex(index);
-    Material* mat = item->data().value<Material*>();
+    Material* mat = getSelectedMaterial();
 
     if(stat)
         mat->enable(Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
