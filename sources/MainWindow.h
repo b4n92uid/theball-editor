@@ -13,6 +13,7 @@
 
 #include "ui_interface.h"
 #include "ui_about.h"
+#include "ui_matedit.h"
 
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
@@ -93,12 +94,25 @@ public slots: // Node manager
 
     void guiMeshMaterialSelected(const QModelIndex& index);
 
-    void guiMeshSetTexture(const QString&);
+    void guiMeshTextureSelected(const QModelIndex& index);
+
+    void guiMeshAddTexture();
+    void guiMeshDelTexture();
+    void guiMeshTextureUp();
+    void guiMeshTextureDown();
+
+    void guiMeshTextureSetBlendMode();
+
     void guiMeshSetOpacity(double value);
 
     void guiMeshSetTextured(bool stat);
     void guiMeshSetLighted(bool stat);
     void guiMeshSetAlphaBlend(bool stat);
+
+    void setSelectedTexture(tbe::Texture tex);
+    tbe::Texture getSelectedTexture();
+
+    tbe::scene::Material* getSelectedMaterial();
 
     // Light GUI Buttons
     void guiLightNew();
@@ -118,16 +132,19 @@ public slots: // Node manager
     void meshRegister(tbe::scene::Mesh* mesh);
     void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
     void meshUpdate(tbe::scene::Mesh* mesh);
+    void meshDelete(tbe::scene::Mesh* mesh);
 
     // Registre & Select light infos on GUI
     void lightRegister(tbe::scene::Light* light);
     void lightSelect(tbe::scene::Light* light, bool upList = true);
     void lightUpdate(tbe::scene::Light* light);
+    void lightDelete(tbe::scene::Light* light);
 
     // Registre & Select particles infos on GUI
     void particlesRegister(tbe::scene::ParticlesEmiter* particles);
     void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
     void particlesUpdate(tbe::scene::ParticlesEmiter* particles);
+    void particlesDelete(tbe::scene::ParticlesEmiter* particles);
 
 public slots: // Env manager
 
@@ -173,16 +190,15 @@ private:
             QPushButton* clone;
             QPushButton* del;
 
-            QBrowsEdit* texture;
-
-            QCheckBox* lighted;
-            QCheckBox* textured;
-            QCheckBox* alphablend;
-
-            QDoubleSpinBox* opacity;
+            QPushButton* openmatedit;
 
             QListView* materialsView;
             QStandardItemModel* materialsModel;
+
+            Ui::MaterialEdit mateditui;
+            QStandardItemModel* textureModel;
+
+            QDialog* matedit;
 
         } meshTab;
 
