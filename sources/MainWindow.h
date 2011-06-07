@@ -102,12 +102,19 @@ public slots: // Node manager
     void guiMeshTextureDown();
 
     void guiMeshTextureSetBlendMode();
+    void guiMeshMaterialSetBlendMode();
 
     void guiMeshSetOpacity(double value);
+    void guiMeshSetAlphaThreshold(double value);
 
     void guiMeshSetTextured(bool stat);
     void guiMeshSetLighted(bool stat);
-    void guiMeshSetAlphaBlend(bool stat);
+    void guiMeshSetDepthMask(bool stat);
+
+    void guiMeshSetBlend(bool stat);
+    void guiMeshSetAlpha(bool stat);
+
+    void guiMeshSetSaveMaterial(bool stat);
 
     void setSelectedTexture(tbe::Texture tex);
     tbe::Texture getSelectedTexture();
@@ -167,6 +174,16 @@ signals:
 
 private:
 
+    class MaterialEditDialog : public QDialog, public Ui::MaterialEdit
+    {
+    public:
+
+        MaterialEditDialog(QWidget* parent) : QDialog(parent)
+        {
+            setupUi(this);
+        }
+    };
+
     struct
     {
 
@@ -195,10 +212,10 @@ private:
             QListView* materialsView;
             QStandardItemModel* materialsModel;
 
-            Ui::MaterialEdit mateditui;
+            MaterialEditDialog* matedit;
             QStandardItemModel* textureModel;
 
-            QDialog* matedit;
+            QCheckBox* saveMaterials;
 
         } meshTab;
 
@@ -314,6 +331,8 @@ private:
     QSignalMapper* m_historyMapping;
 
     bool m_somethingChange;
+
+    QMap<tbe::scene::Mesh*, bool> m_saveMaterial;
 };
 
 #endif	/* MAINWINDOW_H */

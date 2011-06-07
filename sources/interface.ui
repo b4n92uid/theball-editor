@@ -608,6 +608,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QCheckBox" name="node_mesh_savemat">
+                <property name="text">
+                 <string>Enregistrer les parametres materiau</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
@@ -648,8 +655,6 @@
              </layout>
             </item>
            </layout>
-           <zorder>formLayoutWidget</zorder>
-           <zorder>groupBox</zorder>
           </widget>
           <widget class="QWidget" name="tab_5">
            <attribute name="title">
