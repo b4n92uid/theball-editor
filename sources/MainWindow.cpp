@@ -134,9 +134,11 @@ void MainWindow::initWidgets()
     m_selectedNode = new QNodeBinders(this);
 
     nodesGui.name = m_uinterface.node_name;
-    nodesGui.pos = new QVectorBox(this, m_uinterface.node_pos_x, m_uinterface.node_pos_y, m_uinterface.node_pos_z);
-    nodesGui.rot = new QVectorBox(this, m_uinterface.node_rot_x, m_uinterface.node_rot_y, m_uinterface.node_rot_z);
-    nodesGui.scl = new QVectorBox(this, m_uinterface.node_scl_x, m_uinterface.node_scl_y, m_uinterface.node_scl_z);
+    nodesGui.position = new QVectorBox(this, m_uinterface.node_pos_x, m_uinterface.node_pos_y, m_uinterface.node_pos_z);
+    nodesGui.rotation = new QVectorBox(this, m_uinterface.node_rot_x, m_uinterface.node_rot_y, m_uinterface.node_rot_z);
+    nodesGui.scale = new QVectorBox(this, m_uinterface.node_scl_x, m_uinterface.node_scl_y, m_uinterface.node_scl_z);
+
+    nodesGui.enable = m_uinterface.node_enable;
 
     nodesGui.nodeUp = m_uinterface.node_list_up;
     nodesGui.nodeDown = m_uinterface.node_list_down;
@@ -295,9 +297,10 @@ void MainWindow::initConnections()
     connect(nodeMoveBind, SIGNAL(mapped(int)), this, SLOT(scopeNode(int)));
 
     connect(nodesGui.name, SIGNAL(textChanged(const QString&)), m_selectedNode, SLOT(nodeSetName(const QString&)));
-    connect(nodesGui.pos, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetPos(const tbe::Vector3f&)));
-    connect(nodesGui.rot, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetRotation(const tbe::Vector3f&)));
-    connect(nodesGui.scl, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetScale(const tbe::Vector3f&)));
+    connect(nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetPos(const tbe::Vector3f&)));
+    connect(nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetRotation(const tbe::Vector3f&)));
+    connect(nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetScale(const tbe::Vector3f&)));
+    connect(nodesGui.enable, SIGNAL(clicked(bool)), m_selectedNode, SLOT(nodeSetEnalbe(bool)));
 
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
@@ -387,6 +390,8 @@ void MainWindow::initConnections()
 
     connect(m_tbeWidget, SIGNAL(notifyListRebuild()), this, SLOT(clearNodeList()));
 
+    connect(m_tbeWidget, SIGNAL(notifyDeselect()), this, SLOT(unselect()));
+
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
     m_timer->start(16);
@@ -447,6 +452,8 @@ void MainWindow::newScene()
     notifyChanges(false);
 
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+
+    unselect();
 }
 
 void MainWindow::openSceneDialog()
@@ -753,19 +760,22 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
         return;
 
     nodesGui.name->blockSignals(true);
-    nodesGui.pos->blockSignals(true);
-    nodesGui.scl->blockSignals(true);
-    nodesGui.rot->blockSignals(true);
+    nodesGui.position->blockSignals(true);
+    nodesGui.scale->blockSignals(true);
+    nodesGui.rotation->blockSignals(true);
+    nodesGui.enable->blockSignals(true);
 
     nodesGui.name->setText(node->getName().c_str());
-    nodesGui.pos->setValue(node->getPos());
-    nodesGui.scl->setValue(node->getMatrix().getScale());
-    nodesGui.rot->setValue(node->getMatrix().getRotate().getEuler());
+    nodesGui.position->setValue(node->getPos());
+    nodesGui.scale->setValue(node->getMatrix().getScale());
+    nodesGui.rotation->setValue(node->getMatrix().getRotate().getEuler());
+    nodesGui.enable->setChecked(node->isEnable());
 
     nodesGui.name->blockSignals(false);
-    nodesGui.pos->blockSignals(false);
-    nodesGui.scl->blockSignals(false);
-    nodesGui.rot->blockSignals(false);
+    nodesGui.position->blockSignals(false);
+    nodesGui.scale->blockSignals(false);
+    nodesGui.rotation->blockSignals(false);
+    nodesGui.enable->blockSignals(false);
 
     using namespace tbe;
 
@@ -783,6 +793,10 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
 
         nodesGui.additionalModel->appendRow(newfield);
     }
+}
+
+void MainWindow::unselect()
+{
 }
 
 void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
@@ -879,6 +893,8 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 
     bool matset = m_selectedNode->mesh()->isOutputMaterial();
 
+    nodesGui.meshTab.saveMaterials->setEnabled(true);
+
     nodesGui.meshTab.saveMaterials->setChecked(matset);
     nodesGui.meshTab.openmatedit->setEnabled(matset);
     nodesGui.meshTab.opacity->setEnabled(matset);
@@ -886,17 +902,14 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 
 void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 {
-    m_selectedNode->mesh(mesh);
-
-    if(!mesh)
-        return;
-
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[mesh];
         nodesGui.nodesListView->
                 setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
+
+    m_selectedNode->mesh(mesh);
 
     m_tbeWidget->meshSelect(mesh);
 
@@ -960,16 +973,13 @@ void MainWindow::lightDelete(tbe::scene::Light* light)
 
 void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 {
-    m_selectedNode->light(light);
-
-    if(!light)
-        return;
-
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[light];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
+
+    m_selectedNode->light(light);
 
     m_tbeWidget->lightSelect(light);
 
@@ -1039,16 +1049,13 @@ void MainWindow::particlesDelete(tbe::scene::ParticlesEmiter* particles)
 
 void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
 {
-    m_selectedNode->particles(particles);
-
-    if(!particles)
-        return;
-
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[particles];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
+
+    m_selectedNode->particles(particles);
 
     m_tbeWidget->particlesSelect(particles);
 
@@ -1059,6 +1066,9 @@ void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool up
 
 void MainWindow::scopeNode(int move)
 {
+    if(!m_selectedNode->node())
+        return;
+
     QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(nodesGui.nodesListView->currentIndex());
     QStandardItem* parent = item->parent() ? item->parent() : nodesGui.nodesListModel->invisibleRootItem();
 
@@ -1248,6 +1258,9 @@ void MainWindow::guiDelSceneField()
 
 void MainWindow::guiClearSceneField()
 {
+    if(!m_selectedNode->node())
+        return;
+
     if(genGui.additionalModel->rowCount() <= 0)
         return;
 
@@ -1264,6 +1277,9 @@ void MainWindow::guiClearSceneField()
 
 void MainWindow::guiAddNodeField()
 {
+    if(!m_selectedNode->node())
+        return;
+
     QList<QStandardItem*> newfield;
 
     newfield
@@ -1277,6 +1293,9 @@ void MainWindow::guiAddNodeField()
 
 void MainWindow::guiDelNodeField()
 {
+    if(!m_selectedNode->node())
+        return;
+
     QModelIndex i = nodesGui.additionalView->currentIndex();
 
     if(i.isValid())
@@ -1293,6 +1312,9 @@ void MainWindow::guiDelNodeField()
 
 void MainWindow::guiClearNodeField()
 {
+    if(!m_selectedNode->node())
+        return;
+
     if(nodesGui.additionalModel->rowCount() <= 0)
         return;
 
@@ -1309,6 +1331,9 @@ void MainWindow::guiClearNodeField()
 
 void MainWindow::guiChangeNodeField(QStandardItem* item)
 {
+    if(!m_selectedNode->node())
+        return;
+
     if(item->column() == 0)
     {
         QStandardItem* value = nodesGui.additionalModel->item(item->row(), 1);
@@ -1329,21 +1354,16 @@ void MainWindow::clearNodeList()
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 }
 
-void MainWindow::guiMeshSetSaveMaterial(bool stat)
-{
-    m_selectedNode->mesh()->setOutputMaterial(stat);
-
-    nodesGui.meshTab.openmatedit->setEnabled(stat);
-    nodesGui.meshTab.opacity->setEnabled(stat);
-}
-
 void MainWindow::setSelectedTexture(tbe::Texture tex)
 {
     using namespace tbe::scene;
 
-    Material* mat = getSelectedMaterial();
-
     QModelIndex index = nodesGui.meshTab.matedit->textureView->currentIndex();
+
+    if(!index.isValid())
+        return;
+
+    Material* mat = getSelectedMaterial();
 
     mat->setTexture(tex, index.row());
 }
@@ -1354,8 +1374,11 @@ tbe::Texture MainWindow::getSelectedTexture()
 
     QModelIndex index = nodesGui.meshTab.matedit->textureView->currentIndex();
 
-    return nodesGui.meshTab.textureModel
+    if(index.isValid())
+        return nodesGui.meshTab.textureModel
             ->itemFromIndex(index)->data().value<Texture > ();
+    else
+        return Texture();
 }
 
 tbe::scene::Material* MainWindow::getSelectedMaterial()
@@ -1364,12 +1387,29 @@ tbe::scene::Material* MainWindow::getSelectedMaterial()
 
     QModelIndex index = nodesGui.meshTab.materialsView->currentIndex();
 
-    return nodesGui.meshTab.materialsModel
+    if(index.isValid())
+        return nodesGui.meshTab.materialsModel
             ->itemFromIndex(index)->data().value<Material*>();
+    else
+        return NULL;
+}
+
+void MainWindow::guiMeshSetSaveMaterial(bool stat)
+{
+    if(!m_selectedNode->mesh())
+        return;
+
+    m_selectedNode->mesh()->setOutputMaterial(stat);
+
+    nodesGui.meshTab.openmatedit->setEnabled(stat);
+    nodesGui.meshTab.opacity->setEnabled(stat);
 }
 
 void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
     using namespace tbe::scene;
 
@@ -1439,6 +1479,9 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
 
 void MainWindow::guiMeshSetTextured(bool stat)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
@@ -1451,6 +1494,9 @@ void MainWindow::guiMeshSetTextured(bool stat)
 
 void MainWindow::guiMeshTextureSelected(const QModelIndex& index)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
 
     Texture tex = getSelectedTexture();
@@ -1469,6 +1515,9 @@ void MainWindow::guiMeshTextureSelected(const QModelIndex& index)
 
 void MainWindow::guiMeshAddTexture()
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
     using namespace tbe::scene;
 
@@ -1495,6 +1544,9 @@ void MainWindow::guiMeshAddTexture()
 
 void MainWindow::guiMeshDelTexture()
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
@@ -1507,6 +1559,9 @@ void MainWindow::guiMeshDelTexture()
 
 void MainWindow::guiMeshTextureUp()
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
     using namespace scene;
 
@@ -1534,6 +1589,9 @@ void MainWindow::guiMeshTextureUp()
 
 void MainWindow::guiMeshTextureDown()
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
     using namespace scene;
 
@@ -1551,7 +1609,6 @@ void MainWindow::guiMeshTextureDown()
         mat->setTexture(src, dstindex);
         mat->setTexture(dst, srcindex);
 
-
         QList<QStandardItem*> items = nodesGui.meshTab.textureModel->takeRow(srcindex);
         nodesGui.meshTab.textureModel->insertRow(dstindex, items);
 
@@ -1562,6 +1619,9 @@ void MainWindow::guiMeshTextureDown()
 
 void MainWindow::guiMeshTextureSetBlendMode()
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
     using namespace scene;
 
@@ -1586,6 +1646,9 @@ void MainWindow::guiMeshTextureSetBlendMode()
 
 void MainWindow::guiMeshSetBlend(bool stat)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
@@ -1606,6 +1669,9 @@ void MainWindow::guiMeshSetBlend(bool stat)
 
 void MainWindow::guiMeshMaterialSetBlendMode()
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe;
     using namespace scene;
 
@@ -1625,11 +1691,17 @@ void MainWindow::guiMeshMaterialSetBlendMode()
 
 void MainWindow::guiMeshSetOpacity(double value)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     m_selectedNode->mesh()->setOpacity((float)value);
 }
 
 void MainWindow::guiMeshSetAlpha(bool stat)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
@@ -1646,6 +1718,9 @@ void MainWindow::guiMeshSetAlpha(bool stat)
 
 void MainWindow::guiMeshSetAlphaThreshold(double value)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
@@ -1655,6 +1730,9 @@ void MainWindow::guiMeshSetAlphaThreshold(double value)
 
 void MainWindow::guiMeshSetLighted(bool stat)
 {
+    if(!m_selectedNode->mesh())
+        return;
+
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();

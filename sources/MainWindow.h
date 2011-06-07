@@ -152,6 +152,8 @@ public slots: // Node manager
     void particlesUpdate(tbe::scene::ParticlesEmiter* particles);
     void particlesDelete(tbe::scene::ParticlesEmiter* particles);
 
+    void unselect();
+
 public slots: // Env manager
 
     // -------- GUI -> MANAGER
@@ -258,9 +260,11 @@ private:
         } particlesTab;
 
         QLineEdit* name;
-        QVectorBox* pos;
-        QVectorBox* rot;
-        QVectorBox* scl;
+        QVectorBox* position;
+        QVectorBox* rotation;
+        QVectorBox* scale;
+
+        QCheckBox* enable;
 
         QTabWidget* attribTab;
 
