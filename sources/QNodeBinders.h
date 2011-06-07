@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   QNodeBinders.h
  * Author: b4n92uid
  *
@@ -18,20 +18,20 @@ class QNodeBinders : public QObject
 public:
     QNodeBinders(QObject* parent);
 
-    void setCurNode(tbe::scene::Node* curNode);
-    tbe::scene::Node* getCurNode() const;
+    void node(tbe::scene::Node* curNode);
+    tbe::scene::Node* node() const;
 
-    void setCurlight(tbe::scene::Light* curlight);
-    tbe::scene::Light* getCurlight() const;
+    void light(tbe::scene::Light* curlight);
+    tbe::scene::Light* light() const;
 
-    void setCurmesh(tbe::scene::Mesh* curmesh);
-    tbe::scene::Mesh* getCurmesh() const;
+    void mesh(tbe::scene::Mesh* curmesh);
+    tbe::scene::Mesh* mesh() const;
 
-    void setCurparticles(tbe::scene::ParticlesEmiter* curparticles);
-    tbe::scene::ParticlesEmiter* getCurparticles() const;
+    void particles(tbe::scene::ParticlesEmiter* curparticles);
+    tbe::scene::ParticlesEmiter* particles() const;
 
-    void setCurwater(tbe::scene::Water* curwater);
-    tbe::scene::Water* getCurwater() const;
+    void water(tbe::scene::Water* curwater);
+    tbe::scene::Water* water() const;
 
 signals:
     void notifyUpdate(tbe::scene::Node*);

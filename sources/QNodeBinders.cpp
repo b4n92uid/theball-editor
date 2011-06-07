@@ -16,7 +16,7 @@ QNodeBinders::QNodeBinders(QObject* parent) : QObject(parent)
     m_curNode = NULL;
 }
 
-void QNodeBinders::setCurNode(tbe::scene::Node* curNode)
+void QNodeBinders::node(tbe::scene::Node* curNode)
 {
     m_curNode = curNode;
     m_curmesh = NULL;
@@ -27,12 +27,12 @@ void QNodeBinders::setCurNode(tbe::scene::Node* curNode)
     emit notifyUpdate(m_curNode);
 }
 
-tbe::scene::Node* QNodeBinders::getCurNode() const
+tbe::scene::Node* QNodeBinders::node() const
 {
     return m_curNode;
 }
 
-void QNodeBinders::setCurmesh(tbe::scene::Mesh* curmesh)
+void QNodeBinders::mesh(tbe::scene::Mesh* curmesh)
 {
     m_curNode = m_curmesh = curmesh;
     m_curwater = NULL;
@@ -40,12 +40,12 @@ void QNodeBinders::setCurmesh(tbe::scene::Mesh* curmesh)
     m_curlight = NULL;
 }
 
-tbe::scene::Mesh* QNodeBinders::getCurmesh() const
+tbe::scene::Mesh* QNodeBinders::mesh() const
 {
     return m_curmesh;
 }
 
-void QNodeBinders::setCurlight(tbe::scene::Light* curlight)
+void QNodeBinders::light(tbe::scene::Light* curlight)
 {
     m_curNode = m_curlight = curlight;
     m_curmesh = NULL;
@@ -53,12 +53,12 @@ void QNodeBinders::setCurlight(tbe::scene::Light* curlight)
     m_curwater = NULL;
 }
 
-tbe::scene::Light* QNodeBinders::getCurlight() const
+tbe::scene::Light* QNodeBinders::light() const
 {
     return m_curlight;
 }
 
-void QNodeBinders::setCurwater(tbe::scene::Water* curwater)
+void QNodeBinders::water(tbe::scene::Water* curwater)
 {
     m_curNode = m_curwater = curwater;
     m_curmesh = NULL;
@@ -66,12 +66,12 @@ void QNodeBinders::setCurwater(tbe::scene::Water* curwater)
     m_curlight = NULL;
 }
 
-tbe::scene::Water* QNodeBinders::getCurwater() const
+tbe::scene::Water* QNodeBinders::water() const
 {
     return m_curwater;
 }
 
-void QNodeBinders::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
+void QNodeBinders::particles(tbe::scene::ParticlesEmiter* curparticles)
 {
     m_curNode = m_curparticles = curparticles;
     m_curmesh = NULL;
@@ -79,7 +79,7 @@ void QNodeBinders::setCurparticles(tbe::scene::ParticlesEmiter* curparticles)
     m_curlight = NULL;
 }
 
-tbe::scene::ParticlesEmiter* QNodeBinders::getCurparticles() const
+tbe::scene::ParticlesEmiter* QNodeBinders::particles() const
 {
     return m_curparticles;
 }
