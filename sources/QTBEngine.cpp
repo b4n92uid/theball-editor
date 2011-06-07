@@ -107,10 +107,10 @@ void QTBEngine::placeSelection()
     if(selAabb.max < 0.0001 && selAabb.min < 0.0001)
     {
         selAabb = 0.5;
-        m_axe->applyColor("main", Vector4f(1, 0, 0, 0.25));
+        m_axe->setColor(Vector4f(1, 0, 0, 0.25));
     }
     else
-        m_axe->applyColor("main", Vector4f(0, 0, 1, 0.25));
+        m_axe->setColor(Vector4f(0, 0, 1, 0.25));
 
     m_axe->setMatrix(m_selectedNode->getAbsoluteMatrix());
     m_axe->setPos(m_selectedNode->getAbsoluteMatrix() * selAabb.getCenter());
@@ -124,8 +124,9 @@ void QTBEngine::setupSelection()
     using namespace scene;
 
     m_axe = new Box(m_meshScene, 1);
-    m_axe->getMaterial("main")->enable(Material::COLOR | Material::BLEND_MOD);
-    m_axe->applyColor("main", Vector4f(0, 0, 1, 0.25));
+    m_axe->getMaterial("main")->enable(Material::COLOR | Material::BLEND_MOD
+                                       | Material::VERTEX_SORT_CULL_TRICK);
+    m_axe->setColor(Vector4f(0, 0, 1, 0.25));
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
 }
@@ -614,6 +615,9 @@ void QTBEngine::rebuildList()
 
     emit notifyListRebuild();
 
+    m_nodes.clear();
+
+    m_meshs.clear();
     for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
         if(m_axe == *it)
@@ -625,6 +629,7 @@ void QTBEngine::rebuildList()
         emit notifyMeshAdd(*it);
     }
 
+    m_lights.clear();
     for(Iterator<Light*> it = m_lightScene->iterator(); it; it++)
     {
         m_lights.push_back(*it);
@@ -633,6 +638,7 @@ void QTBEngine::rebuildList()
         emit notifyLightAdd(*it);
     }
 
+    m_particles.clear();
     for(Iterator<ParticlesEmiter*> it = m_particlesScene->iterator(); it; it++)
     {
         m_particles.push_back(*it);
@@ -757,6 +763,8 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
     rebuildList();
 
     meshSelect(newmesh);
+
+    emit notifyMeshSelect(newmesh);
 }
 
 tbe::scene::Light* QTBEngine::lightNew()
@@ -814,6 +822,8 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
     rebuildList();
 
     lightSelect(newlight);
+
+    emit notifyLightSelect(newlight);
 }
 
 tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
@@ -871,6 +881,8 @@ void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
     rebuildList();
 
     particlesSelect(newparticles);
+
+    emit notifyParticlesSelect(newparticles);
 }
 
 void QTBEngine::skyboxApply(const QStringList& texs)
