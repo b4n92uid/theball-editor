@@ -46,6 +46,7 @@ public slots:
     void nodeSetRotation(const tbe::Vector3f& v);
     void nodeSetScale(const tbe::Vector3f& v);
     void nodeSetMatrix(const tbe::Matrix4& m);
+    void nodeSetEnalbe(bool stat);
 
     void waterSetDeform(double v);
     void waterSetSize(const tbe::Vector2f& v);

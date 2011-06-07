@@ -129,6 +129,11 @@ void QNodeBinders::nodeSetMatrix(const tbe::Matrix4& m)
     }
 }
 
+void QNodeBinders::nodeSetEnalbe(bool stat)
+{
+    node()->setEnable(stat);
+}
+
 void QNodeBinders::waterSetDeform(double v)
 {
     if(m_curwater)

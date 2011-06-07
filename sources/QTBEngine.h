@@ -92,6 +92,8 @@ public slots:
 
     void rebuildList();
 
+    void deselect();
+
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
     void notifyMeshSelect(tbe::scene::Mesh*);
@@ -113,6 +115,8 @@ signals:
     void notifyInitSkybox(tbe::scene::SkyBox*);
 
     void notifyListRebuild();
+
+    void notifyDeselect();
 
 private:
     tbe::Device* m_device;

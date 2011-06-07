@@ -115,8 +115,7 @@ void QTBEngine::placeSelection()
     m_axe->setMatrix(m_selectedNode->getAbsoluteMatrix());
     m_axe->setPos(m_selectedNode->getAbsoluteMatrix() * selAabb.getCenter());
     m_axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
-
-    m_axe->setEnable(m_selectedNode);
+    m_axe->setEnable(true);
 }
 
 void QTBEngine::setupSelection()
@@ -720,12 +719,9 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 {
     m_selectedNode = mesh;
 
-    if(m_selectedNode)
-    {
-        m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
+    m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
 
-        placeSelection();
-    }
+    placeSelection();
 }
 
 void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
@@ -747,9 +743,9 @@ void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
 
     delete mesh;
 
-    meshSelect(NULL);
+    deselect();
 
-    emit notifyMeshSelect(NULL);
+    emit notifyDeselect();
 }
 
 void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
@@ -794,21 +790,18 @@ void QTBEngine::lightDelete(tbe::scene::Light* light)
 
     delete light;
 
-    lightSelect(NULL);
+    deselect();
 
-    emit notifyLightSelect(NULL);
+    emit notifyDeselect();
 }
 
 void QTBEngine::lightSelect(tbe::scene::Light* light)
 {
     m_selectedNode = light;
 
-    if(m_selectedNode)
-    {
-        m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
+    m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
 
-        placeSelection();
-    }
+    placeSelection();
 }
 
 void QTBEngine::lightClone(tbe::scene::Light* light)
@@ -853,21 +846,18 @@ void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
 
     delete particles;
 
-    particlesSelect(NULL);
+    deselect();
 
-    emit notifyParticlesSelect(NULL);
+    emit notifyDeselect();
 }
 
 void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
 {
     m_selectedNode = particles;
 
-    if(m_selectedNode)
-    {
-        m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
+    m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
 
-        placeSelection();
-    }
+    placeSelection();
 }
 
 void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
@@ -925,4 +915,11 @@ tbe::scene::SceneParser* QTBEngine::getSceneParser() const
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 {
     m_sceneManager->setAmbientLight(vec34(value));
+}
+
+void QTBEngine::deselect()
+{
+    m_selectedNode = NULL;
+
+    m_axe->setEnable(false);
 }
