@@ -109,7 +109,6 @@ public slots: // Node manager
 
     void guiMeshSetTextured(bool stat);
     void guiMeshSetLighted(bool stat);
-    void guiMeshSetDepthMask(bool stat);
 
     void guiMeshSetBlend(bool stat);
     void guiMeshSetAlpha(bool stat);
@@ -206,6 +205,8 @@ private:
             QPushButton* add;
             QPushButton* clone;
             QPushButton* del;
+
+            QDoubleSpinBox* opacity;
 
             QPushButton* openmatedit;
 
@@ -314,7 +315,7 @@ private:
 
     } genGui;
 
-    QNodeBinders* m_qnodebind;
+    QNodeBinders* m_selectedNode;
 
     QString m_filename;
 
@@ -331,8 +332,6 @@ private:
     QSignalMapper* m_historyMapping;
 
     bool m_somethingChange;
-
-    QMap<tbe::scene::Mesh*, bool> m_saveMaterial;
 };
 
 #endif	/* MAINWINDOW_H */
