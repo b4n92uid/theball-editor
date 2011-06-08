@@ -115,7 +115,7 @@ public slots: // Node manager
 
     void guiMeshSetSaveMaterial(bool stat);
 
-    void setSelectedTexture(tbe::Texture tex);
+    void setSelectedTexture(tbe::Texture& tex);
     tbe::Texture getSelectedTexture();
 
     tbe::scene::Material* getSelectedMaterial();

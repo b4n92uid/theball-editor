@@ -663,6 +663,8 @@ void MainWindow::guiMeshNew()
         {
             tbe::scene::Mesh* mesh = m_tbeWidget->meshNew(filename);
 
+            m_tbeWidget->meshRegister(mesh);
+
             meshRegister(mesh);
             meshSelect(mesh);
         }
@@ -697,6 +699,8 @@ void MainWindow::guiLightNew()
 
     Light* light = m_tbeWidget->lightNew();
 
+    m_tbeWidget->lightRegister(light);
+
     lightRegister(light);
     lightSelect(light);
 }
@@ -726,6 +730,8 @@ void MainWindow::guiParticlesNew()
     try
     {
         ParticlesEmiter* particles = m_tbeWidget->particlesNew();
+
+        m_tbeWidget->particlesRegister(particles);
 
         particlesRegister(particles);
         particlesSelect(particles);
@@ -841,8 +847,6 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
 
     nodesGui.nodeItemBinder[mesh] = itid;
 
-    m_tbeWidget->meshRegister(mesh);
-
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
 
@@ -858,6 +862,8 @@ void MainWindow::meshDelete(tbe::scene::Mesh* mesh)
         parent->removeRow(item->row());
     else
         nodesGui.nodesListModel->removeRow(item->row());
+
+    nodesGui.nodeItemBinder.remove(mesh);
 
     notifyChanges(true);
 }
@@ -941,8 +947,6 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
 
     nodesGui.nodeItemBinder[light] = itemType;
 
-    m_tbeWidget->lightRegister(light);
-
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
 
@@ -1013,8 +1017,6 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
         nodesGui.nodesListModel->appendRow(items);
 
     nodesGui.nodeItemBinder[particles] = itemType;
-
-    m_tbeWidget->particlesRegister(particles);
 
     nodesGui.nodesListView->resizeColumnToContents(0);
     nodesGui.nodesListView->resizeColumnToContents(1);
@@ -1354,7 +1356,7 @@ void MainWindow::clearNodeList()
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 }
 
-void MainWindow::setSelectedTexture(tbe::Texture tex)
+void MainWindow::setSelectedTexture(tbe::Texture& tex)
 {
     using namespace tbe::scene;
 
@@ -1366,6 +1368,11 @@ void MainWindow::setSelectedTexture(tbe::Texture tex)
     Material* mat = getSelectedMaterial();
 
     mat->setTexture(tex, index.row());
+
+    QVariant data;
+    data.setValue(tex);
+
+    nodesGui.meshTab.textureModel->itemFromIndex(index)->setData(data);
 }
 
 tbe::Texture MainWindow::getSelectedTexture()
@@ -1509,8 +1516,6 @@ void MainWindow::guiMeshTextureSelected(const QModelIndex& index)
 
     else if(tex.getMulTexBlend() == Texture::REPLACE)
         nodesGui.meshTab.matedit->texture_replace->setChecked(true);
-
-    setSelectedTexture(tex);
 }
 
 void MainWindow::guiMeshAddTexture()
@@ -1534,7 +1539,7 @@ void MainWindow::guiMeshAddTexture()
         QVariant data;
         data.setValue(tex);
 
-        QStandardItem* item = new QStandardItem(paths[i]);
+        QStandardItem* item = new QStandardItem(QFileInfo(paths[i]).baseName());
         item->setData(data);
 
         nodesGui.meshTab.textureModel->appendRow(item);
@@ -1627,8 +1632,6 @@ void MainWindow::guiMeshTextureSetBlendMode()
 
     Texture tex = getSelectedTexture();
 
-    Material* mat = getSelectedMaterial();
-
     if(nodesGui.meshTab.matedit->texture_modulate->isChecked())
         tex.setMulTexBlend(Texture::MODULATE);
 
@@ -1638,10 +1641,7 @@ void MainWindow::guiMeshTextureSetBlendMode()
     else if(nodesGui.meshTab.matedit->texture_replace->isChecked())
         tex.setMulTexBlend(Texture::REPLACE);
 
-    int slot = nodesGui.meshTab.matedit->textureView
-            ->currentIndex().row();
-
-    mat->setTexture(tex, slot);
+    setSelectedTexture(tex);
 }
 
 void MainWindow::guiMeshSetBlend(bool stat)

@@ -154,6 +154,41 @@ private:
     tbe::scene::Mesh::Array m_meshs;
     tbe::scene::Light::Array m_lights;
     tbe::scene::ParticlesEmiter::Array m_particles;
+
+    template<typename T> void removeNode(T v, tbe::scene::Node* p, std::vector<T>& typevec)
+    {
+        using namespace tbe;
+        using namespace scene;
+
+        if(!p) p = v;
+
+        for(Iterator<Node*> it = p->getChildIterator(); it; it++)
+        {
+            removeNode(v, *it, typevec);
+
+            tools::erase(m_nodes, *it);
+            tools::erase(typevec, *it);
+        }
+
+        tools::erase(m_nodes, v);
+        tools::erase(typevec, v);
+
+    }
+
+    template<typename T> void removeMesh(T v, tbe::scene::Node* p = NULL)
+    {
+        removeNode(v, p, m_meshs);
+    }
+
+    template<typename T> void removeLight(T v, tbe::scene::Node* p = NULL)
+    {
+        removeNode(v, p, m_lights);
+    }
+
+    template<typename T> void removeParticules(T v, tbe::scene::Node* p = NULL)
+    {
+        removeNode(v, p, m_particles);
+    }
 };
 
 #endif	/* QTBENGINE_H */

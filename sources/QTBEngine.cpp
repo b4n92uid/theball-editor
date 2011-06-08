@@ -460,10 +460,22 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             using namespace tbe::scene;
 
             if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
+            {
                 meshDelete(mesh);
+                emit notifyMeshDelete(mesh);
+            }
 
             else if(Light * light = tools::find(m_lights, m_selectedNode))
+            {
                 lightDelete(light);
+                emit notifyLightDelete(light);
+            }
+
+            else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
+            {
+                particlesDelete(particles);
+                emit notifyParticlesDelete(particles);
+            }
         }
 
         if(ev->key() == Qt::Key_C)
@@ -622,8 +634,8 @@ void QTBEngine::rebuildList()
         if(m_axe == *it)
             continue;
 
-        m_meshs.push_back(*it);
         m_nodes.push_back(*it);
+        m_meshs.push_back(*it);
 
         emit notifyMeshAdd(*it);
     }
@@ -631,8 +643,8 @@ void QTBEngine::rebuildList()
     m_lights.clear();
     for(Iterator<Light*> it = m_lightScene->iterator(); it; it++)
     {
-        m_lights.push_back(*it);
         m_nodes.push_back(*it);
+        m_lights.push_back(*it);
 
         emit notifyLightAdd(*it);
     }
@@ -640,8 +652,8 @@ void QTBEngine::rebuildList()
     m_particles.clear();
     for(Iterator<ParticlesEmiter*> it = m_particlesScene->iterator(); it; it++)
     {
-        m_particles.push_back(*it);
         m_nodes.push_back(*it);
+        m_particles.push_back(*it);
 
         emit notifyParticlesAdd(*it);
     }
@@ -726,8 +738,8 @@ void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 
 void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
 {
-    m_meshs.push_back(mesh);
     m_nodes.push_back(mesh);
+    m_meshs.push_back(mesh);
 
     meshSelect(mesh);
 
@@ -736,10 +748,7 @@ void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
 
 void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
 {
-    tools::erase(m_nodes, mesh);
-    tools::erase(m_meshs, mesh);
-
-    emit notifyMeshDelete(mesh);
+    removeMesh(mesh);
 
     delete mesh;
 
@@ -773,8 +782,8 @@ tbe::scene::Light* QTBEngine::lightNew()
 
 void QTBEngine::lightRegister(tbe::scene::Light* light)
 {
-    m_lights.push_back(light);
     m_nodes.push_back(light);
+    m_lights.push_back(light);
 
     lightSelect(light);
 
@@ -783,10 +792,7 @@ void QTBEngine::lightRegister(tbe::scene::Light* light)
 
 void QTBEngine::lightDelete(tbe::scene::Light* light)
 {
-    tools::erase(m_nodes, light);
-    tools::erase(m_lights, light);
-
-    emit notifyLightDelete(light);
+    removeLight(light);
 
     delete light;
 
@@ -829,8 +835,8 @@ tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
 
 void QTBEngine::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 {
-    m_particles.push_back(particles);
     m_nodes.push_back(particles);
+    m_particles.push_back(particles);
 
     particlesSelect(particles);
 
@@ -839,10 +845,7 @@ void QTBEngine::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 
 void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
 {
-    tools::erase(m_nodes, particles);
-    tools::erase(m_particles, particles);
-
-    emit particlesDelete(particles);
+    removeParticules(particles);
 
     delete particles;
 
