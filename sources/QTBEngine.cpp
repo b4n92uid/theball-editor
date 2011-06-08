@@ -288,7 +288,7 @@ struct SelectionSort
         if(!node1->getParent()->isRoot())
             return false;
         else if(type == 1)
-            return (node1->getPos() - cameraPos) < (node2->getPos() - cameraPos);
+            return (node1->getPos() - cameraPos) > (node2->getPos() - cameraPos);
         else if(type == 2)
             return node1->getAabb().getSize() < node2->getAabb().getSize();
         else
@@ -338,12 +338,12 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         sortfunc.type = 1;
         std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
-        sortfunc.type = 2;
-        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
+        //        sortfunc.type = 2;
+        //        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
         foreach(Mesh * node, m_meshs)
         {
-            if(node->Mesh::getAbsolutAabb().add(Vector3f(0.5f)).isInner(m_curCursor3D))
+            if(node->Mesh::getAbsolutAabb().isInner(m_curCursor3D))
             {
                 meshSelect(node);
                 emit notifyMeshSelect(node);
@@ -463,18 +463,27 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             {
                 meshDelete(mesh);
                 emit notifyMeshDelete(mesh);
+
+                deselect();
+                emit notifyDeselect();
             }
 
             else if(Light * light = tools::find(m_lights, m_selectedNode))
             {
                 lightDelete(light);
                 emit notifyLightDelete(light);
+
+                deselect();
+                emit notifyDeselect();
             }
 
             else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
             {
                 particlesDelete(particles);
                 emit notifyParticlesDelete(particles);
+
+                deselect();
+                emit notifyDeselect();
             }
         }
 
