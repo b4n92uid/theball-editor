@@ -9,14 +9,14 @@
 #define	QNODEBINDERS_H
 
 #include <Tbe.h>
-#include <QObject>
+#include <QWidget>
 
 class QNodeBinders : public QObject
 {
     Q_OBJECT
 
 public:
-    QNodeBinders(QObject* parent);
+    QNodeBinders(QWidget* parent);
 
     void node(tbe::scene::Node* curNode);
     tbe::scene::Node* node() const;
@@ -77,6 +77,8 @@ private:
     tbe::scene::ParticlesEmiter* m_curparticles;
     tbe::scene::Light* m_curlight;
     tbe::scene::Water* m_curwater;
+
+    QWidget* m_parentWidget;
 };
 
 #endif	/* QNODEBINDERS_H */

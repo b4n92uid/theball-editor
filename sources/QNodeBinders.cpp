@@ -6,9 +6,12 @@
  */
 
 #include "QNodeBinders.h"
+#include <QMessageBox>
 
-QNodeBinders::QNodeBinders(QObject* parent) : QObject(parent)
+QNodeBinders::QNodeBinders(QWidget* parent) : QObject(parent)
 {
+    m_parentWidget = parent;
+
     m_curmesh = NULL;
     m_curparticles = NULL;
     m_curwater = NULL;
@@ -23,8 +26,6 @@ void QNodeBinders::node(tbe::scene::Node* curNode)
     m_curparticles = NULL;
     m_curwater = NULL;
     m_curlight = NULL;
-
-    emit notifyUpdate(m_curNode);
 }
 
 tbe::scene::Node* QNodeBinders::node() const
@@ -235,11 +236,19 @@ void QNodeBinders::particleSetNumber(int v)
 
 void QNodeBinders::particleSetTexture(const QString& v)
 {
-    if(m_curparticles)
+    if(m_curparticles && !v.isEmpty())
     {
-        m_curparticles->setTexture(v.toStdString());
-        emit notifyUpdate(m_curparticles);
+        try
+        {
+            m_curparticles->setTexture(v.toStdString());
+            emit notifyUpdate(m_curparticles);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::critical(m_parentWidget, "Chargement de texture", e.what());
+        }
     }
+
 }
 
 void QNodeBinders::particleSetContinousMode(int v)

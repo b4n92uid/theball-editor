@@ -740,10 +740,6 @@ void QTBEngine::meshRegister(tbe::scene::Mesh* mesh)
 {
     m_nodes.push_back(mesh);
     m_meshs.push_back(mesh);
-
-    meshSelect(mesh);
-
-    emit notifyMeshSelect(mesh);
 }
 
 void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
@@ -751,10 +747,6 @@ void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
     removeMesh(mesh);
 
     delete mesh;
-
-    deselect();
-
-    emit notifyDeselect();
 }
 
 void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
@@ -766,10 +758,6 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
     mesh->getParent()->addChild(newmesh);
 
     rebuildList();
-
-    meshSelect(newmesh);
-
-    emit notifyMeshSelect(newmesh);
 }
 
 tbe::scene::Light* QTBEngine::lightNew()
@@ -784,10 +772,6 @@ void QTBEngine::lightRegister(tbe::scene::Light* light)
 {
     m_nodes.push_back(light);
     m_lights.push_back(light);
-
-    lightSelect(light);
-
-    emit notifyLightSelect(light);
 }
 
 void QTBEngine::lightDelete(tbe::scene::Light* light)
@@ -795,10 +779,6 @@ void QTBEngine::lightDelete(tbe::scene::Light* light)
     removeLight(light);
 
     delete light;
-
-    deselect();
-
-    emit notifyDeselect();
 }
 
 void QTBEngine::lightSelect(tbe::scene::Light* light)
@@ -819,10 +799,6 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
     light->getParent()->addChild(newlight);
 
     rebuildList();
-
-    lightSelect(newlight);
-
-    emit notifyLightSelect(newlight);
 }
 
 tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
@@ -837,10 +813,6 @@ void QTBEngine::particlesRegister(tbe::scene::ParticlesEmiter* particles)
 {
     m_nodes.push_back(particles);
     m_particles.push_back(particles);
-
-    particlesSelect(particles);
-
-    emit notifyParticlesSelect(particles);
 }
 
 void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
@@ -848,10 +820,6 @@ void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
     removeParticules(particles);
 
     delete particles;
-
-    deselect();
-
-    emit notifyDeselect();
 }
 
 void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
@@ -872,10 +840,6 @@ void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
     particles->getParent()->addChild(newparticles);
 
     rebuildList();
-
-    particlesSelect(newparticles);
-
-    emit notifyParticlesSelect(newparticles);
 }
 
 void QTBEngine::skyboxApply(const QStringList& texs)

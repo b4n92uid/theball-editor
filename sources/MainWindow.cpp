@@ -54,6 +54,7 @@ void MainWindow::buildFileHistory()
     }
     else
     {
+        history.sort();
 
         foreach(QString filepath, history)
         {
@@ -74,10 +75,10 @@ void MainWindow::pushFileHistory(const QString& filepath)
     if(history.count(filepath))
         history.removeAll(filepath);
 
-    history << filepath;
+    history.push_front(filepath);
 
     if(history.count() > 16)
-        history.pop_front();
+        history.pop_back();
 
     m_config->setValue("history", history);
 
@@ -690,6 +691,10 @@ void MainWindow::guiMeshDelete()
         m_tbeWidget->meshDelete(mesh);
 
         meshDelete(mesh);
+
+        unselect();
+
+        m_tbeWidget->deselect();
     }
 }
 
@@ -719,6 +724,10 @@ void MainWindow::guiLightDelete()
 
         lightDelete(light);
 
+        unselect();
+
+        m_tbeWidget->deselect();
+
         notifyChanges(true);
     }
 }
@@ -727,25 +736,20 @@ void MainWindow::guiParticlesNew()
 {
     using namespace tbe::scene;
 
-    try
-    {
-        ParticlesEmiter* particles = m_tbeWidget->particlesNew();
+    ParticlesEmiter* particles = m_tbeWidget->particlesNew();
 
-        m_tbeWidget->particlesRegister(particles);
+    m_tbeWidget->particlesRegister(particles);
 
-        particlesRegister(particles);
-        particlesSelect(particles);
-    }
-    catch(std::exception& e)
-    {
-        QMessageBox::critical(parentWidget(), "Errur de création", e.what());
-    }
+    particlesRegister(particles);
+    particlesSelect(particles);
 }
 
 void MainWindow::guiParticlesClone()
 {
     if(m_selectedNode->particles())
+    {
         m_tbeWidget->particlesClone(m_selectedNode->particles());
+    }
 }
 
 void MainWindow::guiParticlesDelete()
@@ -755,6 +759,10 @@ void MainWindow::guiParticlesDelete()
         m_tbeWidget->particlesDelete(particles);
 
         particlesDelete(particles);
+
+        unselect();
+
+        m_tbeWidget->deselect();
 
         notifyChanges(true);
     }
@@ -803,6 +811,12 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
 
 void MainWindow::unselect()
 {
+    m_selectedNode->mesh(NULL);
+    m_selectedNode->light(NULL);
+    m_selectedNode->particles(NULL);
+    m_selectedNode->node(NULL);
+
+    nodesGui.nodesListView->clearSelection();
 }
 
 void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
@@ -1206,8 +1220,8 @@ void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
 
 void MainWindow::toggleFullWidget(bool full)
 {
-    m_uinterface.propertyTab->setVisible(full);
-    m_uinterface.infoBox->setVisible(full);
+    m_uinterface.propertyTab->setVisible(!full);
+    m_uinterface.infoBox->setVisible(!full);
 }
 
 tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)
@@ -1534,16 +1548,23 @@ void MainWindow::guiMeshAddTexture()
 
     for(int i = 0; i < paths.size(); i++)
     {
-        Texture tex(paths[i].toStdString(), true);
+        try
+        {
+            Texture tex(paths[i].toStdString(), true);
 
-        QVariant data;
-        data.setValue(tex);
+            QVariant data;
+            data.setValue(tex);
 
-        QStandardItem* item = new QStandardItem(QFileInfo(paths[i]).baseName());
-        item->setData(data);
+            QStandardItem* item = new QStandardItem(QFileInfo(paths[i]).baseName());
+            item->setData(data);
 
-        nodesGui.meshTab.textureModel->appendRow(item);
-        mat->setTexture(tex, offset + i);
+            nodesGui.meshTab.textureModel->appendRow(item);
+            mat->setTexture(tex, offset + i);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::critical(this, "Erreur de chargement", e.what());
+        }
     }
 }
 
