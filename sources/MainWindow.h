@@ -364,6 +364,14 @@ private:
     QSignalMapper* m_historyMapping;
 
     bool m_somethingChange;
+
+    struct
+    {
+        QString scene;
+        QString mesh;
+        QString particlesTexture;
+
+    } m_workingDir;
 };
 
 #endif	/* MAINWINDOW_H */

@@ -127,7 +127,7 @@ void QNodeBinders::nodeSetRotation(const tbe::Vector3f& v)
 {
     if(m_curNode)
     {
-        m_curNode->getMatrix().setRotate(tbe::Quaternion(v));
+        m_curNode->getMatrix().setRotate(tbe::Quaternion(v * M_PI / 180));
         emit notifyUpdate(m_curNode);
     }
 }

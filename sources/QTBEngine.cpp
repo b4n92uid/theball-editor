@@ -161,6 +161,7 @@ void QTBEngine::moveApply()
 
     // Rotation ----------------------------------------------------------------
 
+    /*
     if(m_eventManager->notify == EventManager::EVENT_KEY_DOWN)
     {
         Quaternion apply;
@@ -190,6 +191,7 @@ void QTBEngine::moveApply()
 
         rotation = apply * rotation;
     }
+     */
 
     // Movement ----------------------------------------------------------------
 

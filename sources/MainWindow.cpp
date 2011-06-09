@@ -352,7 +352,7 @@ void MainWindow::initConnections()
     connect(nodesGui.markTab.clone, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.markTab.del, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
 
-    connect(nodesGui.markTab.size, SIGNAL(activated(double)), this, SLOT(guiMarkSetSize(double)));
+    connect(nodesGui.markTab.size, SIGNAL(valueChanged(double)), this, SLOT(guiMarkSetSize(double)));
     connect(nodesGui.markTab.type, SIGNAL(activated(int)), this, SLOT(guiMarkSetType(int)));
     connect(nodesGui.markTab.color, SIGNAL(activated(int)), this, SLOT(guiMarkSetColor(int)));
 
@@ -514,7 +514,8 @@ void MainWindow::openSceneDialog()
 {
     m_tbeWidget->pauseRendring();
 
-    QString filename = QFileDialog::getOpenFileName(this);
+    QString filename = QFileDialog::getOpenFileName(this, "Editer une scene",
+                                                    m_workingDir.scene);
 
     if(!filename.isNull())
         openScene(filename);
@@ -541,7 +542,7 @@ void MainWindow::openScene(const QString& filename)
 
         m_tbeWidget->loadScene(filename);
 
-        QDir::setCurrent(QFileInfo(filename).path());
+        m_workingDir.scene = QFileInfo(filename).path();
 
         pushFileHistory(filename);
 
@@ -717,7 +718,8 @@ void MainWindow::guiMeshNew()
 {
     m_tbeWidget->pauseRendring();
 
-    QString filename = QFileDialog::getOpenFileName(parentWidget());
+    QString filename = QFileDialog::getOpenFileName(parentWidget(), QString(),
+                                                    m_workingDir.mesh);
 
     if(!filename.isNull())
     {
@@ -729,6 +731,8 @@ void MainWindow::guiMeshNew()
 
             meshRegister(mesh);
             meshSelect(mesh);
+
+            m_workingDir.mesh = QFileInfo(filename).path();
         }
         catch(std::exception& e)
         {
