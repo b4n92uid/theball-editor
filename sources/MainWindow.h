@@ -130,6 +130,16 @@ public slots: // Node manager
     void guiParticlesClone();
     void guiParticlesDelete();
 
+    // MapMark GUI Buttons
+    void guiMarkNew();
+    void guiMarkClone();
+    void guiMarkDelete();
+
+    void guiMarkSetType(int index);
+    void guiMarkSetSize(double value);
+    void guiMarkSetColor(int index);
+
+
     // -------- NODE -> GUI
 
     void nodeUpdate(tbe::scene::Node* node);
@@ -151,6 +161,12 @@ public slots: // Node manager
     void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
     void particlesUpdate(tbe::scene::ParticlesEmiter* particles);
     void particlesDelete(tbe::scene::ParticlesEmiter* particles);
+
+    // Registre & Select mark infos on GUI
+    void markRegister(tbe::scene::MapMark* mark);
+    void markSelect(tbe::scene::MapMark* mark, bool upList = true);
+    void markUpdate(tbe::scene::MapMark* mark);
+    void markDelete(tbe::scene::MapMark* mark);
 
     void unselect();
 

@@ -1526,7 +1526,7 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>Blanc</string>
+                  <string>Vert</string>
                  </property>
                 </item>
                 <item>
@@ -1536,7 +1536,22 @@
                 </item>
                 <item>
                  <property name="text">
+                  <string>Noir</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Blanc</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>Jaune</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Cyan</string>
                  </property>
                 </item>
                </widget>

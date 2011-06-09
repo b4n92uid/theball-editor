@@ -21,6 +21,9 @@ public:
     void node(tbe::scene::Node* curNode);
     tbe::scene::Node* node() const;
 
+    void mark(tbe::scene::MapMark* curNode);
+    tbe::scene::MapMark* mark() const;
+
     void light(tbe::scene::Light* curlight);
     tbe::scene::Light* light() const;
 
@@ -70,10 +73,10 @@ public slots:
     void lightSetSpecular(const tbe::Vector3f& value);
     void lightSetRadius(double value);
 
-
 private:
     tbe::scene::Node* m_curNode;
     tbe::scene::Mesh* m_curmesh;
+    tbe::scene::MapMark* m_curmark;
     tbe::scene::ParticlesEmiter* m_curparticles;
     tbe::scene::Light* m_curlight;
     tbe::scene::Water* m_curwater;

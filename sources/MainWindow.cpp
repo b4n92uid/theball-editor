@@ -9,7 +9,7 @@
 
 enum NodeType
 {
-    IsUnknown, IsMesh, IsParticles, IsWater, IsLight
+    IsUnknown, IsMesh, IsParticles, IsWater, IsLight, IsMark
 };
 
 typedef QList<QStandardItem*> QItemsList;
@@ -22,7 +22,10 @@ Q_DECLARE_METATYPE(tbe::scene::Water*)
 Q_DECLARE_METATYPE(tbe::scene::ParticlesEmiter*)
 Q_DECLARE_METATYPE(tbe::scene::Light*)
 Q_DECLARE_METATYPE(tbe::scene::Material*)
+Q_DECLARE_METATYPE(tbe::scene::MapMark*)
+Q_DECLARE_METATYPE(tbe::scene::MapMark::Type)
 Q_DECLARE_METATYPE(tbe::Texture)
+Q_DECLARE_METATYPE(tbe::Vector3f)
 Q_DECLARE_METATYPE(NodeType)
 
 MainWindow::MainWindow()
@@ -155,6 +158,38 @@ void MainWindow::initWidgets()
     nodesGui.markTab.add = m_uinterface.node_mark_add;
     nodesGui.markTab.del = m_uinterface.node_mark_del;
     nodesGui.markTab.clone = m_uinterface.node_mark_clone;
+
+    QVariant box;
+    box.setValue(tbe::scene::MapMark::Box);
+
+    QVariant sphere;
+    sphere.setValue(tbe::scene::MapMark::Sphere);
+
+    nodesGui.markTab.type->setItemData(0, box);
+    nodesGui.markTab.type->setItemData(1, sphere);
+
+    QVariant red;
+    red.setValue(tbe::Vector3f(1, 0, 0));
+    QVariant green;
+    green.setValue(tbe::Vector3f(1, 0, 0));
+    QVariant blue;
+    blue.setValue(tbe::Vector3f(1, 0, 0));
+    QVariant white;
+    white.setValue(tbe::Vector3f(1, 0, 0));
+    QVariant black;
+    black.setValue(tbe::Vector3f(1, 0, 0));
+    QVariant yellow;
+    yellow.setValue(tbe::Vector3f(1, 0, 0));
+    QVariant cyan;
+    cyan.setValue(tbe::Vector3f(1, 0, 0));
+
+    nodesGui.markTab.color->setItemData(0, red);
+    nodesGui.markTab.color->setItemData(1, green);
+    nodesGui.markTab.color->setItemData(2, blue);
+    nodesGui.markTab.color->setItemData(3, white);
+    nodesGui.markTab.color->setItemData(4, black);
+    nodesGui.markTab.color->setItemData(5, yellow);
+    nodesGui.markTab.color->setItemData(6, cyan);
 
     // -------- Mesh
 
@@ -312,6 +347,14 @@ void MainWindow::initConnections()
     connect(nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetRotation(const tbe::Vector3f&)));
     connect(nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetScale(const tbe::Vector3f&)));
     connect(nodesGui.enable, SIGNAL(clicked(bool)), m_selectedNode, SLOT(nodeSetEnalbe(bool)));
+
+    connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
+    connect(nodesGui.markTab.clone, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
+    connect(nodesGui.markTab.del, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
+
+    connect(nodesGui.markTab.size, SIGNAL(activated(double)), this, SLOT(guiMarkSetSize(double)));
+    connect(nodesGui.markTab.type, SIGNAL(activated(int)), this, SLOT(guiMarkSetType(int)));
+    connect(nodesGui.markTab.color, SIGNAL(activated(int)), this, SLOT(guiMarkSetColor(int)));
 
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
@@ -657,6 +700,14 @@ void MainWindow::guiSelect(const QModelIndex& index)
             ParticlesEmiter* pemiter = item->data().value<ParticlesEmiter*>();
             particlesSelect(pemiter, false);
             nodesGui.attribTab->setCurrentIndex(3);
+        }
+            break;
+
+        case IsMark:
+        {
+            MapMark* mark = item->data().value<MapMark*>();
+            markSelect(mark, false);
+            nodesGui.attribTab->setCurrentIndex(4);
         }
             break;
     }
@@ -1772,4 +1823,164 @@ void MainWindow::guiMeshSetLighted(bool stat)
         mat->enable(Material::LIGHT);
     else
         mat->disable(Material::LIGHT);
+}
+
+void MainWindow::guiMarkNew()
+{
+    using namespace tbe::scene;
+
+    MapMark* mark = m_tbeWidget->markNew();
+
+    m_tbeWidget->markRegister(mark);
+
+    markRegister(mark);
+    markSelect(mark);
+}
+
+void MainWindow::guiMarkClone()
+{
+    if(m_selectedNode->mark())
+    {
+        m_tbeWidget->markClone(m_selectedNode->mark());
+    }
+}
+
+void MainWindow::guiMarkDelete()
+{
+    if(tbe::scene::MapMark * mark = m_selectedNode->mark())
+    {
+        m_tbeWidget->markDelete(mark);
+
+        markDelete(mark);
+
+        unselect();
+
+        m_tbeWidget->deselect();
+
+        notifyChanges(true);
+    }
+}
+
+void MainWindow::markRegister(tbe::scene::MapMark* mark)
+{
+    using namespace tbe::scene;
+
+    QStandardItem* parent = NULL;
+
+    int count = nodesGui.nodesListModel->rowCount();
+
+    if(!mark->getParent()->isRoot())
+        for(int i = 0; i < count; i++)
+        {
+            QStandardItem* item = nodesGui.nodesListModel->item(i);
+
+            if(item && mark->getParent() == item->data().value<Mesh*>())
+            {
+                parent = item;
+                break;
+            }
+        }
+
+    QVariant userdata;
+    userdata.setValue<MapMark*>(mark);
+
+    QStandardItem* itid = new QStandardItem(QString("Mark"));
+    itid->setIcon(QIcon(":/Icons/icons/mark.png"));
+    itid->setData(userdata);
+    itid->setData(IsMark, ContentType);
+
+    QStandardItem* itname = new QStandardItem(mark->getName().c_str());
+    itname->setData(userdata);
+    itname->setData(IsMark, ContentType);
+
+    QItemsList items;
+    items << itid << itname;
+
+    if(parent)
+        parent->appendRow(items);
+    else
+        nodesGui.nodesListModel->appendRow(items);
+
+    nodesGui.nodeItemBinder[mark] = itid;
+
+    nodesGui.nodesListView->resizeColumnToContents(0);
+    nodesGui.nodesListView->resizeColumnToContents(1);
+
+    notifyChanges(true);
+}
+
+void MainWindow::markSelect(tbe::scene::MapMark* mark, bool upList)
+{
+    if(upList)
+    {
+        QStandardItem* item = nodesGui.nodeItemBinder[mark];
+        nodesGui.nodesListView->
+                setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
+    }
+
+    m_selectedNode->mark(mark);
+
+    m_tbeWidget->markSelect(mark);
+
+    nodesGui.attribTab->setCurrentIndex(4);
+
+    markUpdate(mark);
+}
+
+void MainWindow::markUpdate(tbe::scene::MapMark* mark)
+{
+    if(!m_selectedNode->mark())
+        return;
+
+    nodeUpdate(mark);
+}
+
+void MainWindow::markDelete(tbe::scene::MapMark* mark)
+{
+    if(!m_selectedNode->mark())
+        return;
+
+    QStandardItem* item = nodesGui.nodeItemBinder[mark];
+    QStandardItem* parent = item->parent();
+
+    if(parent)
+        parent->removeRow(item->row());
+    else
+        nodesGui.nodesListModel->removeRow(item->row());
+
+    nodesGui.nodeItemBinder.remove(mark);
+
+    notifyChanges(true);
+}
+
+void MainWindow::guiMarkSetType(int index)
+{
+    using namespace tbe::scene;
+
+    if(!m_selectedNode->mark())
+        return;
+
+    MapMark::Type type = nodesGui.markTab.type
+            ->itemData(index).value<MapMark::Type > ();
+
+    m_selectedNode->mark()->setType(type);
+}
+
+void MainWindow::guiMarkSetColor(int index)
+{
+    if(!m_selectedNode->mark())
+        return;
+
+    tbe::Vector3f color = nodesGui.markTab.color
+            ->itemData(index).value<tbe::Vector3f > ();
+
+    m_selectedNode->mark()->setColor(color);
+}
+
+void MainWindow::guiMarkSetSize(double value)
+{
+    if(!m_selectedNode->mark())
+        return;
+
+    m_selectedNode->mark()->setSize((float)value);
 }

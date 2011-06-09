@@ -899,3 +899,45 @@ void QTBEngine::deselect()
 
     m_axe->setEnable(false);
 }
+
+tbe::scene::MapMark* QTBEngine::markNew()
+{
+    tbe::scene::MapMark* mark = new tbe::scene::MapMark;
+
+    m_rootNode->addChild(mark);
+
+    return mark;
+}
+
+void QTBEngine::markRegister(tbe::scene::MapMark* mark)
+{
+    m_nodes.push_back(mark);
+    m_marks.push_back(mark);
+}
+
+void QTBEngine::markDelete(tbe::scene::MapMark* mark)
+{
+    removeMark(mark);
+
+    delete mark;
+}
+
+void QTBEngine::markSelect(tbe::scene::MapMark* mark)
+{
+    m_selectedNode = mark;
+
+    m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
+
+    placeSelection();
+}
+
+void QTBEngine::markClone(tbe::scene::MapMark* mark)
+{
+    using namespace tbe::scene;
+
+    MapMark* newmark = mark->clone();
+
+    mark->getParent()->addChild(newmark);
+
+    rebuildList();
+}
