@@ -259,6 +259,18 @@ private:
 
         } particlesTab;
 
+        struct
+        {
+            QDoubleSpinBox* size;
+            QComboBox* type;
+            QComboBox* color;
+
+            QPushButton* add;
+            QPushButton* clone;
+            QPushButton* del;
+
+        } markTab;
+
         QLineEdit* name;
         QVectorBox* position;
         QVectorBox* rotation;

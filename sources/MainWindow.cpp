@@ -146,6 +146,16 @@ void MainWindow::initWidgets()
     nodesGui.nodeRight = m_uinterface.node_list_makechild;
     nodesGui.nodeLeft = m_uinterface.node_list_makeparent;
 
+    // -------- Mark
+
+    nodesGui.markTab.type = m_uinterface.node_mark_type;
+    nodesGui.markTab.color = m_uinterface.node_mark_color;
+    nodesGui.markTab.size = m_uinterface.node_mark_size;
+
+    nodesGui.markTab.add = m_uinterface.node_mark_add;
+    nodesGui.markTab.del = m_uinterface.node_mark_del;
+    nodesGui.markTab.clone = m_uinterface.node_mark_clone;
+
     // -------- Mesh
 
     nodesGui.meshTab.add = m_uinterface.node_mesh_add;
