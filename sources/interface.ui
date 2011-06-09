@@ -54,7 +54,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_7">
        <attribute name="title">
@@ -724,7 +724,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>1</number>
           </property>
           <property name="usesScrollButtons">
            <bool>false</bool>
@@ -1928,52 +1928,22 @@
  </customwidgets>
  <tabstops>
   <tabstop>propertyTab</tabstop>
-  <tabstop>node_name</tabstop>
-  <tabstop>node_pos_x</tabstop>
-  <tabstop>node_pos_y</tabstop>
-  <tabstop>node_pos_z</tabstop>
-  <tabstop>node_list</tabstop>
-  <tabstop>node_light_type</tabstop>
-  <tabstop>node_light_ambiant_x</tabstop>
-  <tabstop>node_light_ambiant_y</tabstop>
-  <tabstop>node_light_ambiant_z</tabstop>
-  <tabstop>node_light_diffuse_x</tabstop>
-  <tabstop>node_light_diffuse_y</tabstop>
-  <tabstop>node_light_diffuse_z</tabstop>
-  <tabstop>node_light_specular_x</tabstop>
-  <tabstop>node_light_specular_y</tabstop>
-  <tabstop>node_light_specular_z</tabstop>
-  <tabstop>node_light_radius</tabstop>
-  <tabstop>node_light_add</tabstop>
-  <tabstop>node_light_clone</tabstop>
-  <tabstop>node_light_del</tabstop>
-  <tabstop>node_water_deform</tabstop>
-  <tabstop>node_water_size_x</tabstop>
-  <tabstop>node_water_size_y</tabstop>
-  <tabstop>node_water_uvrepeat_x</tabstop>
-  <tabstop>node_water_uvrepeat_y</tabstop>
-  <tabstop>node_water_speed</tabstop>
-  <tabstop>node_water_blend</tabstop>
-  <tabstop>node_water_add</tabstop>
-  <tabstop>node_water_clone</tabstop>
-  <tabstop>node_water_del</tabstop>
-  <tabstop>node_particles_gravity_x</tabstop>
-  <tabstop>node_particles_gravity_y</tabstop>
-  <tabstop>node_particles_gravity_z</tabstop>
-  <tabstop>node_particles_freemove</tabstop>
-  <tabstop>node_particles_lifeinit</tabstop>
-  <tabstop>node_particles_lifedown</tabstop>
-  <tabstop>node_particles_number</tabstop>
-  <tabstop>node_particles_build</tabstop>
-  <tabstop>node_particles_texture</tabstop>
-  <tabstop>node_particles_texture_browse</tabstop>
-  <tabstop>node_particles_continousmide</tabstop>
-  <tabstop>node_particles_add</tabstop>
-  <tabstop>node_particles_clone</tabstop>
-  <tabstop>node_particles_del</tabstop>
+  <tabstop>gen_title</tabstop>
+  <tabstop>gen_author</tabstop>
+  <tabstop>gen_additional</tabstop>
+  <tabstop>gen_addfield</tabstop>
+  <tabstop>gen_delfield</tabstop>
+  <tabstop>gen_clearfields</tabstop>
   <tabstop>env_ambient_x</tabstop>
   <tabstop>env_ambient_y</tabstop>
   <tabstop>env_ambient_z</tabstop>
+  <tabstop>fog_enable</tabstop>
+  <tabstop>fog_x</tabstop>
+  <tabstop>fog_y</tabstop>
+  <tabstop>fog_z</tabstop>
+  <tabstop>fog_start</tabstop>
+  <tabstop>fog_end</tabstop>
+  <tabstop>skybox_enable</tabstop>
   <tabstop>skybox_front</tabstop>
   <tabstop>skybox_front_browse</tabstop>
   <tabstop>skybox_back</tabstop>
@@ -1987,14 +1957,81 @@
   <tabstop>skybox_right</tabstop>
   <tabstop>skybox_right_browse</tabstop>
   <tabstop>skybox_apply</tabstop>
-  <tabstop>fog_x</tabstop>
-  <tabstop>fog_y</tabstop>
-  <tabstop>fog_z</tabstop>
-  <tabstop>fog_start</tabstop>
-  <tabstop>fog_end</tabstop>
+  <tabstop>node_name</tabstop>
+  <tabstop>node_pos_x</tabstop>
+  <tabstop>node_pos_y</tabstop>
+  <tabstop>node_pos_z</tabstop>
+  <tabstop>node_scl_x</tabstop>
+  <tabstop>node_scl_y</tabstop>
+  <tabstop>node_scl_z</tabstop>
+  <tabstop>node_rot_x</tabstop>
+  <tabstop>node_rot_y</tabstop>
+  <tabstop>node_rot_z</tabstop>
+  <tabstop>node_enable</tabstop>
+  <tabstop>node_list</tabstop>
+  <tabstop>node_list_up</tabstop>
+  <tabstop>node_list_down</tabstop>
+  <tabstop>node_list_makeparent</tabstop>
+  <tabstop>node_list_makechild</tabstop>
+  <tabstop>node_particles_boxsize_x</tabstop>
+  <tabstop>node_particles_boxsize_y</tabstop>
+  <tabstop>node_particles_boxsize_z</tabstop>
+  <tabstop>node_particles_freemove</tabstop>
+  <tabstop>node_particles_lifeinit</tabstop>
+  <tabstop>node_particles_lifedown</tabstop>
+  <tabstop>node_particles_number</tabstop>
+  <tabstop>node_particles_build</tabstop>
+  <tabstop>node_particles_texture</tabstop>
+  <tabstop>node_particles_texture_browse</tabstop>
+  <tabstop>node_particles_continousmide</tabstop>
+  <tabstop>node_mark_size</tabstop>
+  <tabstop>node_mark_color</tabstop>
+  <tabstop>node_mark_type</tabstop>
+  <tabstop>node_water_uvrepeat_y</tabstop>
+  <tabstop>node_water_speed</tabstop>
+  <tabstop>node_water_blend</tabstop>
+  <tabstop>node_particles_gravity_x</tabstop>
+  <tabstop>node_particles_gravity_y</tabstop>
+  <tabstop>node_light_ambiant_x</tabstop>
+  <tabstop>node_additional</tabstop>
+  <tabstop>node_addfield</tabstop>
+  <tabstop>node_delfield</tabstop>
+  <tabstop>node_clearfields</tabstop>
+  <tabstop>node_mesh_opacity</tabstop>
   <tabstop>node_mesh_add</tabstop>
-  <tabstop>node_mesh_del</tabstop>
   <tabstop>node_mesh_clone</tabstop>
+  <tabstop>node_mesh_del</tabstop>
+  <tabstop>node_water_uvrepeat_x</tabstop>
+  <tabstop>node_particles_gravity_z</tabstop>
+  <tabstop>node_light_specular_y</tabstop>
+  <tabstop>node_light_clone</tabstop>
+  <tabstop>node_light_del</tabstop>
+  <tabstop>node_light_diffuse_x</tabstop>
+  <tabstop>node_light_diffuse_y</tabstop>
+  <tabstop>node_light_diffuse_z</tabstop>
+  <tabstop>node_light_specular_x</tabstop>
+  <tabstop>node_light_add</tabstop>
+  <tabstop>node_water_del</tabstop>
+  <tabstop>node_particles_del</tabstop>
+  <tabstop>node_water_deform</tabstop>
+  <tabstop>node_water_size_x</tabstop>
+  <tabstop>node_water_size_y</tabstop>
+  <tabstop>attribTab</tabstop>
+  <tabstop>node_light_type</tabstop>
+  <tabstop>node_light_specular_z</tabstop>
+  <tabstop>node_mesh_materials</tabstop>
+  <tabstop>node_light_radius</tabstop>
+  <tabstop>node_mark_add</tabstop>
+  <tabstop>node_mark_clone</tabstop>
+  <tabstop>node_mark_del</tabstop>
+  <tabstop>node_light_ambiant_z</tabstop>
+  <tabstop>node_light_ambiant_y</tabstop>
+  <tabstop>node_mesh_editmat</tabstop>
+  <tabstop>node_mesh_savemat</tabstop>
+  <tabstop>node_particles_add</tabstop>
+  <tabstop>node_particles_clone</tabstop>
+  <tabstop>node_water_add</tabstop>
+  <tabstop>node_water_clone</tabstop>
  </tabstops>
  <resources>
   <include location="ressource.qrc"/>
