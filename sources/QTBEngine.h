@@ -78,6 +78,14 @@ public slots:
     void particlesSelect(tbe::scene::ParticlesEmiter* particles); // Select particles on engine
     void particlesClone(tbe::scene::ParticlesEmiter* particles); // Clone particles on engine
 
+    // Create new mark
+    tbe::scene::MapMark* markNew();
+
+    void markRegister(tbe::scene::MapMark* mark); // Register mark on engin
+    void markDelete(tbe::scene::MapMark* mark); // Delete mark from engin
+    void markSelect(tbe::scene::MapMark* mark); // Select mark on engine
+    void markClone(tbe::scene::MapMark* mark); // Clone mark on engine
+
     // Setting scene ambiant light
     void setSceneAmbiant(const tbe::Vector3f& value);
 
@@ -109,6 +117,11 @@ signals:
     void notifyParticlesSelect(tbe::scene::ParticlesEmiter*);
     void notifyParticlesUpdate(tbe::scene::ParticlesEmiter*);
     void notifyParticlesDelete(tbe::scene::ParticlesEmiter*);
+
+    void notifyMarkAdd(tbe::scene::MapMark*);
+    void notifyMarkSelect(tbe::scene::MapMark*);
+    void notifyMarkUpdate(tbe::scene::MapMark*);
+    void notifyMarkDelete(tbe::scene::MapMark*);
 
     void notifyInitAmbiant(const tbe::Vector3f&);
     void notifyInitFog(tbe::scene::Fog*);
@@ -154,6 +167,7 @@ private:
     tbe::scene::Mesh::Array m_meshs;
     tbe::scene::Light::Array m_lights;
     tbe::scene::ParticlesEmiter::Array m_particles;
+    tbe::scene::MapMark::Array m_marks;
 
     template<typename T> void removeNode(T v, tbe::scene::Node* p, std::vector<T>& typevec)
     {
@@ -188,6 +202,11 @@ private:
     template<typename T> void removeParticules(T v, tbe::scene::Node* p = NULL)
     {
         removeNode(v, p, m_particles);
+    }
+
+    template<typename T> void removeMark(T v, tbe::scene::Node* p = NULL)
+    {
+        removeNode(v, p, m_marks);
     }
 };
 
