@@ -361,6 +361,7 @@ void MainWindow::initConnections()
     connect(nodesGui.meshTab.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetLighted(bool)));
     connect(nodesGui.meshTab.matedit->alpha, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetAlpha(bool)));
     connect(nodesGui.meshTab.matedit->blending, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetBlend(bool)));
+    connect(nodesGui.meshTab.matedit->culltrick, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetCullTrick(bool)));
 
     connect(nodesGui.meshTab.opacity, SIGNAL(valueChanged(double)), this, SLOT(guiMeshSetOpacity(double)));
 
@@ -1532,6 +1533,7 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
 
     // Material stat
     nodesGui.meshTab.matedit->lighted->setChecked(mat->isEnable(Material::LIGHT));
+    nodesGui.meshTab.matedit->culltrick->setChecked(mat->isEnable(Material::VERTEX_SORT_CULL_TRICK));
 
     // Blending stat
     bool blending = mat->isEnable(Material::BLEND_MOD)
@@ -1813,6 +1815,21 @@ void MainWindow::guiMeshSetAlphaThreshold(double value)
     Material* mat = getSelectedMaterial();
 
     mat->setAlphaThershold((float)value);
+}
+
+void MainWindow::guiMeshSetCullTrick(bool stat)
+{
+    if(!m_selectedNode->mesh())
+        return;
+
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    if(stat)
+        mat->enable(Material::VERTEX_SORT_CULL_TRICK);
+    else
+        mat->disable(Material::VERTEX_SORT_CULL_TRICK);
 }
 
 void MainWindow::guiMeshSetLighted(bool stat)
