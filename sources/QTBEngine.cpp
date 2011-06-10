@@ -511,11 +511,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 particlesClone(particles);
         }
 
-        if(ev->key() == Qt::Key_V)
-        {
-            m_centerTarget = 0;
-        }
-
         if(ev->key() == Qt::Key_R)
         {
             m_selectedNode->getMatrix().setRotate(0);
@@ -556,24 +551,65 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             emitTypeUpdate();
         }
 
+        else if(ev->key() == Qt::Key_Plus)
+        {
+            m_camera->setDistance(m_camera->getDistance() - 1);
+        }
+
+        else if(ev->key() == Qt::Key_Minus)
+        {
+            m_camera->setDistance(m_camera->getDistance() + 1);
+        }
+
         else if(ev->key() == Qt::Key_1)
         {
-            m_camera->setAngle(0, 0);
+            m_camera->setRotate(Vector2f(0, 0));
             m_camera->setTarget(Vector3f(0, 0, 1));
+            m_camera->setCenter(m_centerTarget);
+        }
+
+        else if(ev->key() == Qt::Key_2)
+        {
+            m_camera->rotate(Vector2f(0, -10));
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_3)
         {
-            m_camera->setAngle(0, 90);
+            m_camera->setRotate(Vector2f(90, 0));
             m_camera->setTarget(Vector3f(1, 0, 0));
+            m_camera->setCenter(m_centerTarget);
+        }
+
+        else if(ev->key() == Qt::Key_4)
+        {
+            m_camera->rotate(Vector2f(10, 0));
+            m_camera->setCenter(m_centerTarget);
+        }
+
+        else if(ev->key() == Qt::Key_5)
+        {
+            m_camera->setRotate(Vector2f(45, -45));
+            m_centerTarget = 0;
+            m_camera->setDistance(20);
+        }
+
+        else if(ev->key() == Qt::Key_6)
+        {
+            m_camera->rotate(Vector2f(-10, 0));
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_7)
         {
-            m_camera->setAngle(-90, 0);
-            m_camera->setTarget(Vector3f(0, -1, 0.1));
+            m_camera->setRotate(Vector2f(0, -90));
+            m_camera->setTarget(Vector3f(0, -1, 0.01));
+            m_camera->setCenter(m_centerTarget);
+        }
+
+        else if(ev->key() == Qt::Key_8)
+        {
+            m_camera->rotate(Vector2f(0, 10));
             m_camera->setCenter(m_centerTarget);
         }
     }
