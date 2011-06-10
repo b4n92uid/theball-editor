@@ -171,17 +171,17 @@ void MainWindow::initWidgets()
     QVariant red;
     red.setValue(tbe::Vector3f(1, 0, 0));
     QVariant green;
-    green.setValue(tbe::Vector3f(1, 0, 0));
+    green.setValue(tbe::Vector3f(0, 1, 0));
     QVariant blue;
-    blue.setValue(tbe::Vector3f(1, 0, 0));
+    blue.setValue(tbe::Vector3f(0, 0, 1));
     QVariant white;
-    white.setValue(tbe::Vector3f(1, 0, 0));
+    white.setValue(tbe::Vector3f(1, 1, 1));
     QVariant black;
-    black.setValue(tbe::Vector3f(1, 0, 0));
+    black.setValue(tbe::Vector3f(0, 0, 0));
     QVariant yellow;
-    yellow.setValue(tbe::Vector3f(1, 0, 0));
+    yellow.setValue(tbe::Vector3f(1, 1, 0));
     QVariant cyan;
-    cyan.setValue(tbe::Vector3f(1, 0, 0));
+    cyan.setValue(tbe::Vector3f(0, 1, 1));
 
     nodesGui.markTab.color->setItemData(0, red);
     nodesGui.markTab.color->setItemData(1, green);
@@ -435,6 +435,11 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyParticlesSelect(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesSelect(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
     connect(m_tbeWidget, SIGNAL(notifyParticlesDelete(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesDelete(tbe::scene::ParticlesEmiter*)));
+
+    connect(m_tbeWidget, SIGNAL(notifyMarkAdd(tbe::scene::MapMark*)), this, SLOT(markRegister(tbe::scene::MapMark*)));
+    connect(m_tbeWidget, SIGNAL(notifyMarkSelect(tbe::scene::MapMark*)), this, SLOT(markSelect(tbe::scene::MapMark*)));
+    connect(m_tbeWidget, SIGNAL(notifyMarkUpdate(tbe::scene::MapMark*)), this, SLOT(markUpdate(tbe::scene::MapMark*)));
+    connect(m_tbeWidget, SIGNAL(notifyMarkDelete(tbe::scene::MapMark*)), this, SLOT(markDelete(tbe::scene::MapMark*)));
 
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(setSceneAmbiant(const tbe::Vector3f&)));
 
@@ -1933,8 +1938,22 @@ void MainWindow::markSelect(tbe::scene::MapMark* mark, bool upList)
 
 void MainWindow::markUpdate(tbe::scene::MapMark* mark)
 {
-    if(!m_selectedNode->mark())
-        return;
+    nodesGui.markTab.size->setValue(mark->getSize());
+
+    nodesGui.markTab.type->setCurrentIndex(mark->getType());
+
+    using namespace tbe;
+
+    QMap<Vector3f, int> colorBind;
+    colorBind[Vector3f(1, 0, 0)] = 0;
+    colorBind[Vector3f(0, 1, 0)] = 1;
+    colorBind[Vector3f(0, 0, 1)] = 2;
+    colorBind[Vector3f(0, 0, 0)] = 3;
+    colorBind[Vector3f(1, 1, 1)] = 4;
+    colorBind[Vector3f(1, 1, 0)] = 5;
+    colorBind[Vector3f(0, 1, 1)] = 6;
+
+    nodesGui.markTab.color->setCurrentIndex(colorBind[mark->getColor()]);
 
     nodeUpdate(mark);
 }

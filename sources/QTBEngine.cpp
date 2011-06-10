@@ -260,6 +260,9 @@ void QTBEngine::moveApply()
     else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
         emit notifyParticlesUpdate(particles);
 
+    else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
+        emit notifyMarkUpdate(mark);
+
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 
     placeSelection();
