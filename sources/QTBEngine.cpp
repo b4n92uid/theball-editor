@@ -722,6 +722,17 @@ void QTBEngine::rebuildList()
 
         emit notifyParticlesAdd(*it);
     }
+
+    unsigned count = m_sceneParser->getMapMarkCount();
+    for(unsigned i = 0; i < count; i++)
+    {
+        MapMark* mark = m_sceneParser->getMapMark(i);
+
+        m_nodes.push_back(mark);
+        m_marks.push_back(mark);
+
+        emit notifyMarkAdd(mark);
+    }
 }
 
 tbe::scene::Node* QTBEngine::rootNode()
