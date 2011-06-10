@@ -253,6 +253,8 @@ void QTBEngine::moveApply()
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 
+    emitTypeUpdate();
+
     placeSelection();
 }
 
