@@ -538,8 +538,6 @@ void MainWindow::openScene(const QString& filename)
 
         nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
-        notifyChanges(false);
-
         m_tbeWidget->loadScene(filename);
 
         m_workingDir.scene = QFileInfo(filename).path();
@@ -733,6 +731,8 @@ void MainWindow::guiMeshNew()
             meshSelect(mesh);
 
             m_workingDir.mesh = QFileInfo(filename).path();
+
+            notifyChanges(true);
         }
         catch(std::exception& e)
         {
@@ -746,7 +746,11 @@ void MainWindow::guiMeshNew()
 void MainWindow::guiMeshClone()
 {
     if(m_selectedNode->mesh())
+    {
         m_tbeWidget->meshClone(m_selectedNode->mesh());
+
+        notifyChanges(true);
+    }
 }
 
 void MainWindow::guiMeshDelete()
@@ -760,6 +764,8 @@ void MainWindow::guiMeshDelete()
         unselect();
 
         m_tbeWidget->deselect();
+
+        notifyChanges(true);
     }
 }
 
@@ -773,12 +779,18 @@ void MainWindow::guiLightNew()
 
     lightRegister(light);
     lightSelect(light);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiLightClone()
 {
     if(m_selectedNode->light())
+    {
         m_tbeWidget->lightClone(m_selectedNode->light());
+
+        notifyChanges(true);
+    }
 }
 
 void MainWindow::guiLightDelete()
@@ -807,6 +819,8 @@ void MainWindow::guiParticlesNew()
 
     particlesRegister(particles);
     particlesSelect(particles);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiParticlesClone()
@@ -814,6 +828,8 @@ void MainWindow::guiParticlesClone()
     if(m_selectedNode->particles())
     {
         m_tbeWidget->particlesClone(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -1038,11 +1054,23 @@ void MainWindow::lightUpdate(tbe::scene::Light* light)
 {
     nodeUpdate(light);
 
+    nodesGui.lighTab.type->blockSignals(true);
+    nodesGui.lighTab.ambiant->blockSignals(true);
+    nodesGui.lighTab.diffuse->blockSignals(true);
+    nodesGui.lighTab.specular->blockSignals(true);
+    nodesGui.lighTab.radius->blockSignals(true);
+
     nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
     nodesGui.lighTab.ambiant->setValue(vec43(light->getAmbient()));
     nodesGui.lighTab.diffuse->setValue(vec43(light->getDiffuse()));
     nodesGui.lighTab.specular->setValue(vec43(light->getSpecular()));
     nodesGui.lighTab.radius->setValue(light->getRadius());
+
+    nodesGui.lighTab.type->blockSignals(false);
+    nodesGui.lighTab.ambiant->blockSignals(false);
+    nodesGui.lighTab.diffuse->blockSignals(false);
+    nodesGui.lighTab.specular->blockSignals(false);
+    nodesGui.lighTab.radius->blockSignals(false);
 }
 
 void MainWindow::lightDelete(tbe::scene::Light* light)
@@ -1109,6 +1137,15 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 {
     nodeUpdate(particles);
 
+    nodesGui.particlesTab.gravity->blockSignals(true);
+    nodesGui.particlesTab.boxsize->blockSignals(true);
+    nodesGui.particlesTab.freemove->blockSignals(true);
+    nodesGui.particlesTab.lifeinit->blockSignals(true);
+    nodesGui.particlesTab.lifedown->blockSignals(true);
+    nodesGui.particlesTab.number->blockSignals(true);
+    nodesGui.particlesTab.texture->blockSignals(true);
+    nodesGui.particlesTab.continiousmode->blockSignals(true);
+
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
     nodesGui.particlesTab.boxsize->setValue(particles->getBoxSize());
     nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());
@@ -1117,6 +1154,15 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
     nodesGui.particlesTab.number->setValue(particles->getNumber());
     nodesGui.particlesTab.texture->setOpenFileName(particles->getTexture().getFilename().c_str());
     nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
+
+    nodesGui.particlesTab.gravity->blockSignals(false);
+    nodesGui.particlesTab.boxsize->blockSignals(false);
+    nodesGui.particlesTab.freemove->blockSignals(false);
+    nodesGui.particlesTab.lifeinit->blockSignals(false);
+    nodesGui.particlesTab.lifedown->blockSignals(false);
+    nodesGui.particlesTab.number->blockSignals(false);
+    nodesGui.particlesTab.texture->blockSignals(false);
+    nodesGui.particlesTab.continiousmode->blockSignals(false);
 }
 
 void MainWindow::particlesDelete(tbe::scene::ParticlesEmiter* particles)
@@ -1242,6 +1288,8 @@ void MainWindow::guiSkyboxApply(bool enable)
     {
         m_tbeWidget->skyboxClear();
     }
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiFogApply(bool enable)
@@ -1252,11 +1300,15 @@ void MainWindow::guiFogApply(bool enable)
                               envGui.fog.end->value());
     else
         m_tbeWidget->fogClear();
+
+    notifyChanges(true);
 }
 
 void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
 {
     envGui.sceneAmbiant->setValue(value);
+
+    notifyChanges(true);
 }
 
 void MainWindow::fogRegister(tbe::scene::Fog* fog)
@@ -1428,8 +1480,9 @@ void MainWindow::guiChangeNodeField(QStandardItem* item)
     {
         QStandardItem* key = nodesGui.additionalModel->item(item->row(), 0);
         m_selectedNode->node()->setUserData(key->text().toStdString(), item->text().toStdString());
-
     }
+
+    notifyChanges(true);
 }
 
 void MainWindow::clearNodeList()
@@ -1491,6 +1544,8 @@ void MainWindow::guiMeshSetSaveMaterial(bool stat)
 
     nodesGui.meshTab.openmatedit->setEnabled(stat);
     nodesGui.meshTab.opacity->setEnabled(stat);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
@@ -1579,6 +1634,8 @@ void MainWindow::guiMeshSetTextured(bool stat)
         mat->enable(Material::TEXTURE);
     else
         mat->disable(Material::TEXTURE);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMeshTextureSelected(const QModelIndex& index)
@@ -1628,6 +1685,8 @@ void MainWindow::guiMeshAddTexture()
 
             nodesGui.meshTab.textureModel->appendRow(item);
             mat->setTexture(tex, offset + i);
+
+            notifyChanges(true);
         }
         catch(std::exception& e)
         {
@@ -1649,6 +1708,8 @@ void MainWindow::guiMeshDelTexture()
     mat->dropTexture(index.row());
 
     nodesGui.meshTab.textureModel->removeRow(index.row());
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMeshTextureUp()
@@ -1678,6 +1739,8 @@ void MainWindow::guiMeshTextureUp()
 
         nodesGui.meshTab.matedit->textureView
                 ->setCurrentIndex(nodesGui.meshTab.textureModel->index(dstindex, 0));
+
+        notifyChanges(true);
     }
 }
 
@@ -1708,6 +1771,8 @@ void MainWindow::guiMeshTextureDown()
 
         nodesGui.meshTab.matedit->textureView
                 ->setCurrentIndex(nodesGui.meshTab.textureModel->index(dstindex, 0));
+
+        notifyChanges(true);
     }
 }
 
@@ -1796,13 +1861,9 @@ void MainWindow::guiMeshSetAlpha(bool stat)
     Material* mat = getSelectedMaterial();
 
     if(stat)
-    {
         mat->enable(Material::ALPHA);
-    }
     else
-    {
         mat->disable(Material::ALPHA);
-    }
 }
 
 void MainWindow::guiMeshSetAlphaThreshold(double value)
@@ -1857,6 +1918,8 @@ void MainWindow::guiMarkNew()
 
     markRegister(mark);
     markSelect(mark);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMarkClone()
@@ -1864,6 +1927,8 @@ void MainWindow::guiMarkClone()
     if(m_selectedNode->mark())
     {
         m_tbeWidget->markClone(m_selectedNode->mark());
+
+        notifyChanges(true);
     }
 }
 
@@ -1951,6 +2016,10 @@ void MainWindow::markSelect(tbe::scene::MapMark* mark, bool upList)
 
 void MainWindow::markUpdate(tbe::scene::MapMark* mark)
 {
+    nodesGui.markTab.size->blockSignals(true);
+    nodesGui.markTab.type->blockSignals(true);
+    nodesGui.markTab.color->blockSignals(true);
+
     nodesGui.markTab.size->setValue(mark->getSize());
 
     nodesGui.markTab.type->setCurrentIndex(mark->getType());
@@ -1967,6 +2036,10 @@ void MainWindow::markUpdate(tbe::scene::MapMark* mark)
     colorBind[Vector3f(0, 1, 1)] = 6;
 
     nodesGui.markTab.color->setCurrentIndex(colorBind[mark->getColor()]);
+
+    nodesGui.markTab.size->blockSignals(false);
+    nodesGui.markTab.type->blockSignals(false);
+    nodesGui.markTab.color->blockSignals(false);
 
     nodeUpdate(mark);
 }
@@ -2000,6 +2073,8 @@ void MainWindow::guiMarkSetType(int index)
             ->itemData(index).value<MapMark::Type > ();
 
     m_selectedNode->mark()->setType(type);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMarkSetColor(int index)
@@ -2011,6 +2086,8 @@ void MainWindow::guiMarkSetColor(int index)
             ->itemData(index).value<tbe::Vector3f > ();
 
     m_selectedNode->mark()->setColor(color);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMarkSetSize(double value)
@@ -2019,6 +2096,8 @@ void MainWindow::guiMarkSetSize(double value)
         return;
 
     m_selectedNode->mark()->setSize((float)value);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiNodeSetName(const QString& s)
@@ -2027,6 +2106,8 @@ void MainWindow::guiNodeSetName(const QString& s)
     {
         m_selectedNode->node()->setName(s.toStdString());
         nodeUpdate(m_selectedNode->node());
+
+        notifyChanges(true);
     }
 }
 
@@ -2036,6 +2117,8 @@ void MainWindow::guiNodeSetPos(const tbe::Vector3f& v)
     {
         m_selectedNode->node()->setPos(v);
         nodeUpdate(m_selectedNode->node());
+
+        notifyChanges(true);
     }
 }
 
@@ -2052,6 +2135,8 @@ void MainWindow::guiNodeSetRotation(const tbe::Vector3f& v)
         m_selectedNode->node()->setMatrix(newmat);
 
         nodeUpdate(m_selectedNode->node());
+
+        notifyChanges(true);
     }
 }
 
@@ -2061,6 +2146,8 @@ void MainWindow::guiNodeSetScale(const tbe::Vector3f& v)
     {
         m_selectedNode->node()->getMatrix().setScale(v);
         nodeUpdate(m_selectedNode->node());
+
+        notifyChanges(true);
     }
 }
 
@@ -2070,12 +2157,16 @@ void MainWindow::guiNodeSetMatrix(const tbe::Matrix4& m)
     {
         m_selectedNode->node()->setMatrix(m);
         nodeUpdate(m_selectedNode->node());
+
+        notifyChanges(true);
     }
 }
 
 void MainWindow::guiNodeSetEnalbe(bool stat)
 {
     m_selectedNode->node()->setEnable(stat);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiWaterSetDeform(double v)
@@ -2084,6 +2175,8 @@ void MainWindow::guiWaterSetDeform(double v)
     {
         m_selectedNode->water()->setDeform(v);
         // waterUpdate(m_selectedNode->water());
+
+        notifyChanges(true);
     }
 }
 
@@ -2093,6 +2186,8 @@ void MainWindow::guiWaterSetSize(const tbe::Vector2f& v)
     {
         m_selectedNode->water()->setSize(v);
         // waterUpdate(m_selectedNode->water());
+
+        notifyChanges(true);
     }
 }
 
@@ -2102,6 +2197,8 @@ void MainWindow::guiWaterSetUvRepeat(const tbe::Vector2f& v)
     {
         m_selectedNode->water()->setUvRepeat(v);
         // waterUpdate(m_selectedNode->water());
+
+        notifyChanges(true);
     }
 }
 
@@ -2111,6 +2208,8 @@ void MainWindow::guiWaterSetSpeed(double v)
     {
         m_selectedNode->water()->setSpeed(v);
         // waterUpdate(m_selectedNode->water());
+
+        notifyChanges(true);
     }
 }
 
@@ -2120,6 +2219,8 @@ void MainWindow::guiWaterSetBlend(double v)
     {
         m_selectedNode->water()->setBlend(v);
         // waterUpdate(m_selectedNode->water());
+
+        notifyChanges(true);
     }
 }
 
@@ -2129,6 +2230,8 @@ void MainWindow::guiParticleSetGravity(const tbe::Vector3f& v)
     {
         m_selectedNode->particles()->setGravity(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2138,6 +2241,8 @@ void MainWindow::guiParticleSetBoxsize(const tbe::Vector3f& v)
     {
         m_selectedNode->particles()->setBoxSize(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2147,6 +2252,8 @@ void MainWindow::guiParticleSetFreemove(double v)
     {
         m_selectedNode->particles()->setFreeMove(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2156,6 +2263,8 @@ void MainWindow::guiParticleSetLifeinit(double v)
     {
         m_selectedNode->particles()->setLifeInit(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2165,6 +2274,8 @@ void MainWindow::guiParticleSetLifedown(double v)
     {
         m_selectedNode->particles()->setLifeDown(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2174,6 +2285,8 @@ void MainWindow::guiParticleSetNumber(int v)
     {
         m_selectedNode->particles()->setNumber(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2185,6 +2298,8 @@ void MainWindow::guiParticleSetTexture(const QString& v)
         {
             m_selectedNode->particles()->setTexture(v.toStdString());
             particlesUpdate(m_selectedNode->particles());
+
+            notifyChanges(true);
         }
         catch(std::exception& e)
         {
@@ -2200,6 +2315,8 @@ void MainWindow::guiParticleSetContinousMode(int v)
     {
         m_selectedNode->particles()->setContinousMode(v);
         particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
     }
 }
 
@@ -2218,6 +2335,8 @@ void MainWindow::guiLightSetType(int type)
     {
         m_selectedNode->light()->setType((tbe::scene::Light::Type)type);
         lightUpdate(m_selectedNode->light());
+
+        notifyChanges(true);
     }
 }
 
@@ -2227,6 +2346,8 @@ void MainWindow::guiLightSetAmbiant(const tbe::Vector3f& value)
     {
         m_selectedNode->light()->setAmbient(vec34(value));
         lightUpdate(m_selectedNode->light());
+
+        notifyChanges(true);
     }
 }
 
@@ -2236,6 +2357,8 @@ void MainWindow::guiLightSetDiffuse(const tbe::Vector3f& value)
     {
         m_selectedNode->light()->setDiffuse(vec34(value));
         lightUpdate(m_selectedNode->light());
+
+        notifyChanges(true);
     }
 }
 
@@ -2245,6 +2368,8 @@ void MainWindow::guiLightSetSpecular(const tbe::Vector3f& value)
     {
         m_selectedNode->light()->setSpecular(vec34(value));
         lightUpdate(m_selectedNode->light());
+
+        notifyChanges(true);
     }
 }
 
@@ -2254,5 +2379,7 @@ void MainWindow::guiLightSetRadius(double value)
     {
         m_selectedNode->light()->setRadius((float)value);
         lightUpdate(m_selectedNode->light());
+
+        notifyChanges(true);
     }
 }
