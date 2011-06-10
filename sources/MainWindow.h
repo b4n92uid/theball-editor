@@ -78,6 +78,18 @@ public slots: // Node manager
 
     // -------- GUI -> NODE
 
+    void guiNodeSetName(const QString& s);
+    void guiNodeSetPos(const tbe::Vector3f& v);
+    void guiNodeSetRotation(const tbe::Vector3f& v);
+    void guiNodeSetScale(const tbe::Vector3f& v);
+    void guiNodeSetMatrix(const tbe::Matrix4& m);
+    void guiNodeSetEnalbe(bool stat);
+
+    // Mesh GUI Buttons
+    void guiMeshNew();
+    void guiMeshClone();
+    void guiMeshDelete();
+
     void guiAddSceneField();
     void guiDelSceneField();
     void guiClearSceneField();
@@ -86,11 +98,6 @@ public slots: // Node manager
     void guiDelNodeField();
     void guiClearNodeField();
     void guiChangeNodeField(QStandardItem*);
-
-    // Mesh GUI Buttons
-    void guiMeshNew();
-    void guiMeshClone();
-    void guiMeshDelete();
 
     void guiMeshMaterialSelected(const QModelIndex& index);
 
@@ -125,10 +132,26 @@ public slots: // Node manager
     void guiLightClone();
     void guiLightDelete();
 
+    void guiLightSetType(int type);
+    void guiLightSetAmbiant(const tbe::Vector3f& value);
+    void guiLightSetDiffuse(const tbe::Vector3f& value);
+    void guiLightSetSpecular(const tbe::Vector3f& value);
+    void guiLightSetRadius(double value);
+
     // Particles GUI Buttons
     void guiParticlesNew();
     void guiParticlesClone();
     void guiParticlesDelete();
+
+    void guiParticleSetGravity(const tbe::Vector3f& v);
+    void guiParticleSetBoxsize(const tbe::Vector3f& v);
+    void guiParticleSetFreemove(double v);
+    void guiParticleSetLifeinit(double v);
+    void guiParticleSetLifedown(double v);
+    void guiParticleSetNumber(int v);
+    void guiParticleSetTexture(const QString& v);
+    void guiParticleSetContinousMode(int v);
+    void guiParticleBuild();
 
     // MapMark GUI Buttons
     void guiMarkNew();
@@ -138,6 +161,13 @@ public slots: // Node manager
     void guiMarkSetType(int index);
     void guiMarkSetSize(double value);
     void guiMarkSetColor(int index);
+
+    // Water GUI Buttons
+    void guiWaterSetDeform(double v);
+    void guiWaterSetSize(const tbe::Vector2f& v);
+    void guiWaterSetUvRepeat(const tbe::Vector2f& v);
+    void guiWaterSetSpeed(double v);
+    void guiWaterSetBlend(double v);
 
 
     // -------- NODE -> GUI
