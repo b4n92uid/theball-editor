@@ -36,43 +36,6 @@ public:
     void water(tbe::scene::Water* curwater);
     tbe::scene::Water* water() const;
 
-signals:
-    void notifyUpdate(tbe::scene::Node*);
-    void notifyUpdate(tbe::scene::Light*);
-    void notifyUpdate(tbe::scene::Mesh*);
-    void notifyUpdate(tbe::scene::ParticlesEmiter*);
-    void notifyUpdate(tbe::scene::Water*);
-
-public slots:
-    void nodeSetName(const QString& s);
-    void nodeSetPos(const tbe::Vector3f& v);
-    void nodeSetRotation(const tbe::Vector3f& v);
-    void nodeSetScale(const tbe::Vector3f& v);
-    void nodeSetMatrix(const tbe::Matrix4& m);
-    void nodeSetEnalbe(bool stat);
-
-    void waterSetDeform(double v);
-    void waterSetSize(const tbe::Vector2f& v);
-    void waterSetUvRepeat(const tbe::Vector2f& v);
-    void waterSetSpeed(double v);
-    void waterSetBlend(double v);
-
-    void particleSetGravity(const tbe::Vector3f& v);
-    void particleSetBoxsize(const tbe::Vector3f& v);
-    void particleSetFreemove(double v);
-    void particleSetLifeinit(double v);
-    void particleSetLifedown(double v);
-    void particleSetNumber(int v);
-    void particleSetTexture(const QString& v);
-    void particleSetContinousMode(int v);
-    void particleBuild();
-
-    void lightSetType(int type);
-    void lightSetAmbiant(const tbe::Vector3f& value);
-    void lightSetDiffuse(const tbe::Vector3f& value);
-    void lightSetSpecular(const tbe::Vector3f& value);
-    void lightSetRadius(double value);
-
 private:
     tbe::scene::Node* m_curNode;
     tbe::scene::Mesh* m_curmesh;

@@ -317,12 +317,6 @@ void MainWindow::initConnections()
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
 
-    connect(m_selectedNode, SIGNAL(notifyUpdate(tbe::scene::Mesh*)), this, SLOT(meshUpdate(tbe::scene::Mesh*)));
-    connect(m_selectedNode, SIGNAL(notifyUpdate(tbe::scene::Light*)), this, SLOT(lightUpdate(tbe::scene::Light*)));
-    connect(m_selectedNode, SIGNAL(notifyUpdate(tbe::scene::ParticlesEmiter*)), this, SLOT(particlesUpdate(tbe::scene::ParticlesEmiter*)));
-    connect(m_selectedNode, SIGNAL(notifyUpdate(tbe::scene::Node*)), this, SLOT(updateNodeInfo(tbe::scene::Node*)));
-    connect(m_selectedNode, SIGNAL(notifyUpdate(tbe::scene::Node*)), m_tbeWidget, SLOT(placeSelection()));
-
     QSignalMapper* nodeMoveBind = new QSignalMapper(this);
     nodeMoveBind->setMapping(nodesGui.nodeUp, 1);
     nodeMoveBind->setMapping(nodesGui.nodeDown, 2);
@@ -342,11 +336,11 @@ void MainWindow::initConnections()
 
     connect(nodeMoveBind, SIGNAL(mapped(int)), this, SLOT(scopeNode(int)));
 
-    connect(nodesGui.name, SIGNAL(textChanged(const QString&)), m_selectedNode, SLOT(nodeSetName(const QString&)));
-    connect(nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetPos(const tbe::Vector3f&)));
-    connect(nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetRotation(const tbe::Vector3f&)));
-    connect(nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(nodeSetScale(const tbe::Vector3f&)));
-    connect(nodesGui.enable, SIGNAL(clicked(bool)), m_selectedNode, SLOT(nodeSetEnalbe(bool)));
+    connect(nodesGui.name, SIGNAL(textChanged(const QString&)), this, SLOT(guiNodeSetName(const QString&)));
+    connect(nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiNodeSetPos(const tbe::Vector3f&)));
+    connect(nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiNodeSetRotation(const tbe::Vector3f&)));
+    connect(nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiNodeSetScale(const tbe::Vector3f&)));
+    connect(nodesGui.enable, SIGNAL(clicked(bool)), this, SLOT(guiNodeSetEnalbe(bool)));
 
     connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.markTab.clone, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
@@ -389,31 +383,31 @@ void MainWindow::initConnections()
 
     connect(nodesGui.meshTab.materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(guiMeshMaterialSelected(const QModelIndex &)));
 
-    connect(nodesGui.waterTab.deform, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(waterSetDeform(double)));
-    connect(nodesGui.waterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), m_selectedNode, SLOT(waterSetSize(const tbe::Vector2f&)));
-    connect(nodesGui.waterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), m_selectedNode, SLOT(waterSetUvRepeat(const tbe::Vector2f&)));
-    connect(nodesGui.waterTab.speed, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(waterSetSpeed(double)));
-    connect(nodesGui.waterTab.blend, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(waterSetBlend(double)));
+    connect(nodesGui.waterTab.deform, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetDeform(double)));
+    connect(nodesGui.waterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(guiWaterSetSize(const tbe::Vector2f&)));
+    connect(nodesGui.waterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(guiWaterSetUvRepeat(const tbe::Vector2f&)));
+    connect(nodesGui.waterTab.speed, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetSpeed(double)));
+    connect(nodesGui.waterTab.blend, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetBlend(double)));
 
-    connect(nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(particleSetGravity(const tbe::Vector3f&)));
-    connect(nodesGui.particlesTab.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(particleSetBoxsize(const tbe::Vector3f&)));
-    connect(nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(particleSetFreemove(double)));
-    connect(nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(particleSetLifeinit(double)));
-    connect(nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(particleSetLifedown(double)));
-    connect(nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), m_selectedNode, SLOT(particleSetNumber(int)));
-    connect(nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), m_selectedNode, SLOT(particleSetTexture(const QString&)));
-    connect(nodesGui.particlesTab.continiousmode, SIGNAL(stateChanged(int)), m_selectedNode, SLOT(particleSetContinousMode(int)));
-    connect(nodesGui.particlesTab.build, SIGNAL(clicked()), m_selectedNode, SLOT(particleBuild()));
+    connect(nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiParticleSetGravity(const tbe::Vector3f&)));
+    connect(nodesGui.particlesTab.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiParticleSetBoxsize(const tbe::Vector3f&)));
+    connect(nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetFreemove(double)));
+    connect(nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifeinit(double)));
+    connect(nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifedown(double)));
+    connect(nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), this, SLOT(guiParticleSetNumber(int)));
+    connect(nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(guiParticleSetTexture(const QString&)));
+    connect(nodesGui.particlesTab.continiousmode, SIGNAL(stateChanged(int)), this, SLOT(guiParticleSetContinousMode(int)));
+    connect(nodesGui.particlesTab.build, SIGNAL(clicked()), this, SLOT(guiParticleBuild()));
 
     connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
     connect(nodesGui.particlesTab.clone, SIGNAL(clicked()), this, SLOT(guiParticlesClone()));
     connect(nodesGui.particlesTab.del, SIGNAL(clicked()), this, SLOT(guiParticlesDelete()));
 
-    connect(nodesGui.lighTab.type, SIGNAL(activated(int)), m_selectedNode, SLOT(lightSetType(int)));
-    connect(nodesGui.lighTab.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(lightSetAmbiant(const tbe::Vector3f&)));
-    connect(nodesGui.lighTab.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(lightSetDiffuse(const tbe::Vector3f&)));
-    connect(nodesGui.lighTab.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), m_selectedNode, SLOT(lightSetSpecular(const tbe::Vector3f&)));
-    connect(nodesGui.lighTab.radius, SIGNAL(valueChanged(double)), m_selectedNode, SLOT(lightSetRadius(double)));
+    connect(nodesGui.lighTab.type, SIGNAL(activated(int)), this, SLOT(guiLightSetType(int)));
+    connect(nodesGui.lighTab.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiLightSetAmbiant(const tbe::Vector3f&)));
+    connect(nodesGui.lighTab.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiLightSetDiffuse(const tbe::Vector3f&)));
+    connect(nodesGui.lighTab.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiLightSetSpecular(const tbe::Vector3f&)));
+    connect(nodesGui.lighTab.radius, SIGNAL(valueChanged(double)), this, SLOT(guiLightSetRadius(double)));
 
     connect(nodesGui.lighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
     connect(nodesGui.lighTab.clone, SIGNAL(clicked()), this, SLOT(guiLightClone()));
@@ -852,7 +846,7 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
     nodesGui.name->setText(node->getName().c_str());
     nodesGui.position->setValue(node->getPos());
     nodesGui.scale->setValue(node->getMatrix().getScale());
-    nodesGui.rotation->setValue(node->getMatrix().getRotate().getEuler());
+    nodesGui.rotation->setValue(node->getMatrix().getRotate().getEuler() * 180 / M_PI);
     nodesGui.enable->setChecked(node->isEnable());
 
     nodesGui.name->blockSignals(false);
@@ -877,6 +871,8 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
 
         nodesGui.additionalModel->appendRow(newfield);
     }
+
+    m_tbeWidget->placeSelection();
 }
 
 void MainWindow::unselect()
@@ -2006,4 +2002,240 @@ void MainWindow::guiMarkSetSize(double value)
         return;
 
     m_selectedNode->mark()->setSize((float)value);
+}
+
+void MainWindow::guiNodeSetName(const QString& s)
+{
+    if(m_selectedNode->node())
+    {
+        m_selectedNode->node()->setName(s.toStdString());
+        nodeUpdate(m_selectedNode->node());
+    }
+}
+
+void MainWindow::guiNodeSetPos(const tbe::Vector3f& v)
+{
+    if(m_selectedNode->node())
+    {
+        m_selectedNode->node()->setPos(v);
+        nodeUpdate(m_selectedNode->node());
+    }
+}
+
+void MainWindow::guiNodeSetRotation(const tbe::Vector3f& v)
+{
+    if(m_selectedNode->node())
+    {
+        using namespace tbe;
+
+        Matrix4 newmat = m_selectedNode->node()->getMatrix();
+
+        newmat.setRotate(tbe::Quaternion(v * M_PI / 180));
+
+        m_selectedNode->node()->setMatrix(newmat);
+
+        nodeUpdate(m_selectedNode->node());
+    }
+}
+
+void MainWindow::guiNodeSetScale(const tbe::Vector3f& v)
+{
+    if(m_selectedNode->node())
+    {
+        m_selectedNode->node()->getMatrix().setScale(v);
+        nodeUpdate(m_selectedNode->node());
+    }
+}
+
+void MainWindow::guiNodeSetMatrix(const tbe::Matrix4& m)
+{
+    if(m_selectedNode->node())
+    {
+        m_selectedNode->node()->setMatrix(m);
+        nodeUpdate(m_selectedNode->node());
+    }
+}
+
+void MainWindow::guiNodeSetEnalbe(bool stat)
+{
+    m_selectedNode->node()->setEnable(stat);
+}
+
+void MainWindow::guiWaterSetDeform(double v)
+{
+    if(m_selectedNode->water())
+    {
+        m_selectedNode->water()->setDeform(v);
+        // waterUpdate(m_selectedNode->water());
+    }
+}
+
+void MainWindow::guiWaterSetSize(const tbe::Vector2f& v)
+{
+    if(m_selectedNode->water())
+    {
+        m_selectedNode->water()->setSize(v);
+        // waterUpdate(m_selectedNode->water());
+    }
+}
+
+void MainWindow::guiWaterSetUvRepeat(const tbe::Vector2f& v)
+{
+    if(m_selectedNode->water())
+    {
+        m_selectedNode->water()->setUvRepeat(v);
+        // waterUpdate(m_selectedNode->water());
+    }
+}
+
+void MainWindow::guiWaterSetSpeed(double v)
+{
+    if(m_selectedNode->water())
+    {
+        m_selectedNode->water()->setSpeed(v);
+        // waterUpdate(m_selectedNode->water());
+    }
+}
+
+void MainWindow::guiWaterSetBlend(double v)
+{
+    if(m_selectedNode->water())
+    {
+        m_selectedNode->water()->setBlend(v);
+        // waterUpdate(m_selectedNode->water());
+    }
+}
+
+void MainWindow::guiParticleSetGravity(const tbe::Vector3f& v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setGravity(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleSetBoxsize(const tbe::Vector3f& v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setBoxSize(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleSetFreemove(double v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setFreeMove(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleSetLifeinit(double v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setLifeInit(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleSetLifedown(double v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setLifeDown(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleSetNumber(int v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setNumber(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleSetTexture(const QString& v)
+{
+    if(m_selectedNode->particles() && !v.isEmpty())
+    {
+        try
+        {
+            m_selectedNode->particles()->setTexture(v.toStdString());
+            particlesUpdate(m_selectedNode->particles());
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::critical(this, "Chargement de texture", e.what());
+        }
+    }
+
+}
+
+void MainWindow::guiParticleSetContinousMode(int v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setContinousMode(v);
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiParticleBuild()
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->build();
+        particlesUpdate(m_selectedNode->particles());
+    }
+}
+
+void MainWindow::guiLightSetType(int type)
+{
+    if(m_selectedNode->light())
+    {
+        m_selectedNode->light()->setType((tbe::scene::Light::Type)type);
+        lightUpdate(m_selectedNode->light());
+    }
+}
+
+void MainWindow::guiLightSetAmbiant(const tbe::Vector3f& value)
+{
+    if(m_selectedNode->light())
+    {
+        m_selectedNode->light()->setAmbient(vec34(value));
+        lightUpdate(m_selectedNode->light());
+    }
+}
+
+void MainWindow::guiLightSetDiffuse(const tbe::Vector3f& value)
+{
+    if(m_selectedNode->light())
+    {
+        m_selectedNode->light()->setDiffuse(vec34(value));
+        lightUpdate(m_selectedNode->light());
+    }
+}
+
+void MainWindow::guiLightSetSpecular(const tbe::Vector3f& value)
+{
+    if(m_selectedNode->light())
+    {
+        m_selectedNode->light()->setSpecular(vec34(value));
+        lightUpdate(m_selectedNode->light());
+    }
+}
+
+void MainWindow::guiLightSetRadius(double value)
+{
+    if(m_selectedNode->light())
+    {
+        m_selectedNode->light()->setRadius((float)value);
+        lightUpdate(m_selectedNode->light());
+    }
 }
