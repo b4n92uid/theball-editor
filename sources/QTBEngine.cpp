@@ -251,6 +251,15 @@ void QTBEngine::moveApply()
     if(!m_gridEnable)
         m_centerTarget = m_selectedNode->getAbsoluteMatrix() * m_selectedNode->getAabb().getCenter();
 
+    m_eventManager->notify = EventManager::EVENT_NO_EVENT;
+
+    placeSelection();
+}
+
+void QTBEngine::emitTypeUpdate()
+{
+    using namespace scene;
+
     if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
         emit notifyMeshUpdate(mesh);
 
@@ -262,10 +271,6 @@ void QTBEngine::moveApply()
 
     else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
         emit notifyMarkUpdate(mark);
-
-    m_eventManager->notify = EventManager::EVENT_NO_EVENT;
-
-    placeSelection();
 }
 
 void QTBEngine::paintGL()
@@ -514,11 +519,15 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         if(ev->key() == Qt::Key_R)
         {
             m_selectedNode->getMatrix().setRotate(0);
+
+            emitTypeUpdate();
         }
 
         if(ev->key() == Qt::Key_S)
         {
             m_selectedNode->getMatrix().setScale(1);
+
+            emitTypeUpdate();
         }
 
         if(ev->key() == Qt::Key_G)
@@ -528,7 +537,11 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_F)
         {
+            m_axe->setEnable(false);
             m_meshScene->setInFloor(m_selectedNode);
+            m_axe->setEnable(true);
+
+            emitTypeUpdate();
         }
 
         if(ev->key() == Qt::Key_E)
@@ -539,6 +552,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             adjust.y += -m_selectedNode->getAabb().min.y;
 
             m_selectedNode->setPos(adjust);
+
+            emitTypeUpdate();
         }
 
         else if(ev->key() == Qt::Key_1)
