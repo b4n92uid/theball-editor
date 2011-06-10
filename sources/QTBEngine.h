@@ -50,6 +50,8 @@ protected:
 
     void setupSelection();
 
+    void emitTypeUpdate();
+
 public slots:
 
     void placeSelection();
