@@ -540,7 +540,14 @@ void MainWindow::openScene(const QString& filename)
 
         m_tbeWidget->loadScene(filename);
 
-        m_workingDir.scene = QFileInfo(filename).path();
+        m_workingDir.scene
+                = m_workingDir.mesh
+                = QFileInfo(filename).path();
+
+        nodesGui.particlesTab.texture->setWorkDir(m_workingDir.scene);
+
+        for(unsigned i = 0; i < 6; i++)
+            envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
 
         pushFileHistory(filename);
 

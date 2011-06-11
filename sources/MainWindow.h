@@ -400,7 +400,6 @@ private:
     {
         QString scene;
         QString mesh;
-        QString particlesTexture;
 
     } m_workingDir;
 };

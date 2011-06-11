@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   QBrowsEdit.h
  * Author: b4n92uid
  *
@@ -21,6 +21,9 @@ public:
     void setOpenFileName(const QString& str);
     QString getOpenFileName();
 
+    void setWorkDir(QString workDir);
+    QString getWorkDir() const;
+
 public slots:
     void openFileName();
 
@@ -33,6 +36,7 @@ signals:
 private:
     QLineEdit* m_lineEdit;
     QPushButton* m_browse;
+    QString m_workDir;
 };
 
 #endif	/* QBROWSEDIT_H */
