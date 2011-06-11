@@ -99,7 +99,7 @@ void QTBEngine::initializeGL()
 
 void QTBEngine::placeSelection()
 {
-    if(!m_axe)
+    if(!m_axe || !m_selectedNode)
         return;
 
     AABB selAabb = m_selectedNode->getAabb();
@@ -605,7 +605,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         else if(ev->key() == Qt::Key_2)
         {
-            m_camera->rotate(Vector2f(0, -10));
+            m_camera->rotate(Vector2f(0, 10));
             m_camera->setCenter(m_centerTarget);
         }
 
@@ -644,7 +644,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         else if(ev->key() == Qt::Key_8)
         {
-            m_camera->rotate(Vector2f(0, 10));
+            m_camera->rotate(Vector2f(0, -10));
             m_camera->setCenter(m_centerTarget);
         }
     }
@@ -683,7 +683,7 @@ void QTBEngine::clearScene()
 {
     m_rootNode->clearAllChild();
     m_sceneManager->clearParallelScenes(false);
-
+    m_sceneParser->clearMapMark();
     m_nodes.clear();
     m_meshs.clear();
     m_particles.clear();
