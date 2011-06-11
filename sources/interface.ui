@@ -679,7 +679,7 @@
                  <item>
                   <widget class="QPushButton" name="node_mesh_editmat">
                    <property name="text">
-                    <string>Editeur le materiau séléctioner</string>
+                    <string> Editer le materiau séléctioné</string>
                    </property>
                   </widget>
                  </item>
