@@ -116,6 +116,8 @@ void QTBEngine::placeSelection()
     m_axe->setPos(m_selectedNode->getAbsoluteMatrix() * selAabb.getCenter());
     m_axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
     m_axe->setEnable(true);
+
+    m_gride->setPos(Vector3f::Y(m_axe->getPos().y));
 }
 
 void QTBEngine::setupSelection()
@@ -128,6 +130,11 @@ void QTBEngine::setupSelection()
     m_axe->setColor(Vector4f(0, 0, 1, 0.25));
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
+
+    m_gride = new Gride(m_meshScene);
+    m_gride->setEnable(false);
+
+    m_rootNode->addChild(m_gride);
 }
 
 void QTBEngine::pauseRendring()
@@ -538,6 +545,24 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         if(ev->key() == Qt::Key_G)
         {
             m_gridEnable = !m_gridEnable;
+
+            if(m_gridEnable)
+            {
+                m_gride->clear();
+
+                AABB sceneAabb = m_meshScene->getSceneAabb();
+
+                Vector2i cuts;
+                cuts.x = sceneAabb.max.x - sceneAabb.min.x;
+                cuts.y = sceneAabb.max.z - sceneAabb.min.z;
+                cuts = tools::nextPow2(cuts);
+
+                Vector2f size = cuts;
+
+                m_gride->setup(size, cuts);
+            }
+
+            m_gride->setEnable(m_gridEnable);
         }
 
         if(ev->key() == Qt::Key_F)
@@ -649,6 +674,7 @@ void QTBEngine::saveScene(const QString& filename)
 
     m_sceneParser->archive(m_rootNode);
     m_sceneParser->exclude(m_axe);
+    m_sceneParser->exclude(m_gride);
 
     m_sceneParser->saveScene(filename.toStdString());
 }
@@ -706,7 +732,7 @@ void QTBEngine::rebuildList()
     m_meshs.clear();
     for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
-        if(m_axe == *it)
+        if(*it == m_axe || *it == m_gride)
             continue;
 
         m_nodes.push_back(*it);
