@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QBrowsEdit.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 4 décembre 2010, 00:15
  */
 
@@ -27,12 +27,25 @@ void QBrowsEdit::openFileName()
 {
     emit beginChoose();
 
-    QString filename = QFileDialog::getOpenFileName(m_browse);
+    QString filename = QFileDialog::getOpenFileName(m_browse, QString(), m_workDir);
 
     if(!filename.isEmpty())
+    {
         m_lineEdit->setText(filename);
+        m_workDir = QFileInfo(filename).path();
+    }
 
     emit endChoose();
+}
+
+void QBrowsEdit::setWorkDir(QString workDir)
+{
+    this->m_workDir = workDir;
+}
+
+QString QBrowsEdit::getWorkDir() const
+{
+    return m_workDir;
 }
 
 void QBrowsEdit::setOpenFileName(const QString& str)
