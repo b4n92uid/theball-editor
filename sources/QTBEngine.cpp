@@ -201,7 +201,10 @@ void QTBEngine::moveApply()
         {
             if(m_eventManager->keyState[EventManager::KEY_LALT])
             {
-                // Vertical gride move
+                setCursor(Qt::BlankCursor);
+
+                position.y += m_eventManager->mousePosRel.y / 2;
+                tools::round(position, Vector3f(1));
             }
             else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
             {
@@ -746,7 +749,10 @@ void QTBEngine::fillTextInfo(QLabel* label)
 {
     QString text;
 
-    text += QString("Curseur 3D: %1 %2 %3\n\n").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
+    if(m_gridEnable)
+        text += "<p><b>Déplacement en grille</b></p>";
+
+    text += QString("<p>Curseur 3D: %1 %2 %3</p>").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
 
     if(m_selectedNode)
     {
@@ -754,11 +760,14 @@ void QTBEngine::fillTextInfo(QLabel* label)
         tbe::Vector3f pos = m_selectedNode->getPos();
         tbe::AABB aabb = m_selectedNode->getAabb();
 
-        text += QString("Node: %1\n").arg(name);
-        text += QString("|_Pos: %1 %2 %3\n").arg(pos.x).arg(pos.y).arg(pos.z);
+        text += QString("<p>").arg(name);
+        text += QString("Node: %1<br/>").arg(name);
+        text += QString("|_Pos: %1 %2 %3<br/>").arg(pos.x).arg(pos.y).arg(pos.z);
         text += QString("|_Aabb: (%1,%2,%3) (%4,%5,%6)")
                 .arg(aabb.min.x).arg(aabb.min.y).arg(aabb.min.z)
                 .arg(aabb.max.x).arg(aabb.max.y).arg(aabb.max.z);
+
+        text += QString("</p>").arg(name);
 
 
         if(!m_selectedNode->getParent()->isRoot())
@@ -770,15 +779,16 @@ void QTBEngine::fillTextInfo(QLabel* label)
             QString name = parent->getName().c_str();
             tbe::Vector3f pos = parent->getPos();
 
-            text += "\n\n";
+            text += QString("<p>").arg(name);
             text += QString("Parent: %1\n").arg(name);
             text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
+            text += QString("</p>").arg(name);
         }
     }
 
     else
     {
-        text += QString("Pas de séléction");
+        text += QString("<p><i>Pas de séléction</i></p>");
     }
 
     label->setText(text);
