@@ -164,6 +164,7 @@ private:
 
     tbe::scene::Node* m_selectedNode;
     tbe::scene::Box* m_axe;
+    tbe::scene::Gride* m_gride;
 
     tbe::scene::Node::Array m_nodes;
     tbe::scene::Mesh::Array m_meshs;
