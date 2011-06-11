@@ -195,22 +195,27 @@ void QTBEngine::moveApply()
 
     // Movement ----------------------------------------------------------------
 
+    Vector3f gridSize(1);
+
     if(m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
     {
         if(m_gridEnable)
         {
+            if(m_eventManager->keyState[EventManager::KEY_LCTRL])
+                gridSize /= 2.0f;
+
             if(m_eventManager->keyState[EventManager::KEY_LALT])
             {
                 setCursor(Qt::BlankCursor);
 
                 position.y += m_eventManager->mousePosRel.y / 2;
-                tools::round(position, Vector3f(1));
+                tools::round(position, gridSize);
             }
             else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
             {
                 position.x = m_curCursor3D.x;
                 position.z = m_curCursor3D.z;
-                tools::round(position, Vector3f(1));
+                tools::round(position, gridSize);
             }
         }
         else
@@ -760,14 +765,14 @@ void QTBEngine::fillTextInfo(QLabel* label)
         tbe::Vector3f pos = m_selectedNode->getPos();
         tbe::AABB aabb = m_selectedNode->getAabb();
 
-        text += QString("<p>").arg(name);
-        text += QString("Node: %1<br/>").arg(name);
-        text += QString("|_Pos: %1 %2 %3<br/>").arg(pos.x).arg(pos.y).arg(pos.z);
+        text += QString("<p>");
+        text += QString("Node: %1<br />").arg(name);
+        text += QString("|_Pos: %1 %2 %3<br />").arg(pos.x).arg(pos.y).arg(pos.z);
         text += QString("|_Aabb: (%1,%2,%3) (%4,%5,%6)")
                 .arg(aabb.min.x).arg(aabb.min.y).arg(aabb.min.z)
                 .arg(aabb.max.x).arg(aabb.max.y).arg(aabb.max.z);
 
-        text += QString("</p>").arg(name);
+        text += QString("</p>");
 
 
         if(!m_selectedNode->getParent()->isRoot())
@@ -779,10 +784,10 @@ void QTBEngine::fillTextInfo(QLabel* label)
             QString name = parent->getName().c_str();
             tbe::Vector3f pos = parent->getPos();
 
-            text += QString("<p>").arg(name);
-            text += QString("Parent: %1\n").arg(name);
+            text += QString("<p>");
+            text += QString("Parent: %1<br />").arg(name);
             text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
-            text += QString("</p>").arg(name);
+            text += QString("</p>");
         }
     }
 
