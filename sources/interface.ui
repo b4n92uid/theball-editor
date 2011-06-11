@@ -394,11 +394,15 @@
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QCheckBox" name="node_enable">
-             <property name="text">
-              <string>Activé</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_31">
+             <item>
+              <widget class="QCheckBox" name="node_enable">
+               <property name="text">
+                <string>Activé</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -1980,7 +1984,6 @@
   <tabstop>node_rot_x</tabstop>
   <tabstop>node_rot_y</tabstop>
   <tabstop>node_rot_z</tabstop>
-  <tabstop>node_enable</tabstop>
   <tabstop>node_list_up</tabstop>
   <tabstop>node_list_down</tabstop>
   <tabstop>node_list_makeparent</tabstop>
