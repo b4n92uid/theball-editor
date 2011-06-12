@@ -405,6 +405,13 @@ void MainWindow::initConnections()
 
     connect(m_tbeWidget, SIGNAL(notifyDeselect()), this, SLOT(unselect()));
 
+    connect(envGui.skybox.textures[0], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+    connect(envGui.skybox.textures[1], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+    connect(envGui.skybox.textures[2], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+    connect(envGui.skybox.textures[3], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+    connect(envGui.skybox.textures[4], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+    connect(envGui.skybox.textures[5], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
     m_timer->start(16);
@@ -863,6 +870,7 @@ void MainWindow::unselect()
     m_selectedNode->mesh(NULL);
     m_selectedNode->light(NULL);
     m_selectedNode->particles(NULL);
+    m_selectedNode->mark(NULL);
     m_selectedNode->node(NULL);
 
     nodesGui.nodesListView->clearSelection();
@@ -1246,8 +1254,14 @@ void MainWindow::guiSkyboxApply(bool enable)
         for(unsigned i = 0; i < 6; i++)
             texs << envGui.skybox.textures[i]->getOpenFileName();
 
-
-        m_tbeWidget->skyboxApply(texs);
+        try
+        {
+            m_tbeWidget->skyboxApply(texs);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::critical(this, "Erreur: Skybox", e.what());
+        }
     }
 
     else
@@ -2285,4 +2299,14 @@ void MainWindow::guiLightSetRadius(double value)
 
         notifyChanges(true);
     }
+}
+
+void MainWindow::skyboxWorkingDir(const QString& filename)
+{
+    envGui.skybox.textures[0]->setWorkDir(QFileInfo(filename).path());
+    envGui.skybox.textures[1]->setWorkDir(QFileInfo(filename).path());
+    envGui.skybox.textures[2]->setWorkDir(QFileInfo(filename).path());
+    envGui.skybox.textures[3]->setWorkDir(QFileInfo(filename).path());
+    envGui.skybox.textures[4]->setWorkDir(QFileInfo(filename).path());
+    envGui.skybox.textures[5]->setWorkDir(QFileInfo(filename).path());
 }

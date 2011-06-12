@@ -712,11 +712,22 @@ void QTBEngine::clearScene()
     m_meshs.clear();
     m_particles.clear();
     m_lights.clear();
+    m_marks.clear();
 
     m_fog->clear();
     m_skybox->clear();
 
     m_axe = NULL;
+    m_gride = NULL;
+    m_selectedNode = NULL;
+
+    m_centerTarget = 0;
+    m_lastCursorPos = 0;
+    m_curCursorPos = 0;
+    m_curCursor3D = 0;
+
+    m_grabCamera = false;
+    m_gridEnable = false;
 
     setupSelection();
 

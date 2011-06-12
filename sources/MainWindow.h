@@ -66,6 +66,8 @@ public slots:
 
     void closeEvent(QCloseEvent *event);
 
+    void skyboxWorkingDir(const QString& filename);
+
 public slots: // Node manager
 
     // Update node info box
