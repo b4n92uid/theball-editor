@@ -36,6 +36,8 @@ public:
     void water(tbe::scene::Water* curwater);
     tbe::scene::Water* water() const;
 
+    void deselect();
+
 private:
     tbe::scene::Node* m_curNode;
     tbe::scene::Mesh* m_curmesh;

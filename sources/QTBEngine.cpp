@@ -190,40 +190,6 @@ void QTBEngine::moveApply()
     Quaternion rotation = m_selectedNode->getMatrix().getRotate();
     Vector3f scale = m_selectedNode->getMatrix().getScale();
 
-    // Rotation ----------------------------------------------------------------
-
-    /*
-    if(m_eventManager->notify == EventManager::EVENT_KEY_DOWN)
-    {
-        Quaternion apply;
-
-        float angle = M_PI / 8;
-
-        if(m_eventManager->keyState[EventManager::KEY_LCTRL])
-            angle = M_PI / 2;
-
-        if(m_eventManager->keyState['a'])
-            apply.setAxisAngle(angle, Vector3f::X());
-
-        if(m_eventManager->keyState['z'])
-            apply.setAxisAngle(-angle, Vector3f::X());
-
-        if(m_eventManager->keyState['q'])
-            apply.setAxisAngle(angle, Vector3f::Y());
-
-        if(m_eventManager->keyState['s'])
-            apply.setAxisAngle(-angle, Vector3f::Y());
-
-        if(m_eventManager->keyState['w'])
-            apply.setAxisAngle(angle, Vector3f::Z());
-
-        if(m_eventManager->keyState['x'])
-            apply.setAxisAngle(-angle, Vector3f::Z());
-
-        rotation = apply * rotation;
-    }
-     */
-
     // Movement ----------------------------------------------------------------
 
     Vector3f gridSize(1);
@@ -339,9 +305,9 @@ struct SelectionSort
         if(!node1->getParent()->isRoot())
             return false;
         else if(type == 1)
-            return (node1->getPos() - cameraPos) > (node2->getPos() - cameraPos);
+            return node1->getAabb().getLength() < node2->getAabb().getLength();
         else if(type == 2)
-            return node1->getAabb().getSize() < node2->getAabb().getSize();
+            return (node1->getPos() - cameraPos) < (node2->getPos() - cameraPos);
         else
             return false;
     }
@@ -389,8 +355,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         sortfunc.type = 1;
         std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
-        //        sortfunc.type = 2;
-        //        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
+        sortfunc.type = 2;
+        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
 
         foreach(Mesh * node, m_meshs)
         {
@@ -706,8 +672,10 @@ void QTBEngine::saveScene(const QString& filename)
 void QTBEngine::clearScene()
 {
     m_rootNode->clearAllChild();
+
     m_sceneManager->clearParallelScenes(false);
     m_sceneParser->clearMapMark();
+
     m_nodes.clear();
     m_meshs.clear();
     m_particles.clear();

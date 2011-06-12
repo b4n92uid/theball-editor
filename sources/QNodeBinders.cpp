@@ -104,3 +104,13 @@ tbe::scene::ParticlesEmiter* QNodeBinders::particles() const
 {
     return m_curparticles;
 }
+
+void QNodeBinders::deselect()
+{
+    m_curNode = NULL;
+    m_curmark = NULL;
+    m_curparticles = NULL;
+    m_curmesh = NULL;
+    m_curwater = NULL;
+    m_curlight = NULL;
+}
