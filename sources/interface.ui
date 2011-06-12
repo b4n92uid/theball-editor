@@ -674,7 +674,14 @@
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_2">
                  <item>
-                  <widget class="QListView" name="node_mesh_materials"/>
+                  <widget class="QListView" name="node_mesh_materials">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="node_mesh_editmat">
@@ -1173,85 +1180,28 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
-             <layout class="QFormLayout" name="formLayout_10">
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_34">
-                <property name="text">
-                 <string>Taille</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QDoubleSpinBox" name="node_mark_size"/>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="node_mark_type">
-                <item>
-                 <property name="text">
-                  <string>Box</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Sphere</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_35">
-                <property name="text">
-                 <string>Type</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_37">
-                <property name="text">
-                 <string>Couleur</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QComboBox" name="node_mark_color">
-                <item>
-                 <property name="text">
-                  <string>Rouge</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Vert</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Bleu</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Noir</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Blanc</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Jaune</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Cyan</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QLabel" name="label_34">
+              <property name="text">
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;img src=&quot;:/Icons/icons/mark.png&quot; style=&quot;float:left&quot; /&gt;&lt;span style=&quot; font-size:8pt; font-weight:600; font-style:italic;&quot;&gt;Les marqueurs&lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt; servent a indiquer une position absolue ou relative a un noude dans la scene afin d'etre utiliser dans les programme extern pour extraire une position précise&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+              <property name="margin">
+               <number>0</number>
+              </property>
+              <property name="indent">
+               <number>-1</number>
+              </property>
+              <property name="openExternalLinks">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="verticalSpacer_3">
@@ -1999,9 +1949,6 @@
   <tabstop>node_particles_texture</tabstop>
   <tabstop>node_particles_texture_browse</tabstop>
   <tabstop>node_particles_continousmide</tabstop>
-  <tabstop>node_mark_size</tabstop>
-  <tabstop>node_mark_color</tabstop>
-  <tabstop>node_mark_type</tabstop>
   <tabstop>node_water_uvrepeat_y</tabstop>
   <tabstop>node_water_speed</tabstop>
   <tabstop>node_water_blend</tabstop>

@@ -23,7 +23,6 @@ Q_DECLARE_METATYPE(tbe::scene::ParticlesEmiter*)
 Q_DECLARE_METATYPE(tbe::scene::Light*)
 Q_DECLARE_METATYPE(tbe::scene::Material*)
 Q_DECLARE_METATYPE(tbe::scene::MapMark*)
-Q_DECLARE_METATYPE(tbe::scene::MapMark::Type)
 Q_DECLARE_METATYPE(tbe::Texture)
 Q_DECLARE_METATYPE(tbe::Vector3f)
 Q_DECLARE_METATYPE(NodeType)
@@ -151,45 +150,9 @@ void MainWindow::initWidgets()
 
     // -------- Mark
 
-    nodesGui.markTab.type = m_uinterface.node_mark_type;
-    nodesGui.markTab.color = m_uinterface.node_mark_color;
-    nodesGui.markTab.size = m_uinterface.node_mark_size;
-
     nodesGui.markTab.add = m_uinterface.node_mark_add;
     nodesGui.markTab.del = m_uinterface.node_mark_del;
     nodesGui.markTab.clone = m_uinterface.node_mark_clone;
-
-    QVariant box;
-    box.setValue(tbe::scene::MapMark::Box);
-
-    QVariant sphere;
-    sphere.setValue(tbe::scene::MapMark::Sphere);
-
-    nodesGui.markTab.type->setItemData(0, box);
-    nodesGui.markTab.type->setItemData(1, sphere);
-
-    QVariant red;
-    red.setValue(tbe::Vector3f(1, 0, 0));
-    QVariant green;
-    green.setValue(tbe::Vector3f(0, 1, 0));
-    QVariant blue;
-    blue.setValue(tbe::Vector3f(0, 0, 1));
-    QVariant white;
-    white.setValue(tbe::Vector3f(1, 1, 1));
-    QVariant black;
-    black.setValue(tbe::Vector3f(0, 0, 0));
-    QVariant yellow;
-    yellow.setValue(tbe::Vector3f(1, 1, 0));
-    QVariant cyan;
-    cyan.setValue(tbe::Vector3f(0, 1, 1));
-
-    nodesGui.markTab.color->setItemData(0, red);
-    nodesGui.markTab.color->setItemData(1, green);
-    nodesGui.markTab.color->setItemData(2, blue);
-    nodesGui.markTab.color->setItemData(3, white);
-    nodesGui.markTab.color->setItemData(4, black);
-    nodesGui.markTab.color->setItemData(5, yellow);
-    nodesGui.markTab.color->setItemData(6, cyan);
 
     // -------- Mesh
 
@@ -345,10 +308,6 @@ void MainWindow::initConnections()
     connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.markTab.clone, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.markTab.del, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
-
-    connect(nodesGui.markTab.size, SIGNAL(valueChanged(double)), this, SLOT(guiMarkSetSize(double)));
-    connect(nodesGui.markTab.type, SIGNAL(activated(int)), this, SLOT(guiMarkSetType(int)));
-    connect(nodesGui.markTab.color, SIGNAL(activated(int)), this, SLOT(guiMarkSetColor(int)));
 
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
@@ -2023,31 +1982,6 @@ void MainWindow::markSelect(tbe::scene::MapMark* mark, bool upList)
 
 void MainWindow::markUpdate(tbe::scene::MapMark* mark)
 {
-    nodesGui.markTab.size->blockSignals(true);
-    nodesGui.markTab.type->blockSignals(true);
-    nodesGui.markTab.color->blockSignals(true);
-
-    nodesGui.markTab.size->setValue(mark->getSize());
-
-    nodesGui.markTab.type->setCurrentIndex(mark->getType());
-
-    using namespace tbe;
-
-    QMap<Vector3f, int> colorBind;
-    colorBind[Vector3f(1, 0, 0)] = 0;
-    colorBind[Vector3f(0, 1, 0)] = 1;
-    colorBind[Vector3f(0, 0, 1)] = 2;
-    colorBind[Vector3f(0, 0, 0)] = 3;
-    colorBind[Vector3f(1, 1, 1)] = 4;
-    colorBind[Vector3f(1, 1, 0)] = 5;
-    colorBind[Vector3f(0, 1, 1)] = 6;
-
-    nodesGui.markTab.color->setCurrentIndex(colorBind[mark->getColor()]);
-
-    nodesGui.markTab.size->blockSignals(false);
-    nodesGui.markTab.type->blockSignals(false);
-    nodesGui.markTab.color->blockSignals(false);
-
     nodeUpdate(mark);
 }
 
@@ -2065,44 +1999,6 @@ void MainWindow::markDelete(tbe::scene::MapMark* mark)
         nodesGui.nodesListModel->removeRow(item->row());
 
     nodesGui.nodeItemBinder.remove(mark);
-
-    notifyChanges(true);
-}
-
-void MainWindow::guiMarkSetType(int index)
-{
-    using namespace tbe::scene;
-
-    if(!m_selectedNode->mark())
-        return;
-
-    MapMark::Type type = nodesGui.markTab.type
-            ->itemData(index).value<MapMark::Type > ();
-
-    m_selectedNode->mark()->setType(type);
-
-    notifyChanges(true);
-}
-
-void MainWindow::guiMarkSetColor(int index)
-{
-    if(!m_selectedNode->mark())
-        return;
-
-    tbe::Vector3f color = nodesGui.markTab.color
-            ->itemData(index).value<tbe::Vector3f > ();
-
-    m_selectedNode->mark()->setColor(color);
-
-    notifyChanges(true);
-}
-
-void MainWindow::guiMarkSetSize(double value)
-{
-    if(!m_selectedNode->mark())
-        return;
-
-    m_selectedNode->mark()->setSize((float)value);
 
     notifyChanges(true);
 }

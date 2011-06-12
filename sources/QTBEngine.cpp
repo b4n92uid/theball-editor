@@ -99,23 +99,47 @@ void QTBEngine::initializeGL()
 
 void QTBEngine::placeSelection()
 {
+    using namespace tbe;
+    using namespace scene;
+
     if(!m_axe || !m_selectedNode)
         return;
 
     AABB selAabb = m_selectedNode->getAabb();
 
-    if(selAabb.max < 0.0001 && selAabb.min < 0.0001)
-    {
-        selAabb = 0.5;
-        m_axe->setColor(Vector4f(1, 0, 0, 0.25));
-    }
-    else
-        m_axe->setColor(Vector4f(0, 0, 1, 0.25));
-
+    m_axe->setEnable(true);
     m_axe->setMatrix(m_selectedNode->getAbsoluteMatrix());
     m_axe->setPos(m_selectedNode->getAbsoluteMatrix() * selAabb.getCenter());
-    m_axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
-    m_axe->setEnable(true);
+
+    if(tools::find(m_meshs, m_selectedNode))
+    {
+        m_axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
+        m_axe->setColor(Vector4f(0, 0, 1, 0.25));
+    }
+
+    else if(tools::find(m_lights, m_selectedNode))
+    {
+        m_axe->setSize(0.25);
+        m_axe->setColor(Vector4f(1, 1, 1, 0.25));
+    }
+
+    else if(tools::find(m_particles, m_selectedNode))
+    {
+        m_axe->setSize(selAabb.getSize() / 2.0f + 0.1f);
+        m_axe->setColor(Vector4f(0, 1, 1, 0.25));
+    }
+
+    else if(tools::find(m_marks, m_selectedNode))
+    {
+        m_axe->setSize(0.25);
+        m_axe->setColor(Vector4f(1, 1, 0, 0.25));
+    }
+
+    else
+    {
+        m_axe->setSize(0.5);
+        m_axe->setColor(Vector4f(1, 0, 0, 0.25));
+    }
 
     m_gride->setPos(Vector3f::Y(m_axe->getPos().y));
 }
