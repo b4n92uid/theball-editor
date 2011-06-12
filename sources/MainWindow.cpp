@@ -473,6 +473,10 @@ void MainWindow::newScene()
 
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
+    genGui.title->clear();
+    genGui.author->clear();
+    genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
+
     unselect();
 }
 
@@ -867,11 +871,7 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
 
 void MainWindow::unselect()
 {
-    m_selectedNode->mesh(NULL);
-    m_selectedNode->light(NULL);
-    m_selectedNode->particles(NULL);
-    m_selectedNode->mark(NULL);
-    m_selectedNode->node(NULL);
+    m_selectedNode->deselect();
 
     nodesGui.nodesListView->clearSelection();
 }
@@ -1309,7 +1309,7 @@ void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
     tbe::Texture* texs = sky->getTextures();
 
     for(unsigned i = 0; i < 6; i++)
-        this->envGui.skybox.textures[i]->setOpenFileName(texs[i].getFilename().c_str());
+        envGui.skybox.textures[i]->setOpenFileName(texs[i].getFilename().c_str());
 
     envGui.skybox.enable->setChecked(sky->isEnable());
 
