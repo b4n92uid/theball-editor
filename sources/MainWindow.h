@@ -159,10 +159,6 @@ public slots: // Node manager
     void guiMarkClone();
     void guiMarkDelete();
 
-    void guiMarkSetType(int index);
-    void guiMarkSetSize(double value);
-    void guiMarkSetColor(int index);
-
     // Water GUI Buttons
     void guiWaterSetDeform(double v);
     void guiWaterSetSize(const tbe::Vector2f& v);
@@ -308,10 +304,6 @@ private:
 
         struct
         {
-            QDoubleSpinBox* size;
-            QComboBox* type;
-            QComboBox* color;
-
             QPushButton* add;
             QPushButton* clone;
             QPushButton* del;
