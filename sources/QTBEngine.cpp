@@ -43,6 +43,7 @@ QTBEngine::QTBEngine(QWidget* parent)
     m_grabCamera = false;
 
     m_selectedNode = NULL;
+    m_lastSelectedNode = NULL;
 
     m_gridEnable = false;
 
@@ -141,7 +142,7 @@ void QTBEngine::placeSelection()
         m_axe->setColor(Vector4f(1, 0, 0, 0.25));
     }
 
-    m_gride->setPos(Vector3f::Y(m_axe->getPos().y));
+    //    m_grid->setPos(Vector3f::Y(m_axe->getPos().y));
 }
 
 void QTBEngine::setupSelection()
@@ -155,10 +156,10 @@ void QTBEngine::setupSelection()
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
 
-    m_gride = new Gride(m_meshScene);
-    m_gride->setEnable(false);
+    //    m_grid = new Grid(m_meshScene, 8, 8);
+    //    m_grid->setEnable(false);
 
-    m_rootNode->addChild(m_gride);
+    //    m_rootNode->addChild(m_grid);
 }
 
 void QTBEngine::pauseRendring()
@@ -258,26 +259,9 @@ void QTBEngine::moveApply()
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 
-    emitTypeUpdate();
+    updateSelected();
 
     placeSelection();
-}
-
-void QTBEngine::emitTypeUpdate()
-{
-    using namespace scene;
-
-    if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
-        emit notifyMeshUpdate(mesh);
-
-    else if(Light * light = tools::find(m_lights, m_selectedNode))
-        emit notifyLightUpdate(light);
-
-    else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
-        emit notifyParticlesUpdate(particles);
-
-    else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
-        emit notifyMarkUpdate(mark);
 }
 
 void QTBEngine::paintGL()
@@ -347,8 +331,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         using namespace tbe;
         using namespace tbe::scene;
 
-        m_selectedNode = NULL;
-
         SelectionSort sortfunc;
         sortfunc.cameraPos = m_camera->getPos();
 
@@ -367,8 +349,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 break;
             }
         }
-
-        m_axe->setEnable(m_selectedNode);
     }
 }
 
@@ -470,6 +450,12 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 particlesSelect(particles);
                 emit notifyParticlesSelect(particles);
             }
+
+            else if(MapMark * mark = tools::find(m_marks, m_selectedNode->getParent()))
+            {
+                markSelect(mark);
+                emit notifyMarkSelect(mark);
+            }
         }
 
         if(ev->key() == Qt::Key_Delete)
@@ -502,6 +488,15 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 deselect();
                 emit notifyDeselect();
             }
+
+            else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
+            {
+                markDelete(mark);
+                emit notifyMarkDelete(mark);
+
+                deselect();
+                emit notifyDeselect();
+            }
         }
 
         if(ev->key() == Qt::Key_C)
@@ -516,29 +511,33 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
                 particlesClone(particles);
+
+            else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
+                markClone(mark);
         }
 
         if(ev->key() == Qt::Key_R)
         {
             m_selectedNode->getMatrix().setRotate(0);
 
-            emitTypeUpdate();
+            updateSelected();
         }
 
         if(ev->key() == Qt::Key_S)
         {
             m_selectedNode->getMatrix().setScale(1);
 
-            emitTypeUpdate();
+            updateSelected();
         }
 
         if(ev->key() == Qt::Key_G)
         {
             m_gridEnable = !m_gridEnable;
 
-            if(m_gridEnable)
+            /*
+             if(m_gridEnable)
             {
-                m_gride->clear();
+                m_grid->clear();
 
                 AABB sceneAabb = m_meshScene->getSceneAabb();
 
@@ -549,10 +548,11 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
                 Vector2f size = cuts;
 
-                m_gride->setup(size, cuts);
+                m_grid->setup(size, cuts);
             }
 
-            m_gride->setEnable(m_gridEnable);
+            m_grid->setEnable(m_gridEnable);
+             */
         }
 
         if(ev->key() == Qt::Key_F)
@@ -561,19 +561,21 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_meshScene->setInFloor(m_selectedNode);
             m_axe->setEnable(true);
 
-            emitTypeUpdate();
+            updateSelected();
         }
 
         if(ev->key() == Qt::Key_E)
         {
+            m_axe->setEnable(false);
             m_meshScene->setInFloor(m_selectedNode);
+            m_axe->setEnable(true);
 
             Vector3f adjust = m_selectedNode->getPos();
             adjust.y += -m_selectedNode->getAabb().min.y;
 
             m_selectedNode->setPos(adjust);
 
-            emitTypeUpdate();
+            updateSelected();
         }
 
         else if(ev->key() == Qt::Key_Plus)
@@ -586,29 +588,56 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_camera->setDistance(m_camera->getDistance() + 1);
         }
 
+        else if(ev->key() == Qt::Key_Escape)
+        {
+            deselect();
+        }
+
+        else if(ev->key() == Qt::Key_Q)
+        {
+            if(m_lastSelectedNode)
+                select(m_lastSelectedNode);
+        }
+
         else if(ev->key() == Qt::Key_1)
         {
-            m_camera->setRotate(Vector2f(0, 0));
-            m_camera->setTarget(Vector3f(0, 0, 1));
+            if(ev->modifiers() & Qt::CTRL)
+            {
+                m_camera->setRotate(Vector2f(180, 0));
+                m_camera->setTarget(Vector3f(0, 0, -1));
+            }
+            else
+            {
+                m_camera->setRotate(Vector2f(0, 0));
+                m_camera->setTarget(Vector3f(0, 0, 1));
+            }
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_2)
         {
-            m_camera->rotate(Vector2f(0, 10));
+            m_camera->rotate(Vector2f(0, 22.5));
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_3)
         {
-            m_camera->setRotate(Vector2f(90, 0));
-            m_camera->setTarget(Vector3f(1, 0, 0));
+            if(ev->modifiers() & Qt::CTRL)
+            {
+                m_camera->setRotate(Vector2f(-90, 0));
+                m_camera->setTarget(Vector3f(-1, 0, 0));
+            }
+            else
+            {
+                m_camera->setRotate(Vector2f(90, 0));
+                m_camera->setTarget(Vector3f(1, 0, 0));
+            }
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_4)
         {
-            m_camera->rotate(Vector2f(10, 0));
+            m_camera->rotate(Vector2f(22.5, 0));
             m_camera->setCenter(m_centerTarget);
         }
 
@@ -621,20 +650,28 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         else if(ev->key() == Qt::Key_6)
         {
-            m_camera->rotate(Vector2f(-10, 0));
+            m_camera->rotate(Vector2f(-22.5, 0));
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_7)
         {
-            m_camera->setRotate(Vector2f(0, -90));
-            m_camera->setTarget(Vector3f(0, -1, 0.01));
+            if(ev->modifiers() & Qt::CTRL)
+            {
+                m_camera->setRotate(Vector2f(0, 90));
+                m_camera->setTarget(Vector3f(0, 1, 0.01));
+            }
+            else
+            {
+                m_camera->setRotate(Vector2f(0, -90));
+                m_camera->setTarget(Vector3f(0, -1, 0.01));
+            }
             m_camera->setCenter(m_centerTarget);
         }
 
         else if(ev->key() == Qt::Key_8)
         {
-            m_camera->rotate(Vector2f(0, -10));
+            m_camera->rotate(Vector2f(0, -22.5));
             m_camera->setCenter(m_centerTarget);
         }
     }
@@ -664,7 +701,7 @@ void QTBEngine::saveScene(const QString& filename)
 
     m_sceneParser->archive(m_rootNode);
     m_sceneParser->exclude(m_axe);
-    m_sceneParser->exclude(m_gride);
+    //    m_sceneParser->exclude(m_grid);
 
     m_sceneParser->saveScene(filename.toStdString());
 }
@@ -686,7 +723,7 @@ void QTBEngine::clearScene()
     m_skybox->clear();
 
     m_axe = NULL;
-    m_gride = NULL;
+    m_grid = NULL;
     m_selectedNode = NULL;
 
     m_centerTarget = 0;
@@ -735,7 +772,7 @@ void QTBEngine::rebuildList()
     m_meshs.clear();
     for(Iterator<Mesh*> it = m_meshScene->iterator(); it; it++)
     {
-        if(*it == m_axe || *it == m_gride)
+        if(*it == m_axe || *it == m_grid)
             continue;
 
         m_nodes.push_back(*it);
@@ -822,6 +859,7 @@ void QTBEngine::fillTextInfo(QLabel* label)
 
     else
     {
+
         text += QString("<p><i>Pas de séléction</i></p>");
     }
 
@@ -851,6 +889,9 @@ tbe::scene::Mesh* QTBEngine::meshNew(const QString& filename)
 
 void QTBEngine::meshSelect(tbe::scene::Mesh* mesh)
 {
+    if(m_selectedNode && m_selectedNode != mesh)
+        m_lastSelectedNode = m_selectedNode;
+
     m_selectedNode = mesh;
 
     m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
@@ -905,6 +946,9 @@ void QTBEngine::lightDelete(tbe::scene::Light* light)
 
 void QTBEngine::lightSelect(tbe::scene::Light* light)
 {
+    if(m_selectedNode && m_selectedNode != light)
+        m_lastSelectedNode = m_selectedNode;
+
     m_selectedNode = light;
 
     m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
@@ -946,6 +990,9 @@ void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
 
 void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
 {
+    if(m_selectedNode && m_selectedNode != particles)
+        m_lastSelectedNode = m_selectedNode;
+
     m_selectedNode = particles;
 
     m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();
@@ -1006,11 +1053,58 @@ void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
     m_sceneManager->setAmbientLight(vec34(value));
 }
 
+void QTBEngine::select(tbe::scene::Node* node)
+{
+    using namespace scene;
+
+    if(Mesh * mesh = tools::find(m_meshs, node))
+    {
+        meshSelect(mesh);
+        emit notifyMeshSelect(mesh);
+    }
+
+    else if(Light * light = tools::find(m_lights, node))
+    {
+        lightSelect(light);
+        emit notifyLightSelect(light);
+    }
+
+    else if(ParticlesEmiter * particles = tools::find(m_particles, node))
+    {
+        particlesSelect(particles);
+        emit notifyParticlesSelect(particles);
+    }
+
+    else if(MapMark * mark = tools::find(m_marks, node))
+    {
+        markSelect(mark);
+        emit notifyMarkSelect(mark);
+    }
+}
+
 void QTBEngine::deselect()
 {
+    m_lastSelectedNode = m_selectedNode;
     m_selectedNode = NULL;
 
     m_axe->setEnable(false);
+}
+
+void QTBEngine::updateSelected()
+{
+    using namespace scene;
+
+    if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
+        emit notifyMeshUpdate(mesh);
+
+    else if(Light * light = tools::find(m_lights, m_selectedNode))
+        emit notifyLightUpdate(light);
+
+    else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
+        emit notifyParticlesUpdate(particles);
+
+    else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
+        emit notifyMarkUpdate(mark);
 }
 
 tbe::scene::MapMark* QTBEngine::markNew()
@@ -1037,6 +1131,9 @@ void QTBEngine::markDelete(tbe::scene::MapMark* mark)
 
 void QTBEngine::markSelect(tbe::scene::MapMark* mark)
 {
+    if(m_selectedNode && m_selectedNode != mark)
+        m_lastSelectedNode = m_selectedNode;
+
     m_selectedNode = mark;
 
     m_centerTarget = m_selectedNode->getAbsoluteMatrix().getPos();

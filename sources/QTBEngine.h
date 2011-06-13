@@ -50,8 +50,6 @@ protected:
 
     void setupSelection();
 
-    void emitTypeUpdate();
-
 public slots:
 
     void placeSelection();
@@ -102,7 +100,10 @@ public slots:
 
     void rebuildList();
 
+
+    void select(tbe::scene::Node* node);
     void deselect();
+    void updateSelected();
 
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
@@ -163,8 +164,9 @@ private:
     tbe::Vector3f m_centerTarget;
 
     tbe::scene::Node* m_selectedNode;
+    tbe::scene::Node* m_lastSelectedNode;
     tbe::scene::Box* m_axe;
-    tbe::scene::Gride* m_gride;
+    tbe::scene::Grid* m_grid;
 
     tbe::scene::Node::Array m_nodes;
     tbe::scene::Mesh::Array m_meshs;
