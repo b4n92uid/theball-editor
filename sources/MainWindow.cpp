@@ -60,7 +60,7 @@ void MainWindow::buildFileHistory()
 
         foreach(QString filepath, history)
         {
-            QAction* act = filehistory->addAction(filepath);
+            QAction* act = filehistory->addAction(QFileInfo(filepath).fileName());
 
             connect(act, SIGNAL(triggered()), m_historyMapping, SLOT(map()));
             m_historyMapping->setMapping(act, filepath);
@@ -72,12 +72,14 @@ void MainWindow::buildFileHistory()
 
 void MainWindow::pushFileHistory(const QString& filepath)
 {
+    QString nativefp = QDir::toNativeSeparators(filepath);
+
     QStringList history = m_config->value("history").toStringList();
 
-    if(history.count(filepath))
-        history.removeAll(filepath);
+    if(history.count(nativefp))
+        history.removeAll(nativefp);
 
-    history.push_front(filepath);
+    history.push_front(nativefp);
 
     if(history.count() > 16)
         history.pop_back();

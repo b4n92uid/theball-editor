@@ -142,7 +142,7 @@ void QTBEngine::placeSelection()
         m_axe->setColor(Vector4f(1, 0, 0, 0.25));
     }
 
-    //    m_grid->setPos(Vector3f::Y(m_axe->getPos().y));
+    m_grid->setPos(Vector3f::Y(m_axe->getPos().y));
 }
 
 void QTBEngine::setupSelection()
@@ -156,10 +156,10 @@ void QTBEngine::setupSelection()
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
 
-    //    m_grid = new Grid(m_meshScene, 8, 8);
-    //    m_grid->setEnable(false);
+    m_grid = new Grid(m_meshScene, 8, 8);
+    m_grid->setEnable(false);
 
-    //    m_rootNode->addChild(m_grid);
+    m_rootNode->addChild(m_grid);
 }
 
 void QTBEngine::pauseRendring()
@@ -534,8 +534,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         {
             m_gridEnable = !m_gridEnable;
 
-            /*
-             if(m_gridEnable)
+            if(m_gridEnable)
             {
                 m_grid->clear();
 
@@ -552,7 +551,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             }
 
             m_grid->setEnable(m_gridEnable);
-             */
         }
 
         if(ev->key() == Qt::Key_F)
@@ -701,7 +699,7 @@ void QTBEngine::saveScene(const QString& filename)
 
     m_sceneParser->archive(m_rootNode);
     m_sceneParser->exclude(m_axe);
-    //    m_sceneParser->exclude(m_grid);
+    m_sceneParser->exclude(m_grid);
 
     m_sceneParser->saveScene(filename.toStdString());
 }
@@ -733,6 +731,8 @@ void QTBEngine::clearScene()
 
     m_grabCamera = false;
     m_gridEnable = false;
+
+    Texture::resetCache();
 
     setupSelection();
 
