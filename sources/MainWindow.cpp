@@ -395,11 +395,9 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(notifyMarkUpdate(tbe::scene::MapMark*)), this, SLOT(markUpdate(tbe::scene::MapMark*)));
     connect(m_tbeWidget, SIGNAL(notifyMarkDelete(tbe::scene::MapMark*)), this, SLOT(markDelete(tbe::scene::MapMark*)));
 
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), m_tbeWidget, SLOT(setSceneAmbiant(const tbe::Vector3f&)));
-
     connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fogRegister(tbe::scene::Fog*)));
     connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxRegister(tbe::scene::SkyBox*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiantUpdate(const tbe::Vector3f&)));
+    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiantRegister(const tbe::Vector3f&)));
 
     connect(m_tbeWidget, SIGNAL(notifyListRebuild()), this, SLOT(clearNodeList()));
 
@@ -512,6 +510,7 @@ void MainWindow::openScene(const QString& filename)
 
         m_workingDir.scene
                 = m_workingDir.mesh
+                = m_workingDir.meshTexture
                 = QFileInfo(filename).path();
 
         nodesGui.particlesTab.texture->setWorkDir(m_workingDir.scene);
@@ -839,7 +838,10 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
 
     nodesGui.name->setText(node->getName().c_str());
     nodesGui.position->setValue(node->getPos());
-    nodesGui.scale->setValue(node->getMatrix().getScale());
+    if(m_selectedNode->mesh())
+        nodesGui.scale->setValue(m_selectedNode->mesh()->getVertexScale());
+    else
+        nodesGui.scale->setValue(node->getMatrix().getScale());
     nodesGui.rotation->setValue(node->getMatrix().getRotate().getEuler() * 180 / M_PI);
     nodesGui.enable->setChecked(node->isEnable());
 
@@ -1284,9 +1286,16 @@ void MainWindow::guiFogApply(bool enable)
     notifyChanges(true);
 }
 
-void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
+void MainWindow::sceneAmbiantRegister(const tbe::Vector3f& value)
 {
     envGui.sceneAmbiant->setValue(value);
+
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(sceneAmbiantUpdate(const tbe::Vector3f&)));
+}
+
+void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
+{
+    m_tbeWidget->setSceneAmbiant(value);
 
     notifyChanges(true);
 }
@@ -1647,7 +1656,8 @@ void MainWindow::guiMeshAddTexture()
 
     Material* mat = getSelectedMaterial();
 
-    QStringList paths = QFileDialog::getOpenFileNames(this);
+    QStringList paths = QFileDialog::getOpenFileNames(this, QString(),
+                                                      m_workingDir.meshTexture);
 
     int offset = mat->getTexturesCount();
 
@@ -2061,7 +2071,10 @@ void MainWindow::guiNodeSetScale(const tbe::Vector3f& v)
 {
     if(m_selectedNode->node())
     {
-        m_selectedNode->node()->getMatrix().setScale(v);
+        if(m_selectedNode->mesh())
+            m_selectedNode->mesh()->setVertexScale(v);
+        else
+            m_selectedNode->node()->getMatrix().setScale(v);
         nodeUpdate(m_selectedNode->node());
 
         notifyChanges(true);
