@@ -205,13 +205,14 @@ public slots: // Env manager
 
     void guiSkyboxApply(bool enable = true);
     void guiFogApply(bool enable = true);
+    void sceneAmbiantUpdate(const tbe::Vector3f& value);
 
     // -------- MANAGER -> GUI
 
     void skyboxRegister(tbe::scene::SkyBox* tbesky);
     void fogRegister(tbe::scene::Fog* tbefog);
+    void sceneAmbiantRegister(const tbe::Vector3f& value);
 
-    void sceneAmbiantUpdate(const tbe::Vector3f& value);
 
 signals:
 
@@ -394,6 +395,7 @@ private:
     {
         QString scene;
         QString mesh;
+        QString meshTexture;
 
     } m_workingDir;
 };
