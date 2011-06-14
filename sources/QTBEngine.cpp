@@ -582,18 +582,22 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_F)
         {
+            m_grid->setEnable(false);
             m_axe->setEnable(false);
             m_meshScene->setInFloor(m_selectedNode);
             m_axe->setEnable(true);
+            m_grid->setEnable(m_gridEnable);
 
             updateSelected();
         }
 
         if(ev->key() == Qt::Key_E)
         {
+            m_grid->setEnable(false);
             m_axe->setEnable(false);
             m_meshScene->setInFloor(m_selectedNode);
             m_axe->setEnable(true);
+            m_grid->setEnable(m_gridEnable);
 
             Vector3f adjust = m_selectedNode->getPos();
             adjust.y += -m_selectedNode->getAabb().min.y;
