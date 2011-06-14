@@ -68,6 +68,8 @@ public slots:
 
     void skyboxWorkingDir(const QString& filename);
 
+    void openFileHistory();
+
 public slots: // Node manager
 
     // Update node info box
@@ -386,8 +388,6 @@ private:
     Ui_mainWindow m_uinterface;
 
     QSettings* m_config;
-
-    QSignalMapper* m_historyMapping;
 
     bool m_somethingChange;
 
