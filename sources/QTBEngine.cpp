@@ -125,10 +125,14 @@ void QTBEngine::placeSelection()
         m_axe->setColor(Vector4f(1, 1, 1, 0.25));
     }
 
-    else if(tools::find(m_particles, m_selectedNode))
+    else if(scene::ParticlesEmiter * emiter = tools::find(m_particles, m_selectedNode))
     {
-        m_axe->setSize(selAabb.getSize() / 2.0f + 0.1f);
+        Vector3f size = emiter->getBoxSize();
+        size.y = 1;
+
+        m_axe->setSize(size / 2.0f + 0.1f);
         m_axe->setColor(Vector4f(0, 1, 1, 0.25));
+        m_axe->setPos(m_selectedNode->getAbsoluteMatrix().getPos() + size / 2.0f);
     }
 
     else if(tools::find(m_marks, m_selectedNode))
@@ -154,6 +158,7 @@ void QTBEngine::setupSelection()
     m_axe->setName("selection");
     m_axe->getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD
                                        | Material::VERTEX_SORT_CULL_TRICK);
+    m_axe->getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
     m_axe->setColor(Vector4f(0, 0, 1, 0.25));
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
@@ -309,6 +314,17 @@ void QTBEngine::enterEvent(QEvent * event)
     setFocus();
 }
 
+struct Nearest
+{
+    Vector3f center;
+
+    bool operator()(scene::Mesh* mesh1, scene::Mesh * mesh2)
+    {
+        return (mesh1->getAbsoluteMatrix().getPos() - center <
+                mesh2->getAbsoluteMatrix().getPos() - center);
+    }
+};
+
 void QTBEngine::mousePressEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
@@ -338,24 +354,26 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         using namespace tbe;
         using namespace tbe::scene;
 
-        SelectionSort sortfunc;
-        sortfunc.cameraPos = m_camera->getPos();
+        m_axe->setEnable(false);
+        m_grid->setEnable(false);
 
-        sortfunc.type = 1;
-        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
+        if(m_selectedNode)
+            m_selectedNode->setEnable(false);
 
-        sortfunc.type = 2;
-        std::sort(m_meshs.begin(), m_meshs.end(), sortfunc);
+        Vector3f campos = m_camera->getPos();
+        Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
 
-        foreach(Mesh * node, m_meshs)
-        {
-            if(node->Mesh::getAbsolutAabb().isInner(m_curCursor3D))
-            {
-                meshSelect(node);
-                emit notifyMeshSelect(node);
-                break;
-            }
-        }
+        Nearest pred = {campos};
+        Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
+
+        if(m_selectedNode)
+            m_selectedNode->setEnable(true);
+
+        meshSelect(nearest);
+        emit notifyMeshSelect(nearest);
+
+        m_axe->setEnable(m_selectedNode);
+        m_grid->setEnable(m_gridEnable);
     }
 }
 
