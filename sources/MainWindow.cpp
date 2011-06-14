@@ -469,8 +469,6 @@ void MainWindow::newScene()
 
     m_filename.clear();
 
-    notifyChanges(false);
-
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
     genGui.title->clear();
@@ -478,6 +476,8 @@ void MainWindow::newScene()
     genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
 
     unselect();
+
+    notifyChanges(false);
 }
 
 void MainWindow::openSceneDialog()
@@ -708,7 +708,9 @@ void MainWindow::guiMeshNew()
             meshRegister(mesh);
             meshSelect(mesh);
 
-            m_workingDir.mesh = QFileInfo(filename).path();
+            m_workingDir.mesh
+                    = m_workingDir.meshTexture
+                    = QFileInfo(filename).path();
 
             notifyChanges(true);
         }
@@ -1551,7 +1553,7 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
 
     // Textures
 
-    nodesGui.meshTab.matedit->textured->setChecked(mat->isEnable(Material::TEXTURE));
+    nodesGui.meshTab.matedit->textured->setChecked(mat->isEnable(Material::TEXTURED));
 
     nodesGui.meshTab.textureModel->
             removeRows(0, nodesGui.meshTab.textureModel->rowCount());
@@ -1578,7 +1580,7 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
     guiMeshTextureSelected(first);
 
     // Material stat
-    nodesGui.meshTab.matedit->lighted->setChecked(mat->isEnable(Material::LIGHT));
+    nodesGui.meshTab.matedit->lighted->setChecked(mat->isEnable(Material::LIGHTED));
     nodesGui.meshTab.matedit->culltrick->setChecked(mat->isEnable(Material::VERTEX_SORT_CULL_TRICK));
 
     // Blending stat
@@ -1622,9 +1624,9 @@ void MainWindow::guiMeshSetTextured(bool stat)
     Material* mat = getSelectedMaterial();
 
     if(stat)
-        mat->enable(Material::TEXTURE);
+        mat->enable(Material::TEXTURED);
     else
-        mat->disable(Material::TEXTURE);
+        mat->disable(Material::TEXTURED);
 
     notifyChanges(true);
 }
@@ -1801,7 +1803,7 @@ void MainWindow::guiMeshSetBlend(bool stat)
 
     if(stat)
     {
-        mat->enable(Material::COLOR);
+        mat->enable(Material::COLORED);
 
         guiMeshMaterialSetBlendMode();
     }
@@ -1809,7 +1811,7 @@ void MainWindow::guiMeshSetBlend(bool stat)
     else
     {
         mat->disable(Material::BLEND_ADD | Material::BLEND_MOD
-                     | Material::BLEND_MUL | Material::COLOR);
+                     | Material::BLEND_MUL | Material::COLORED);
     }
 }
 
@@ -1895,9 +1897,9 @@ void MainWindow::guiMeshSetLighted(bool stat)
     Material* mat = getSelectedMaterial();
 
     if(stat)
-        mat->enable(Material::LIGHT);
+        mat->enable(Material::LIGHTED);
     else
-        mat->disable(Material::LIGHT);
+        mat->disable(Material::LIGHTED);
 }
 
 void MainWindow::guiMarkNew()
