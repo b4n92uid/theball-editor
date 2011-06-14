@@ -645,6 +645,15 @@ void MainWindow::about()
     Ui::About ctor;
     ctor.setupUi(aboutdlg);
 
+    QString content = ctor.text->text();
+
+    content.replace("$APP_VERSION", "1.0");
+    content.replace("$BUILD_DATE", __DATE__);
+    content.replace("$QT_VERSION", qVersion());
+    content.replace("$TBE_VERSION", tbe::Device::getVersion().c_str());
+
+    ctor.text->setText(content);
+
     aboutdlg->open();
     aboutdlg->raise();
 }
