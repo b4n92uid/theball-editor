@@ -36,6 +36,13 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::openFileHistory()
+{
+    QAction* action = qobject_cast<QAction*>(sender());
+
+    openScene(action->data().toString());
+}
+
 void MainWindow::buildFileHistory()
 {
     QMenu* filehistory = m_uinterface.actionDernier_fichiers->menu();
@@ -56,17 +63,13 @@ void MainWindow::buildFileHistory()
     }
     else
     {
-        history.sort();
 
         foreach(QString filepath, history)
         {
-            QAction* act = filehistory->addAction(QFileInfo(filepath).fileName());
-
-            connect(act, SIGNAL(triggered()), m_historyMapping, SLOT(map()));
-            m_historyMapping->setMapping(act, filepath);
+            QAction* act = filehistory->addAction(QFileInfo(filepath).fileName(),
+                                                  this, SLOT(openFileHistory()));
+            act->setData(filepath);
         }
-
-        connect(m_historyMapping, SIGNAL(mapped(const QString&)), this, SLOT(openScene(const QString&)));
     }
 }
 
@@ -100,8 +103,6 @@ void MainWindow::initWidgets()
     nodesGui.attribTab = m_uinterface.attribTab;
 
     m_config = new QSettings(this);
-
-    m_historyMapping = new QSignalMapper(this);
 
     buildFileHistory();
 
@@ -565,7 +566,22 @@ void MainWindow::saveSceneDialog()
     if(!filename.isNull())
     {
         saveScene(filename);
-        openScene(filename);
+
+        m_workingDir.scene
+                = m_workingDir.mesh
+                = m_workingDir.meshTexture
+                = QFileInfo(filename).path();
+
+        nodesGui.particlesTab.texture->setWorkDir(m_workingDir.scene);
+
+        for(unsigned i = 0; i < 6; i++)
+            envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
+
+        pushFileHistory(filename);
+
+        m_filename = filename;
+
+        notifyChanges(false);
     }
 }
 
