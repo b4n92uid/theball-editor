@@ -363,14 +363,22 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         Vector3f campos = m_camera->getPos();
         Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
 
-        Nearest pred = {campos};
-        Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
+        if(!nodes.empty())
+        {
+            Nearest pred = {campos};
+            Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
 
-        if(m_selectedNode)
-            m_selectedNode->setEnable(true);
+            if(m_selectedNode)
+                m_selectedNode->setEnable(true);
 
-        meshSelect(nearest);
-        emit notifyMeshSelect(nearest);
+            meshSelect(nearest);
+            emit notifyMeshSelect(nearest);
+        }
+        else
+        {
+            if(m_selectedNode)
+                m_selectedNode->setEnable(true);
+        }
 
         m_axe->setEnable(m_selectedNode);
         m_grid->setEnable(m_gridEnable);
