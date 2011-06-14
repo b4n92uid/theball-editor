@@ -91,7 +91,8 @@ void QTBEngine::initializeGL()
 
     m_rootNode = m_sceneManager->getRootNode();
 
-    setupSelection();
+    m_axe = NULL;
+    m_grid = NULL;
 
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
@@ -150,13 +151,17 @@ void QTBEngine::setupSelection()
     using namespace scene;
 
     m_axe = new Box(m_meshScene, 1);
-    m_axe->getMaterial("main")->enable(Material::COLOR | Material::BLEND_MOD
+    m_axe->setName("selection");
+    m_axe->getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD
                                        | Material::VERTEX_SORT_CULL_TRICK);
     m_axe->setColor(Vector4f(0, 0, 1, 0.25));
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
 
     m_grid = new Grid(m_meshScene, 8, 8);
+    m_grid->setName("grid");
+    m_grid->getMaterial("main")->disable(Material::FOGED);
+    m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
     m_grid->setEnable(false);
 
     m_rootNode->addChild(m_grid);
@@ -211,9 +216,11 @@ void QTBEngine::moveApply()
             }
             else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
             {
+                float backY = position.y;
                 position.x = m_curCursor3D.x;
                 position.z = m_curCursor3D.z;
                 tools::round(position, gridSize);
+                position.y = backY;
             }
         }
         else
@@ -548,6 +555,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 Vector2f size = cuts;
 
                 m_grid->setup(size, cuts);
+                m_grid->getMaterial("main")->disable(scene::Material::FOGED);
+                m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
             }
 
             m_grid->setEnable(m_gridEnable);
