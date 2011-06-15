@@ -861,10 +861,10 @@ struct RootSort
         // « node1 < node2 » Don't know but it fix it !
         // crash whene node's count >= 17
 
-        if(node1->getParent()->isRoot() && node2->getParent()->isRoot())
+        if(node1->deepPosition() == node2->deepPosition())
             return node1 < node2;
         else
-            return node1->getParent()->isRoot();
+            return node1->deepPosition() < node2->deepPosition();
     }
 
 };
