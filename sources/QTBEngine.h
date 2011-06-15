@@ -52,45 +52,15 @@ protected:
 
 public slots:
 
-    void placeSelection();
-
-    // Create new mesh on engine
-    tbe::scene::Mesh* meshNew(const QString& filename);
-
-    void meshRegister(tbe::scene::Mesh* mesh); // Register mesh on engine
-    void meshDelete(tbe::scene::Mesh* mesh); // Delete mesh from engine
-    void meshSelect(tbe::scene::Mesh* mesh); // Select mesh on engine
-    void meshClone(tbe::scene::Mesh* mesh); // Clone mesh on engine
-
-    // Create new light on engine
-    tbe::scene::Light* lightNew();
-
-    void lightRegister(tbe::scene::Light* light); // Register light on engin
-    void lightDelete(tbe::scene::Light* light); // Delete light from engin
-    void lightSelect(tbe::scene::Light* light); // Select light on engine
-    void lightClone(tbe::scene::Light* light); // Clone light on engine
-
-    // Create new particles on engine
-    tbe::scene::ParticlesEmiter* particlesNew();
-
-    void particlesRegister(tbe::scene::ParticlesEmiter* particles); // Register particles on engin
-    void particlesDelete(tbe::scene::ParticlesEmiter* particles); // Delete particles from engin
-    void particlesSelect(tbe::scene::ParticlesEmiter* particles); // Select particles on engine
-    void particlesClone(tbe::scene::ParticlesEmiter* particles); // Clone particles on engine
-
-    // Create new mark
-    tbe::scene::MapMark* markNew();
-
-    void markRegister(tbe::scene::MapMark* mark); // Register mark on engin
-    void markDelete(tbe::scene::MapMark* mark); // Delete mark from engin
-    void markSelect(tbe::scene::MapMark* mark); // Select mark on engine
-    void markClone(tbe::scene::MapMark* mark); // Clone mark on engine
-
-    // Setting scene ambiant light
-    void setSceneAmbiant(const tbe::Vector3f& value);
+    void select(tbe::scene::Node* node);
+    void deselect();
+    void updateSelected();
 
     void pauseRendring();
     void resumeRendring();
+
+    // Setting scene ambiant light
+    void setSceneAmbiant(const tbe::Vector3f& value);
 
     void skyboxApply(const QStringList& texs);
     void skyboxClear();
@@ -98,12 +68,45 @@ public slots:
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
 
+    void placeSelection();
+
     void rebuildList();
 
+    // Create new mesh on engine
+    tbe::scene::Mesh* meshNew(const QString& filename);
+    // Clone mesh on engine
+    tbe::scene::Mesh* meshClone(tbe::scene::Mesh* mesh);
 
-    void select(tbe::scene::Node* node);
-    void deselect();
-    void updateSelected();
+    void meshRegister(tbe::scene::Mesh* mesh); // Register mesh on engine
+    void meshDelete(tbe::scene::Mesh* mesh); // Delete mesh from engine
+    void meshSelect(tbe::scene::Mesh* mesh); // Select mesh on engine
+
+    // Create new light on engine
+    tbe::scene::Light* lightNew();
+    // Clone light on engine
+    tbe::scene::Light* lightClone(tbe::scene::Light* light);
+
+    void lightRegister(tbe::scene::Light* light); // Register light on engin
+    void lightDelete(tbe::scene::Light* light); // Delete light from engin
+    void lightSelect(tbe::scene::Light* light); // Select light on engine
+
+    // Create new particles on engine
+    tbe::scene::ParticlesEmiter* particlesNew();
+    // Clone particles on engine
+    tbe::scene::ParticlesEmiter* particlesClone(tbe::scene::ParticlesEmiter* particles);
+
+    void particlesRegister(tbe::scene::ParticlesEmiter* particles); // Register particles on engin
+    void particlesDelete(tbe::scene::ParticlesEmiter* particles); // Delete particles from engin
+    void particlesSelect(tbe::scene::ParticlesEmiter* particles); // Select particles on engine
+
+    // Create new mark
+    tbe::scene::MapMark* markNew();
+    // Clone mark on engine
+    tbe::scene::MapMark* markClone(tbe::scene::MapMark* mark);
+
+    void markRegister(tbe::scene::MapMark* mark); // Register mark on engin
+    void markDelete(tbe::scene::MapMark* mark); // Delete mark from engin
+    void markSelect(tbe::scene::MapMark* mark); // Select mark on engine
 
 signals:
     void notifyMeshAdd(tbe::scene::Mesh*);
@@ -174,6 +177,8 @@ private:
     tbe::scene::Light::Array m_lights;
     tbe::scene::ParticlesEmiter::Array m_particles;
     tbe::scene::MapMark::Array m_marks;
+
+    QMap<tbe::scene::Node*, bool> m_lockedNode;
 
     template<typename T> void removeNode(T v, tbe::scene::Node* p, std::vector<T>& typevec)
     {

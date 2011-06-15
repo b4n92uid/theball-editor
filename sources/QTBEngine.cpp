@@ -361,6 +361,9 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         m_axe->setEnable(false);
         m_grid->setEnable(false);
 
+        foreach(Node* node, m_lockedNode.keys())
+        node->setEnable(false);
+
         if(m_selectedNode)
             m_selectedNode->setEnable(false);
 
@@ -383,6 +386,9 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             if(m_selectedNode)
                 m_selectedNode->setEnable(true);
         }
+
+        foreach(Node* node, m_lockedNode.keys())
+        node->setEnable(true);
 
         m_axe->setEnable(m_selectedNode);
         m_grid->setEnable(m_gridEnable);
@@ -543,16 +549,32 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 using namespace tbe::scene;
 
                 if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
-                    meshClone(mesh);
+                {
+                    Mesh* clone = meshClone(mesh);
+                    meshSelect(clone);
+                    emit notifyMeshSelect(clone);
+                }
 
                 else if(Light * light = tools::find(m_lights, m_selectedNode))
-                    lightClone(light);
+                {
+                    Light* clone = lightClone(light);
+                    lightSelect(clone);
+                    emit notifyLightSelect(clone);
+                }
 
                 else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
-                    particlesClone(particles);
+                {
+                    ParticlesEmiter* clone = particlesClone(particles);
+                    particlesSelect(clone);
+                    emit notifyParticlesSelect(clone);
+                }
 
                 else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
-                    markClone(mark);
+                {
+                    MapMark* clone = markClone(mark);
+                    markSelect(clone);
+                    emit notifyMarkSelect(clone);
+                }
             }
             catch(std::exception& e)
             {
@@ -573,6 +595,14 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         m_selectedNode->getMatrix().setScale(1);
 
         updateSelected();
+    }
+
+    if(ev->key() == Qt::Key_L)
+    {
+        if(m_lockedNode.contains(m_selectedNode))
+            m_lockedNode.remove(m_selectedNode);
+        else
+            m_lockedNode[m_selectedNode] = true;
     }
 
     if(ev->key() == Qt::Key_G)
@@ -825,6 +855,8 @@ void QTBEngine::clearScene()
 
     Texture::resetCache();
 
+    m_lockedNode.clear();
+
     setupSelection();
 
     emit notifyInitFog(m_fog);
@@ -934,6 +966,9 @@ void QTBEngine::fillTextInfo(QLabel* label)
     if(m_gridEnable)
         text += "<p><b>Déplacement en grille</b></p>";
 
+    if(m_lockedNode.contains(m_selectedNode))
+        text += "<p><b>Noeud verrouiller</b></p>";
+
     text += QString("<p>Curseur 3D: %1 %2 %3</p>").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
 
     if(m_selectedNode)
@@ -1023,7 +1058,7 @@ void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
     delete mesh;
 }
 
-void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
+tbe::scene::Mesh* QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 {
     using namespace tbe::scene;
 
@@ -1032,6 +1067,8 @@ void QTBEngine::meshClone(tbe::scene::Mesh* mesh)
     mesh->getParent()->addChild(newmesh);
 
     rebuildList();
+
+    return newmesh;
 }
 
 tbe::scene::Light* QTBEngine::lightNew()
@@ -1067,7 +1104,7 @@ void QTBEngine::lightSelect(tbe::scene::Light* light)
     placeSelection();
 }
 
-void QTBEngine::lightClone(tbe::scene::Light* light)
+tbe::scene::Light* QTBEngine::lightClone(tbe::scene::Light* light)
 {
     using namespace tbe::scene;
 
@@ -1076,6 +1113,8 @@ void QTBEngine::lightClone(tbe::scene::Light* light)
     light->getParent()->addChild(newlight);
 
     rebuildList();
+
+    return newlight;
 }
 
 tbe::scene::ParticlesEmiter* QTBEngine::particlesNew()
@@ -1111,7 +1150,7 @@ void QTBEngine::particlesSelect(tbe::scene::ParticlesEmiter* particles)
     placeSelection();
 }
 
-void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
+tbe::scene::ParticlesEmiter* QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
 {
     using namespace tbe::scene;
 
@@ -1120,6 +1159,8 @@ void QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
     particles->getParent()->addChild(newparticles);
 
     rebuildList();
+
+    return newparticles;
 }
 
 void QTBEngine::skyboxApply(const QStringList& texs)
@@ -1252,7 +1293,7 @@ void QTBEngine::markSelect(tbe::scene::MapMark* mark)
     placeSelection();
 }
 
-void QTBEngine::markClone(tbe::scene::MapMark* mark)
+tbe::scene::MapMark* QTBEngine::markClone(tbe::scene::MapMark* mark)
 {
     using namespace tbe::scene;
 
@@ -1261,4 +1302,6 @@ void QTBEngine::markClone(tbe::scene::MapMark* mark)
     mark->getParent()->addChild(newmark);
 
     rebuildList();
+
+    return newmark;
 }
