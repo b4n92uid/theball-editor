@@ -149,6 +149,7 @@ private:
     tbe::scene::LightParallelScene* m_lightScene;
     tbe::scene::ParticlesParallelScene* m_particlesScene;
     tbe::scene::WaterParallelScene* m_waterScene;
+    tbe::scene::MapMarkParalleScene* m_markScene;
 
     tbe::scene::SceneParser* m_sceneParser;
 
