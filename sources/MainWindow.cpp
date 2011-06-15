@@ -180,6 +180,9 @@ void MainWindow::initWidgets()
 
     nodesGui.meshTab.saveMaterials = m_uinterface.node_mesh_savemat;
 
+    nodesGui.meshTab.billboardX = m_uinterface.node_mesh_billboard_x;
+    nodesGui.meshTab.billboardY = m_uinterface.node_mesh_billboard_y;
+
     // -------- Water
 
     nodesGui.waterTab.deform = m_uinterface.node_water_deform;
@@ -326,6 +329,8 @@ void MainWindow::initConnections()
     connect(nodesGui.meshTab.matedit->culltrick, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetCullTrick(bool)));
 
     connect(nodesGui.meshTab.opacity, SIGNAL(valueChanged(double)), this, SLOT(guiMeshSetOpacity(double)));
+    connect(nodesGui.meshTab.billboardX, SIGNAL(clicked()), this, SLOT(guiMeshSetBillBoard()));
+    connect(nodesGui.meshTab.billboardY, SIGNAL(clicked()), this, SLOT(guiMeshSetBillBoard()));
 
     connect(nodesGui.meshTab.matedit->alphathreshold, SIGNAL(valueChanged(double)), this, SLOT(guiMeshSetAlphaThreshold(double)));
 
@@ -1030,6 +1035,10 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
     nodesGui.meshTab.saveMaterials->setChecked(matset);
     nodesGui.meshTab.openmatedit->setEnabled(matset);
     nodesGui.meshTab.opacity->setEnabled(matset);
+
+    tbe::Vector2b billboard = mesh->getBillBoard();
+    nodesGui.meshTab.billboardX->setChecked(billboard.x);
+    nodesGui.meshTab.billboardY->setChecked(billboard.y);
 }
 
 void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
@@ -1907,6 +1916,15 @@ void MainWindow::guiMeshMaterialSetBlendMode()
 
     else if(nodesGui.meshTab.matedit->blend_mul->isChecked())
         mat->enable(Material::BLEND_MUL);
+}
+
+void MainWindow::guiMeshSetBillBoard()
+{
+    tbe::Vector2b apply;
+    apply.x = nodesGui.meshTab.billboardX->isChecked();
+    apply.y = nodesGui.meshTab.billboardY->isChecked();
+
+    m_selectedNode->mesh()->setBillBoard(apply);
 }
 
 void MainWindow::guiMeshSetOpacity(double value)

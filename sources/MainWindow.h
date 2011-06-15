@@ -115,6 +115,7 @@ public slots: // Node manager
     void guiMeshTextureSetBlendMode();
     void guiMeshMaterialSetBlendMode();
 
+    void guiMeshSetBillBoard();
     void guiMeshSetOpacity(double value);
     void guiMeshSetAlphaThreshold(double value);
 
@@ -267,6 +268,9 @@ private:
             QStandardItemModel* textureModel;
 
             QCheckBox* saveMaterials;
+
+            QCheckBox* billboardX;
+            QCheckBox* billboardY;
 
         } meshTab;
 
