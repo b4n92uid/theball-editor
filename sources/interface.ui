@@ -119,7 +119,7 @@
     <item>
      <widget class="QTabWidget" name="propertyTab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
@@ -458,12 +458,12 @@
                 <widget class="QComboBox" name="node_light_type">
                  <item>
                   <property name="text">
-                   <string>Dirictionelle</string>
+                   <string>Ponctuelle</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Ponctuelle</string>
+                   <string>Dirictionelle</string>
                   </property>
                  </item>
                 </widget>
@@ -526,6 +526,9 @@
                    <property name="singleStep">
                     <double>0.100000000000000</double>
                    </property>
+                   <property name="value">
+                    <double>1.000000000000000</double>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -536,6 +539,9 @@
                    <property name="singleStep">
                     <double>0.100000000000000</double>
                    </property>
+                   <property name="value">
+                    <double>1.000000000000000</double>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -545,6 +551,9 @@
                    </property>
                    <property name="singleStep">
                     <double>0.100000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>1.000000000000000</double>
                    </property>
                   </widget>
                  </item>
@@ -602,6 +611,9 @@
                 <widget class="QDoubleSpinBox" name="node_light_radius">
                  <property name="maximum">
                   <double>64.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>1.000000000000000</double>
                  </property>
                 </widget>
                </item>
