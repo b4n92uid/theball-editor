@@ -1400,7 +1400,7 @@ void MainWindow::toggleFullWidget(bool full)
 {
     m_uinterface.propertyTab->setVisible(!full);
     m_uinterface.infoBox->setVisible(!full);
-    nodesGui.nodesListView->setVisible(!full);
+    m_uinterface.sideBar->setVisible(!full);
 }
 
 tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)
