@@ -406,12 +406,20 @@ void MainWindow::initConnections()
 
     connect(m_tbeWidget, SIGNAL(notifyDeselect()), this, SLOT(unselect()));
 
+    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
+    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogApply()));
+    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
+    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
+
     connect(envGui.skybox.textures[0], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
     connect(envGui.skybox.textures[1], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
     connect(envGui.skybox.textures[2], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
     connect(envGui.skybox.textures[3], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
     connect(envGui.skybox.textures[4], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
     connect(envGui.skybox.textures[5], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
+
+    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxApply(bool)));
+    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxApply()));
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
@@ -1356,19 +1364,27 @@ void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
 
 void MainWindow::fogRegister(tbe::scene::Fog* fog)
 {
+    envGui.fog.enable->blockSignals(true);
+    envGui.fog.color->blockSignals(true);
+    envGui.fog.start->blockSignals(true);
+    envGui.fog.end->blockSignals(true);
+
     envGui.fog.enable->setChecked(fog->isEnable());
     envGui.fog.color->setValue(vec43(fog->getColor()));
-    envGui.fog.start->setValue(fog->getStart());
-    envGui.fog.end->setValue(fog->getEnd());
+    envGui.fog.start->setValue((float)fog->getStart());
+    envGui.fog.end->setValue((float)fog->getEnd());
 
-    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
-    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogApply()));
-    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
-    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
+    envGui.fog.enable->blockSignals(false);
+    envGui.fog.color->blockSignals(false);
+    envGui.fog.start->blockSignals(false);
+    envGui.fog.end->blockSignals(false);
 }
 
 void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
 {
+    envGui.skybox.apply->blockSignals(true);
+    envGui.skybox.enable->blockSignals(true);
+
     tbe::Texture* texs = sky->getTextures();
 
     for(unsigned i = 0; i < 6; i++)
@@ -1376,8 +1392,8 @@ void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
 
     envGui.skybox.enable->setChecked(sky->isEnable());
 
-    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxApply(bool)));
-    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxApply()));
+    envGui.skybox.apply->blockSignals(false);
+    envGui.skybox.enable->blockSignals(false);
 }
 
 void MainWindow::toggleFullWidget(bool full)
