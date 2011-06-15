@@ -743,6 +743,31 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_32">
+                   <item>
+                    <widget class="QCheckBox" name="node_mesh_billboard_x">
+                     <property name="text">
+                      <string>Horizental</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="node_mesh_billboard_y">
+                     <property name="text">
+                      <string>Vertical</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_35">
+                   <property name="text">
+                    <string>Billboard</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
