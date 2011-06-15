@@ -376,6 +376,7 @@ private:
     } genGui;
 
     QNodeBinders* m_selectedNode;
+    tbe::scene::Node* m_lastSelectedNode;
 
     QString m_filename;
 

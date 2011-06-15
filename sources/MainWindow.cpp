@@ -525,8 +525,8 @@ void MainWindow::openScene(const QString& filename)
 
         SceneParser* sceneParser = m_tbeWidget->getSceneParser();
 
-        genGui.title->setText(sceneParser->getSceneName().c_str());
-        genGui.author->setText(sceneParser->getAuthorName().c_str());
+        genGui.title->setText(QString::fromStdString(sceneParser->getSceneName()));
+        genGui.author->setText(QString::fromStdString(sceneParser->getAuthorName()));
 
         genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
 
@@ -535,10 +535,10 @@ void MainWindow::openScene(const QString& filename)
         for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
         {
             QStandardItem* key = new QStandardItem;
-            key->setText(it->first.c_str());
+            key->setText(QString::fromStdString(it->first));
 
             QStandardItem* value = new QStandardItem;
-            value->setText(it->second.c_str());
+            value->setText(QString::fromStdString(it->second));
 
             genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
         }
@@ -650,7 +650,7 @@ void MainWindow::about()
     content.replace("$APP_VERSION", "1.0");
     content.replace("$BUILD_DATE", __DATE__);
     content.replace("$QT_VERSION", qVersion());
-    content.replace("$TBE_VERSION", tbe::Device::getVersion().c_str());
+    content.replace("$TBE_VERSION", QString::fromStdString(tbe::Device::getVersion()));
 
     ctor.text->setText(content);
 
@@ -752,9 +752,16 @@ void MainWindow::guiMeshClone()
 {
     if(m_selectedNode->mesh())
     {
-        m_tbeWidget->meshClone(m_selectedNode->mesh());
+        try
+        {
+            m_tbeWidget->meshClone(m_selectedNode->mesh());
 
-        notifyChanges(true);
+            notifyChanges(true);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::warning(parentWidget(), "Erreur", e.what());
+        }
     }
 }
 
@@ -778,23 +785,37 @@ void MainWindow::guiLightNew()
 {
     using namespace tbe::scene;
 
-    Light* light = m_tbeWidget->lightNew();
+    try
+    {
+        Light* light = m_tbeWidget->lightNew();
 
-    m_tbeWidget->lightRegister(light);
+        m_tbeWidget->lightRegister(light);
 
-    lightRegister(light);
-    lightSelect(light);
+        lightRegister(light);
+        lightSelect(light);
 
-    notifyChanges(true);
+        notifyChanges(true);
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::warning(parentWidget(), "Erreur d'instance", e.what());
+    }
 }
 
 void MainWindow::guiLightClone()
 {
     if(m_selectedNode->light())
     {
-        m_tbeWidget->lightClone(m_selectedNode->light());
+        try
+        {
+            m_tbeWidget->lightClone(m_selectedNode->light());
 
-        notifyChanges(true);
+            notifyChanges(true);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::warning(parentWidget(), "Erreur", e.what());
+        }
     }
 }
 
@@ -818,23 +839,37 @@ void MainWindow::guiParticlesNew()
 {
     using namespace tbe::scene;
 
-    ParticlesEmiter* particles = m_tbeWidget->particlesNew();
+    try
+    {
+        ParticlesEmiter* particles = m_tbeWidget->particlesNew();
 
-    m_tbeWidget->particlesRegister(particles);
+        m_tbeWidget->particlesRegister(particles);
 
-    particlesRegister(particles);
-    particlesSelect(particles);
+        particlesRegister(particles);
+        particlesSelect(particles);
 
-    notifyChanges(true);
+        notifyChanges(true);
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::warning(parentWidget(), "Erreur", e.what());
+    }
 }
 
 void MainWindow::guiParticlesClone()
 {
     if(m_selectedNode->particles())
     {
-        m_tbeWidget->particlesClone(m_selectedNode->particles());
+        try
+        {
+            m_tbeWidget->particlesClone(m_selectedNode->particles());
 
-        notifyChanges(true);
+            notifyChanges(true);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::warning(parentWidget(), "Erreur", e.what());
+        }
     }
 }
 
@@ -865,7 +900,7 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
     nodesGui.rotation->blockSignals(true);
     nodesGui.enable->blockSignals(true);
 
-    nodesGui.name->setText(node->getName().c_str());
+    nodesGui.name->setText(QString::fromStdString(node->getName()));
     nodesGui.position->setValue(node->getPos());
     if(m_selectedNode->mesh())
         nodesGui.scale->setValue(m_selectedNode->mesh()->getVertexScale());
@@ -891,8 +926,8 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
         QList<QStandardItem*> newfield;
 
         newfield
-                << new QStandardItem(it->first.c_str())
-                << new QStandardItem(it->second.getValue<std::string > ().c_str());
+                << new QStandardItem(QString::fromStdString(it->first))
+                << new QStandardItem(QString::fromStdString(it->second.getValue<std::string > ()));
 
         nodesGui.additionalModel->appendRow(newfield);
     }
@@ -911,46 +946,27 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
 {
     using namespace tbe::scene;
 
-    QStandardItem* parent = NULL;
-
-    int count = nodesGui.nodesListModel->rowCount();
-
-    if(!mesh->getParent()->isRoot())
-        for(int i = 0; i < count; i++)
-        {
-            QStandardItem* item = nodesGui.nodesListModel->item(i);
-
-            if(item && mesh->getParent() == item->data().value<Mesh*>())
-            {
-                parent = item;
-                break;
-            }
-        }
-
     QVariant userdata;
-    userdata.setValue<Mesh*>(mesh);
+    userdata.setValue(mesh);
 
-    QStandardItem* itid = new QStandardItem(QString("Mesh"));
-    itid->setIcon(QIcon(":/Icons/icons/mesh.png"));
-    itid->setData(userdata);
-    itid->setData(IsMesh, ContentType);
+    QStandardItem* itemType = new QStandardItem("Mesh");
+    itemType->setIcon(QIcon(":/Icons/icons/mesh.png"));
+    itemType->setData(userdata);
+    itemType->setData(IsMesh, ContentType);
 
-    QStandardItem* itname = new QStandardItem(mesh->getName().c_str());
-    itname->setData(userdata);
-    itname->setData(IsMesh, ContentType);
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(mesh->getName()));
+    itemName->setData(userdata);
+    itemName->setData(IsMesh, ContentType);
 
     QItemsList items;
-    items << itid << itname;
+    items << itemType << itemName;
 
-    if(parent)
-        parent->appendRow(items);
+    if(nodesGui.nodeItemBinder.count(mesh->getParent()))
+        nodesGui.nodeItemBinder[mesh->getParent()]->appendRow(items);
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    nodesGui.nodeItemBinder[mesh] = itid;
-
-    nodesGui.nodesListView->resizeColumnToContents(0);
-    nodesGui.nodesListView->resizeColumnToContents(1);
+    nodesGui.nodeItemBinder[mesh] = itemType;
 
     notifyChanges(true);
 }
@@ -986,7 +1002,7 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
         QVariant data;
         data.setValue<Material*>(mat);
 
-        QStandardItem* item = new QStandardItem(mat->getName().c_str());
+        QStandardItem* item = new QStandardItem(QString::fromStdString(mat->getName()));
         item->setData(data);
 
         nodesGui.meshTab.materialsModel->appendRow(item);
@@ -1010,6 +1026,9 @@ void MainWindow::meshUpdate(tbe::scene::Mesh* mesh)
 
 void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
 {
+    if(mesh == m_selectedNode->node())
+        return;
+
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[mesh];
@@ -1017,6 +1036,7 @@ void MainWindow::meshSelect(tbe::scene::Mesh* mesh, bool upList)
                 setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
+    m_lastSelectedNode = m_selectedNode->node();
     m_selectedNode->mesh(mesh);
 
     m_tbeWidget->meshSelect(mesh);
@@ -1034,23 +1054,23 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
     userData.setValue(light);
 
     QStandardItem* itemType = new QStandardItem("Light");
+    itemType->setIcon(QIcon(":/Icons/icons/light.png"));
     itemType->setData(userData);
     itemType->setData(IsLight, ContentType);
-    itemType->setIcon(QIcon(":/Icons/icons/light.png"));
 
-    QStandardItem* itemName = new QStandardItem(light->getName().c_str());
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(light->getName()));
     itemName->setData(userData);
     itemName->setData(IsLight, ContentType);
 
     QItemsList items;
     items << itemType << itemName;
 
-    nodesGui.nodesListModel->appendRow(items);
+    if(nodesGui.nodeItemBinder.count(light->getParent()))
+        nodesGui.nodeItemBinder[light->getParent()]->appendRow(items);
+    else
+        nodesGui.nodesListModel->appendRow(items);
 
     nodesGui.nodeItemBinder[light] = itemType;
-
-    nodesGui.nodesListView->resizeColumnToContents(0);
-    nodesGui.nodesListView->resizeColumnToContents(1);
 
     notifyChanges(true);
 }
@@ -1091,12 +1111,16 @@ void MainWindow::lightDelete(tbe::scene::Light* light)
 
 void MainWindow::lightSelect(tbe::scene::Light* light, bool upList)
 {
+    if(light == m_selectedNode->node())
+        return;
+
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[light];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
+    m_lastSelectedNode = m_selectedNode->node();
     m_selectedNode->light(light);
 
     m_tbeWidget->lightSelect(light);
@@ -1114,11 +1138,11 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     userData.setValue(particles);
 
     QStandardItem* itemType = new QStandardItem("Particles");
+    itemType->setIcon(QIcon(":/Icons/icons/particles.png"));
     itemType->setData(userData);
     itemType->setData(IsParticles, ContentType);
-    itemType->setIcon(QIcon(":/Icons/icons/particles.png"));
 
-    QStandardItem* itemName = new QStandardItem(particles->getName().c_str());
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(particles->getName()));
     itemName->setData(userData);
     itemName->setData(IsParticles, ContentType);
 
@@ -1131,9 +1155,6 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
         nodesGui.nodesListModel->appendRow(items);
 
     nodesGui.nodeItemBinder[particles] = itemType;
-
-    nodesGui.nodesListView->resizeColumnToContents(0);
-    nodesGui.nodesListView->resizeColumnToContents(1);
 
     notifyChanges(true);
 }
@@ -1157,7 +1178,7 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
     nodesGui.particlesTab.lifeinit->setValue(particles->getLifeInit());
     nodesGui.particlesTab.lifedown->setValue(particles->getLifeDown());
     nodesGui.particlesTab.number->setValue(particles->getNumber());
-    nodesGui.particlesTab.texture->setOpenFileName(particles->getTexture().getFilename().c_str());
+    nodesGui.particlesTab.texture->setOpenFileName(QString::fromStdString(particles->getTexture().getFilename()));
     nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
 
     nodesGui.particlesTab.gravity->blockSignals(false);
@@ -1181,14 +1202,18 @@ void MainWindow::particlesDelete(tbe::scene::ParticlesEmiter* particles)
         nodesGui.nodesListModel->removeRow(item->row());
 }
 
-void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter *particles, bool upList)
+void MainWindow::particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList)
 {
+    if(particles == m_selectedNode->node())
+        return;
+
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[particles];
         nodesGui.nodesListView->setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
+    m_lastSelectedNode = m_selectedNode->node();
     m_selectedNode->particles(particles);
 
     m_tbeWidget->particlesSelect(particles);
@@ -1273,7 +1298,7 @@ void MainWindow::updateNodeInfo(tbe::scene::Node* node)
             ? itemType->parent()->child(itemType->row(), 1)
             : nodesGui.nodesListModel->item(itemType->row(), 1);
 
-    itemName->setText(node->getName().c_str());
+    itemName->setText(QString::fromStdString(node->getName()));
 }
 
 void MainWindow::guiSkyboxApply(bool enable)
@@ -1347,7 +1372,7 @@ void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
     tbe::Texture* texs = sky->getTextures();
 
     for(unsigned i = 0; i < 6; i++)
-        envGui.skybox.textures[i]->setOpenFileName(texs[i].getFilename().c_str());
+        envGui.skybox.textures[i]->setOpenFileName(QString::fromStdString(texs[i].getFilename()));
 
     envGui.skybox.enable->setChecked(sky->isEnable());
 
@@ -1359,6 +1384,7 @@ void MainWindow::toggleFullWidget(bool full)
 {
     m_uinterface.propertyTab->setVisible(!full);
     m_uinterface.infoBox->setVisible(!full);
+    nodesGui.nodesListView->setVisible(!full);
 }
 
 tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)
@@ -1378,6 +1404,9 @@ tbe::scene::Node* MainWindow::itemNode(QStandardItem* item)
 
         case IsParticles:
             return item->data().value<tbe::scene::ParticlesEmiter*>();
+
+        case IsMark:
+            return item->data().value<tbe::scene::MapMark*>();
 
         case IsUnknown:
             return item->data().value<tbe::scene::Node*>();
@@ -1506,6 +1535,8 @@ void MainWindow::guiChangeNodeField(QStandardItem* item)
 void MainWindow::clearNodeList()
 {
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
+
+    nodesGui.nodeItemBinder.clear();
 }
 
 void MainWindow::setSelectedTexture(tbe::Texture& tex)
@@ -1586,9 +1617,9 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
     unsigned count = mat->getTexturesCount();
     for(unsigned i = 0; i < count; i++)
     {
-        QString path = mat->getTexture(i).getFilename().c_str();
+        Texture tex = mat->getTexture(i);
 
-        Texture tex(path.toStdString(), true);
+        QString path = QString::fromStdString(tex.getFilename());
 
         QVariant data;
         data.setValue(tex);
@@ -1931,23 +1962,37 @@ void MainWindow::guiMarkNew()
 {
     using namespace tbe::scene;
 
-    MapMark* mark = m_tbeWidget->markNew();
+    try
+    {
+        MapMark* mark = m_tbeWidget->markNew();
 
-    m_tbeWidget->markRegister(mark);
+        m_tbeWidget->markRegister(mark);
 
-    markRegister(mark);
-    markSelect(mark);
+        markRegister(mark);
+        markSelect(mark);
 
-    notifyChanges(true);
+        notifyChanges(true);
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::warning(parentWidget(), "Erreur", e.what());
+    }
 }
 
 void MainWindow::guiMarkClone()
 {
     if(m_selectedNode->mark())
     {
-        m_tbeWidget->markClone(m_selectedNode->mark());
+        try
+        {
+            m_tbeWidget->markClone(m_selectedNode->mark());
 
-        notifyChanges(true);
+            notifyChanges(true);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::warning(parentWidget(), "Erreur", e.what());
+        }
     }
 }
 
@@ -1971,52 +2016,36 @@ void MainWindow::markRegister(tbe::scene::MapMark* mark)
 {
     using namespace tbe::scene;
 
-    QStandardItem* parent = NULL;
-
-    int count = nodesGui.nodesListModel->rowCount();
-
-    if(!mark->getParent()->isRoot())
-        for(int i = 0; i < count; i++)
-        {
-            QStandardItem* item = nodesGui.nodesListModel->item(i);
-
-            if(item && mark->getParent() == item->data().value<Mesh*>())
-            {
-                parent = item;
-                break;
-            }
-        }
-
     QVariant userdata;
-    userdata.setValue<MapMark*>(mark);
+    userdata.setValue(mark);
 
-    QStandardItem* itid = new QStandardItem(QString("Mark"));
-    itid->setIcon(QIcon(":/Icons/icons/mark.png"));
-    itid->setData(userdata);
-    itid->setData(IsMark, ContentType);
+    QStandardItem* itemType = new QStandardItem("Mark");
+    itemType->setIcon(QIcon(":/Icons/icons/mark.png"));
+    itemType->setData(userdata);
+    itemType->setData(IsMark, ContentType);
 
-    QStandardItem* itname = new QStandardItem(mark->getName().c_str());
-    itname->setData(userdata);
-    itname->setData(IsMark, ContentType);
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(mark->getName()));
+    itemName->setData(userdata);
+    itemName->setData(IsMark, ContentType);
 
     QItemsList items;
-    items << itid << itname;
+    items << itemType << itemName;
 
-    if(parent)
-        parent->appendRow(items);
+    if(nodesGui.nodeItemBinder.count(mark->getParent()))
+        nodesGui.nodeItemBinder[mark->getParent()]->appendRow(items);
     else
         nodesGui.nodesListModel->appendRow(items);
 
-    nodesGui.nodeItemBinder[mark] = itid;
-
-    nodesGui.nodesListView->resizeColumnToContents(0);
-    nodesGui.nodesListView->resizeColumnToContents(1);
+    nodesGui.nodeItemBinder[mark] = itemType;
 
     notifyChanges(true);
 }
 
 void MainWindow::markSelect(tbe::scene::MapMark* mark, bool upList)
 {
+    if(mark == m_selectedNode->node())
+        return;
+
     if(upList)
     {
         QStandardItem* item = nodesGui.nodeItemBinder[mark];
@@ -2024,6 +2053,7 @@ void MainWindow::markSelect(tbe::scene::MapMark* mark, bool upList)
                 setCurrentIndex(nodesGui.nodesListModel->indexFromItem(item));
     }
 
+    m_lastSelectedNode = m_selectedNode->node();
     m_selectedNode->mark(mark);
 
     m_tbeWidget->markSelect(mark);
