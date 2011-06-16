@@ -80,6 +80,8 @@ public slots: // Node manager
 
     void scopeNode(int move);
 
+    void screenshot();
+
     // -------- GUI -> NODE
 
     void guiNodeSetName(const QString& s);
