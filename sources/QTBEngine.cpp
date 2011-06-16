@@ -470,7 +470,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             setCursor(Qt::BlankCursor);
     }
 
-    else
+    else if(m_selectedNode)
     {
         if(ev->key() == Qt::Key_P && !m_selectedNode->getParent()->isRoot())
         {
@@ -581,28 +581,109 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 QMessageBox::warning(parentWidget(), "Erreur", e.what());
             }
         }
-    }
 
-    if(ev->key() == Qt::Key_R)
-    {
-        m_selectedNode->getMatrix().setRotate(0);
+        if(ev->key() == Qt::Key_R)
+        {
+            m_selectedNode->getMatrix().setRotate(0);
 
-        updateSelected();
-    }
+            updateSelected();
+        }
 
-    if(ev->key() == Qt::Key_S)
-    {
-        m_selectedNode->getMatrix().setScale(1);
+        if(ev->key() == Qt::Key_S)
+        {
+            m_selectedNode->getMatrix().setScale(1);
 
-        updateSelected();
-    }
+            updateSelected();
+        }
 
-    if(ev->key() == Qt::Key_L)
-    {
-        if(m_lockedNode.contains(m_selectedNode))
-            m_lockedNode.remove(m_selectedNode);
-        else
-            m_lockedNode[m_selectedNode] = true;
+        if(ev->key() == Qt::Key_T)
+        {
+            m_selectedNode->getMatrix().setPos(0);
+
+            updateSelected();
+        }
+
+        if(ev->key() == Qt::Key_L)
+        {
+            if(m_lockedNode.contains(m_selectedNode))
+                m_lockedNode.remove(m_selectedNode);
+            else
+                m_lockedNode[m_selectedNode] = true;
+        }
+
+        if(ev->key() == Qt::Key_F)
+        {
+            m_grid->setEnable(false);
+            m_axe->setEnable(false);
+            m_meshScene->setInFloor(m_selectedNode);
+            m_axe->setEnable(true);
+            m_grid->setEnable(m_gridEnable);
+
+            updateSelected();
+        }
+
+        if(ev->key() == Qt::Key_E)
+        {
+            m_grid->setEnable(false);
+            m_axe->setEnable(false);
+            m_meshScene->setInFloor(m_selectedNode);
+            m_axe->setEnable(true);
+            m_grid->setEnable(m_gridEnable);
+
+            Vector3f adjust = m_selectedNode->getPos();
+            adjust.y += -m_selectedNode->getAabb().min.y;
+
+            m_selectedNode->setPos(adjust);
+
+            updateSelected();
+        }
+
+        else if(ev->key() == Qt::Key_Up)
+        {
+            Vector3f pos = m_selectedNode->getPos();
+            if(ev->modifiers() & Qt::ALT)
+                pos.y += 1;
+            else
+                pos.z += 1;
+            m_selectedNode->setPos(pos);
+
+            updateSelected();
+        }
+
+        else if(ev->key() == Qt::Key_Down)
+        {
+            Vector3f pos = m_selectedNode->getPos();
+            if(ev->modifiers() & Qt::ALT)
+                pos.y -= 1;
+            else
+                pos.z -= 1;
+            m_selectedNode->setPos(pos);
+
+            updateSelected();
+        }
+
+        else if(ev->key() == Qt::Key_Left)
+        {
+            Vector3f pos = m_selectedNode->getPos();
+            pos.x += 1;
+            m_selectedNode->setPos(pos);
+
+            updateSelected();
+        }
+
+        else if(ev->key() == Qt::Key_Right)
+        {
+            Vector3f pos = m_selectedNode->getPos();
+            pos.x -= 1;
+            m_selectedNode->setPos(pos);
+
+            updateSelected();
+        }
+
+        else if(ev->key() == Qt::Key_Escape)
+        {
+            deselect();
+        }
     }
 
     if(ev->key() == Qt::Key_G)
@@ -630,31 +711,10 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         m_grid->setEnable(m_gridEnable);
     }
 
-    if(ev->key() == Qt::Key_F)
+    else if(ev->key() == Qt::Key_Q)
     {
-        m_grid->setEnable(false);
-        m_axe->setEnable(false);
-        m_meshScene->setInFloor(m_selectedNode);
-        m_axe->setEnable(true);
-        m_grid->setEnable(m_gridEnable);
-
-        updateSelected();
-    }
-
-    if(ev->key() == Qt::Key_E)
-    {
-        m_grid->setEnable(false);
-        m_axe->setEnable(false);
-        m_meshScene->setInFloor(m_selectedNode);
-        m_axe->setEnable(true);
-        m_grid->setEnable(m_gridEnable);
-
-        Vector3f adjust = m_selectedNode->getPos();
-        adjust.y += -m_selectedNode->getAabb().min.y;
-
-        m_selectedNode->setPos(adjust);
-
-        updateSelected();
+        if(m_lastSelectedNode)
+            select(m_lastSelectedNode);
     }
 
     else if(ev->key() == Qt::Key_Plus)
@@ -665,59 +725,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     else if(ev->key() == Qt::Key_Minus)
     {
         m_camera->setDistance(m_camera->getDistance() + 1);
-    }
-
-    else if(ev->key() == Qt::Key_Up)
-    {
-        Vector3f pos = m_selectedNode->getPos();
-        if(ev->modifiers() & Qt::ALT)
-            pos.y += 1;
-        else
-            pos.z += 1;
-        m_selectedNode->setPos(pos);
-
-        updateSelected();
-    }
-
-    else if(ev->key() == Qt::Key_Down)
-    {
-        Vector3f pos = m_selectedNode->getPos();
-        if(ev->modifiers() & Qt::ALT)
-            pos.y -= 1;
-        else
-            pos.z -= 1;
-        m_selectedNode->setPos(pos);
-
-        updateSelected();
-    }
-
-    else if(ev->key() == Qt::Key_Left)
-    {
-        Vector3f pos = m_selectedNode->getPos();
-        pos.x += 1;
-        m_selectedNode->setPos(pos);
-
-        updateSelected();
-    }
-
-    else if(ev->key() == Qt::Key_Right)
-    {
-        Vector3f pos = m_selectedNode->getPos();
-        pos.x -= 1;
-        m_selectedNode->setPos(pos);
-
-        updateSelected();
-    }
-
-    else if(ev->key() == Qt::Key_Escape)
-    {
-        deselect();
-    }
-
-    else if(ev->key() == Qt::Key_Q)
-    {
-        if(m_lastSelectedNode)
-            select(m_lastSelectedNode);
     }
 
     else if(ev->key() == Qt::Key_1)
