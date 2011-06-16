@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Icons">
+    <file>../icons/image.png</file>
     <file>../icons/3d_modelling.png</file>
     <file>../icons/vcard.png</file>
     <file>../icons/arrow_out.png</file>

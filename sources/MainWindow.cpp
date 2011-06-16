@@ -282,6 +282,7 @@ void MainWindow::initConnections()
     connect(m_uinterface.actionA_Propos, SIGNAL(triggered()), this, SLOT(about()));
     connect(m_uinterface.actionRendue_plein_fenete, SIGNAL(triggered(bool)), this, SLOT(toggleFullWidget(bool)));
     connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(m_uinterface.actionScreenShot, SIGNAL(triggered()), this, SLOT(screenshot()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
@@ -2415,4 +2416,24 @@ void MainWindow::skyboxWorkingDir(const QString& filename)
     envGui.skybox.textures[3]->setWorkDir(QFileInfo(filename).path());
     envGui.skybox.textures[4]->setWorkDir(QFileInfo(filename).path());
     envGui.skybox.textures[5]->setWorkDir(QFileInfo(filename).path());
+}
+
+void MainWindow::screenshot()
+{
+    QImage shot = m_tbeWidget->grabFrameBuffer(false);
+
+    QString title = QString("%1-%2.png")
+            .arg(QString::fromStdString(tbe::tools::unixName(genGui.title->text().toStdString())))
+            .arg(QDate::currentDate().toString("yyyyMMdd"));
+
+    QString defname = QDir(m_workingDir.scene).filePath(title);
+
+    QString filename = QFileDialog::getSaveFileName(this, "Enregistrer la capture d'écran", defname);
+
+    if(!filename.isEmpty())
+    {
+        QFile output(filename);
+        output.open(QIODevice::WriteOnly);
+        shot.save(&output, "PNG");
+    }
 }
