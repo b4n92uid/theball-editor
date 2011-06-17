@@ -826,7 +826,6 @@ void QTBEngine::saveScene(const QString& filename)
 {
     using namespace scene;
 
-    m_sceneParser->archive(m_rootNode);
     m_sceneParser->exclude(m_axe);
     m_sceneParser->exclude(m_grid);
 
