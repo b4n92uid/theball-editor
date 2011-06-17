@@ -1772,32 +1772,36 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Fichier</string>
     </property>
-    <addaction name="actionNouvelle_scene"/>
-    <addaction name="actionOuvrire"/>
-    <addaction name="actionDernier_fichiers"/>
+    <addaction name="actionNewScene"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionLastFiles"/>
     <addaction name="separator"/>
-    <addaction name="actionEnregistrer"/>
-    <addaction name="actionEnregistrer_sous"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
-    <addaction name="actionQuitter"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string>?</string>
     </property>
-    <addaction name="actionA_Propos"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuAffichage">
     <property name="title">
      <string>Affichage</string>
     </property>
-    <addaction name="actionRendue_plein_fenete"/>
+    <addaction name="actionToggleFullScreen"/>
    </widget>
    <widget class="QMenu" name="menuOutils">
     <property name="title">
      <string>Outils</string>
     </property>
     <addaction name="actionScreenShot"/>
+    <addaction name="actionOpenPacker"/>
+    <addaction name="separator"/>
+    <addaction name="actionNormalsUp"/>
+    <addaction name="actionRestoreMesh"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuAffichage"/>
@@ -1805,7 +1809,7 @@ p, li { white-space: pre-wrap; }
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionOuvrire">
+  <action name="actionOpen">
    <property name="icon">
     <iconset resource="ressource.qrc">
      <normaloff>:/Icons/icons/folder_page_white.png</normaloff>:/Icons/icons/folder_page_white.png</iconset>
@@ -1817,7 +1821,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="actionEnregistrer">
+  <action name="actionSave">
    <property name="icon">
     <iconset resource="ressource.qrc">
      <normaloff>:/Icons/icons/disk.png</normaloff>:/Icons/icons/disk.png</iconset>
@@ -1829,7 +1833,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionEnregistrer_sous">
+  <action name="actionSaveAs">
    <property name="text">
     <string>Enregistrer sous...</string>
    </property>
@@ -1837,7 +1841,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+Shift+S</string>
    </property>
   </action>
-  <action name="actionQuitter">
+  <action name="actionQuit">
    <property name="text">
     <string>Quitter</string>
    </property>
@@ -1845,7 +1849,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionA_Propos">
+  <action name="actionAbout">
    <property name="icon">
     <iconset resource="ressource.qrc">
      <normaloff>:/Icons/icons/vcard.png</normaloff>:/Icons/icons/vcard.png</iconset>
@@ -1857,7 +1861,7 @@ p, li { white-space: pre-wrap; }
     <string>F1</string>
    </property>
   </action>
-  <action name="actionNouvelle_scene">
+  <action name="actionNewScene">
    <property name="icon">
     <iconset resource="ressource.qrc">
      <normaloff>:/Icons/icons/page_white_star.png</normaloff>:/Icons/icons/page_white_star.png</iconset>
@@ -1869,7 +1873,7 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="actionRendue_plein_fenete">
+  <action name="actionToggleFullScreen">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1884,7 +1888,7 @@ p, li { white-space: pre-wrap; }
     <string>F11</string>
    </property>
   </action>
-  <action name="actionDernier_fichiers">
+  <action name="actionLastFiles">
    <property name="text">
     <string>Dernier fichiers</string>
    </property>
@@ -1899,6 +1903,25 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>F10</string>
+   </property>
+  </action>
+  <action name="actionNormalsUp">
+   <property name="text">
+    <string>Normals en (0,1,0)</string>
+   </property>
+  </action>
+  <action name="actionRestoreMesh">
+   <property name="text">
+    <string>Réstituer le Mesh original</string>
+   </property>
+  </action>
+  <action name="actionOpenPacker">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Icons/icons/package.png</normaloff>:/Icons/icons/package.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exporter en Pack</string>
    </property>
   </action>
  </widget>
