@@ -32,6 +32,11 @@ MainWindow::MainWindow()
     notifyChanges(false);
 }
 
+QString MainWindow::getOpenFileName() const
+{
+    return m_filename;
+}
+
 MainWindow::~MainWindow()
 {
 }
@@ -45,12 +50,12 @@ void MainWindow::openFileHistory()
 
 void MainWindow::buildFileHistory()
 {
-    QMenu* filehistory = m_uinterface.actionDernier_fichiers->menu();
+    QMenu* filehistory = m_uinterface.actionLastFiles->menu();
 
     if(!filehistory)
     {
         filehistory = new QMenu(this);
-        m_uinterface.actionDernier_fichiers->setMenu(filehistory);
+        m_uinterface.actionLastFiles->setMenu(filehistory);
     }
 
     filehistory->clear();
@@ -103,6 +108,8 @@ void MainWindow::initWidgets()
     nodesGui.attribTab = m_uinterface.attribTab;
 
     m_config = new QSettings(this);
+
+    m_packerDialog = new PackerDialog(this);
 
     buildFileHistory();
 
@@ -275,14 +282,16 @@ void MainWindow::initConnections()
     connect(genGui.delField, SIGNAL(clicked()), this, SLOT(guiDelSceneField()));
     connect(genGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearSceneField()));
 
-    connect(m_uinterface.actionNouvelle_scene, SIGNAL(triggered()), this, SLOT(newScene()));
-    connect(m_uinterface.actionOuvrire, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
-    connect(m_uinterface.actionEnregistrer, SIGNAL(triggered()), this, SLOT(saveScene()));
-    connect(m_uinterface.actionEnregistrer_sous, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
-    connect(m_uinterface.actionA_Propos, SIGNAL(triggered()), this, SLOT(about()));
-    connect(m_uinterface.actionRendue_plein_fenete, SIGNAL(triggered(bool)), this, SLOT(toggleFullWidget(bool)));
-    connect(m_uinterface.actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(m_uinterface.actionNewScene, SIGNAL(triggered()), this, SLOT(newScene()));
+    connect(m_uinterface.actionOpen, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
+    connect(m_uinterface.actionSave, SIGNAL(triggered()), this, SLOT(saveScene()));
+    connect(m_uinterface.actionSaveAs, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
+    connect(m_uinterface.actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    connect(m_uinterface.actionToggleFullScreen, SIGNAL(triggered(bool)), this, SLOT(toggleFullWidget(bool)));
+    connect(m_uinterface.actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(m_uinterface.actionScreenShot, SIGNAL(triggered()), this, SLOT(screenshot()));
+
+    connect(m_uinterface.actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
@@ -1363,6 +1372,11 @@ void MainWindow::sceneAmbiantRegister(const tbe::Vector3f& value)
     envGui.sceneAmbiant->setValue(value);
 
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(sceneAmbiantUpdate(const tbe::Vector3f&)));
+}
+
+QTBEngine* MainWindow::getTbeWidget() const
+{
+    return m_tbeWidget;
 }
 
 void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)

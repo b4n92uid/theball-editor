@@ -4,6 +4,8 @@
     <logicalFolder name="SourceFiles" displayName="Class" projectFiles="true">
       <itemPath>sources/MainWindow.cpp</itemPath>
       <itemPath>sources/MainWindow.h</itemPath>
+      <itemPath>sources/PackerDialog.cpp</itemPath>
+      <itemPath>sources/PackerDialog.h</itemPath>
       <itemPath>sources/QNodeBinders.cpp</itemPath>
       <itemPath>sources/QNodeBinders.h</itemPath>
       <itemPath>sources/QTBEngine.cpp</itemPath>
@@ -15,6 +17,7 @@
       <itemPath>sources/about.ui</itemPath>
       <itemPath>sources/interface.ui</itemPath>
       <itemPath>sources/matedit.ui</itemPath>
+      <itemPath>sources/packer.ui</itemPath>
       <itemPath>sources/ressource.qrc</itemPath>
       <itemPath>sources/ressource.rc</itemPath>
     </logicalFolder>
@@ -62,6 +65,8 @@
         <ccTool>
           <incDir>
             <pElem>D:/projets/cpp/tbengine/sources</pElem>
+            <pElem>D:/librairies/cpp/qt/quazip-0.4.1/quazip</pElem>
+            <pElem>D:/librairies/cpp/zlib/zlib123</pElem>
           </incDir>
           <preprocessorList>
             <Elem>_DEBUG</Elem>
@@ -69,6 +74,8 @@
         </ccTool>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibFileItem>D:/librairies/cpp/qt/quazip-0.4.1/quazip/release/libquazip.a</linkerLibFileItem>
+            <linkerLibFileItem>D:/librairies/cpp/zlib/zlib123/libzlib.a</linkerLibFileItem>
             <linkerLibFileItem>D:/projets/cpp/tbengine/dist/Debug/MinGW-Windows/libtbengine.a</linkerLibFileItem>
             <linkerLibFileItem>D:/librairies/cpp/devil/DevIL-SDK-x86-1.7.8/lib/DevIL.lib</linkerLibFileItem>
             <linkerLibFileItem>D:/librairies/cpp/freetype/freetype-2.3.9/objs/.libs/libfreetype.a</linkerLibFileItem>
@@ -102,6 +109,8 @@
           <developmentMode>5</developmentMode>
           <incDir>
             <pElem>D:/projets/cpp/tbengine/sources</pElem>
+            <pElem>D:/librairies/cpp/qt/quazip-0.4.1/quazip</pElem>
+            <pElem>D:/librairies/cpp/zlib/zlib123</pElem>
           </incDir>
         </ccTool>
         <fortranCompilerTool>
@@ -112,6 +121,8 @@
         </asmTool>
         <linkerTool>
           <linkerLibItems>
+            <linkerLibFileItem>D:/librairies/cpp/qt/quazip-0.4.1/quazip/release/libquazip.a</linkerLibFileItem>
+            <linkerLibFileItem>D:/librairies/cpp/zlib/zlib123/libzlib.a</linkerLibFileItem>
             <linkerLibFileItem>D:/projets/cpp/tbengine/dist/Release/MinGW-Windows/libtbengine.a</linkerLibFileItem>
             <linkerLibFileItem>D:/librairies/cpp/devil/DevIL-SDK-x86-1.7.8/lib/DevIL.lib</linkerLibFileItem>
             <linkerLibFileItem>D:/librairies/cpp/freetype/freetype-2.3.9/objs/.libs/libfreetype.a</linkerLibFileItem>

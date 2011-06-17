@@ -20,6 +20,7 @@
 #include "QVector2Box.h"
 #include "QTBEngine.h"
 #include "QNodeBinders.h"
+#include "PackerDialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -33,6 +34,9 @@ public:
     void initWidgets();
     void initConnections();
 
+    QTBEngine* getTbeWidget() const;
+
+    QString getOpenFileName() const;
 
 protected:
 
@@ -218,9 +222,7 @@ public slots: // Env manager
     void fogRegister(tbe::scene::Fog* tbefog);
     void sceneAmbiantRegister(const tbe::Vector3f& value);
 
-
 signals:
-
     void pauseRendring();
     void resumeRendring();
 
@@ -393,6 +395,8 @@ private:
     QTimer* m_timer;
 
     Ui_mainWindow m_uinterface;
+
+    PackerDialog* m_packerDialog;
 
     QSettings* m_config;
 

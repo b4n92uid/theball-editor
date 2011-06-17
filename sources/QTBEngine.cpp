@@ -829,6 +829,7 @@ void QTBEngine::saveScene(const QString& filename)
     m_sceneParser->exclude(m_axe);
     m_sceneParser->exclude(m_grid);
 
+    m_sceneParser->prepareScene();
     m_sceneParser->saveScene(filename.toStdString());
 }
 
@@ -877,6 +878,7 @@ void QTBEngine::loadScene(const QString& filename)
     clearScene();
 
     m_sceneParser->loadScene(filename.toStdString());
+    m_sceneParser->buildScene();
 
     rebuildList();
 
