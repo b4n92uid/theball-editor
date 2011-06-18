@@ -1902,16 +1902,6 @@ p, li { white-space: pre-wrap; }
     <string>F10</string>
    </property>
   </action>
-  <action name="actionNormalsUp">
-   <property name="text">
-    <string>Normals en (0,1,0)</string>
-   </property>
-  </action>
-  <action name="actionRestoreMesh">
-   <property name="text">
-    <string>Réstituer le Mesh original</string>
-   </property>
-  </action>
   <action name="actionOpenPacker">
    <property name="icon">
     <iconset resource="ressource.qrc">
@@ -1919,6 +1909,9 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Exporter en Pack</string>
+   </property>
+   <property name="shortcut">
+    <string>F12</string>
    </property>
   </action>
  </widget>
