@@ -31,9 +31,9 @@ PackerDialog::PackerDialog(MainWindow* parent) : QDialog(parent)
     fileListView->setRootIsDecorated(false);
     fileListView->setSelectionMode(QTreeView::ExtendedSelection);
 
+    connect(addFileButton, SIGNAL(clicked()), this, SLOT(openFilesDialog()));
+    connect(delFileButton, SIGNAL(clicked()), this, SLOT(delFiles()));
     connect(exportButton, SIGNAL(clicked()), this, SLOT(exportPack()));
-    connect(addFileButton, SIGNAL(clicked()), this, SLOT(addFile()));
-    connect(delFileButton, SIGNAL(clicked()), this, SLOT(delFile()));
 }
 
 PackerDialog::~PackerDialog()
@@ -48,7 +48,7 @@ void PackerDialog::recursivFilesFind(const SceneParser::Relation& rel)
         QFileInfo finfo = m_baseDir.filePath(value);
 
         if(finfo.isReadable())
-            addFile(value);
+            addRelativeFile(value);
     }
 
     for(unsigned i = 0; i < rel.child.size(); i++)
@@ -68,12 +68,15 @@ void PackerDialog::exec()
 
     SceneParser::MapDescriptor& descriptor = parser->getMapDescriptor();
 
-    addFile(descriptor.skybox.front);
-    addFile(descriptor.skybox.back);
-    addFile(descriptor.skybox.top);
-    addFile(descriptor.skybox.bottom);
-    addFile(descriptor.skybox.left);
-    addFile(descriptor.skybox.right);
+    addRelativeFile(QString::fromStdString(descriptor.skybox.front));
+    addRelativeFile(QString::fromStdString(descriptor.skybox.back));
+    addRelativeFile(QString::fromStdString(descriptor.skybox.top));
+    addRelativeFile(QString::fromStdString(descriptor.skybox.bottom));
+    addRelativeFile(QString::fromStdString(descriptor.skybox.left));
+    addRelativeFile(QString::fromStdString(descriptor.skybox.right));
+
+    foreach(QString path, m_parent->getTbeWidget()->usedRessources())
+    addAbsoluteFile(path);
 
     for(unsigned i = 0; i < descriptor.nodes.size(); i++)
         recursivFilesFind(descriptor.nodes[i]);
@@ -83,12 +86,26 @@ void PackerDialog::exec()
     QDialog::exec();
 }
 
-void PackerDialog::addFile(std::string filename)
+void PackerDialog::addAbsoluteFile(QString filename)
 {
-    addFile(QString::fromStdString(filename));
+    QString relativeFileName = m_baseDir.relativeFilePath(filename);
+
+    if(!m_fileListModel->findItems(relativeFileName).isEmpty())
+        return;
+
+    QFileInfo fileinfo = filename;
+
+    QVariant data;
+    data.setValue(fileinfo);
+
+    QStandardItem* item = new QStandardItem(relativeFileName);
+    item->setData(data);
+    item->setIcon(QFileIconProvider().icon(fileinfo.absoluteFilePath()));
+
+    m_fileListModel->appendRow(item);
 }
 
-void PackerDialog::addFile(QString filename)
+void PackerDialog::addRelativeFile(QString filename)
 {
     if(!m_fileListModel->findItems(filename).isEmpty())
         return;
@@ -105,15 +122,15 @@ void PackerDialog::addFile(QString filename)
     m_fileListModel->appendRow(item);
 }
 
-void PackerDialog::addFile()
+void PackerDialog::openFilesDialog()
 {
     QStringList filenames = QFileDialog::getOpenFileNames(m_parent);
 
     foreach(QString fn, filenames)
-    addFile(fn);
+    addRelativeFile(fn);
 }
 
-void PackerDialog::delFile()
+void PackerDialog::delFiles()
 {
     QItemSelectionModel* selection = fileListView->selectionModel();
     QModelIndexList list = selection->selectedRows();

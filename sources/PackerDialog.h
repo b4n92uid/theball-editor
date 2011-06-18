@@ -27,10 +27,12 @@ public:
 public slots:
     void exec();
 
-    void addFile(std::string filename);
-    void addFile(QString filename);
-    void addFile();
-    void delFile();
+    void openFilesDialog();
+
+    void addRelativeFile(QString filename);
+    void addAbsoluteFile(QString filename);
+
+    void delFiles();
 
     void exportPack();
 

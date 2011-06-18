@@ -31,6 +31,8 @@ public:
 
     tbe::scene::SceneParser* getSceneParser() const;
 
+    QStringList usedRessources();
+
 protected:
     void initializeGL();
     void resizeGL(int w, int h);

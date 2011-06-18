@@ -1313,3 +1313,27 @@ tbe::scene::MapMark* QTBEngine::markClone(tbe::scene::MapMark* mark)
 
     return newmark;
 }
+
+QStringList QTBEngine::usedRessources()
+{
+    using namespace std;
+    using namespace tbe;
+    using namespace scene;
+
+    QStringList ressPath;
+
+    foreach(Mesh* mesh, m_meshs)
+    {
+        vector<string> meshRessPath = mesh->getUsedRessources();
+
+        foreach(string path, meshRessPath)
+        ressPath << QString::fromStdString(path);
+    }
+
+    foreach(ParticlesEmiter* particles, m_particles)
+    {
+        ressPath << QString::fromStdString(particles->getTexture().getFilename());
+    }
+
+    return ressPath;
+}
