@@ -21,35 +21,14 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-     </property>
-     <item row="0" column="0" colspan="2">
-      <widget class="QTreeView" name="fileListView"/>
-     </item>
-     <item row="1" column="0" colspan="2">
+    <widget class="QTreeView" name="fileListView"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
       <widget class="QCheckBox" name="addScreenshot">
        <property name="text">
         <string>Ajouter une capture d'écran</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="addFileButton">
-       <property name="text">
-        <string>Ajouter</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="delFileButton">
-       <property name="text">
-        <string>Supprimer</string>
        </property>
       </widget>
      </item>
@@ -66,10 +45,66 @@
        </property>
       </spacer>
      </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="delFileButton">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ressource.qrc">
+         <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="addFileButton">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ressource.qrc">
+         <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item>
       <widget class="QPushButton" name="exportButton">
        <property name="text">
-        <string>Enregistrer le Pack</string>
+        <string>Exporté</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ressource.qrc">
+         <normaloff>:/Icons/icons/package.png</normaloff>:/Icons/icons/package.png</iconset>
        </property>
       </widget>
      </item>
@@ -84,7 +119,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="ressource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>closeButton</sender>
