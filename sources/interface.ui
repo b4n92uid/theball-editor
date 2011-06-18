@@ -1799,9 +1799,6 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionScreenShot"/>
     <addaction name="actionOpenPacker"/>
-    <addaction name="separator"/>
-    <addaction name="actionNormalsUp"/>
-    <addaction name="actionRestoreMesh"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuAffichage"/>
