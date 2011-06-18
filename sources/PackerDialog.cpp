@@ -58,7 +58,16 @@ void PackerDialog::recursivFilesFind(const SceneParser::Relation& rel)
 
 void PackerDialog::exec()
 {
-    m_baseDir = QFileInfo(m_parent->getOpenFileName()).dir();
+    QString sceneFileName = m_parent->getOpenFileName();
+
+    if(sceneFileName.isEmpty())
+    {
+        QMessageBox::warning(m_parent, "Packer !", "Aucun fichier scene spécfier !\n"
+                             "Enregistrer la scene en cour ou ouvrer un fichier scene");
+        return;
+    }
+
+    m_baseDir = QFileInfo(sceneFileName).dir();
 
     m_fileListModel->removeRows(0, m_fileListModel->rowCount());
 
@@ -114,7 +123,7 @@ void PackerDialog::addAbsoluteFile(QString filename)
 {
     QString relativeFileName = m_baseDir.relativeFilePath(filename);
 
-    if(!m_fileListModel->findItems(relativeFileName).isEmpty())
+    if(filename.isEmpty() || !m_fileListModel->findItems(relativeFileName).isEmpty())
         return;
 
     QFileInfo fileinfo = filename;
@@ -133,7 +142,7 @@ void PackerDialog::addAbsoluteFile(QString filename)
 
 void PackerDialog::addRelativeFile(QString filename)
 {
-    if(!m_fileListModel->findItems(filename).isEmpty())
+    if(filename.isEmpty() || !m_fileListModel->findItems(filename).isEmpty())
         return;
 
     QFileInfo fileinfo = m_baseDir.filePath(filename);
