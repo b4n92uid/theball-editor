@@ -28,6 +28,8 @@ PackerDialog::PackerDialog(MainWindow* parent) : QDialog(parent)
     m_fileListModel->setHorizontalHeaderLabels(QStringList() << "Fichiers");
 
     fileListView->setModel(m_fileListModel);
+    fileListView->setRootIsDecorated(false);
+    fileListView->setSelectionMode(QTreeView::ExtendedSelection);
 
     connect(exportButton, SIGNAL(clicked()), this, SLOT(exportPack()));
     connect(addFileButton, SIGNAL(clicked()), this, SLOT(addFile()));
@@ -100,31 +102,31 @@ void PackerDialog::addFile(QString filename)
     item->setData(data);
     item->setIcon(QFileIconProvider().icon(fileinfo.absoluteFilePath()));
 
-    QModelIndex index = fileListView->currentIndex();
-
-    if(index.isValid())
-        m_fileListModel->itemFromIndex(index)->appendRow(item);
-    else
-        m_fileListModel->appendRow(item);
+    m_fileListModel->appendRow(item);
 }
 
 void PackerDialog::addFile()
 {
-    QString filename = QFileDialog::getOpenFileName(m_parent);
+    QStringList filenames = QFileDialog::getOpenFileNames(m_parent);
 
-    if(!filename.isEmpty())
-        addFile(filename);
+    foreach(QString fn, filenames)
+    addFile(fn);
 }
 
 void PackerDialog::delFile()
 {
-    QModelIndex index = fileListView->currentIndex();
-    QStandardItem* item = m_fileListModel->itemFromIndex(index);
+    QItemSelectionModel* selection = fileListView->selectionModel();
+    QModelIndexList list = selection->selectedRows();
 
-    if(item->parent())
-        item->parent()->removeRow(item->row());
-    else
-        m_fileListModel->removeRow(item->row());
+    foreach(QModelIndex index, list)
+    {
+        QStandardItem* item = m_fileListModel->itemFromIndex(index);
+
+        if(item->parent())
+            item->parent()->removeRow(item->row());
+        else
+            m_fileListModel->removeRow(item->row());
+    }
 }
 
 void PackerDialog::exportPack()
@@ -154,13 +156,15 @@ void PackerDialog::exportPack()
 
             QuaZipFile zipfile(&ziparchive);
 
-            QuaZipNewInfo newinfo(m_baseDir.relativeFilePath(fileinfo.filePath()), fileinfo.filePath());
+            QString zipfilename = m_baseDir.relativeFilePath(item->text());
+
+            QuaZipNewInfo newinfo(zipfilename, fileinfo.filePath());
             zipfile.open(QIODevice::WriteOnly, newinfo);
 
-            QFile writer(fileinfo.filePath());
-            writer.open(QIODevice::ReadOnly);
+            QFile reader(fileinfo.filePath());
+            reader.open(QIODevice::ReadOnly);
 
-            zipfile.write(writer.readAll());
+            zipfile.write(reader.readAll());
 
             zipfile.close();
         }
@@ -182,11 +186,13 @@ void PackerDialog::exportPack()
         QuaZipNewInfo newinfo(m_baseDir.relativeFilePath(m_parent->getOpenFileName()), m_parent->getOpenFileName());
         zipfile.open(QIODevice::WriteOnly, newinfo);
 
-        QFile writer(m_parent->getOpenFileName());
-        writer.open(QIODevice::ReadOnly);
+        QFile reader(m_parent->getOpenFileName());
+        reader.open(QIODevice::ReadOnly);
 
-        zipfile.write(writer.readAll());
+        zipfile.write(reader.readAll());
 
         ziparchive.close();
+
+        reject();
     }
 }
