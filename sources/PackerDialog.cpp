@@ -25,11 +25,12 @@ PackerDialog::PackerDialog(MainWindow* parent) : QDialog(parent)
     setupUi(this);
 
     m_fileListModel = new QStandardItemModel;
-    m_fileListModel->setHorizontalHeaderLabels(QStringList() << "Fichiers");
+    m_fileListModel->setHorizontalHeaderLabels(QStringList() << "Fichiers" << "Taille");
 
     fileListView->setModel(m_fileListModel);
     fileListView->setRootIsDecorated(false);
     fileListView->setSelectionMode(QTreeView::ExtendedSelection);
+    fileListView->header()->setResizeMode(QHeaderView::Stretch);
 
     connect(addFileButton, SIGNAL(clicked()), this, SLOT(openFilesDialog()));
     connect(delFileButton, SIGNAL(clicked()), this, SLOT(delFiles()));
@@ -86,6 +87,29 @@ void PackerDialog::exec()
     QDialog::exec();
 }
 
+inline qint64 unit(qint64 number, int it)
+{
+    for(; it > 0; it--)
+        number /= 1024;
+
+    return qint64(number + 0.5);
+}
+
+inline QString humainSize(qint64 size)
+{
+    if(size > pow(1024, 3)) // Go
+        return QString("%1 Go").arg(unit(size, 3));
+
+    else if(size > pow(1024, 2)) // Mo
+        return QString("%1 Mo").arg(unit(size, 2));
+
+    else if(size > pow(1024, 1)) // Ko
+        return QString("%1 Ko").arg(unit(size, 1));
+
+    else
+        return QString("%1 Octet").arg(size);
+}
+
 void PackerDialog::addAbsoluteFile(QString filename)
 {
     QString relativeFileName = m_baseDir.relativeFilePath(filename);
@@ -102,7 +126,9 @@ void PackerDialog::addAbsoluteFile(QString filename)
     item->setData(data);
     item->setIcon(QFileIconProvider().icon(fileinfo.absoluteFilePath()));
 
-    m_fileListModel->appendRow(item);
+    QStandardItem* size = new QStandardItem(humainSize(fileinfo.size()));
+
+    m_fileListModel->appendRow(QList<QStandardItem*>() << item << size);
 }
 
 void PackerDialog::addRelativeFile(QString filename)
@@ -119,7 +145,9 @@ void PackerDialog::addRelativeFile(QString filename)
     item->setData(data);
     item->setIcon(QFileIconProvider().icon(fileinfo.absoluteFilePath()));
 
-    m_fileListModel->appendRow(item);
+    QStandardItem* size = new QStandardItem(humainSize(fileinfo.size()));
+
+    m_fileListModel->appendRow(QList<QStandardItem*>() << item << size);
 }
 
 void PackerDialog::openFilesDialog()
