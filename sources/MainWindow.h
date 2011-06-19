@@ -157,12 +157,15 @@ public slots: // Node manager
 
     void guiParticleSetGravity(const tbe::Vector3f& v);
     void guiParticleSetBoxsize(const tbe::Vector3f& v);
+    void guiParticleSetBulletsize(const tbe::Vector2f& v);
     void guiParticleSetFreemove(double v);
     void guiParticleSetLifeinit(double v);
     void guiParticleSetLifedown(double v);
+    void guiParticleSetBrust(int v);
     void guiParticleSetNumber(int v);
     void guiParticleSetTexture(const QString& v);
-    void guiParticleSetContinousMode(int v);
+    void guiParticleSetContinousMode(bool stat);
+    void guiParticleSetPointSprite(bool stat);
     void guiParticleBuild();
 
     // MapMark GUI Buttons
@@ -298,12 +301,15 @@ private:
         {
             QVectorBox* gravity;
             QVectorBox* boxsize;
+            QVector2Box* bulletsize;
             QDoubleSpinBox* freemove;
             QDoubleSpinBox* lifeinit;
             QDoubleSpinBox* lifedown;
+            QSpinBox* brust;
             QSpinBox* number;
             QBrowsEdit* texture;
             QCheckBox* continiousmode;
+            QCheckBox* pointsprite;
 
             QPushButton* build;
 

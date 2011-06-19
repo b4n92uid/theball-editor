@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   QVector2Box.h
  * Author: b4n92uid
  *
@@ -20,8 +20,8 @@ public:
     virtual ~QVector2Box();
 
 public slots:
-    tbe::Vector2f getVectorValue();
-    void setVectorValue(const tbe::Vector2f& value);
+    tbe::Vector2f value();
+    void setValue(const tbe::Vector2f& value);
 
     void componentValueChanged(double d);
 
