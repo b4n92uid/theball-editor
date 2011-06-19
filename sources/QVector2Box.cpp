@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QVector2Box.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 5 décembre 2010, 23:01
  */
 
@@ -20,12 +20,12 @@ QVector2Box::~QVector2Box()
 {
 }
 
-tbe::Vector2f QVector2Box::getVectorValue()
+tbe::Vector2f QVector2Box::value()
 {
     return tbe::Vector2f(m_x->value(), m_y->value());
 }
 
-void QVector2Box::setVectorValue(const tbe::Vector2f& value)
+void QVector2Box::setValue(const tbe::Vector2f& value)
 {
     m_x->setValue(value.x);
     m_y->setValue(value.y);
@@ -33,5 +33,5 @@ void QVector2Box::setVectorValue(const tbe::Vector2f& value)
 
 void QVector2Box::componentValueChanged(double d)
 {
-    emit valueChanged(getVectorValue());
+    emit valueChanged(value());
 }

@@ -205,12 +205,15 @@ void MainWindow::initWidgets()
 
     nodesGui.particlesTab.gravity = new QVectorBox(this, m_uinterface.node_particles_gravity_x, m_uinterface.node_particles_gravity_y, m_uinterface.node_particles_gravity_z);
     nodesGui.particlesTab.boxsize = new QVectorBox(this, m_uinterface.node_particles_boxsize_x, m_uinterface.node_particles_boxsize_y, m_uinterface.node_particles_boxsize_z);
+    nodesGui.particlesTab.bulletsize = new QVector2Box(this, m_uinterface.node_particles_bulletsize_x, m_uinterface.node_particles_bulletsize_y);
     nodesGui.particlesTab.freemove = m_uinterface.node_particles_freemove;
     nodesGui.particlesTab.lifeinit = m_uinterface.node_particles_lifeinit;
     nodesGui.particlesTab.lifedown = m_uinterface.node_particles_lifedown;
+    nodesGui.particlesTab.brust = m_uinterface.node_particles_brust;
     nodesGui.particlesTab.number = m_uinterface.node_particles_number;
     nodesGui.particlesTab.texture = new QBrowsEdit(this, m_uinterface.node_particles_texture, m_uinterface.node_particles_texture_browse);
-    nodesGui.particlesTab.continiousmode = m_uinterface.node_particles_continousmide;
+    nodesGui.particlesTab.continiousmode = m_uinterface.node_particles_continousmode;
+    nodesGui.particlesTab.pointsprite = m_uinterface.node_particles_pointsprite;
     nodesGui.particlesTab.build = m_uinterface.node_particles_build;
     nodesGui.particlesTab.add = m_uinterface.node_particles_add;
     nodesGui.particlesTab.clone = m_uinterface.node_particles_clone;
@@ -369,12 +372,15 @@ void MainWindow::initConnections()
 
     connect(nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiParticleSetGravity(const tbe::Vector3f&)));
     connect(nodesGui.particlesTab.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiParticleSetBoxsize(const tbe::Vector3f&)));
+    connect(nodesGui.particlesTab.bulletsize, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(guiParticleSetBulletsize(const tbe::Vector2f&)));
     connect(nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetFreemove(double)));
     connect(nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifeinit(double)));
     connect(nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifedown(double)));
+    connect(nodesGui.particlesTab.brust, SIGNAL(valueChanged(int)), this, SLOT(guiParticleSetBrust(int)));
     connect(nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), this, SLOT(guiParticleSetNumber(int)));
     connect(nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(guiParticleSetTexture(const QString&)));
-    connect(nodesGui.particlesTab.continiousmode, SIGNAL(stateChanged(int)), this, SLOT(guiParticleSetContinousMode(int)));
+    connect(nodesGui.particlesTab.continiousmode, SIGNAL(clicked(bool)), this, SLOT(guiParticleSetContinousMode(bool)));
+    connect(nodesGui.particlesTab.pointsprite, SIGNAL(clicked(bool)), this, SLOT(guiParticleSetPointSprite(bool)));
     connect(nodesGui.particlesTab.build, SIGNAL(clicked()), this, SLOT(guiParticleBuild()));
 
     connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
@@ -1192,30 +1198,39 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 
     nodesGui.particlesTab.gravity->blockSignals(true);
     nodesGui.particlesTab.boxsize->blockSignals(true);
+    nodesGui.particlesTab.bulletsize->blockSignals(true);
     nodesGui.particlesTab.freemove->blockSignals(true);
     nodesGui.particlesTab.lifeinit->blockSignals(true);
     nodesGui.particlesTab.lifedown->blockSignals(true);
+    nodesGui.particlesTab.brust->blockSignals(true);
     nodesGui.particlesTab.number->blockSignals(true);
     nodesGui.particlesTab.texture->blockSignals(true);
     nodesGui.particlesTab.continiousmode->blockSignals(true);
+    nodesGui.particlesTab.pointsprite->blockSignals(true);
 
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
     nodesGui.particlesTab.boxsize->setValue(particles->getBoxSize());
+    nodesGui.particlesTab.bulletsize->setValue(particles->getBulletSize());
     nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());
     nodesGui.particlesTab.lifeinit->setValue(particles->getLifeInit());
     nodesGui.particlesTab.lifedown->setValue(particles->getLifeDown());
+    nodesGui.particlesTab.brust->setValue(particles->getBrustCount());
     nodesGui.particlesTab.number->setValue(particles->getNumber());
     nodesGui.particlesTab.texture->setOpenFileName(QString::fromStdString(particles->getTexture().getFilename()));
     nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
+    nodesGui.particlesTab.pointsprite->setChecked(particles->isUsePointSprite());
 
     nodesGui.particlesTab.gravity->blockSignals(false);
     nodesGui.particlesTab.boxsize->blockSignals(false);
+    nodesGui.particlesTab.bulletsize->blockSignals(false);
     nodesGui.particlesTab.freemove->blockSignals(false);
     nodesGui.particlesTab.lifeinit->blockSignals(false);
     nodesGui.particlesTab.lifedown->blockSignals(false);
     nodesGui.particlesTab.number->blockSignals(false);
+    nodesGui.particlesTab.brust->blockSignals(false);
     nodesGui.particlesTab.texture->blockSignals(false);
     nodesGui.particlesTab.continiousmode->blockSignals(false);
+    nodesGui.particlesTab.pointsprite->blockSignals(false);
 }
 
 void MainWindow::particlesDelete(tbe::scene::ParticlesEmiter* particles)
@@ -2273,6 +2288,17 @@ void MainWindow::guiParticleSetGravity(const tbe::Vector3f& v)
     }
 }
 
+void MainWindow::guiParticleSetBulletsize(const tbe::Vector2f& v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setBulletSize(v);
+        particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
+    }
+}
+
 void MainWindow::guiParticleSetBoxsize(const tbe::Vector3f& v)
 {
     if(m_selectedNode->particles())
@@ -2317,6 +2343,17 @@ void MainWindow::guiParticleSetLifedown(double v)
     }
 }
 
+void MainWindow::guiParticleSetBrust(int v)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setBrustCount(v);
+        particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
+    }
+}
+
 void MainWindow::guiParticleSetNumber(int v)
 {
     if(m_selectedNode->particles())
@@ -2347,11 +2384,22 @@ void MainWindow::guiParticleSetTexture(const QString& v)
 
 }
 
-void MainWindow::guiParticleSetContinousMode(int v)
+void MainWindow::guiParticleSetPointSprite(bool stat)
 {
     if(m_selectedNode->particles())
     {
-        m_selectedNode->particles()->setContinousMode(v);
+        m_selectedNode->particles()->setUsePointSprite(stat);
+        particlesUpdate(m_selectedNode->particles());
+
+        notifyChanges(true);
+    }
+}
+
+void MainWindow::guiParticleSetContinousMode(bool stat)
+{
+    if(m_selectedNode->particles())
+    {
+        m_selectedNode->particles()->setContinousMode(stat);
         particlesUpdate(m_selectedNode->particles());
 
         notifyChanges(true);

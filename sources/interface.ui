@@ -987,6 +987,9 @@
             <item>
              <widget class="QWidget" name="widget" native="true">
               <layout class="QFormLayout" name="formLayout_7">
+               <property name="fieldGrowthPolicy">
+                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+               </property>
                <property name="margin">
                 <number>0</number>
                </property>
@@ -1026,121 +1029,6 @@
                    </property>
                    <property name="singleStep">
                     <double>0.010000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_21">
-                 <property name="text">
-                  <string>FreeMove</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QDoubleSpinBox" name="node_particles_freemove">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_23">
-                 <property name="text">
-                  <string>LifeInit</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="node_particles_lifeinit">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_24">
-                 <property name="text">
-                  <string>LifeDown</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_25">
-                 <property name="text">
-                  <string>Number</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_26">
-                 <property name="text">
-                  <string>Texture</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="5,1">
-                 <item>
-                  <widget class="QLineEdit" name="node_particles_texture"/>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="node_particles_texture_browse">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="7" column="1">
-                <widget class="QCheckBox" name="node_particles_continousmide">
-                 <property name="text">
-                  <string>Continous Mode</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="node_particles_lifedown">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,1">
-                 <item>
-                  <widget class="QSpinBox" name="node_particles_number">
-                   <property name="maximum">
-                    <number>9999</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="node_particles_build">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Icons/icons/cog.png</normaloff>:/Icons/icons/cog.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -1186,6 +1074,169 @@
                   </widget>
                  </item>
                 </layout>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>BulletSize</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_33">
+                 <item>
+                  <widget class="QDoubleSpinBox" name="node_particles_bulletsize_x">
+                   <property name="minimum">
+                    <double>-99.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="node_particles_bulletsize_y">
+                   <property name="minimum">
+                    <double>-99.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>FreeMove</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QDoubleSpinBox" name="node_particles_freemove">
+                 <property name="singleStep">
+                  <double>0.100000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QLabel" name="label_23">
+                 <property name="text">
+                  <string>LifeInit</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QDoubleSpinBox" name="node_particles_lifeinit">
+                 <property name="singleStep">
+                  <double>0.100000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>LifeDown</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QDoubleSpinBox" name="node_particles_lifedown">
+                 <property name="singleStep">
+                  <double>0.100000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_25">
+                 <property name="text">
+                  <string>Number</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,1">
+                 <item>
+                  <widget class="QSpinBox" name="node_particles_number">
+                   <property name="maximum">
+                    <number>9999</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="node_particles_build">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Icons/icons/cog.png</normaloff>:/Icons/icons/cog.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>Texture</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="1">
+                <layout class="QHBoxLayout" name="horizontalLayout_23" stretch="5,1">
+                 <item>
+                  <widget class="QLineEdit" name="node_particles_texture"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="node_particles_texture_browse">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="10" column="1">
+                <widget class="QCheckBox" name="node_particles_continousmode">
+                 <property name="text">
+                  <string>Continous Mode</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="1">
+                <widget class="QCheckBox" name="node_particles_pointsprite">
+                 <property name="text">
+                  <string>Point Sprite Particules</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QSpinBox" name="node_particles_brust"/>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_38">
+                 <property name="text">
+                  <string>Brust</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -1955,7 +2006,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_particles_build</tabstop>
   <tabstop>node_particles_texture</tabstop>
   <tabstop>node_particles_texture_browse</tabstop>
-  <tabstop>node_particles_continousmide</tabstop>
+  <tabstop>node_particles_continousmode</tabstop>
   <tabstop>node_water_uvrepeat_y</tabstop>
   <tabstop>node_water_speed</tabstop>
   <tabstop>node_water_blend</tabstop>
