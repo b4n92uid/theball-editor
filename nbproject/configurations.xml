@@ -8,6 +8,8 @@
       <itemPath>sources/PackerDialog.h</itemPath>
       <itemPath>sources/QNodeBinders.cpp</itemPath>
       <itemPath>sources/QNodeBinders.h</itemPath>
+      <itemPath>sources/QSignalBlocker.cpp</itemPath>
+      <itemPath>sources/QSignalBlocker.h</itemPath>
       <itemPath>sources/QTBEngine.cpp</itemPath>
       <itemPath>sources/QTBEngine.h</itemPath>
     </logicalFolder>
