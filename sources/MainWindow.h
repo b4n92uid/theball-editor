@@ -20,6 +20,7 @@
 #include "QVector2Box.h"
 #include "QTBEngine.h"
 #include "QNodeBinders.h"
+#include "QSignalBlocker.h"
 #include "PackerDialog.h"
 
 class MainWindow : public QMainWindow
@@ -161,7 +162,6 @@ public slots: // Node manager
     void guiParticleSetFreemove(double v);
     void guiParticleSetLifeinit(double v);
     void guiParticleSetLifedown(double v);
-    void guiParticleSetBrust(int v);
     void guiParticleSetNumber(int v);
     void guiParticleSetTexture(const QString& v);
     void guiParticleSetContinousMode(bool stat);
@@ -217,7 +217,7 @@ public slots: // Env manager
 
     void guiSkyboxApply(bool enable = true);
     void guiFogApply(bool enable = true);
-    void sceneAmbiantUpdate(const tbe::Vector3f& value);
+    void guiSceneAmbiantApply(const tbe::Vector3f& value);
 
     // -------- MANAGER -> GUI
 
@@ -305,7 +305,6 @@ private:
             QDoubleSpinBox* freemove;
             QDoubleSpinBox* lifeinit;
             QDoubleSpinBox* lifedown;
-            QSpinBox* brust;
             QSpinBox* number;
             QBrowsEdit* texture;
             QCheckBox* continiousmode;

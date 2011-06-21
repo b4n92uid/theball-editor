@@ -71,7 +71,7 @@ void MainWindow::buildFileHistory()
 
         foreach(QString filepath, history)
         {
-            QAction* act = filehistory->addAction(QFileInfo(filepath).fileName(),
+            QAction* act = filehistory->addAction("..." + filepath.section('\\', -2),
                                                   this, SLOT(openFileHistory()));
             act->setData(filepath);
         }
@@ -209,7 +209,6 @@ void MainWindow::initWidgets()
     nodesGui.particlesTab.freemove = m_uinterface.node_particles_freemove;
     nodesGui.particlesTab.lifeinit = m_uinterface.node_particles_lifeinit;
     nodesGui.particlesTab.lifedown = m_uinterface.node_particles_lifedown;
-    nodesGui.particlesTab.brust = m_uinterface.node_particles_brust;
     nodesGui.particlesTab.number = m_uinterface.node_particles_number;
     nodesGui.particlesTab.texture = new QBrowsEdit(this, m_uinterface.node_particles_texture, m_uinterface.node_particles_texture_browse);
     nodesGui.particlesTab.continiousmode = m_uinterface.node_particles_continousmode;
@@ -376,7 +375,6 @@ void MainWindow::initConnections()
     connect(nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetFreemove(double)));
     connect(nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifeinit(double)));
     connect(nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifedown(double)));
-    connect(nodesGui.particlesTab.brust, SIGNAL(valueChanged(int)), this, SLOT(guiParticleSetBrust(int)));
     connect(nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), this, SLOT(guiParticleSetNumber(int)));
     connect(nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(guiParticleSetTexture(const QString&)));
     connect(nodesGui.particlesTab.continiousmode, SIGNAL(clicked(bool)), this, SLOT(guiParticleSetContinousMode(bool)));
@@ -441,6 +439,8 @@ void MainWindow::initConnections()
 
     connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxApply(bool)));
     connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxApply()));
+
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiSceneAmbiantApply(const tbe::Vector3f&)));
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
@@ -923,11 +923,18 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
     if(!node)
         return;
 
-    nodesGui.name->blockSignals(true);
-    nodesGui.position->blockSignals(true);
-    nodesGui.scale->blockSignals(true);
-    nodesGui.rotation->blockSignals(true);
-    nodesGui.enable->blockSignals(true);
+    QSignalBlocker blocker;
+    blocker << nodesGui.name << nodesGui.position << nodesGui.scale <<
+            nodesGui.rotation << nodesGui.enable;
+
+    blocker.block();
+
+    QStandardItem* item = nodesGui.nodeItemBinder[node];
+
+    if(item->parent())
+        item->parent()->child(item->row(), 1)->setText(QString::fromStdString(node->getName()));
+    else
+        nodesGui.nodesListModel->item(item->row(), 1)->setText(QString::fromStdString(node->getName()));
 
     nodesGui.name->setText(QString::fromStdString(node->getName()));
     nodesGui.position->setValue(node->getPos());
@@ -938,11 +945,7 @@ void MainWindow::nodeUpdate(tbe::scene::Node* node)
     nodesGui.rotation->setValue(node->getMatrix().getRotate().getEuler() * 180 / M_PI);
     nodesGui.enable->setChecked(node->isEnable());
 
-    nodesGui.name->blockSignals(false);
-    nodesGui.position->blockSignals(false);
-    nodesGui.scale->blockSignals(false);
-    nodesGui.rotation->blockSignals(false);
-    nodesGui.enable->blockSignals(false);
+    blocker.unblock();
 
     using namespace tbe;
 
@@ -1112,11 +1115,12 @@ void MainWindow::lightUpdate(tbe::scene::Light* light)
 {
     nodeUpdate(light);
 
-    nodesGui.lighTab.type->blockSignals(true);
-    nodesGui.lighTab.ambiant->blockSignals(true);
-    nodesGui.lighTab.diffuse->blockSignals(true);
-    nodesGui.lighTab.specular->blockSignals(true);
-    nodesGui.lighTab.radius->blockSignals(true);
+    QSignalBlocker blocker;
+    blocker << nodesGui.lighTab.type << nodesGui.lighTab.ambiant
+            << nodesGui.lighTab.diffuse << nodesGui.lighTab.specular
+            << nodesGui.lighTab.radius;
+
+    blocker.block();
 
     nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
     nodesGui.lighTab.ambiant->setValue(vec43(light->getAmbient()));
@@ -1124,11 +1128,7 @@ void MainWindow::lightUpdate(tbe::scene::Light* light)
     nodesGui.lighTab.specular->setValue(vec43(light->getSpecular()));
     nodesGui.lighTab.radius->setValue(light->getRadius());
 
-    nodesGui.lighTab.type->blockSignals(false);
-    nodesGui.lighTab.ambiant->blockSignals(false);
-    nodesGui.lighTab.diffuse->blockSignals(false);
-    nodesGui.lighTab.specular->blockSignals(false);
-    nodesGui.lighTab.radius->blockSignals(false);
+    blocker.unblock();
 }
 
 void MainWindow::lightDelete(tbe::scene::Light* light)
@@ -1196,17 +1196,14 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
 {
     nodeUpdate(particles);
 
-    nodesGui.particlesTab.gravity->blockSignals(true);
-    nodesGui.particlesTab.boxsize->blockSignals(true);
-    nodesGui.particlesTab.bulletsize->blockSignals(true);
-    nodesGui.particlesTab.freemove->blockSignals(true);
-    nodesGui.particlesTab.lifeinit->blockSignals(true);
-    nodesGui.particlesTab.lifedown->blockSignals(true);
-    nodesGui.particlesTab.brust->blockSignals(true);
-    nodesGui.particlesTab.number->blockSignals(true);
-    nodesGui.particlesTab.texture->blockSignals(true);
-    nodesGui.particlesTab.continiousmode->blockSignals(true);
-    nodesGui.particlesTab.pointsprite->blockSignals(true);
+    QSignalBlocker blocker;
+    blocker << nodesGui.particlesTab.gravity << nodesGui.particlesTab.boxsize
+            << nodesGui.particlesTab.bulletsize << nodesGui.particlesTab.freemove
+            << nodesGui.particlesTab.lifeinit << nodesGui.particlesTab.lifedown
+            << nodesGui.particlesTab.number << nodesGui.particlesTab.texture
+            << nodesGui.particlesTab.continiousmode << nodesGui.particlesTab.pointsprite;
+
+    blocker.block();
 
     nodesGui.particlesTab.gravity->setValue(particles->getGravity());
     nodesGui.particlesTab.boxsize->setValue(particles->getBoxSize());
@@ -1214,23 +1211,12 @@ void MainWindow::particlesUpdate(tbe::scene::ParticlesEmiter* particles)
     nodesGui.particlesTab.freemove->setValue(particles->getFreeMove());
     nodesGui.particlesTab.lifeinit->setValue(particles->getLifeInit());
     nodesGui.particlesTab.lifedown->setValue(particles->getLifeDown());
-    nodesGui.particlesTab.brust->setValue(particles->getBrustCount());
     nodesGui.particlesTab.number->setValue(particles->getNumber());
     nodesGui.particlesTab.texture->setOpenFileName(QString::fromStdString(particles->getTexture().getFilename()));
     nodesGui.particlesTab.continiousmode->setChecked(particles->isContinousMode());
     nodesGui.particlesTab.pointsprite->setChecked(particles->isUsePointSprite());
 
-    nodesGui.particlesTab.gravity->blockSignals(false);
-    nodesGui.particlesTab.boxsize->blockSignals(false);
-    nodesGui.particlesTab.bulletsize->blockSignals(false);
-    nodesGui.particlesTab.freemove->blockSignals(false);
-    nodesGui.particlesTab.lifeinit->blockSignals(false);
-    nodesGui.particlesTab.lifedown->blockSignals(false);
-    nodesGui.particlesTab.number->blockSignals(false);
-    nodesGui.particlesTab.brust->blockSignals(false);
-    nodesGui.particlesTab.texture->blockSignals(false);
-    nodesGui.particlesTab.continiousmode->blockSignals(false);
-    nodesGui.particlesTab.pointsprite->blockSignals(false);
+    blocker.unblock();
 }
 
 void MainWindow::particlesDelete(tbe::scene::ParticlesEmiter* particles)
@@ -1384,9 +1370,9 @@ void MainWindow::guiFogApply(bool enable)
 
 void MainWindow::sceneAmbiantRegister(const tbe::Vector3f& value)
 {
+    envGui.sceneAmbiant->blockSignals(true);
     envGui.sceneAmbiant->setValue(value);
-
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(sceneAmbiantUpdate(const tbe::Vector3f&)));
+    envGui.sceneAmbiant->blockSignals(false);
 }
 
 QTBEngine* MainWindow::getTbeWidget() const
@@ -1394,7 +1380,7 @@ QTBEngine* MainWindow::getTbeWidget() const
     return m_tbeWidget;
 }
 
-void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
+void MainWindow::guiSceneAmbiantApply(const tbe::Vector3f& value)
 {
     m_tbeWidget->setSceneAmbiant(value);
 
@@ -1403,26 +1389,26 @@ void MainWindow::sceneAmbiantUpdate(const tbe::Vector3f& value)
 
 void MainWindow::fogRegister(tbe::scene::Fog* fog)
 {
-    envGui.fog.enable->blockSignals(true);
-    envGui.fog.color->blockSignals(true);
-    envGui.fog.start->blockSignals(true);
-    envGui.fog.end->blockSignals(true);
+    QSignalBlocker blocker;
+    blocker << envGui.fog.enable << envGui.fog.color
+            << envGui.fog.start << envGui.fog.end;
+
+    blocker.block();
 
     envGui.fog.enable->setChecked(fog->isEnable());
     envGui.fog.color->setValue(vec43(fog->getColor()));
     envGui.fog.start->setValue((float)fog->getStart());
     envGui.fog.end->setValue((float)fog->getEnd());
 
-    envGui.fog.enable->blockSignals(false);
-    envGui.fog.color->blockSignals(false);
-    envGui.fog.start->blockSignals(false);
-    envGui.fog.end->blockSignals(false);
+    blocker.unblock();
 }
 
 void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
 {
-    envGui.skybox.apply->blockSignals(true);
-    envGui.skybox.enable->blockSignals(true);
+    QSignalBlocker blocker;
+    blocker << envGui.skybox.apply << envGui.skybox.enable;
+
+    blocker.block();
 
     tbe::Texture* texs = sky->getTextures();
 
@@ -1431,8 +1417,7 @@ void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
 
     envGui.skybox.enable->setChecked(sky->isEnable());
 
-    envGui.skybox.apply->blockSignals(false);
-    envGui.skybox.enable->blockSignals(false);
+    blocker.unblock();
 }
 
 void MainWindow::toggleFullWidget(bool full)
@@ -2337,17 +2322,6 @@ void MainWindow::guiParticleSetLifedown(double v)
     if(m_selectedNode->particles())
     {
         m_selectedNode->particles()->setLifeDown(v);
-        particlesUpdate(m_selectedNode->particles());
-
-        notifyChanges(true);
-    }
-}
-
-void MainWindow::guiParticleSetBrust(int v)
-{
-    if(m_selectedNode->particles())
-    {
-        m_selectedNode->particles()->setBrustCount(v);
         particlesUpdate(m_selectedNode->particles());
 
         notifyChanges(true);
