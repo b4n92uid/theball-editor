@@ -336,6 +336,7 @@ void MainWindow::initConnections()
 
     connect(nodesGui.meshTab.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetTextured(bool)));
     connect(nodesGui.meshTab.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetLighted(bool)));
+    connect(nodesGui.meshTab.matedit->foged, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetFoged(bool)));
     connect(nodesGui.meshTab.matedit->alpha, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetAlpha(bool)));
     connect(nodesGui.meshTab.matedit->blending, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetBlend(bool)));
     connect(nodesGui.meshTab.matedit->culltrick, SIGNAL(clicked(bool)), this, SLOT(guiMeshSetCullTrick(bool)));
@@ -1676,6 +1677,7 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
     guiMeshTextureSelected(first);
 
     // Material stat
+    nodesGui.meshTab.matedit->foged->setChecked(mat->isEnable(Material::FOGED));
     nodesGui.meshTab.matedit->lighted->setChecked(mat->isEnable(Material::LIGHTED));
     nodesGui.meshTab.matedit->culltrick->setChecked(mat->isEnable(Material::VERTEX_SORT_CULL_TRICK));
 
@@ -1708,6 +1710,23 @@ void MainWindow::guiMeshMaterialSelected(const QModelIndex& index)
 
     nodesGui.meshTab.matedit->alpha->setChecked(alpha);
     nodesGui.meshTab.matedit->alphathreshold->setValue(mat->getAlphaThershold());
+}
+
+void MainWindow::guiMeshSetFoged(bool stat)
+{
+    if(!m_selectedNode->mesh())
+        return;
+
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    if(stat)
+        mat->enable(Material::FOGED);
+    else
+        mat->disable(Material::FOGED);
+
+    notifyChanges(true);
 }
 
 void MainWindow::guiMeshSetTextured(bool stat)

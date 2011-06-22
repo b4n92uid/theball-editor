@@ -126,6 +126,7 @@ public slots: // Node manager
     void guiMeshSetOpacity(double value);
     void guiMeshSetAlphaThreshold(double value);
 
+    void guiMeshSetFoged(bool stat);
     void guiMeshSetTextured(bool stat);
     void guiMeshSetLighted(bool stat);
     void guiMeshSetCullTrick(bool stat);

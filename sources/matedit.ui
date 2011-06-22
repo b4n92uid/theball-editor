@@ -214,6 +214,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="foged">
+        <property name="text">
+         <string>Foged</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="culltrick">
         <property name="text">
          <string>Sort Cull Trick</string>
