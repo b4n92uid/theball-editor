@@ -221,14 +221,14 @@ void QTBEngine::moveApply()
                 setCursor(Qt::BlankCursor);
 
                 position.y += m_eventManager->mousePosRel.y / 2;
-                tools::round(position, gridSize);
+                math::round(position, gridSize);
             }
             else
             {
                 float backY = position.y;
                 position.x = m_curCursor3D.x;
                 position.z = m_curCursor3D.z;
-                tools::round(position, gridSize);
+                math::round(position, gridSize);
                 position.y = backY;
             }
         }
@@ -699,7 +699,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             Vector2i cuts;
             cuts.x = sceneAabb.max.x - sceneAabb.min.x;
             cuts.y = sceneAabb.max.z - sceneAabb.min.z;
-            cuts = tools::nextPow2(cuts);
+            cuts = math::nextPow2(cuts);
 
             Vector2f size = cuts;
 
@@ -868,7 +868,7 @@ void QTBEngine::clearScene()
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
-    emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
+    emit notifyInitAmbiant(math::vec43(m_sceneManager->getAmbientLight()));
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -889,7 +889,7 @@ void QTBEngine::loadScene(const QString& filename)
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
-    emit notifyInitAmbiant(vec43(m_sceneManager->getAmbientLight()));
+    emit notifyInitAmbiant(math::vec43(m_sceneManager->getAmbientLight()));
 }
 
 struct RootSort
@@ -1210,7 +1210,7 @@ tbe::scene::SceneParser* QTBEngine::getSceneParser() const
 
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 {
-    m_sceneManager->setAmbientLight(vec34(value));
+    m_sceneManager->setAmbientLight(math::vec34(value));
 }
 
 void QTBEngine::select(tbe::scene::Node* node)

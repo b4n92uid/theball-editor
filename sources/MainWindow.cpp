@@ -1124,9 +1124,9 @@ void MainWindow::lightUpdate(tbe::scene::Light* light)
     blocker.block();
 
     nodesGui.lighTab.type->setCurrentIndex((int)light->getType());
-    nodesGui.lighTab.ambiant->setValue(vec43(light->getAmbient()));
-    nodesGui.lighTab.diffuse->setValue(vec43(light->getDiffuse()));
-    nodesGui.lighTab.specular->setValue(vec43(light->getSpecular()));
+    nodesGui.lighTab.ambiant->setValue(tbe::math::vec43(light->getAmbient()));
+    nodesGui.lighTab.diffuse->setValue(tbe::math::vec43(light->getDiffuse()));
+    nodesGui.lighTab.specular->setValue(tbe::math::vec43(light->getSpecular()));
     nodesGui.lighTab.radius->setValue(light->getRadius());
 
     blocker.unblock();
@@ -1360,7 +1360,7 @@ void MainWindow::guiSkyboxApply(bool enable)
 void MainWindow::guiFogApply(bool enable)
 {
     if(enable)
-        m_tbeWidget->fogApply(vec34(envGui.fog.color->value()),
+        m_tbeWidget->fogApply(tbe::math::vec34(envGui.fog.color->value()),
                               envGui.fog.start->value(),
                               envGui.fog.end->value());
     else
@@ -1397,9 +1397,9 @@ void MainWindow::fogRegister(tbe::scene::Fog* fog)
     blocker.block();
 
     envGui.fog.enable->setChecked(fog->isEnable());
-    envGui.fog.color->setValue(vec43(fog->getColor()));
-    envGui.fog.start->setValue((float)fog->getStart());
-    envGui.fog.end->setValue((float)fog->getEnd());
+    envGui.fog.color->setValue(tbe::math::vec43(fog->getColor()));
+    envGui.fog.start->setValue(fog->getStart());
+    envGui.fog.end->setValue(fog->getEnd());
 
     blocker.unblock();
 }
@@ -2423,7 +2423,7 @@ void MainWindow::guiLightSetAmbiant(const tbe::Vector3f& value)
 {
     if(m_selectedNode->light())
     {
-        m_selectedNode->light()->setAmbient(vec34(value));
+        m_selectedNode->light()->setAmbient(tbe::math::vec34(value));
         lightUpdate(m_selectedNode->light());
 
         notifyChanges(true);
@@ -2434,7 +2434,7 @@ void MainWindow::guiLightSetDiffuse(const tbe::Vector3f& value)
 {
     if(m_selectedNode->light())
     {
-        m_selectedNode->light()->setDiffuse(vec34(value));
+        m_selectedNode->light()->setDiffuse(tbe::math::vec34(value));
         lightUpdate(m_selectedNode->light());
 
         notifyChanges(true);
@@ -2445,7 +2445,7 @@ void MainWindow::guiLightSetSpecular(const tbe::Vector3f& value)
 {
     if(m_selectedNode->light())
     {
-        m_selectedNode->light()->setSpecular(vec34(value));
+        m_selectedNode->light()->setSpecular(tbe::math::vec34(value));
         lightUpdate(m_selectedNode->light());
 
         notifyChanges(true);
