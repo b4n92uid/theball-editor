@@ -254,8 +254,9 @@ void QTBEngine::moveApply()
             }
             else
             {
-                transform = -left * mousePosRel.x * moveSpeed;
-                transform -= target * mousePosRel.y * moveSpeed;
+                Quaternion rota = m_selectedNode->getAbsoluteMatrix(false).getRotate();
+                transform = rota * (-left * mousePosRel.x * moveSpeed);
+                transform -= rota * (target * mousePosRel.y * moveSpeed);
                 transform.y = 0;
             }
 
@@ -271,7 +272,7 @@ void QTBEngine::moveApply()
     m_selectedNode->setMatrix(apply);
 
     if(!m_gridEnable)
-        m_centerTarget = m_selectedNode->getAbsoluteMatrix() * m_selectedNode->getAabb().getCenter();
+        m_centerTarget = m_axe->getAbsoluteMatrix().getPos();
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 
