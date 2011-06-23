@@ -37,7 +37,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="2,2,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,4">
      <item>
@@ -46,7 +46,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="ressource.qrc">:/Icons/icons/logo.png</pixmap>
+        <pixmap resource="ressource.qrc">:/Medias/medias/logo-big.png</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="ressource.qrc">
-    <normaloff>:/Icons/icons/icon.ico</normaloff>:/Icons/icons/icon.ico</iconset>
+    <normaloff>:/Medias/medias/icon.ico</normaloff>:/Medias/medias/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="2,8,1">
@@ -55,8 +55,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Icons/icons/arrow_up.png</normaloff>:/Icons/icons/arrow_up.png</iconset>
+            <iconset>
+             <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
            </property>
           </widget>
          </item>
@@ -66,8 +66,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Icons/icons/arrow_down.png</normaloff>:/Icons/icons/arrow_down.png</iconset>
+            <iconset>
+             <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
            </property>
           </widget>
          </item>
@@ -77,8 +77,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Icons/icons/arrow_left.png</normaloff>:/Icons/icons/arrow_left.png</iconset>
+            <iconset>
+             <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
            </property>
           </widget>
          </item>
@@ -88,8 +88,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Icons/icons/arrow_right.png</normaloff>:/Icons/icons/arrow_right.png</iconset>
+            <iconset>
+             <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
            </property>
           </widget>
          </item>
@@ -177,8 +177,8 @@
                 <string>Ajouter</string>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                </property>
               </widget>
              </item>
@@ -188,8 +188,8 @@
                 <string>Supprimer</string>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                </property>
               </widget>
              </item>
@@ -199,8 +199,8 @@
                 <string>Suppr. Tout</string>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                </property>
               </widget>
              </item>
@@ -646,8 +646,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
               </item>
@@ -657,8 +657,8 @@
                  <string>Cloner</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/page_copy.png</normaloff>:/Icons/icons/page_copy.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
                 </property>
                </widget>
               </item>
@@ -668,8 +668,8 @@
                  <string>Effacer</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -794,8 +794,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
               </item>
@@ -805,8 +805,8 @@
                  <string>Cloner</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/page_copy.png</normaloff>:/Icons/icons/page_copy.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
                 </property>
                </widget>
               </item>
@@ -816,8 +816,8 @@
                  <string>Effacer</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -942,8 +942,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
               </item>
@@ -956,8 +956,8 @@
                  <string>Cloner</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/page_copy.png</normaloff>:/Icons/icons/page_copy.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
                 </property>
                </widget>
               </item>
@@ -970,8 +970,8 @@
                  <string>Effacer</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1176,8 +1176,8 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Icons/icons/cog.png</normaloff>:/Icons/icons/cog.png</iconset>
+                    <iconset>
+                     <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -1207,8 +1207,8 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                    <iconset>
+                     <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -1239,8 +1239,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1250,8 +1250,8 @@
                  <string>Cloner</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/page_copy.png</normaloff>:/Icons/icons/page_copy.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1261,8 +1261,8 @@
                  <string>Effacer</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1282,7 +1282,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;img src=&quot;:/Icons/icons/mark.png&quot; style=&quot;float:left&quot; /&gt;&lt;span style=&quot; font-size:8pt; font-weight:600; font-style:italic;&quot;&gt;Les marqueurs&lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt; servent a indiquer une position absolue ou relative a un noude dans la scene afin d'etre utiliser dans les programme extern pour extraire une position précise&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;img src=&quot;:/Medias/medias/mark.png&quot; style=&quot;float:left&quot; /&gt;&lt;span style=&quot; font-size:8pt; font-weight:600; font-style:italic;&quot;&gt;Les marqueurs&lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt; servent a indiquer une position absolue ou relative a un noude dans la scene afin d'etre utiliser dans les programme extern pour extraire une position précise&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="wordWrap">
@@ -1320,8 +1320,8 @@ p, li { white-space: pre-wrap; }
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1331,8 +1331,8 @@ p, li { white-space: pre-wrap; }
                  <string>Cloner</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/page_copy.png</normaloff>:/Icons/icons/page_copy.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1342,8 +1342,8 @@ p, li { white-space: pre-wrap; }
                  <string>Effacer</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1367,8 +1367,8 @@ p, li { white-space: pre-wrap; }
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1378,8 +1378,8 @@ p, li { white-space: pre-wrap; }
                  <string>Supprimer</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1389,8 +1389,8 @@ p, li { white-space: pre-wrap; }
                  <string>Suppr. Tout</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+                 <iconset>
+                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1608,8 +1608,8 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
              </item>
@@ -1639,8 +1639,8 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
              </item>
@@ -1670,8 +1670,8 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
              </item>
@@ -1701,8 +1701,8 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
              </item>
@@ -1732,8 +1732,8 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
              </item>
@@ -1747,8 +1747,8 @@ p, li { white-space: pre-wrap; }
                 <string>Apliquer</string>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/accept.png</normaloff>:/Icons/icons/accept.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/accept.png</normaloff>:/Medias/medias/accept.png</iconset>
                </property>
               </widget>
              </item>
@@ -1771,8 +1771,8 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+                <iconset>
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
              </item>
@@ -1849,8 +1849,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/folder_page_white.png</normaloff>:/Icons/icons/folder_page_white.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/folder_page_white.png</normaloff>:/Medias/medias/folder_page_white.png</iconset>
    </property>
    <property name="text">
     <string>Charger une scene...</string>
@@ -1861,8 +1861,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/disk.png</normaloff>:/Icons/icons/disk.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/disk.png</normaloff>:/Medias/medias/disk.png</iconset>
    </property>
    <property name="text">
     <string>Enregistrer</string>
@@ -1889,8 +1889,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/vcard.png</normaloff>:/Icons/icons/vcard.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/vcard.png</normaloff>:/Medias/medias/vcard.png</iconset>
    </property>
    <property name="text">
     <string>A Propos</string>
@@ -1901,8 +1901,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionNewScene">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/page_white_star.png</normaloff>:/Icons/icons/page_white_star.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/page_white_star.png</normaloff>:/Medias/medias/page_white_star.png</iconset>
    </property>
    <property name="text">
     <string>Nouvelle scene</string>
@@ -1916,8 +1916,8 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/arrow_out.png</normaloff>:/Icons/icons/arrow_out.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/arrow_out.png</normaloff>:/Medias/medias/arrow_out.png</iconset>
    </property>
    <property name="text">
     <string>Rendue plein fenêtre</string>
@@ -1933,8 +1933,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionScreenShot">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/image.png</normaloff>:/Icons/icons/image.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/image.png</normaloff>:/Medias/medias/image.png</iconset>
    </property>
    <property name="text">
     <string>Capture d'écran</string>
@@ -1945,8 +1945,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionOpenPacker">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Icons/icons/package.png</normaloff>:/Icons/icons/package.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/package.png</normaloff>:/Medias/medias/package.png</iconset>
    </property>
    <property name="text">
     <string>Exporter en Pack</string>
