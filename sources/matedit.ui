@@ -76,7 +76,7 @@
           </property>
           <property name="icon">
            <iconset resource="ressource.qrc">
-            <normaloff>:/Icons/icons/arrow_down.png</normaloff>:/Icons/icons/arrow_down.png</iconset>
+            <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
           </property>
          </widget>
         </item>
@@ -87,7 +87,7 @@
           </property>
           <property name="icon">
            <iconset resource="ressource.qrc">
-            <normaloff>:/Icons/icons/arrow_up.png</normaloff>:/Icons/icons/arrow_up.png</iconset>
+            <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
           </property>
          </widget>
         </item>
@@ -98,7 +98,7 @@
           </property>
           <property name="icon">
            <iconset resource="ressource.qrc">
-            <normaloff>:/Icons/icons/explore.png</normaloff>:/Icons/icons/explore.png</iconset>
+            <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
           </property>
          </widget>
         </item>
@@ -109,7 +109,7 @@
           </property>
           <property name="icon">
            <iconset resource="ressource.qrc">
-            <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+            <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
           </property>
          </widget>
         </item>

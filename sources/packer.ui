@@ -69,7 +69,7 @@
        </property>
        <property name="icon">
         <iconset resource="ressource.qrc">
-         <normaloff>:/Icons/icons/cross.png</normaloff>:/Icons/icons/cross.png</iconset>
+         <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
        </property>
       </widget>
      </item>
@@ -80,7 +80,7 @@
        </property>
        <property name="icon">
         <iconset resource="ressource.qrc">
-         <normaloff>:/Icons/icons/add.png</normaloff>:/Icons/icons/add.png</iconset>
+         <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
        </property>
       </widget>
      </item>
@@ -104,7 +104,7 @@
        </property>
        <property name="icon">
         <iconset resource="ressource.qrc">
-         <normaloff>:/Icons/icons/package.png</normaloff>:/Icons/icons/package.png</iconset>
+         <normaloff>:/Medias/medias/package.png</normaloff>:/Medias/medias/package.png</iconset>
        </property>
       </widget>
      </item>
