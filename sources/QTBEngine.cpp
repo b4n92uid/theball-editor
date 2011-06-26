@@ -77,7 +77,7 @@ void QTBEngine::initializeGL()
     m_particlesScene = new ParticlesParallelScene;
     m_sceneManager->addParallelScene(m_particlesScene);
 
-    m_markScene = new MapMarkParalleScene;
+    m_markScene = new MapMarkParallelScene;
     m_sceneManager->addParallelScene(m_markScene);
 
     m_sceneParser = new scene::SceneParser(m_sceneManager);
