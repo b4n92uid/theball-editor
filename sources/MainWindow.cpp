@@ -324,8 +324,8 @@ void MainWindow::initConnections()
     connect(nodesGui.enable, SIGNAL(clicked(bool)), this, SLOT(guiNodeSetEnalbe(bool)));
 
     connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
-    connect(nodesGui.markTab.clone, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
-    connect(nodesGui.markTab.del, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
+    connect(nodesGui.markTab.clone, SIGNAL(clicked()), this, SLOT(guiMarkClone()));
+    connect(nodesGui.markTab.del, SIGNAL(clicked()), this, SLOT(guiMarkDelete()));
 
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.meshTab.clone, SIGNAL(clicked()), this, SLOT(guiMeshClone()));
@@ -638,7 +638,7 @@ void MainWindow::saveScene(const QString& filename)
         std::string key = genGui.additionalModel->item(i, 0)->text().toStdString();
         std::string value = genGui.additionalModel->item(i, 1)->text().toStdString();
 
-        sceneParser->setAdditional(key, value);
+        sceneParser->setAdditionalString(key, value);
     }
 
     m_tbeWidget->saveScene(filename);
@@ -983,7 +983,7 @@ void MainWindow::meshRegister(tbe::scene::Mesh* mesh)
     userdata.setValue(mesh);
 
     QStandardItem* itemType = new QStandardItem("Mesh");
-    itemType->setIcon(QIcon(":/Icons/icons/mesh.png"));
+    itemType->setIcon(QIcon(":/Medias/medias/mesh.png"));
     itemType->setData(userdata);
     itemType->setData(IsMesh, ContentType);
 
@@ -1091,7 +1091,7 @@ void MainWindow::lightRegister(tbe::scene::Light* light)
     userData.setValue(light);
 
     QStandardItem* itemType = new QStandardItem("Light");
-    itemType->setIcon(QIcon(":/Icons/icons/light.png"));
+    itemType->setIcon(QIcon(":/Medias/medias/light.png"));
     itemType->setData(userData);
     itemType->setData(IsLight, ContentType);
 
@@ -1172,7 +1172,7 @@ void MainWindow::particlesRegister(tbe::scene::ParticlesEmiter* particles)
     userData.setValue(particles);
 
     QStandardItem* itemType = new QStandardItem("Particles");
-    itemType->setIcon(QIcon(":/Icons/icons/particles.png"));
+    itemType->setIcon(QIcon(":/Medias/medias/particles.png"));
     itemType->setData(userData);
     itemType->setData(IsParticles, ContentType);
 
@@ -2088,7 +2088,7 @@ void MainWindow::markRegister(tbe::scene::MapMark* mark)
     userdata.setValue(mark);
 
     QStandardItem* itemType = new QStandardItem("Mark");
-    itemType->setIcon(QIcon(":/Icons/icons/mark.png"));
+    itemType->setIcon(QIcon(":/Medias/medias/mark.png"));
     itemType->setData(userdata);
     itemType->setData(IsMark, ContentType);
 
