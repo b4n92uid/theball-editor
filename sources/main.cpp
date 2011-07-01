@@ -20,6 +20,9 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+    QSplashScreen splash(QPixmap(":/Medias/medias/splashscreen.png"));
+    splash.show();
+
     QTranslator translator;
     translator.load("qt_fr", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 
@@ -38,10 +41,14 @@ int main(int argc, char *argv[])
     window.showMaximized();
     window.newScene();
 
+    splash.raise();
+
     if(argc > 1)
     {
         window.openScene(argv[1]);
     }
+
+    splash.finish(&window);
 
     int ret = app.exec();
 
