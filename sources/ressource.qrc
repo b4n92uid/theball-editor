@@ -23,5 +23,6 @@
     <file>../medias/mesh.png</file>
     <file>../medias/light.png</file>
     <file>../medias/particles.png</file>
+    <file>../medias/splashscreen.png</file>
   </qresource>
 </RCC>
