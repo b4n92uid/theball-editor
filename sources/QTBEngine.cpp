@@ -46,6 +46,7 @@ QTBEngine::QTBEngine(QWidget* parent)
     m_lastSelectedNode = NULL;
 
     m_gridEnable = false;
+    m_propertyCopyMode = false;
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -379,8 +380,25 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             if(m_selectedNode)
                 m_selectedNode->setEnable(true);
 
-            meshSelect(nearest);
-            emit notifyMeshSelect(nearest);
+            if(m_propertyCopyMode)
+            {
+                nearest->clearUserData();
+
+                Any::Map ud = m_selectedNode->getUserDatas();
+
+                foreach(Any::Map::value_type i, ud)
+                {
+                    nearest->setUserData(i.first, i.second);
+                }
+
+                emit notifyMeshSelect(nearest);
+                meshSelect(nearest);
+            }
+            else
+            {
+                meshSelect(nearest);
+                emit notifyMeshSelect(nearest);
+            }
         }
         else
         {
@@ -473,6 +491,12 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     else if(m_selectedNode)
     {
+        if(ev->key() == Qt::Key_Alt)
+        {
+            setCursor(Qt::PointingHandCursor);
+            m_propertyCopyMode = true;
+        }
+
         if(ev->key() == Qt::Key_P && !m_selectedNode->getParent()->isRoot())
         {
             using namespace tbe::scene;
@@ -816,6 +840,12 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Shift)
         setCursor(Qt::OpenHandCursor);
+
+    if(ev->key() == Qt::Key_Alt)
+    {
+        setCursor(Qt::OpenHandCursor);
+        m_propertyCopyMode = false;
+    }
 
     int c = std::tolower(ev->key());
     translate(c);
