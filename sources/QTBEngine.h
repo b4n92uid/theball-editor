@@ -193,12 +193,26 @@ private:
         {
             removeNode(v, *it, typevec);
 
-            tools::erase(m_nodes, *it);
-            tools::erase(typevec, *it);
+            typename std::vector<T>::iterator it = std::find(typevec.begin(), typevec.end(), *it);
+
+            if(it != typevec.end())
+                typevec.erase(it);
+
+            typename std::vector<tbe::scene::Node*>::iterator it2 = std::find(m_nodes.begin(), m_nodes.end(), *it);
+
+            if(it2 != m_nodes.end())
+                m_nodes.erase(it2);
         }
 
-        tools::erase(m_nodes, v);
-        tools::erase(typevec, v);
+        typename std::vector<T>::iterator it = std::find(typevec.begin(), typevec.end(), v);
+
+        if(it != typevec.end())
+            typevec.erase(it);
+
+        typename std::vector<tbe::scene::Node*>::iterator it2 = std::find(m_nodes.begin(), m_nodes.end(), v);
+
+        if(it2 != m_nodes.end())
+            m_nodes.erase(it2);
 
     }
 

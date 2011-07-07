@@ -508,38 +508,38 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             if(Mesh * mesh = tools::find(m_meshs, m_selectedNode))
             {
-                meshDelete(mesh);
                 emit notifyMeshDelete(mesh);
+                meshDelete(mesh);
 
-                deselect();
                 emit notifyDeselect();
+                deselect();
             }
 
             else if(Light * light = tools::find(m_lights, m_selectedNode))
             {
-                lightDelete(light);
                 emit notifyLightDelete(light);
+                lightDelete(light);
 
-                deselect();
                 emit notifyDeselect();
+                deselect();
             }
 
             else if(ParticlesEmiter * particles = tools::find(m_particles, m_selectedNode))
             {
-                particlesDelete(particles);
                 emit notifyParticlesDelete(particles);
+                particlesDelete(particles);
 
-                deselect();
                 emit notifyDeselect();
+                deselect();
             }
 
             else if(MapMark * mark = tools::find(m_marks, m_selectedNode))
             {
-                markDelete(mark);
                 emit notifyMarkDelete(mark);
+                markDelete(mark);
 
-                deselect();
                 emit notifyDeselect();
+                deselect();
             }
         }
 
