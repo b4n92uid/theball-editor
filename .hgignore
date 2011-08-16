@@ -1,13 +1,10 @@
-ignore
 build
+ignore
 debug
 release
-private
 
-object_script.tbeditor
+qtcreator
+qmake
+nbproject
 
-syntax: glob
 ui_*
-**.bash
-**.mk
-**.log
