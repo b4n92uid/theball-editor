@@ -18,7 +18,7 @@ LIBS += $$TBENGINE_LIB $$DEVIL_LIB $$FREETYPE_LIB $$QUAZIP_LIB $$ZLIB_LIB -lopen
 UI_DIR = ../sources
 
 debug {
-    CONFIG += console
+    CONFIG += CONSOLE
     DEFINES += _DEBUG
 
     MOC_DIR     = ../build/debug
