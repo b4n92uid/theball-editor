@@ -28,6 +28,8 @@ debug {
 }
 
 release {
+    win32: CONFIG += windows
+
     MOC_DIR     = ../build/release
     OBJECTS_DIR = ../build/release
     RCC_DIR     = ../build/release
