@@ -1580,38 +1580,6 @@ void MainWindow::clearNodeList()
     nodesGui.nodeItemBinder.clear();
 }
 
-void MainWindow::setSelectedTexture(tbe::Texture& tex)
-{
-    using namespace tbe::scene;
-
-    QModelIndex index = nodesGui.meshTab.matedit->textureView->currentIndex();
-
-    if(!index.isValid())
-        return;
-
-    Material* mat = getSelectedMaterial();
-
-    mat->setTexture(tex, index.row());
-
-    QVariant data;
-    data.setValue(tex);
-
-    nodesGui.meshTab.textureModel->itemFromIndex(index)->setData(data);
-}
-
-tbe::Texture MainWindow::getSelectedTexture()
-{
-    using namespace tbe;
-
-    QModelIndex index = nodesGui.meshTab.matedit->textureView->currentIndex();
-
-    if(index.isValid())
-        return nodesGui.meshTab.textureModel
-            ->itemFromIndex(index)->data().value<Texture > ();
-    else
-        return Texture();
-}
-
 tbe::scene::Material* MainWindow::getSelectedMaterial()
 {
     using namespace tbe::scene;
@@ -1751,17 +1719,17 @@ void MainWindow::guiMeshTextureSelected(const QModelIndex& index)
     if(!m_selectedNode->mesh())
         return;
 
-    using namespace tbe;
+    using namespace tbe::scene;
 
-    Texture tex = getSelectedTexture();
+    Material* mat = getSelectedMaterial();
 
-    if(tex.getMulTexBlend() == Texture::MODULATE)
+    if(mat->getTextureBlend(index.row()) == Material::MODULATE)
         nodesGui.meshTab.matedit->texture_modulate->setChecked(true);
 
-    else if(tex.getMulTexBlend() == Texture::ADDITIVE)
+    else if(mat->getTextureBlend(index.row()) == Material::ADDITIVE)
         nodesGui.meshTab.matedit->texture_additive->setChecked(true);
 
-    else if(tex.getMulTexBlend() == Texture::REPLACE)
+    else if(mat->getTextureBlend(index.row()) == Material::REPLACE)
         nodesGui.meshTab.matedit->texture_replace->setChecked(true);
 }
 
@@ -1893,18 +1861,18 @@ void MainWindow::guiMeshTextureSetBlendMode()
     using namespace tbe;
     using namespace scene;
 
-    Texture tex = getSelectedTexture();
+    QModelIndex index = nodesGui.meshTab.matedit->textureView->currentIndex();
+
+    Material* mat = getSelectedMaterial();
 
     if(nodesGui.meshTab.matedit->texture_modulate->isChecked())
-        tex.setMulTexBlend(Texture::MODULATE);
+        mat->setTextureBlend(Material::MODULATE, index.row());
 
     else if(nodesGui.meshTab.matedit->texture_additive->isChecked())
-        tex.setMulTexBlend(Texture::ADDITIVE);
+        mat->setTextureBlend(Material::ADDITIVE, index.row());
 
     else if(nodesGui.meshTab.matedit->texture_replace->isChecked())
-        tex.setMulTexBlend(Texture::REPLACE);
-
-    setSelectedTexture(tex);
+        mat->setTextureBlend(Material::REPLACE, index.row());
 }
 
 void MainWindow::guiMeshSetBlend(bool stat)
