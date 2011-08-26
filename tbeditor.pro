@@ -17,6 +17,15 @@ LIBS += $$TBENGINE_LIB $$DEVIL_LIB $$FREETYPE_LIB $$QUAZIP_LIB $$ZLIB_LIB -lopen
 
 UI_DIR = ../sources
 
+release {
+    CONFIG += WINDOWS
+
+    MOC_DIR     = ../build/release
+    OBJECTS_DIR = ../build/release
+    RCC_DIR     = ../build/release
+    DESTDIR     = ../release
+}
+
 debug {
     CONFIG += CONSOLE
     DEFINES += _DEBUG
@@ -25,15 +34,6 @@ debug {
     OBJECTS_DIR = ../build/debug
     RCC_DIR     = ../build/debug
     DESTDIR     = ../debug
-}
-
-release {
-    win32: CONFIG += windows
-
-    MOC_DIR     = ../build/release
-    OBJECTS_DIR = ../build/release
-    RCC_DIR     = ../build/release
-    DESTDIR     = ../release
 }
 
 SOURCES += \
