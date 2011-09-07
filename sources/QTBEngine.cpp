@@ -449,8 +449,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
 
-    tbe::scene::Node* selnode = m_selectedNode->getTarget();
-
     if(ev->key() == Qt::Key_Shift)
     {
         if(m_gridEnable)
@@ -461,11 +459,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     else if(m_selectedNode)
     {
-        if(ev->key() == Qt::Key_Alt)
-        {
-            setCursor(Qt::PointingHandCursor);
-            m_propertyCopyMode = true;
-        }
+        tbe::scene::Node* selnode = m_selectedNode->getTarget();
 
         if(ev->key() == Qt::Key_P && !selnode->getParent()->isRoot())
         {
@@ -480,7 +474,11 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         {
             using namespace tbe::scene;
 
-            // NOTE delete selection
+            QNodeInteractor* todelete = m_selectedNode;
+
+            deselect();
+
+            delete todelete;
         }
 
         if(ev->key() == Qt::Key_C)
@@ -549,49 +547,52 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_selectedNode->update();
         }
 
-        else if(ev->key() == Qt::Key_Up)
+        if(ev->modifiers() & Qt::ShiftModifier)
         {
-            Vector3f pos = selnode->getPos();
-            if(ev->modifiers() & Qt::ALT)
-                pos.y += 1;
-            else
-                pos.z += 1;
+            if(ev->key() == Qt::Key_Up)
+            {
+                Vector3f pos = selnode->getPos();
+                if(ev->modifiers() & Qt::ALT)
+                    pos.y += 1;
+                else
+                    pos.z += 1;
 
-            selnode->setPos(pos);
-            m_selectedNode->update();
+                selnode->setPos(pos);
+                m_selectedNode->update();
+            }
+
+            else if(ev->key() == Qt::Key_Down)
+            {
+                Vector3f pos = selnode->getPos();
+                if(ev->modifiers() & Qt::ALT)
+                    pos.y -= 1;
+                else
+                    pos.z -= 1;
+                selnode->setPos(pos);
+
+                m_selectedNode->update();
+            }
+
+            else if(ev->key() == Qt::Key_Left)
+            {
+                Vector3f pos = selnode->getPos();
+                pos.x += 1;
+                selnode->setPos(pos);
+
+                m_selectedNode->update();
+            }
+
+            else if(ev->key() == Qt::Key_Right)
+            {
+                Vector3f pos = selnode->getPos();
+                pos.x -= 1;
+                selnode->setPos(pos);
+
+                m_selectedNode->update();
+            }
         }
 
-        else if(ev->key() == Qt::Key_Down)
-        {
-            Vector3f pos = selnode->getPos();
-            if(ev->modifiers() & Qt::ALT)
-                pos.y -= 1;
-            else
-                pos.z -= 1;
-            selnode->setPos(pos);
-
-            m_selectedNode->update();
-        }
-
-        else if(ev->key() == Qt::Key_Left)
-        {
-            Vector3f pos = selnode->getPos();
-            pos.x += 1;
-            selnode->setPos(pos);
-
-            m_selectedNode->update();
-        }
-
-        else if(ev->key() == Qt::Key_Right)
-        {
-            Vector3f pos = selnode->getPos();
-            pos.x -= 1;
-            selnode->setPos(pos);
-
-            m_selectedNode->update();
-        }
-
-        else if(ev->key() == Qt::Key_Escape)
+        if(ev->key() == Qt::Key_Escape)
         {
             deselect();
         }
@@ -725,12 +726,6 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Shift)
         setCursor(Qt::OpenHandCursor);
-
-    if(ev->key() == Qt::Key_Alt)
-    {
-        setCursor(Qt::OpenHandCursor);
-        m_propertyCopyMode = false;
-    }
 
     int c = std::tolower(ev->key());
     translate(c);
