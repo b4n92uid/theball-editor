@@ -22,6 +22,8 @@ public:
 public slots:
     tbe::Vector3f value();
     void setValue(const tbe::Vector3f& value);
+    
+    void clear();
 
     void componentValueChanged(double d);
 

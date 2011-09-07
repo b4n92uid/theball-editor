@@ -35,3 +35,9 @@ void QVector2Box::componentValueChanged(double d)
 {
     emit valueChanged(value());
 }
+
+void QVector2Box::clear()
+{
+    m_x->clear();
+    m_y->clear();
+}

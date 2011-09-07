@@ -23,6 +23,8 @@ public slots:
     tbe::Vector2f value();
     void setValue(const tbe::Vector2f& value);
 
+    void clear();
+
     void componentValueChanged(double d);
 
 signals:

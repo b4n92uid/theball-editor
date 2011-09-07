@@ -45,7 +45,13 @@ SOURCES += \
     sources/QBrowsEdit.cpp \
     sources/QSignalBlocker.cpp \
     sources/PackerDialog.cpp \
-    sources/main.cpp
+    sources/main.cpp \
+    sources/NodeFactory.cpp \
+    sources/QLightInteractor.cpp \
+    sources/QMapMarkInteractor.cpp \
+    sources/QMeshInteractor.cpp \
+    sources/QNodeInteractor.cpp \
+    sources/QParticlesInteractor.cpp \
 
 HEADERS  += \
     sources/MainWindow.h \
@@ -57,9 +63,19 @@ HEADERS  += \
     sources/QBrowsEdit.h \
     sources/QSignalBlocker.h \
     sources/PackerDialog.h \
+    sources/Metatype.h \
+    sources/NodeFactory.h \
+    sources/QLightInteractor.h \
+    sources/QMapMarkInteractor.h \
+    sources/QMeshInteractor.h \
+    sources/QNodeInteractor.h \
+    sources/QParticlesInteractor.h \
 
 FORMS += \
-    sources/interface.ui
+    sources/about.ui \
+    sources/interface.ui \
+    sources/matedit.ui \
+    sources/packer.ui \
 
 RESOURCES += \
     sources/ressource.qrc
