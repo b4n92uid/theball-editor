@@ -38,3 +38,10 @@ void QVectorBox::componentValueChanged(double d)
 {
     emit valueChanged(value());
 }
+
+void QVectorBox::clear()
+{
+    m_x->clear();
+    m_y->clear();
+    m_z->clear();
+}

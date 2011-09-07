@@ -55,7 +55,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="ressource.qrc">
              <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
            </property>
           </widget>
@@ -66,7 +66,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="ressource.qrc">
              <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
            </property>
           </widget>
@@ -77,7 +77,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="ressource.qrc">
              <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
            </property>
           </widget>
@@ -88,7 +88,7 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset>
+            <iconset resource="ressource.qrc">
              <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
            </property>
           </widget>
@@ -177,7 +177,7 @@
                 <string>Ajouter</string>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                </property>
               </widget>
@@ -188,7 +188,7 @@
                 <string>Supprimer</string>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                </property>
               </widget>
@@ -199,7 +199,7 @@
                 <string>Suppr. Tout</string>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                </property>
               </widget>
@@ -228,7 +228,7 @@
        <attribute name="title">
         <string>Noeuds</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,8">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0,8">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
@@ -413,6 +413,32 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_34">
+          <item>
+           <widget class="QPushButton" name="node_clone">
+            <property name="text">
+             <string>Cloner</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_delete">
+            <property name="text">
+             <string>Supprmier</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QTabWidget" name="attribTab">
           <property name="enabled">
            <bool>true</bool>
@@ -424,7 +450,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="usesScrollButtons">
            <bool>false</bool>
@@ -438,6 +464,135 @@
           <property name="movable">
            <bool>false</bool>
           </property>
+          <widget class="QWidget" name="tab_4">
+           <attribute name="title">
+            <string>Mesh</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_11">
+              <item>
+               <widget class="QGroupBox" name="groupBox_4">
+                <property name="title">
+                 <string>Materiaux</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                  <widget class="QListView" name="node_mesh_materials">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="node_mesh_editmat">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string> Editer le materiau séléctioné</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="node_mesh_savemat">
+                   <property name="text">
+                    <string>Enregistrer les parametres materiaux</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_5">
+                <property name="title">
+                 <string>Mailliage</string>
+                </property>
+                <layout class="QFormLayout" name="formLayout_9">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_36">
+                   <property name="text">
+                    <string>Opacité</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QDoubleSpinBox" name="node_mesh_opacity">
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>1.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_32">
+                   <item>
+                    <widget class="QCheckBox" name="node_mesh_billboard_x">
+                     <property name="text">
+                      <string>Horizental</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="node_mesh_billboard_y">
+                     <property name="text">
+                      <string>Vertical</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_35">
+                   <property name="text">
+                    <string>Billboard</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_18">
+              <item>
+               <widget class="QPushButton" name="node_mesh_add">
+                <property name="text">
+                 <string>Ajouter</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ressource.qrc">
+                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="tab_2">
            <attribute name="title">
             <string>Lumier</string>
@@ -646,178 +801,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_light_clone">
-                <property name="text">
-                 <string>Cloner</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_light_del">
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_4">
-           <attribute name="title">
-            <string>Mesh</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_10">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_11">
-              <item>
-               <widget class="QGroupBox" name="groupBox_4">
-                <property name="title">
-                 <string>Materiaux</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_2">
-                 <item>
-                  <widget class="QListView" name="node_mesh_materials">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="node_mesh_editmat">
-                   <property name="text">
-                    <string> Editer le materiau séléctioné</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="node_mesh_savemat">
-                   <property name="text">
-                    <string>Enregistrer les parametres materiaux</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_5">
-                <property name="title">
-                 <string>Mailliage</string>
-                </property>
-                <layout class="QFormLayout" name="formLayout_9">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_36">
-                   <property name="text">
-                    <string>Opacité</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QDoubleSpinBox" name="node_mesh_opacity">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <layout class="QHBoxLayout" name="horizontalLayout_32">
-                   <item>
-                    <widget class="QCheckBox" name="node_mesh_billboard_x">
-                     <property name="text">
-                      <string>Horizental</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QCheckBox" name="node_mesh_billboard_y">
-                     <property name="text">
-                      <string>Vertical</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_35">
-                   <property name="text">
-                    <string>Billboard</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
-              <item>
-               <widget class="QPushButton" name="node_mesh_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_mesh_clone">
-                <property name="text">
-                 <string>Cloner</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_mesh_del">
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -942,36 +927,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_water_clone">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Cloner</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_water_del">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1176,7 +1133,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset>
+                    <iconset resource="ressource.qrc">
                      <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
                    </property>
                   </widget>
@@ -1207,7 +1164,7 @@
                     <string/>
                    </property>
                    <property name="icon">
-                    <iconset>
+                    <iconset resource="ressource.qrc">
                      <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                    </property>
                   </widget>
@@ -1239,30 +1196,8 @@
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_particles_clone">
-                <property name="text">
-                 <string>Cloner</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_particles_del">
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1320,30 +1255,8 @@ p, li { white-space: pre-wrap; }
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_mark_clone">
-                <property name="text">
-                 <string>Cloner</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_mark_del">
-                <property name="text">
-                 <string>Effacer</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
               </item>
@@ -1367,7 +1280,7 @@ p, li { white-space: pre-wrap; }
                  <string>Ajouter</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                 </property>
                </widget>
@@ -1378,7 +1291,7 @@ p, li { white-space: pre-wrap; }
                  <string>Supprimer</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
@@ -1389,7 +1302,7 @@ p, li { white-space: pre-wrap; }
                  <string>Suppr. Tout</string>
                 </property>
                 <property name="icon">
-                 <iconset>
+                 <iconset resource="ressource.qrc">
                   <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
                 </property>
                </widget>
@@ -1608,7 +1521,7 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
@@ -1639,7 +1552,7 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
@@ -1670,7 +1583,7 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
@@ -1701,7 +1614,7 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
@@ -1732,7 +1645,7 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
@@ -1747,7 +1660,7 @@ p, li { white-space: pre-wrap; }
                 <string>Apliquer</string>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/accept.png</normaloff>:/Medias/medias/accept.png</iconset>
                </property>
               </widget>
@@ -1771,7 +1684,7 @@ p, li { white-space: pre-wrap; }
                 <string/>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
               </widget>
@@ -1841,7 +1754,20 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionScreenShot"/>
     <addaction name="actionOpenPacker"/>
    </widget>
+   <widget class="QMenu" name="menuEditer">
+    <property name="title">
+     <string>Edition</string>
+    </property>
+    <addaction name="actionNewMesh"/>
+    <addaction name="actionNewLight"/>
+    <addaction name="actionNewParticles"/>
+    <addaction name="actionNewMapMark"/>
+    <addaction name="separator"/>
+    <addaction name="actionDeleteNode"/>
+    <addaction name="actionCloneNode"/>
+   </widget>
    <addaction name="menuFichier"/>
+   <addaction name="menuEditer"/>
    <addaction name="menuAffichage"/>
    <addaction name="menuOutils"/>
    <addaction name="menu"/>
@@ -1849,7 +1775,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/folder_page_white.png</normaloff>:/Medias/medias/folder_page_white.png</iconset>
    </property>
    <property name="text">
@@ -1861,7 +1787,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/disk.png</normaloff>:/Medias/medias/disk.png</iconset>
    </property>
    <property name="text">
@@ -1889,7 +1815,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/vcard.png</normaloff>:/Medias/medias/vcard.png</iconset>
    </property>
    <property name="text">
@@ -1901,7 +1827,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionNewScene">
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/page_white_star.png</normaloff>:/Medias/medias/page_white_star.png</iconset>
    </property>
    <property name="text">
@@ -1916,7 +1842,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/arrow_out.png</normaloff>:/Medias/medias/arrow_out.png</iconset>
    </property>
    <property name="text">
@@ -1933,7 +1859,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionScreenShot">
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/image.png</normaloff>:/Medias/medias/image.png</iconset>
    </property>
    <property name="text">
@@ -1945,7 +1871,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionOpenPacker">
    <property name="icon">
-    <iconset>
+    <iconset resource="ressource.qrc">
      <normaloff>:/Medias/medias/package.png</normaloff>:/Medias/medias/package.png</iconset>
    </property>
    <property name="text">
@@ -1953,6 +1879,36 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>F12</string>
+   </property>
+  </action>
+  <action name="actionNewMesh">
+   <property name="text">
+    <string>Inserer Mesh</string>
+   </property>
+  </action>
+  <action name="actionNewParticles">
+   <property name="text">
+    <string>Inserer Particlules</string>
+   </property>
+  </action>
+  <action name="actionNewMapMark">
+   <property name="text">
+    <string>Inserer Marqueur</string>
+   </property>
+  </action>
+  <action name="actionNewLight">
+   <property name="text">
+    <string>Inserer Lumiere</string>
+   </property>
+  </action>
+  <action name="actionDeleteNode">
+   <property name="text">
+    <string>Supprmer le noeud</string>
+   </property>
+  </action>
+  <action name="actionCloneNode">
+   <property name="text">
+    <string>Cloner le noeud</string>
    </property>
   </action>
  </widget>
@@ -2009,20 +1965,14 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_clearfields</tabstop>
   <tabstop>node_mesh_opacity</tabstop>
   <tabstop>node_mesh_add</tabstop>
-  <tabstop>node_mesh_clone</tabstop>
-  <tabstop>node_mesh_del</tabstop>
   <tabstop>node_water_uvrepeat_x</tabstop>
   <tabstop>node_particles_gravity_z</tabstop>
   <tabstop>node_light_specular_y</tabstop>
-  <tabstop>node_light_clone</tabstop>
-  <tabstop>node_light_del</tabstop>
   <tabstop>node_light_diffuse_x</tabstop>
   <tabstop>node_light_diffuse_y</tabstop>
   <tabstop>node_light_diffuse_z</tabstop>
   <tabstop>node_light_specular_x</tabstop>
   <tabstop>node_light_add</tabstop>
-  <tabstop>node_water_del</tabstop>
-  <tabstop>node_particles_del</tabstop>
   <tabstop>node_water_deform</tabstop>
   <tabstop>node_water_size_x</tabstop>
   <tabstop>node_water_size_y</tabstop>
@@ -2031,19 +1981,32 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_mesh_materials</tabstop>
   <tabstop>node_light_radius</tabstop>
   <tabstop>node_mark_add</tabstop>
-  <tabstop>node_mark_clone</tabstop>
-  <tabstop>node_mark_del</tabstop>
   <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_ambiant_y</tabstop>
   <tabstop>node_mesh_editmat</tabstop>
   <tabstop>node_mesh_savemat</tabstop>
   <tabstop>node_particles_add</tabstop>
-  <tabstop>node_particles_clone</tabstop>
   <tabstop>node_water_add</tabstop>
-  <tabstop>node_water_clone</tabstop>
  </tabstops>
  <resources>
   <include location="ressource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>node_mesh_savemat</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>node_mesh_editmat</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>581</x>
+     <y>485</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>591</x>
+     <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

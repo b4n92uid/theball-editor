@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>291</width>
-    <height>396</height>
+    <height>459</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -201,6 +201,75 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="cliping">
+     <property name="title">
+      <string>Clipping</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Taille de frame</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QSpinBox" name="clipping_x">
+          <property name="maximum">
+           <number>2048</number>
+          </property>
+          <property name="value">
+           <number>128</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="clipping_y">
+          <property name="maximum">
+           <number>2048</number>
+          </property>
+          <property name="value">
+           <number>128</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="clipping_animation">
+        <property name="text">
+         <string>Animation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="clipping_animation_msec">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximum">
+         <number>3600000</number>
+        </property>
+        <property name="value">
+         <number>500</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="others">
      <property name="title">
       <string>Autres</string>
@@ -235,5 +304,22 @@
  <resources>
   <include location="ressource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>clipping_animation</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>clipping_animation_msec</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>57</x>
+     <y>367</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>130</x>
+     <y>369</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

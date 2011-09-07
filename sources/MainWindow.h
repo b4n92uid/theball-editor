@@ -11,17 +11,21 @@
 #include <QtGui/QtGui>
 #include <Tbe.h>
 
-#include "ui_interface.h"
 #include "ui_about.h"
 #include "ui_matedit.h"
 
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
 #include "QVector2Box.h"
+#include "NodeFactory.h"
 #include "QTBEngine.h"
 #include "QNodeBinders.h"
 #include "QSignalBlocker.h"
 #include "PackerDialog.h"
+
+#include "Metatype.h"
+
+class Ui_mainWindow;
 
 class MainWindow : public QMainWindow
 {
@@ -45,8 +49,6 @@ protected:
     void buildFileHistory();
 
     bool leaveSafely();
-
-    tbe::scene::Node* itemNode(QStandardItem* item);
 
 public slots:
 
@@ -75,10 +77,7 @@ public slots:
 
     void openFileHistory();
 
-public slots: // Node manager
-
-    // Update node info box
-    void updateNodeInfo(tbe::scene::Node*);
+public slots:
 
     // On nodes list item select
     void guiSelect(const QModelIndex& index);
@@ -87,137 +86,34 @@ public slots: // Node manager
 
     void screenshot();
 
-    // -------- GUI -> NODE
-
-    void guiNodeSetName(const QString& s);
-    void guiNodeSetPos(const tbe::Vector3f& v);
-    void guiNodeSetRotation(const tbe::Vector3f& v);
-    void guiNodeSetScale(const tbe::Vector3f& v);
-    void guiNodeSetMatrix(const tbe::Matrix4& m);
-    void guiNodeSetEnalbe(bool stat);
-
-    // Mesh GUI Buttons
-    void guiMeshNew();
-    void guiMeshClone();
-    void guiMeshDelete();
-
     void guiAddSceneField();
     void guiDelSceneField();
     void guiClearSceneField();
 
-    void guiAddNodeField();
-    void guiDelNodeField();
-    void guiClearNodeField();
-    void guiChangeNodeField(QStandardItem*);
-
-    void guiMeshMaterialSelected(const QModelIndex& index);
-
-    void guiMeshTextureSelected(const QModelIndex& index);
-
-    void guiMeshAddTexture();
-    void guiMeshDelTexture();
-    void guiMeshTextureUp();
-    void guiMeshTextureDown();
-
-    void guiMeshTextureSetBlendMode();
-    void guiMeshMaterialSetBlendMode();
-
-    void guiMeshSetBillBoard();
-    void guiMeshSetOpacity(double value);
-    void guiMeshSetAlphaThreshold(double value);
-
-    void guiMeshSetFoged(bool stat);
-    void guiMeshSetTextured(bool stat);
-    void guiMeshSetLighted(bool stat);
-    void guiMeshSetCullTrick(bool stat);
-
-    void guiMeshSetBlend(bool stat);
-    void guiMeshSetAlpha(bool stat);
-
-    void guiMeshSetSaveMaterial(bool stat);
-
-    tbe::scene::Material* getSelectedMaterial();
-
-    // Light GUI Buttons
+    void guiMeshNew();
     void guiLightNew();
-    void guiLightClone();
-    void guiLightDelete();
-
-    void guiLightSetType(int type);
-    void guiLightSetAmbiant(const tbe::Vector3f& value);
-    void guiLightSetDiffuse(const tbe::Vector3f& value);
-    void guiLightSetSpecular(const tbe::Vector3f& value);
-    void guiLightSetRadius(double value);
-
-    // Particles GUI Buttons
     void guiParticlesNew();
-    void guiParticlesClone();
-    void guiParticlesDelete();
-
-    void guiParticleSetGravity(const tbe::Vector3f& v);
-    void guiParticleSetBoxsize(const tbe::Vector3f& v);
-    void guiParticleSetBulletsize(const tbe::Vector2f& v);
-    void guiParticleSetFreemove(double v);
-    void guiParticleSetLifeinit(double v);
-    void guiParticleSetLifedown(double v);
-    void guiParticleSetNumber(int v);
-    void guiParticleSetTexture(const QString& v);
-    void guiParticleSetContinousMode(bool stat);
-    void guiParticleSetPointSprite(bool stat);
-    void guiParticleBuild();
-
-    // MapMark GUI Buttons
     void guiMarkNew();
-    void guiMarkClone();
-    void guiMarkDelete();
 
-    // Water GUI Buttons
-    void guiWaterSetDeform(double v);
-    void guiWaterSetSize(const tbe::Vector2f& v);
-    void guiWaterSetUvRepeat(const tbe::Vector2f& v);
-    void guiWaterSetSpeed(double v);
-    void guiWaterSetBlend(double v);
+    void guiClone();
+    void guiDelete();
 
-
-    // -------- NODE -> GUI
-
-    void nodeUpdate(tbe::scene::Node* node);
-
-    // Registre & Select mesh infos on GUI
-    void meshRegister(tbe::scene::Mesh* mesh);
-    void meshSelect(tbe::scene::Mesh* mesh, bool upList = true);
-    void meshUpdate(tbe::scene::Mesh* mesh);
-    void meshDelete(tbe::scene::Mesh* mesh);
-
-    // Registre & Select light infos on GUI
-    void lightRegister(tbe::scene::Light* light);
-    void lightSelect(tbe::scene::Light* light, bool upList = true);
-    void lightUpdate(tbe::scene::Light* light);
-    void lightDelete(tbe::scene::Light* light);
-
-    // Registre & Select particles infos on GUI
-    void particlesRegister(tbe::scene::ParticlesEmiter* particles);
-    void particlesSelect(tbe::scene::ParticlesEmiter* particles, bool upList = true);
-    void particlesUpdate(tbe::scene::ParticlesEmiter* particles);
-    void particlesDelete(tbe::scene::ParticlesEmiter* particles);
-
-    // Registre & Select mark infos on GUI
-    void markRegister(tbe::scene::MapMark* mark);
-    void markSelect(tbe::scene::MapMark* mark, bool upList = true);
-    void markUpdate(tbe::scene::MapMark* mark);
-    void markDelete(tbe::scene::MapMark* mark);
-
-    void unselect();
+    void select(QNodeInteractor* qnode);
+    void deselect();
 
 public slots: // Env manager
 
-    // -------- GUI -> MANAGER
+    // -------------------------------------------------------------------------
+    // GUI -> MANAGER
+    // -------------------------------------------------------------------------
 
     void guiSkyboxApply(bool enable = true);
     void guiFogApply(bool enable = true);
     void guiSceneAmbiantApply(const tbe::Vector3f& value);
 
-    // -------- MANAGER -> GUI
+    // -------------------------------------------------------------------------
+    // MANAGER -> GUI
+    // -------------------------------------------------------------------------
 
     void skyboxRegister(tbe::scene::SkyBox* tbesky);
     void fogRegister(tbe::scene::Fog* tbefog);
@@ -226,6 +122,12 @@ public slots: // Env manager
 signals:
     void pauseRendring();
     void resumeRendring();
+
+    friend class QNodeInteractor;
+    friend class QLightInteractor;
+    friend class QMeshInteractor;
+    friend class QParticlesInteractor;
+    friend class QMapMarkInteractor;
 
 private:
 
@@ -239,10 +141,10 @@ private:
         }
     };
 
-    struct
+    struct NodesGuiTab
     {
 
-        struct
+        struct LightGuiTab
         {
             QComboBox* type;
             QVectorBox* ambiant;
@@ -251,16 +153,12 @@ private:
             QDoubleSpinBox* radius;
 
             QPushButton* add;
-            QPushButton* clone;
-            QPushButton* del;
 
         } lighTab;
 
-        struct
+        struct MeshGuiTab
         {
             QPushButton* add;
-            QPushButton* clone;
-            QPushButton* del;
 
             QDoubleSpinBox* opacity;
 
@@ -279,7 +177,7 @@ private:
 
         } meshTab;
 
-        struct
+        struct WaterGuiTab
         {
             QDoubleSpinBox* deform;
             QVector2Box* size;
@@ -288,14 +186,12 @@ private:
             QDoubleSpinBox* blend;
 
             QPushButton* add;
-            QPushButton* clone;
-            QPushButton* del;
 
             QMap<QObject*, QString> sourcMap;
 
         } waterTab;
 
-        struct
+        struct ParticlesGuiTab
         {
             QVectorBox* gravity;
             QVectorBox* boxsize;
@@ -311,18 +207,14 @@ private:
             QPushButton* build;
 
             QPushButton* add;
-            QPushButton* clone;
-            QPushButton* del;
 
             QMap<QObject*, QString> sourcMap;
 
         } particlesTab;
 
-        struct
+        struct MapMarkGuiTab
         {
             QPushButton* add;
-            QPushButton* clone;
-            QPushButton* del;
 
         } markTab;
 
@@ -330,6 +222,9 @@ private:
         QVectorBox* position;
         QVectorBox* rotation;
         QVectorBox* scale;
+
+        QPushButton* clone;
+        QPushButton* del;
 
         QCheckBox* enable;
 
@@ -344,14 +239,14 @@ private:
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
 
-        QMap<tbe::scene::Node*, QStandardItem*> nodeItemBinder;
+        QMap<QNodeInteractor*, QStandardItem*> nodeItemBinder;
 
     } nodesGui;
 
-    struct
+    struct EnvGuiTab
     {
 
-        struct
+        struct SkyboxGuiTab
         {
             QBrowsEdit * textures[6];
             QPushButton* apply;
@@ -359,7 +254,7 @@ private:
 
         } skybox;
 
-        struct
+        struct FogGuiTab
         {
             QVectorBox* color;
             QDoubleSpinBox* start;
@@ -372,7 +267,7 @@ private:
 
     } envGui;
 
-    struct
+    struct GeneralGuiTab
     {
         QLineEdit* title;
         QLineEdit* author;
@@ -386,8 +281,8 @@ private:
 
     } genGui;
 
-    QNodeBinders* m_selectedNode;
-    tbe::scene::Node* m_lastSelectedNode;
+    QNodeInteractor* m_selectedNode;
+    QNodeInteractor* m_lastSelectedNode;
 
     QString m_filename;
 
@@ -397,7 +292,7 @@ private:
 
     QTimer* m_timer;
 
-    Ui_mainWindow m_uinterface;
+    Ui_mainWindow* m_uinterface;
 
     PackerDialog* m_packerDialog;
 
