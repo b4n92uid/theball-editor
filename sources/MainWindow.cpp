@@ -778,7 +778,7 @@ void MainWindow::scopeNode(int move)
             Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
-            
+
             item->data().value<QNodeInteractor*>()->setProtectNode(!parentNode->isRoot());
 
             m_tbeWidget->placeCamera();
@@ -802,7 +802,7 @@ void MainWindow::scopeNode(int move)
             currNode->setParent(parentNode);
 
             m_tbeWidget->placeCamera();
-            
+
             item->data().value<QNodeInteractor*>()->setProtectNode(true);
         }
         else
