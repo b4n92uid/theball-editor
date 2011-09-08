@@ -281,6 +281,7 @@ private:
 
     } genGui;
 
+    QNodeInteractor* m_rootNode;
     QNodeInteractor* m_selectedNode;
     QNodeInteractor* m_lastSelectedNode;
 
