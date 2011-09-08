@@ -884,6 +884,9 @@ QMesh* QTBEngine::meshNew(const QString& filename)
     using namespace tbe;
     using namespace scene;
 
+    QMesh* mesh = new QMesh(m_mainwin, OBJMesh(m_meshScene, filename.toStdString()));
+
+    /*
     QMesh* mesh = NULL;
 
     if(filename.endsWith("ball3d"))
@@ -894,6 +897,7 @@ QMesh* QTBEngine::meshNew(const QString& filename)
 
     else
         throw Exception("Format du fichier non reconnue \"%s\"", filename.toStdString().c_str());
+     */
 
     m_rootNode->addChild(mesh);
 
@@ -914,7 +918,7 @@ QMesh* QTBEngine::meshClone(tbe::scene::Mesh* mesh)
     mesh->getParent()->addChild(newmesh);
 
     m_nodeInterface[newmesh] = newmesh;
-    
+
     return newmesh;
 }
 
@@ -944,7 +948,7 @@ QLight* QTBEngine::lightClone(tbe::scene::Light* light)
     QLight* newlight = new QLight(m_mainwin, *light);
 
     light->getParent()->addChild(newlight);
-    
+
     m_nodeInterface[newlight] = newlight;
 
     return newlight;
@@ -976,7 +980,7 @@ QParticles* QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
     QParticles* newparticles = new QParticles(m_mainwin, *particles);
 
     particles->getParent()->addChild(newparticles);
-    
+
     m_nodeInterface[newparticles] = newparticles;
 
     return newparticles;
@@ -1008,7 +1012,7 @@ QMapMark* QTBEngine::markClone(tbe::scene::MapMark* mark)
     QMapMark* newmark = new QMapMark(m_mainwin, *mark);
 
     mark->getParent()->addChild(newmark);
-    
+
     m_nodeInterface[newmark] = newmark;
 
     return newmark;
