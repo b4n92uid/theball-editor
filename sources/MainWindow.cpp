@@ -14,11 +14,13 @@ MainWindow::MainWindow()
     notifyChanges(false);
 
     m_uinterface = new Ui_mainWindow;
+    m_rootNode = NULL;
 }
 
 MainWindow::~MainWindow()
 {
     delete m_uinterface;
+    delete m_rootNode;
 }
 
 QString MainWindow::getOpenFileName() const
@@ -392,6 +394,17 @@ void MainWindow::newScene()
     deselect();
 
     notifyChanges(false);
+
+    if(!m_rootNode)
+    {
+        m_rootNode = new QNodeInteractor(this, m_tbeWidget->rootNode());
+        m_rootNode->setProtectNode(true);
+
+        QVariant rootData;
+        rootData.setValue(m_rootNode);
+
+        nodesGui.nodesListModel->invisibleRootItem()->setData(rootData);
+    }
 }
 
 void MainWindow::openSceneDialog()
@@ -456,10 +469,12 @@ void MainWindow::openScene(const QString& filename)
             genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
         }
 
+        /*
         QVariant rootUserData;
         rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
 
         nodesGui.nodesListModel->invisibleRootItem()->setData(rootUserData);
+         */
 
         m_filename = filename;
 
@@ -702,9 +717,9 @@ void MainWindow::select(QNodeInteractor* qnode)
 {
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
-    m_selectedNode->select();
-
     m_tbeWidget->selectNode(qnode);
+
+    m_selectedNode->select();
 }
 
 void MainWindow::deselect()
@@ -722,6 +737,9 @@ void MainWindow::deselect()
 
 void MainWindow::scopeNode(int move)
 {
+    using namespace tbe;
+    using namespace scene;
+
     if(!m_selectedNode)
         return;
 
@@ -756,10 +774,14 @@ void MainWindow::scopeNode(int move)
 
             host->insertRow(parent->row() + 1, row);
 
-            QNodeInteractor* parentNode = host->data().value<QNodeInteractor*>();
-            QNodeInteractor* currNode = item->data().value<QNodeInteractor*>();
+            Node* parentNode = host->data().value<QNodeInteractor*>()->getTarget();
+            Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
+            
+            item->data().value<QNodeInteractor*>()->setProtectNode(!parentNode->isRoot());
+
+            m_tbeWidget->placeCamera();
         }
         else
             parent->insertRow(currRow, row);
@@ -774,10 +796,14 @@ void MainWindow::scopeNode(int move)
 
             host->appendRow(row);
 
-            QNodeInteractor* parentNode = host->data().value<QNodeInteractor*>();
-            QNodeInteractor* currNode = item->data().value<QNodeInteractor*>();
+            Node* parentNode = host->data().value<QNodeInteractor*>()->getTarget();
+            Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
+
+            m_tbeWidget->placeCamera();
+            
+            item->data().value<QNodeInteractor*>()->setProtectNode(true);
         }
         else
             parent->insertRow(currRow, row);
