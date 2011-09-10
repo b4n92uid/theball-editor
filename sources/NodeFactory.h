@@ -18,16 +18,6 @@
 
 class MainWindow;
 
-class NodeFactory
-{
-public:
-    NodeFactory(MainWindow* parent);
-    virtual ~NodeFactory();
-
-private:
-    MainWindow* m_mainwin;
-};
-
 class QMesh : public tbe::scene::Mesh, public QMeshInteractor
 {
 public:

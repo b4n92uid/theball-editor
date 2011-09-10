@@ -8,24 +8,40 @@
 #include "QNodeInteractor.h"
 #include "MainWindow.h"
 
-QNodeInteractor::QNodeInteractor() : m_mainwin(NULL), m_target(NULL)
+QNodeInteractor::QNodeInteractor() :
+m_mainwin(NULL), m_target(NULL)
 {
-    m_protectNode = false;
 }
 
-QNodeInteractor::QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target)
-: m_mainwin(mainwin), m_target(target)
+QNodeInteractor::QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target) :
+m_mainwin(mainwin), m_target(target)
 {
-    m_protectNode = false;
+}
+
+void QNodeInteractor::clearChilds(QStandardItem* item)
+{
+    int count = item->rowCount();
+
+    for(int i = 0; i < count; i++)
+    {
+        QStandardItem* subitem = item->child(i);
+
+        clearChilds(subitem);
+        item->removeRow(i);
+
+        QNodeInteractor* interface = subitem->data().value<QNodeInteractor*>();
+        m_mainwin->nodesGui.nodeItemBinder.remove(interface);
+    }
 }
 
 QNodeInteractor::~QNodeInteractor()
 {
-    if(!m_protectNode)
+    if(m_mainwin->nodesGui.nodeItemBinder.count(this))
     {
         QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
         QStandardItem* parent = item->parent();
 
+        clearChilds(item);
         m_mainwin->nodesGui.nodeItemBinder.remove(this);
 
         if(parent)
@@ -113,16 +129,6 @@ void QNodeInteractor::setEnalbe(bool stat)
     m_mainwin->notifyChanges(true);
 }
 
-void QNodeInteractor::setProtectNode(bool protectNode)
-{
-    this->m_protectNode = protectNode;
-}
-
-bool QNodeInteractor::isProtectNode() const
-{
-    return m_protectNode;
-}
-
 tbe::scene::Node* QNodeInteractor::getTarget() const
 {
     return m_target;
@@ -201,6 +207,11 @@ void QNodeInteractor::changeNodeField(QStandardItem* item)
     }
 
     m_mainwin->notifyChanges(true);
+}
+
+void QNodeInteractor::setup()
+{
+
 }
 
 void QNodeInteractor::select()

@@ -29,10 +29,8 @@ public:
     operator tbe::scene::Node*();
     tbe::scene::Node* operator->();
 
-    void setProtectNode(bool protectNode);
-    bool isProtectNode() const;
-
 public slots:
+    virtual void setup();
     virtual void select();
     virtual void deselect();
     virtual void update();
@@ -53,9 +51,11 @@ public slots:
     void setEnalbe(bool stat);
 
 protected:
+    void clearChilds(QStandardItem* item);
+
+protected:
     MainWindow* m_mainwin;
     tbe::scene::Node* m_target;
-    bool m_protectNode;
 };
 
 #endif	/* QNODEINTERACTOR_H */

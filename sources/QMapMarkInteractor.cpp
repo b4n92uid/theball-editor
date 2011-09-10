@@ -11,6 +11,11 @@
 QMapMarkInteractor::QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
+
+}
+
+void QMapMarkInteractor::setup()
+{
     using namespace tbe::scene;
 
     QVariant userdata;
@@ -40,7 +45,6 @@ QMapMarkInteractor::QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark*
 
 QMapMarkInteractor::~QMapMarkInteractor()
 {
-    m_mainwin->m_tbeWidget->markDelete(m_target);
 }
 
 void QMapMarkInteractor::select()

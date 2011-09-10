@@ -17,7 +17,8 @@ LIBS += $$TBENGINE_LIB $$DEVIL_LIB $$FREETYPE_LIB $$QUAZIP_LIB $$ZLIB_LIB -lopen
 
 UI_DIR = ../sources
 
-release {
+CONFIG(release, debug|release) {
+    CONFIG += release
     CONFIG += WINDOWS
 
     MOC_DIR     = ../build/release
@@ -26,8 +27,10 @@ release {
     DESTDIR     = ../release
 }
 
-debug {
+CONFIG(debug, debug|release) {
+    CONFIG += debug
     CONFIG += CONSOLE
+
     DEFINES += _DEBUG
 
     MOC_DIR     = ../build/debug
@@ -52,6 +55,7 @@ SOURCES += \
     sources/QMeshInteractor.cpp \
     sources/QNodeInteractor.cpp \
     sources/QParticlesInteractor.cpp \
+    sources/ClassFactory.cpp \
 
 HEADERS  += \
     sources/MainWindow.h \
@@ -70,6 +74,7 @@ HEADERS  += \
     sources/QMeshInteractor.h \
     sources/QNodeInteractor.h \
     sources/QParticlesInteractor.h \
+    sources/ClassFactory.h \
 
 FORMS += \
     sources/about.ui \

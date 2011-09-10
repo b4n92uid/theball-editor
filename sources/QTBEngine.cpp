@@ -10,6 +10,8 @@
 
 #include "NodeFactory.h"
 #include "MainWindow.h"
+#include "ClassFactory.h"
+
 #include "QNodeInteractor.h"
 
 #include <QDebug>
@@ -51,6 +53,8 @@ QTBEngine::QTBEngine(QWidget* parent)
     m_selectedNode = NULL;
     m_lastSelectedNode = NULL;
 
+    m_classFactory = new ClassFactory(m_mainwin);
+
     m_gridEnable = false;
     m_propertyCopyMode = false;
 
@@ -88,6 +92,7 @@ void QTBEngine::initializeGL()
     m_sceneManager->addParallelScene(m_markScene);
 
     m_sceneParser = new scene::SceneParser(m_sceneManager);
+    m_sceneParser->setClassFactory(m_classFactory);
     m_sceneParser->setLightScene(m_lightScene);
     m_sceneParser->setMeshScene(m_meshScene);
     m_sceneParser->setParticlesScene(m_particlesScene);
@@ -879,6 +884,14 @@ void QTBEngine::fillTextInfo(QLabel* label)
     label->setText(text);
 }
 
+void QTBEngine::meshRegister(QMesh* mesh)
+{
+    m_nodes.push_back(mesh);
+    m_meshs.push_back(mesh);
+
+    m_nodeInterface[mesh] = mesh;
+}
+
 QMesh* QTBEngine::meshNew(const QString& filename)
 {
     using namespace tbe;
@@ -901,10 +914,7 @@ QMesh* QTBEngine::meshNew(const QString& filename)
 
     m_rootNode->addChild(mesh);
 
-    m_nodes.push_back(mesh);
-    m_meshs.push_back(mesh);
-
-    m_nodeInterface[mesh] = mesh;
+    meshRegister(mesh);
 
     return mesh;
 }
@@ -917,7 +927,7 @@ QMesh* QTBEngine::meshClone(tbe::scene::Mesh* mesh)
 
     mesh->getParent()->addChild(newmesh);
 
-    m_nodeInterface[newmesh] = newmesh;
+    meshRegister(newmesh);
 
     return newmesh;
 }
@@ -927,16 +937,21 @@ void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
     //    delete mesh;
 }
 
+void QTBEngine::lightRegister(QLight* light)
+{
+    m_nodes.push_back(light);
+    m_lights.push_back(light);
+
+    m_nodeInterface[light] = light;
+}
+
 QLight* QTBEngine::lightNew()
 {
     QLight* light = new QLight(m_mainwin);
 
     m_rootNode->addChild(light);
 
-    m_nodes.push_back(light);
-    m_lights.push_back(light);
-
-    m_nodeInterface[light] = light;
+    lightRegister(light);
 
     return light;
 }
@@ -949,7 +964,7 @@ QLight* QTBEngine::lightClone(tbe::scene::Light* light)
 
     light->getParent()->addChild(newlight);
 
-    m_nodeInterface[newlight] = newlight;
+    lightRegister(newlight);
 
     return newlight;
 }
@@ -959,16 +974,21 @@ void QTBEngine::lightDelete(tbe::scene::Light* light)
     //    delete light;
 }
 
+void QTBEngine::particlesRegister(QParticles* particles)
+{
+    m_nodes.push_back(particles);
+    m_particles.push_back(particles);
+
+    m_nodeInterface[particles] = particles;
+}
+
 QParticles* QTBEngine::particlesNew()
 {
     QParticles* particles = new QParticles(m_mainwin);
 
     m_rootNode->addChild(particles);
 
-    m_nodes.push_back(particles);
-    m_particles.push_back(particles);
-
-    m_nodeInterface[particles] = particles;
+    particlesRegister(particles);
 
     return particles;
 }
@@ -981,7 +1001,7 @@ QParticles* QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
 
     particles->getParent()->addChild(newparticles);
 
-    m_nodeInterface[newparticles] = newparticles;
+    particlesRegister(newparticles);
 
     return newparticles;
 }
@@ -991,16 +1011,21 @@ void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
     //    delete particles;
 }
 
+void QTBEngine::markRegister(QMapMark* mark)
+{
+    m_nodes.push_back(mark);
+    m_marks.push_back(mark);
+
+    m_nodeInterface[mark] = mark;
+}
+
 QMapMark* QTBEngine::markNew()
 {
     QMapMark* mark = new QMapMark(m_mainwin);
 
     m_rootNode->addChild(mark);
 
-    m_nodes.push_back(mark);
-    m_marks.push_back(mark);
-
-    m_nodeInterface[mark] = mark;
+    markRegister(mark);
 
     return mark;
 }
@@ -1013,7 +1038,7 @@ QMapMark* QTBEngine::markClone(tbe::scene::MapMark* mark)
 
     mark->getParent()->addChild(newmark);
 
-    m_nodeInterface[newmark] = newmark;
+    markRegister(newmark);
 
     return newmark;
 }

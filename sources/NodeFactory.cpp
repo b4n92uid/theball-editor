@@ -17,14 +17,6 @@
 
 using namespace tbe::scene;
 
-NodeFactory::NodeFactory(MainWindow* parent) : m_mainwin(parent)
-{
-}
-
-NodeFactory::~NodeFactory()
-{
-}
-
 QMesh::QMesh(MainWindow* mainwin) :
 Mesh(mainwin->getTbeWidget()->getSceneParser()->getMeshScene()),
 QMeshInteractor(mainwin, this)

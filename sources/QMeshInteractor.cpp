@@ -11,6 +11,15 @@
 QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
+
+}
+
+QMeshInteractor::~QMeshInteractor()
+{
+}
+
+void QMeshInteractor::setup()
+{
     using namespace tbe::scene;
 
     QVariant userdata;
@@ -36,11 +45,6 @@ QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
     m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
 
     m_mainwin->notifyChanges(true);
-}
-
-QMeshInteractor::~QMeshInteractor()
-{
-    m_mainwin->m_tbeWidget->meshDelete(m_target);
 }
 
 tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
