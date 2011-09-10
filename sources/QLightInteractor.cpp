@@ -11,6 +11,15 @@
 QLightInteractor::QLightInteractor(MainWindow* mainwin, tbe::scene::Light* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
+
+}
+
+QLightInteractor::~QLightInteractor()
+{
+}
+
+void QLightInteractor::setup()
+{
     using namespace tbe::scene;
 
     QVariant userdata;
@@ -36,11 +45,6 @@ QLightInteractor::QLightInteractor(MainWindow* mainwin, tbe::scene::Light* targe
     m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
 
     m_mainwin->notifyChanges(true);
-}
-
-QLightInteractor::~QLightInteractor()
-{
-    m_mainwin->m_tbeWidget->lightDelete(m_target);
 }
 
 void QLightInteractor::setType(int type)

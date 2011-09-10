@@ -11,6 +11,15 @@
 QParticlesInteractor::QParticlesInteractor(MainWindow* mainwin, tbe::scene::ParticlesEmiter* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
+
+}
+
+QParticlesInteractor::~QParticlesInteractor()
+{
+}
+
+void QParticlesInteractor::setup()
+{
     using namespace tbe::scene;
 
     QVariant userdata;
@@ -36,11 +45,6 @@ QParticlesInteractor::QParticlesInteractor(MainWindow* mainwin, tbe::scene::Part
     m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
 
     m_mainwin->notifyChanges(true);
-}
-
-QParticlesInteractor::~QParticlesInteractor()
-{
-    m_mainwin->m_tbeWidget->particlesDelete(m_target);
 }
 
 void QParticlesInteractor::setGravity(const tbe::Vector3f& v)
@@ -133,17 +137,17 @@ void QParticlesInteractor::select()
 {
     QNodeInteractor::select();
 
-    connect(m_mainwin->nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiParticleSetGravity(const tbe::Vector3f&)));
-    connect(m_mainwin->nodesGui.particlesTab.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiParticleSetBoxsize(const tbe::Vector3f&)));
-    connect(m_mainwin->nodesGui.particlesTab.bulletsize, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(guiParticleSetBulletsize(const tbe::Vector2f&)));
-    connect(m_mainwin->nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetFreemove(double)));
-    connect(m_mainwin->nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifeinit(double)));
-    connect(m_mainwin->nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), this, SLOT(guiParticleSetLifedown(double)));
-    connect(m_mainwin->nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), this, SLOT(guiParticleSetNumber(int)));
-    connect(m_mainwin->nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(guiParticleSetTexture(const QString&)));
-    connect(m_mainwin->nodesGui.particlesTab.continiousmode, SIGNAL(clicked(bool)), this, SLOT(guiParticleSetContinousMode(bool)));
-    connect(m_mainwin->nodesGui.particlesTab.pointsprite, SIGNAL(clicked(bool)), this, SLOT(guiParticleSetPointSprite(bool)));
-    connect(m_mainwin->nodesGui.particlesTab.build, SIGNAL(clicked()), this, SLOT(guiParticleBuild()));
+    connect(m_mainwin->nodesGui.particlesTab.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setGravity(const tbe::Vector3f&)));
+    connect(m_mainwin->nodesGui.particlesTab.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setBoxsize(const tbe::Vector3f&)));
+    connect(m_mainwin->nodesGui.particlesTab.bulletsize, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(setBulletsize(const tbe::Vector2f&)));
+    connect(m_mainwin->nodesGui.particlesTab.freemove, SIGNAL(valueChanged(double)), this, SLOT(setFreemove(double)));
+    connect(m_mainwin->nodesGui.particlesTab.lifeinit, SIGNAL(valueChanged(double)), this, SLOT(setLifeinit(double)));
+    connect(m_mainwin->nodesGui.particlesTab.lifedown, SIGNAL(valueChanged(double)), this, SLOT(setLifedown(double)));
+    connect(m_mainwin->nodesGui.particlesTab.number, SIGNAL(valueChanged(int)), this, SLOT(setNumber(int)));
+    connect(m_mainwin->nodesGui.particlesTab.texture, SIGNAL(textChanged(const QString&)), this, SLOT(setTexture(const QString&)));
+    connect(m_mainwin->nodesGui.particlesTab.continiousmode, SIGNAL(clicked(bool)), this, SLOT(setContinousMode(bool)));
+    connect(m_mainwin->nodesGui.particlesTab.pointsprite, SIGNAL(clicked(bool)), this, SLOT(setPointSprite(bool)));
+    connect(m_mainwin->nodesGui.particlesTab.build, SIGNAL(clicked()), this, SLOT(build()));
 
     update();
 
@@ -176,7 +180,7 @@ void QParticlesInteractor::deselect()
 
 void QParticlesInteractor::update()
 {
-    update();
+    QNodeInteractor::update();
 
     QSignalBlocker blocker;
     blocker << m_mainwin->nodesGui.particlesTab.gravity << m_mainwin->nodesGui.particlesTab.boxsize

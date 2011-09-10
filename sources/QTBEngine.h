@@ -20,6 +20,8 @@ class QMapMark;
 class QNodeInteractor;
 class MainWindow;
 
+class ClassFactory;
+
 class QTBEngine : public QGLWidget
 {
     Q_OBJECT
@@ -40,20 +42,20 @@ public:
     tbe::scene::SceneParser* getSceneParser() const;
 
     QStringList usedRessources();
-    
+
     QNodeInteractor* fetchInterface(tbe::scene::Node* node);
 
 public slots:
 
     void select(QNodeInteractor* qnode);
     void selectNode(QNodeInteractor* qnode);
-    
+
     void deselect();
     void deselectNode();
 
     void pauseRendring();
     void resumeRendring();
-    
+
     void placeCamera();
 
     // Setting scene ambiant light
@@ -71,18 +73,22 @@ public slots:
     QMesh* meshNew(const QString& filename);
     QMesh* meshClone(tbe::scene::Mesh* mesh);
     void meshDelete(tbe::scene::Mesh* mesh);
+    void meshRegister(QMesh* mesh);
 
     QLight* lightNew();
     QLight* lightClone(tbe::scene::Light* light);
     void lightDelete(tbe::scene::Light* light);
+    void lightRegister(QLight* light);
 
     QParticles* particlesNew();
     QParticles* particlesClone(tbe::scene::ParticlesEmiter* particles);
     void particlesDelete(tbe::scene::ParticlesEmiter* particles);
+    void particlesRegister(QParticles* particles);
 
     QMapMark* markNew();
     QMapMark* markClone(tbe::scene::MapMark* mark);
     void markDelete(tbe::scene::MapMark* mark);
+    void markRegister(QMapMark* mark);
 
 signals:
     void notifyInitAmbiant(const tbe::Vector3f&);
@@ -158,7 +164,11 @@ private:
     QMap<QNodeInteractor*, bool> m_lockedNode;
 
     MainWindow* m_mainwin;
+
+    ClassFactory* m_classFactory;
 };
+
+
 
 #endif	/* QTBENGINE_H */
 

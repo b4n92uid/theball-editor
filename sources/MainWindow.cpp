@@ -398,7 +398,6 @@ void MainWindow::newScene()
     if(!m_rootNode)
     {
         m_rootNode = new QNodeInteractor(this, m_tbeWidget->rootNode());
-        m_rootNode->setProtectNode(true);
 
         QVariant rootData;
         rootData.setValue(m_rootNode);
@@ -779,8 +778,6 @@ void MainWindow::scopeNode(int move)
 
             currNode->setParent(parentNode);
 
-            item->data().value<QNodeInteractor*>()->setProtectNode(!parentNode->isRoot());
-
             m_tbeWidget->placeCamera();
         }
         else
@@ -802,8 +799,6 @@ void MainWindow::scopeNode(int move)
             currNode->setParent(parentNode);
 
             m_tbeWidget->placeCamera();
-
-            item->data().value<QNodeInteractor*>()->setProtectNode(true);
         }
         else
             parent->insertRow(currRow, row);
