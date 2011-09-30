@@ -71,23 +71,15 @@ public slots:
     tbe::scene::Grid* getGrid();
 
     QMesh* meshNew(const QString& filename);
-    QMesh* meshClone(tbe::scene::Mesh* mesh);
-    void meshDelete(tbe::scene::Mesh* mesh);
     void meshRegister(QMesh* mesh);
 
     QLight* lightNew();
-    QLight* lightClone(tbe::scene::Light* light);
-    void lightDelete(tbe::scene::Light* light);
     void lightRegister(QLight* light);
 
     QParticles* particlesNew();
-    QParticles* particlesClone(tbe::scene::ParticlesEmiter* particles);
-    void particlesDelete(tbe::scene::ParticlesEmiter* particles);
     void particlesRegister(QParticles* particles);
 
     QMapMark* markNew();
-    QMapMark* markClone(tbe::scene::MapMark* mark);
-    void markDelete(tbe::scene::MapMark* mark);
     void markRegister(QMapMark* mark);
 
 signals:

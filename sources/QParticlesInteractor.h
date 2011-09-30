@@ -19,7 +19,6 @@ public:
     virtual ~QParticlesInteractor();
 
 public slots:
-    void setup();
     void select();
     void deselect();
     void update();

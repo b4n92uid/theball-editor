@@ -27,7 +27,6 @@ void QNodeInteractor::clearChilds(QStandardItem* item)
         QStandardItem* subitem = item->child(i);
 
         clearChilds(subitem);
-        item->removeRow(i);
 
         QNodeInteractor* interface = subitem->data().value<QNodeInteractor*>();
         m_mainwin->nodesGui.nodeItemBinder.remove(interface);
@@ -39,10 +38,13 @@ QNodeInteractor::~QNodeInteractor()
     if(m_mainwin->nodesGui.nodeItemBinder.count(this))
     {
         QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
-        QStandardItem* parent = item->parent();
 
         clearChilds(item);
+
         m_mainwin->nodesGui.nodeItemBinder.remove(this);
+
+
+        QStandardItem* parent = item->parent();
 
         if(parent)
             parent->removeRow(item->row());
@@ -102,11 +104,6 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
 {
     if(m_target)
     {
-        /*
-        if(m_selectedNode->mesh())
-            m_selectedNode->mesh()->setVertexScale(v);
-         */
-
         m_target->getMatrix().setScale(v);
         m_mainwin->notifyChanges(true);
     }
@@ -269,11 +266,6 @@ void QNodeInteractor::update()
     m_mainwin->nodesGui.name->setText(QString::fromStdString(m_target->getName()));
 
     m_mainwin->nodesGui.position->setValue(m_target->getPos());
-
-    /*
-    if(m_selectedNode->mesh())
-        nodesGui.scale->setValue(m_selectedNode->mesh()->getVertexScale());
-     */
 
     m_mainwin->nodesGui.scale->setValue(m_target->getMatrix().getScale());
     m_mainwin->nodesGui.rotation->setValue(m_target->getMatrix().getRotate().getEuler() * 180 / M_PI);

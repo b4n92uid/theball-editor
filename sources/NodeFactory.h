@@ -23,9 +23,12 @@ class QMesh : public tbe::scene::Mesh, public QMeshInteractor
 public:
     QMesh(MainWindow* mainwin);
     QMesh(MainWindow* mainwin, const tbe::scene::Mesh& copy);
+    QMesh(const QMesh& copy);
     virtual ~QMesh();
-private:
-
+    
+    QMesh* clone();
+    
+    void setup();
 };
 
 class QLight : public tbe::scene::Light, public QLightInteractor
@@ -33,9 +36,12 @@ class QLight : public tbe::scene::Light, public QLightInteractor
 public:
     QLight(MainWindow* mainwin);
     QLight(MainWindow* mainwin, const tbe::scene::Light& copy);
+    QLight(const QLight& copy);
     virtual ~QLight();
-private:
-
+    
+    QLight* clone();
+    
+    void setup();
 };
 
 class QParticles : public tbe::scene::ParticlesEmiter, public QParticlesInteractor
@@ -43,9 +49,12 @@ class QParticles : public tbe::scene::ParticlesEmiter, public QParticlesInteract
 public:
     QParticles(MainWindow* mainwin);
     QParticles(MainWindow* mainwin, const tbe::scene::ParticlesEmiter& copy);
+    QParticles(const QParticles& copy);
     virtual ~QParticles();
-private:
 
+    QParticles* clone();
+
+    void setup();
 };
 
 class QMapMark : public tbe::scene::MapMark, public QMapMarkInteractor
@@ -53,9 +62,12 @@ class QMapMark : public tbe::scene::MapMark, public QMapMarkInteractor
 public:
     QMapMark(MainWindow* mainwin);
     QMapMark(MainWindow* mainwin, const tbe::scene::MapMark& copy);
+    QMapMark(const QMapMark& copy);
     virtual ~QMapMark();
-private:
-
+    
+    QMapMark* clone();
+    
+    void setup();
 };
 
 

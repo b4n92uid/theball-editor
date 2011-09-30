@@ -18,35 +18,6 @@ QLightInteractor::~QLightInteractor()
 {
 }
 
-void QLightInteractor::setup()
-{
-    using namespace tbe::scene;
-
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
-
-    QStandardItem* itemType = new QStandardItem("Light");
-    itemType->setIcon(QIcon(":/Medias/medias/light.png"));
-    itemType->setData(userdata);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(m_target->getName()));
-    itemName->setData(userdata);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(m_target->getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
-}
-
 void QLightInteractor::setType(int type)
 {
     m_target->setType((tbe::scene::Light::Type)type);

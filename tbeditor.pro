@@ -4,20 +4,16 @@
 #
 #-------------------------------------------------
 
-include(build/cache.pro)
 
 QT += core gui opengl
 
 TARGET = tbeditor
 TEMPLATE = app
 
-INCLUDEPATH += $$TBENGINE_INC $$DEVIL_INC $$FREETYPE_INC $$QUAZIP_INC $$ZLIB_INC
-
-LIBS += $$TBENGINE_LIB $$DEVIL_LIB $$FREETYPE_LIB $$QUAZIP_LIB $$ZLIB_LIB -lopengl32 -lglu32
-
-UI_DIR = ../sources
-
 CONFIG(release, debug|release) {
+    
+    include(build/cache.release)
+    
     CONFIG += release
     CONFIG += WINDOWS
 
@@ -28,6 +24,9 @@ CONFIG(release, debug|release) {
 }
 
 CONFIG(debug, debug|release) {
+
+    include(build/cache.debug)
+    
     CONFIG += debug
     CONFIG += CONSOLE
 
@@ -38,6 +37,12 @@ CONFIG(debug, debug|release) {
     RCC_DIR     = ../build/debug
     DESTDIR     = ../debug
 }
+
+INCLUDEPATH += $$TBENGINE_INC $$DEVIL_INC $$FREETYPE_INC $$QUAZIP_INC $$ZLIB_INC
+
+LIBS += $$TBENGINE_LIB $$DEVIL_LIB $$FREETYPE_LIB $$QUAZIP_LIB $$ZLIB_LIB -lopengl32 -lglu32
+
+UI_DIR = ../sources
 
 SOURCES += \
     sources/MainWindow.cpp \
