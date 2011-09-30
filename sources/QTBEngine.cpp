@@ -492,7 +492,9 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             {
                 using namespace tbe::scene;
 
-                select(m_selectedNode->clone());
+                QNodeInteractor* clone = m_selectedNode->clone();
+
+                select(clone);
             }
             catch(std::exception& e)
             {
@@ -916,25 +918,9 @@ QMesh* QTBEngine::meshNew(const QString& filename)
 
     meshRegister(mesh);
 
+    mesh->setup();
+
     return mesh;
-}
-
-QMesh* QTBEngine::meshClone(tbe::scene::Mesh* mesh)
-{
-    using namespace tbe::scene;
-
-    QMesh* newmesh = new QMesh(m_mainwin, *mesh);
-
-    mesh->getParent()->addChild(newmesh);
-
-    meshRegister(newmesh);
-
-    return newmesh;
-}
-
-void QTBEngine::meshDelete(tbe::scene::Mesh* mesh)
-{
-    //    delete mesh;
 }
 
 void QTBEngine::lightRegister(QLight* light)
@@ -953,25 +939,9 @@ QLight* QTBEngine::lightNew()
 
     lightRegister(light);
 
+    light->setup();
+
     return light;
-}
-
-QLight* QTBEngine::lightClone(tbe::scene::Light* light)
-{
-    using namespace tbe::scene;
-
-    QLight* newlight = new QLight(m_mainwin, *light);
-
-    light->getParent()->addChild(newlight);
-
-    lightRegister(newlight);
-
-    return newlight;
-}
-
-void QTBEngine::lightDelete(tbe::scene::Light* light)
-{
-    //    delete light;
 }
 
 void QTBEngine::particlesRegister(QParticles* particles)
@@ -990,25 +960,9 @@ QParticles* QTBEngine::particlesNew()
 
     particlesRegister(particles);
 
+    particles->setup();
+
     return particles;
-}
-
-QParticles* QTBEngine::particlesClone(tbe::scene::ParticlesEmiter* particles)
-{
-    using namespace tbe::scene;
-
-    QParticles* newparticles = new QParticles(m_mainwin, *particles);
-
-    particles->getParent()->addChild(newparticles);
-
-    particlesRegister(newparticles);
-
-    return newparticles;
-}
-
-void QTBEngine::particlesDelete(tbe::scene::ParticlesEmiter* particles)
-{
-    //    delete particles;
 }
 
 void QTBEngine::markRegister(QMapMark* mark)
@@ -1027,25 +981,9 @@ QMapMark* QTBEngine::markNew()
 
     markRegister(mark);
 
+    mark->setup();
+
     return mark;
-}
-
-QMapMark* QTBEngine::markClone(tbe::scene::MapMark* mark)
-{
-    using namespace tbe::scene;
-
-    QMapMark* newmark = new QMapMark(m_mainwin, *mark);
-
-    mark->getParent()->addChild(newmark);
-
-    markRegister(newmark);
-
-    return newmark;
-}
-
-void QTBEngine::markDelete(tbe::scene::MapMark* mark)
-{
-    //    delete mark;
 }
 
 void QTBEngine::skyboxApply(const QStringList& texs)

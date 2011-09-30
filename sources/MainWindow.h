@@ -129,6 +129,11 @@ signals:
     friend class QParticlesInteractor;
     friend class QMapMarkInteractor;
 
+    friend class QLight;
+    friend class QMesh;
+    friend class QParticles;
+    friend class QMapMark;
+
 private:
 
     class MaterialEditDialog : public QDialog, public Ui::MaterialEdit

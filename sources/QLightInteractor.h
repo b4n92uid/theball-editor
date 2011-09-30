@@ -19,7 +19,6 @@ public:
     virtual ~QLightInteractor();
 
 public slots:
-    void setup();
     void select();
     void deselect();
     void update();

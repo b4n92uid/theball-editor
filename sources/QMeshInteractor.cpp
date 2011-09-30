@@ -18,33 +18,13 @@ QMeshInteractor::~QMeshInteractor()
 {
 }
 
-void QMeshInteractor::setup()
+void QMeshInteractor::setScale(const tbe::Vector3f& v)
 {
-    using namespace tbe::scene;
-
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
-
-    QStandardItem* itemType = new QStandardItem("Mesh");
-    itemType->setIcon(QIcon(":/Medias/medias/mesh.png"));
-    itemType->setData(userdata);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(m_target->getName()));
-    itemName->setData(userdata);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(m_target->getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
+    if(m_target)
+    {
+        m_target->setVertexScale(v);
+        m_mainwin->notifyChanges(true);
+    }
 }
 
 tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
@@ -556,6 +536,8 @@ void QMeshInteractor::update()
 
     QNodeInteractor::update();
 
+    m_mainwin->nodesGui.scale->setValue(m_target->getVertexScale());
+    
     m_mainwin->nodesGui.meshTab.materialsModel->
             removeRows(0, m_mainwin->nodesGui.meshTab.materialsModel->rowCount());
 
@@ -608,13 +590,4 @@ void QMeshInteractor::update()
     axe->setColor(Vector4f(0, 0, 1, 0.25));
 
     grid->setPos(Vector3f::Y(axe->getPos().y));
-}
-
-QMeshInteractor* QMeshInteractor::clone()
-{
-    using namespace tbe::scene;
-
-    QMesh* mesh = m_mainwin->m_tbeWidget->meshClone(m_target);
-
-    return mesh;
 }

@@ -14,34 +14,6 @@ QMapMarkInteractor::QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark*
 
 }
 
-void QMapMarkInteractor::setup()
-{
-    using namespace tbe::scene;
-
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
-
-    QStandardItem* itemType = new QStandardItem("Mark");
-    itemType->setIcon(QIcon(":/Medias/medias/mark.png"));
-    itemType->setData(userdata);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(m_target->getName()));
-    itemName->setData(userdata);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(m_target->getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
-}
 
 QMapMarkInteractor::~QMapMarkInteractor()
 {

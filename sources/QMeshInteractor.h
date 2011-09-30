@@ -19,16 +19,15 @@ public:
     virtual ~QMeshInteractor();
 
 public slots:
-    void setup();
     void select();
     void deselect();
     void update();
     
-    QMeshInteractor* clone();
-
 public slots:
     void materialSelected(const QModelIndex& index);
     void textureSelected(const QModelIndex& index);
+
+    void setScale(const tbe::Vector3f& v);
 
     void addTexture();
     void delTexture();
