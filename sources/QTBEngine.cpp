@@ -556,13 +556,17 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->modifiers() & Qt::ShiftModifier)
         {
+            float factor = ev->modifiers() & Qt::ControlModifier ? 0.1 : 1;
+
             if(ev->key() == Qt::Key_Up)
             {
                 Vector3f pos = selnode->getPos();
+
                 if(ev->modifiers() & Qt::ALT)
-                    pos.y += 1;
+                    pos += m_camera->getUp().normalize().X(0).Z(0).pinpoint() * factor;
+
                 else
-                    pos.z += 1;
+                    pos += m_camera->getTarget().normalize().Y(0).pinpoint() * factor;
 
                 selnode->setPos(pos);
                 m_selectedNode->update();
@@ -571,10 +575,12 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             else if(ev->key() == Qt::Key_Down)
             {
                 Vector3f pos = selnode->getPos();
+
                 if(ev->modifiers() & Qt::ALT)
-                    pos.y -= 1;
+                    pos -= m_camera->getUp().normalize().X(0).Z(0).pinpoint() * factor;
                 else
-                    pos.z -= 1;
+                    pos -= m_camera->getTarget().normalize().Y(0).pinpoint() * factor;
+
                 selnode->setPos(pos);
 
                 m_selectedNode->update();
@@ -583,7 +589,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             else if(ev->key() == Qt::Key_Left)
             {
                 Vector3f pos = selnode->getPos();
-                pos.x += 1;
+                pos -= m_camera->getLeft().normalize().Y(0).pinpoint() * factor;
                 selnode->setPos(pos);
 
                 m_selectedNode->update();
@@ -592,7 +598,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             else if(ev->key() == Qt::Key_Right)
             {
                 Vector3f pos = selnode->getPos();
-                pos.x -= 1;
+                pos += m_camera->getLeft().normalize().Y(0).pinpoint() * factor;
                 selnode->setPos(pos);
 
                 m_selectedNode->update();
@@ -622,7 +628,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             Vector2f size = cuts;
 
-            m_grid->setup(size, cuts);
+            m_grid->build(size, cuts);
             m_grid->getMaterial("main")->disable(scene::Material::FOGED);
             m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
         }
