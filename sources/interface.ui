@@ -1763,8 +1763,14 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionNewParticles"/>
     <addaction name="actionNewMapMark"/>
     <addaction name="separator"/>
-    <addaction name="actionDeleteNode"/>
     <addaction name="actionCloneNode"/>
+    <addaction name="actionDeleteNode"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPastPosition"/>
+    <addaction name="actionPastScale"/>
+    <addaction name="actionPastRotation"/>
+    <addaction name="actionPastFields"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuEditer"/>
@@ -1909,6 +1915,31 @@ p, li { white-space: pre-wrap; }
   <action name="actionCloneNode">
    <property name="text">
     <string>Cloner le noeud</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copier</string>
+   </property>
+  </action>
+  <action name="actionPastPosition">
+   <property name="text">
+    <string>Coller la position</string>
+   </property>
+  </action>
+  <action name="actionPastRotation">
+   <property name="text">
+    <string>Coller la rotation</string>
+   </property>
+  </action>
+  <action name="actionPastScale">
+   <property name="text">
+    <string>Coller le scale</string>
+   </property>
+  </action>
+  <action name="actionPastFields">
+   <property name="text">
+    <string>Coller les champs</string>
    </property>
   </action>
  </widget>

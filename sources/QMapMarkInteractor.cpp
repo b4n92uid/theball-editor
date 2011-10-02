@@ -59,5 +59,5 @@ void QMapMarkInteractor::update()
     axe->setSize(0.25);
     axe->setColor(Vector4f(1, 1, 0, 0.25));
 
-    grid->setPos(Vector3f::Y(axe->getPos().y));
+    grid->setPos(Vector3f(0, axe->getPos().y, 0));
 }
