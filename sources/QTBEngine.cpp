@@ -14,6 +14,8 @@
 
 #include "QNodeInteractor.h"
 
+#include "ui_interface.h"
+
 #include <QDebug>
 
 using namespace tbe;
@@ -56,7 +58,6 @@ QTBEngine::QTBEngine(QWidget* parent)
     m_classFactory = new ClassFactory(m_mainwin);
 
     m_gridEnable = false;
-    m_propertyCopyMode = false;
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -353,25 +354,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             if(m_selectedNode)
                 m_selectedNode->getTarget()->setEnable(true);
 
-            if(m_propertyCopyMode)
-            {
-                nearest->clearUserData();
-
-                Any::Map ud = m_selectedNode->getTarget()->getUserDatas();
-
-                foreach(Any::Map::value_type i, ud)
-                {
-                    nearest->setUserData(i.first, i.second);
-                }
-
-                if(m_nodeInterface.contains(nearest))
-                    select(m_nodeInterface[nearest]);
-            }
-            else
-            {
-                if(m_nodeInterface.contains(nearest))
-                    select(m_nodeInterface[nearest]);
-            }
+            if(m_nodeInterface.contains(nearest))
+                select(m_nodeInterface[nearest]);
         }
         else
         {
@@ -466,6 +450,11 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     {
         tbe::scene::Node* selnode = m_selectedNode->getTarget();
 
+        if(ev->key() == Qt::Key_Space)
+        {
+            m_mainwin->getUi()->menuEditer->popup(QCursor::pos());
+        }
+
         if(ev->key() == Qt::Key_P && !selnode->getParent()->isRoot())
         {
             using namespace tbe::scene;
@@ -556,7 +545,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->modifiers() & Qt::ShiftModifier)
         {
-            float factor = ev->modifiers() & Qt::ControlModifier ? 0.1 : 1;
+            float factor = ev->modifiers() & Qt::ControlModifier ? 0.01 : 1;
 
             if(ev->key() == Qt::Key_Up)
             {

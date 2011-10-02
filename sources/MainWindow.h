@@ -43,6 +43,8 @@ public:
 
     QString getOpenFileName() const;
 
+    Ui_mainWindow* getUi();
+
 protected:
 
     void pushFileHistory(const QString& filepath);
@@ -76,6 +78,12 @@ public slots:
     void skyboxWorkingDir(const QString& filename);
 
     void openFileHistory();
+
+    void copy();
+    void pastField();
+    void pastPosition();
+    void pastScale();
+    void pastRotation();
 
 public slots:
 
@@ -145,6 +153,8 @@ private:
             setupUi(this);
         }
     };
+
+    QNodeInteractor* m_sourceCopy;
 
     struct NodesGuiTab
     {

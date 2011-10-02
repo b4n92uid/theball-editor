@@ -15,6 +15,7 @@ MainWindow::MainWindow()
 
     m_uinterface = new Ui_mainWindow;
     m_rootNode = NULL;
+    m_sourceCopy = NULL;
 }
 
 MainWindow::~MainWindow()
@@ -26,6 +27,11 @@ MainWindow::~MainWindow()
 QString MainWindow::getOpenFileName() const
 {
     return m_filename;
+}
+
+Ui_mainWindow* MainWindow::getUi()
+{
+    return m_uinterface;
 }
 
 void MainWindow::openFileHistory()
@@ -282,6 +288,12 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), this, SLOT(guiDelete()));
 
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
+
+    connect(m_uinterface->actionPastFields, SIGNAL(triggered()), this, SLOT(pastField()));
+    connect(m_uinterface->actionPastPosition, SIGNAL(triggered()), this, SLOT(pastPosition()));
+    connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
+    connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
+    connect(m_uinterface->actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
@@ -692,11 +704,9 @@ void MainWindow::guiClone()
 {
     try
     {
-        QNodeInteractor* node = m_selectedNode->clone();
+        QNodeInteractor* clone = m_selectedNode->clone();
 
-        select(node);
-
-        notifyChanges(true);
+        select(clone);
     }
     catch(std::exception& e)
     {
@@ -706,14 +716,11 @@ void MainWindow::guiClone()
 
 void MainWindow::guiDelete()
 {
-    QNodeInteractor* selection = m_selectedNode;
-    m_selectedNode = NULL;
+    QNodeInteractor* todelete = m_selectedNode;
 
-    delete selection;
+    deselect();
 
-    select(m_lastSelectedNode);
-
-    notifyChanges(true);
+    delete todelete;
 }
 
 void MainWindow::select(QNodeInteractor* qnode)
@@ -985,4 +992,65 @@ void MainWindow::screenshot()
         output.open(QIODevice::WriteOnly);
         shot.save(&output, "PNG");
     }
+}
+
+void MainWindow::pastField()
+{
+    if(!m_sourceCopy)
+        return;
+
+    using namespace tbe;
+    using namespace scene;
+
+    Node* nearest = m_selectedNode->getTarget();
+    nearest->clearUserData();
+
+    const Any::Map& ud = m_sourceCopy->getTarget()->getUserDatas();
+
+    foreach(Any::Map::value_type i, ud)
+    {
+        nearest->setUserData(i.first, i.second);
+    }
+
+    statusBar()->showMessage("Champs coller...", 2000);
+}
+
+void MainWindow::pastPosition()
+{
+    if(!m_sourceCopy)
+        return;
+
+    m_selectedNode->setPos(m_sourceCopy->getTarget()->getPos());
+
+    statusBar()->showMessage("Position coller...", 2000);
+}
+
+void MainWindow::pastScale()
+{
+    if(!m_sourceCopy)
+        return;
+
+    m_selectedNode->setScale(m_sourceCopy->getTarget()->getMatrix().getScale());
+
+    statusBar()->showMessage("Scale coller...", 2000);
+}
+
+void MainWindow::pastRotation()
+{
+    if(!m_sourceCopy)
+        return;
+
+    m_selectedNode->setRotation(m_sourceCopy->getTarget()->getMatrix().getRotate().getEuler());
+
+    statusBar()->showMessage("Rotation coller...", 2000);
+}
+
+void MainWindow::copy()
+{
+    if(!m_sourceCopy)
+        return;
+
+    m_sourceCopy = m_selectedNode;
+
+    statusBar()->showMessage("Copie effectuer...", 2000);
 }

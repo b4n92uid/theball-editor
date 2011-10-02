@@ -128,7 +128,6 @@ private:
 
     bool m_grabCamera;
     bool m_gridEnable;
-    bool m_propertyCopyMode;
 
     tbe::Vector2i m_lastCursorPos;
     tbe::Vector2i m_curCursorPos;

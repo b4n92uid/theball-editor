@@ -192,5 +192,5 @@ void QParticlesInteractor::update()
     axe->setSize(size / 2.0f + 0.1f);
     axe->setColor(Vector4f(0, 1, 1, 0.25));
 
-    grid->setPos(Vector3f::Y(axe->getPos().y));
+    grid->setPos(Vector3f(0, axe->getPos().y, 0));
 }

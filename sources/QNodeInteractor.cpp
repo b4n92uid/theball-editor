@@ -53,6 +53,9 @@ QNodeInteractor::~QNodeInteractor()
 
         m_mainwin->notifyChanges(true);
     }
+
+    if(m_mainwin->m_sourceCopy == this)
+        m_mainwin->m_sourceCopy = NULL;
 }
 
 QNodeInteractor::operator tbe::scene::Node*()
@@ -79,9 +82,12 @@ void QNodeInteractor::setPos(const tbe::Vector3f& v)
     if(m_target)
     {
         m_target->setPos(v);
-        m_mainwin->notifyChanges(true);
 
         m_mainwin->getTbeWidget()->placeCamera();
+
+        m_mainwin->notifyChanges(true);
+
+        update();
     }
 }
 
@@ -97,6 +103,8 @@ void QNodeInteractor::setRotation(const tbe::Vector3f& v)
         m_target->setMatrix(newmat);
 
         m_mainwin->notifyChanges(true);
+
+        update();
     }
 }
 
@@ -106,6 +114,8 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
     {
         m_target->getMatrix().setScale(v);
         m_mainwin->notifyChanges(true);
+
+        update();
     }
 }
 
@@ -116,6 +126,8 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
         m_target->setMatrix(m);
 
         m_mainwin->notifyChanges(true);
+
+        update();
     }
 }
 
