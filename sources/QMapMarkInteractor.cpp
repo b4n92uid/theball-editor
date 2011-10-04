@@ -48,7 +48,6 @@ void QMapMarkInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Grid* grid = m_mainwin->m_tbeWidget->getGrid();
     Box* axe = m_mainwin->m_tbeWidget->getAxe();
 
     AABB selAabb = m_target->getAabb();
@@ -58,6 +57,4 @@ void QMapMarkInteractor::update()
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
     axe->setSize(0.25);
     axe->setColor(Vector4f(1, 1, 0, 0.25));
-
-    grid->setPos(Vector3f(0, axe->getPos().y, 0));
 }

@@ -57,6 +57,8 @@ public slots:
     void resumeRendring();
 
     void placeCamera();
+    
+    void enableGrid(bool stat = true);
 
     // Setting scene ambiant light
     void setSceneAmbiant(const tbe::Vector3f& value);

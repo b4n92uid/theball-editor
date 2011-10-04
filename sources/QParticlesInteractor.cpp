@@ -180,7 +180,6 @@ void QParticlesInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Grid* grid = m_mainwin->m_tbeWidget->getGrid();
     Box* axe = m_mainwin->m_tbeWidget->getAxe();
 
     Vector3f size = m_target->getBoxSize();
@@ -191,6 +190,4 @@ void QParticlesInteractor::update()
     axe->setPos(m_target->getAbsoluteMatrix().getPos() + size / 2.0f);
     axe->setSize(size / 2.0f + 0.1f);
     axe->setColor(Vector4f(0, 1, 1, 0.25));
-
-    grid->setPos(Vector3f(0, axe->getPos().y, 0));
 }

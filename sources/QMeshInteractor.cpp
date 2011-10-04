@@ -528,6 +528,9 @@ void QMeshInteractor::deselect()
     disconnect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.meshTab.materialsView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
+
+    m_mainwin->nodesGui.meshTab.materialsModel
+            ->removeRows(0, m_mainwin->nodesGui.meshTab.materialsModel->rowCount());
 }
 
 void QMeshInteractor::update()
@@ -537,7 +540,7 @@ void QMeshInteractor::update()
     QNodeInteractor::update();
 
     m_mainwin->nodesGui.scale->setValue(m_target->getVertexScale());
-    
+
     m_mainwin->nodesGui.meshTab.materialsModel->
             removeRows(0, m_mainwin->nodesGui.meshTab.materialsModel->rowCount());
 
@@ -578,7 +581,6 @@ void QMeshInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Grid* grid = m_mainwin->m_tbeWidget->getGrid();
     Box* axe = m_mainwin->m_tbeWidget->getAxe();
 
     AABB selAabb = m_target->getAabb();
@@ -588,6 +590,4 @@ void QMeshInteractor::update()
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
     axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
     axe->setColor(Vector4f(0, 0, 1, 0.25));
-
-    grid->setPos(Vector3f(0, axe->getPos().y, 0));
 }

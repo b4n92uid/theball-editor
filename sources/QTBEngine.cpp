@@ -434,6 +434,34 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     }
 }
 
+void QTBEngine::enableGrid(bool stat)
+{
+    m_gridEnable = stat;
+
+    if(m_gridEnable)
+    {
+        m_grid->clear();
+
+        AABB zone = m_selectedNode->getTarget()->getAabb();
+
+        Vector2i cuts;
+        cuts.x = zone.max.x - zone.min.x;
+        cuts.y = zone.max.z - zone.min.z;
+        cuts = math::nextPow2(cuts * 8);
+
+        Vector2f size = cuts;
+
+        m_grid->build(size, cuts);
+        m_grid->getMaterial("main")->disable(scene::Material::FOGED);
+        m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
+
+        if(m_selectedNode)
+            m_grid->setPos(m_selectedNode->getTarget()->getAbsoluteMatrix().getPos());
+    }
+
+    m_grid->setEnable(m_gridEnable);
+}
+
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
@@ -602,27 +630,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_G)
     {
-        m_gridEnable = !m_gridEnable;
-
-        if(m_gridEnable)
-        {
-            m_grid->clear();
-
-            AABB sceneAabb = m_meshScene->getSceneAabb();
-
-            Vector2i cuts;
-            cuts.x = sceneAabb.max.x - sceneAabb.min.x;
-            cuts.y = sceneAabb.max.z - sceneAabb.min.z;
-            cuts = math::nextPow2(cuts);
-
-            Vector2f size = cuts;
-
-            m_grid->build(size, cuts);
-            m_grid->getMaterial("main")->disable(scene::Material::FOGED);
-            m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
-        }
-
-        m_grid->setEnable(m_gridEnable);
+        enableGrid(!m_gridEnable);
     }
 
     else if(ev->key() == Qt::Key_Q)
