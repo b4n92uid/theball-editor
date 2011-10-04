@@ -788,6 +788,7 @@ void MainWindow::scopeNode(int move)
             Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
+            currNode->setPos(parentNode->getPos() + currNode->getPos());
 
             m_tbeWidget->placeCamera();
         }
@@ -808,6 +809,7 @@ void MainWindow::scopeNode(int move)
             Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
+            currNode->setPos(currNode->getPos() - parentNode->getPos());
 
             m_tbeWidget->placeCamera();
         }
@@ -1047,9 +1049,6 @@ void MainWindow::pastRotation()
 
 void MainWindow::copy()
 {
-    if(!m_sourceCopy)
-        return;
-
     m_sourceCopy = m_selectedNode;
 
     statusBar()->showMessage("Copie effectuer...", 2000);
