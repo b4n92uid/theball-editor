@@ -74,7 +74,7 @@ public slots:
     void closeEvent(QCloseEvent *event);
 
     void skyboxWorkingDir(const QString& filename);
-    
+
     void toggleFullWidget(bool full = true);
 
     void openFileHistory();
@@ -103,16 +103,22 @@ public slots:
     void guiClone();
     void guiDelete();
 
+    void guiNodeListFilterView();
+
     void select(QNodeInteractor* qnode);
     void deselect();
 
     void guiSkyboxApply(bool enable = true);
     void guiFogApply(bool enable = true);
-    void guiSceneAmbiantApply(const tbe::Vector3f& value);
+    void guiAmbiantApply(const tbe::Vector3f& value);
+    void guiZNear(double value);
+    void guiZFar(double value);
 
-    void skyboxRegister(tbe::scene::SkyBox* tbesky);
-    void fogRegister(tbe::scene::Fog* tbefog);
-    void sceneAmbiantRegister(const tbe::Vector3f& value);
+    void skybox(tbe::scene::SkyBox* tbesky);
+    void fog(tbe::scene::Fog* tbefog);
+    void ambiant(const tbe::Vector3f& value);
+    void zNear(float value);
+    void zFar(float value);
 
 signals:
     void pauseRendring();
@@ -238,6 +244,7 @@ private:
 
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
+        QCheckBox* displayMesh, *displayLights, *displayParticles, *displayMarks;
 
         QMap<QNodeInteractor*, QStandardItem*> nodeItemBinder;
 
@@ -262,6 +269,8 @@ private:
             QGroupBox* enable;
 
         } fog;
+
+        QDoubleSpinBox* znear, *zfar;
 
         QVectorBox* sceneAmbiant;
 

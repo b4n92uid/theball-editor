@@ -249,12 +249,20 @@ void QNodeInteractor::deselect()
     disconnect(m_mainwin->nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
     disconnect(m_mainwin->nodesGui.enable, SIGNAL(clicked(bool)), 0, 0);
 
+    disconnect(m_mainwin->nodesGui.additionalModel, SIGNAL(itemChanged(QStandardItem*)), 0, 0);
+
+    disconnect(m_mainwin->nodesGui.addField, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.delField, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.clearFields, SIGNAL(clicked()), 0, 0);
 
     m_mainwin->nodesGui.name->clear();
     m_mainwin->nodesGui.position->clear();
     m_mainwin->nodesGui.rotation->clear();
     m_mainwin->nodesGui.scale->clear();
     m_mainwin->nodesGui.enable->setChecked(false);
+
+    m_mainwin->nodesGui.additionalModel
+            ->removeRows(0, m_mainwin->nodesGui.additionalModel->rowCount());
 }
 
 void QNodeInteractor::update()

@@ -836,6 +836,9 @@ void QTBEngine::clearScene()
 
     setupSelection();
 
+    m_mainwin->zNear(m_sceneManager->getZNear());
+    m_mainwin->zFar(m_sceneManager->getZFar());
+
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
     emit notifyInitAmbiant(math::vec43(m_sceneManager->getAmbientLight()));
@@ -854,6 +857,9 @@ void QTBEngine::loadScene(const QString& filename)
     m_centerTarget = 0;
 
     m_axe->setEnable(false);
+
+    m_mainwin->zNear(m_sceneManager->getZNear());
+    m_mainwin->zFar(m_sceneManager->getZFar());
 
     emit notifyInitFog(m_fog);
     emit notifyInitSkybox(m_skybox);
@@ -1137,4 +1143,16 @@ QNodeInteractor* QTBEngine::fetchInterface(tbe::scene::Node* node)
         return m_nodeInterface[node];
     else
         return NULL;
+}
+
+void QTBEngine::setZNear(float value)
+{
+    m_sceneManager->setZNear(value);
+    m_sceneManager->updateViewParameter();
+}
+
+void QTBEngine::setZFar(float value)
+{
+    m_sceneManager->setZFar(value);
+    m_sceneManager->updateViewParameter();
 }

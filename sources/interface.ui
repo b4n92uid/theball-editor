@@ -51,7 +51,7 @@
     <item>
      <widget class="QTabWidget" name="propertyTab">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
@@ -1752,6 +1752,57 @@ p, li { white-space: pre-wrap; }
             <property name="icon">
              <iconset resource="ressource.qrc">
               <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="node_display_meshs">
+            <property name="text">
+             <string>Afficher les Mailliages</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="node_display_particules">
+            <property name="text">
+             <string>Afficher les Particules</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="node_display_lights">
+            <property name="text">
+             <string>Afficher les Lumieres</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="node_display_marks">
+            <property name="text">
+             <string>Afficher les Marqeurs</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

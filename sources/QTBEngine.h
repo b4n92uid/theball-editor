@@ -65,6 +65,9 @@ public slots:
 
     void setSceneAmbiant(const tbe::Vector3f& value);
 
+    void setZNear(float value);
+    void setZFar(float value);
+    
     void skyboxApply(const QStringList& texs);
     void skyboxClear();
 
