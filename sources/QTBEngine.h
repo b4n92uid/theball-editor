@@ -39,7 +39,7 @@ public:
 
     tbe::scene::Node* rootNode();
 
-    tbe::scene::SceneParser* getSceneParser() const;
+    tbe::scene::SceneParser* sceneParser() const;
 
     QStringList usedRessources();
 
@@ -57,10 +57,12 @@ public slots:
     void resumeRendring();
 
     void placeCamera();
-    
-    void enableGrid(bool stat = true);
 
-    // Setting scene ambiant light
+    void enableGrid(bool stat = true);
+    
+    void pushHistoryStat();
+    void popHistoryStat();
+
     void setSceneAmbiant(const tbe::Vector3f& value);
 
     void skyboxApply(const QStringList& texs);
@@ -94,6 +96,8 @@ protected:
     void resizeGL(int w, int h);
     void paintGL();
 
+    void setupSelection();
+    
     void enterEvent(QEvent * event);
 
     void mousePressEvent(QMouseEvent* ev);
@@ -105,8 +109,6 @@ protected:
     void keyReleaseEvent(QKeyEvent* ev);
 
     void moveApply();
-
-    void setupSelection();
 
 private:
     tbe::Device* m_device;
@@ -159,6 +161,14 @@ private:
     MainWindow* m_mainwin;
 
     ClassFactory* m_classFactory;
+
+    struct HistoryStat
+    {
+        QNodeInteractor* source;
+        QNodeInteractor* destination;
+    };
+
+    QStack<HistoryStat> m_history;
 };
 
 

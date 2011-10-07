@@ -18,7 +18,7 @@
 using namespace tbe::scene;
 
 QMesh::QMesh(MainWindow* mainwin) :
-Mesh(mainwin->getTbeWidget()->getSceneParser()->getMeshScene()),
+Mesh(mainwin->tbeWidget()->sceneParser()->getMeshScene()),
 QMeshInteractor(mainwin, this)
 {
 }
@@ -41,10 +41,6 @@ QMesh* QMesh::clone()
 {
     QMesh* theclone = new QMesh(*this);
 
-    getParent()->addChild(theclone);
-
-    theclone->setup();
-    
     return theclone;
 }
 
@@ -76,13 +72,13 @@ void QMesh::setup()
 
     m_mainwin->notifyChanges(true);
 
-    m_mainwin->getTbeWidget()->meshRegister(this);
+    m_mainwin->tbeWidget()->meshRegister(this);
 
     Node::setup();
 }
 
 QLight::QLight(MainWindow* mainwin) :
-Light(mainwin->getTbeWidget()->getSceneParser()->getLightScene()),
+Light(mainwin->tbeWidget()->sceneParser()->getLightScene()),
 QLightInteractor(mainwin, this)
 {
 }
@@ -106,10 +102,6 @@ QLight* QLight::clone()
 {
     QLight* theclone = new QLight(*this);
 
-    getParent()->addChild(theclone);
-
-    theclone->setup();
-    
     return theclone;
 }
 
@@ -141,13 +133,13 @@ void QLight::setup()
 
     m_mainwin->notifyChanges(true);
 
-    m_mainwin->getTbeWidget()->lightRegister(this);
+    m_mainwin->tbeWidget()->lightRegister(this);
 
     Node::setup();
 }
 
 QParticles::QParticles(MainWindow* mainwin) :
-ParticlesEmiter(mainwin->getTbeWidget()->getSceneParser()->getParticlesScene()),
+ParticlesEmiter(mainwin->tbeWidget()->sceneParser()->getParticlesScene()),
 QParticlesInteractor(mainwin, this)
 {
 }
@@ -170,10 +162,6 @@ QParticles* QParticles::clone()
 {
     QParticles* theclone = new QParticles(*this);
 
-    getParent()->addChild(theclone);
-
-    theclone->setup();
-    
     return theclone;
 }
 
@@ -205,13 +193,13 @@ void QParticles::setup()
 
     m_mainwin->notifyChanges(true);
 
-    m_mainwin->getTbeWidget()->particlesRegister(this);
+    m_mainwin->tbeWidget()->particlesRegister(this);
 
     Node::setup();
 }
 
 QMapMark::QMapMark(MainWindow* mainwin) :
-MapMark(mainwin->getTbeWidget()->getSceneParser()->getMarkScene()),
+MapMark(mainwin->tbeWidget()->sceneParser()->getMarkScene()),
 QMapMarkInteractor(mainwin, this)
 {
 }
@@ -235,10 +223,6 @@ QMapMark* QMapMark::clone()
 {
     QMapMark* theclone = new QMapMark(*this);
 
-    getParent()->addChild(theclone);
-
-    theclone->setup();
-    
     return theclone;
 }
 
@@ -270,7 +254,7 @@ void QMapMark::setup()
 
     m_mainwin->notifyChanges(true);
 
-    m_mainwin->getTbeWidget()->markRegister(this);
+    m_mainwin->tbeWidget()->markRegister(this);
 
     Node::setup();
 }

@@ -58,7 +58,7 @@ void PackerDialog::recursivFilesFind(const SceneParser::Relation& rel)
 
 void PackerDialog::exec()
 {
-    QString sceneFileName = m_parent->getOpenFileName();
+    QString sceneFileName = m_parent->openFileName();
 
     if(sceneFileName.isEmpty())
     {
@@ -71,8 +71,8 @@ void PackerDialog::exec()
 
     m_fileListModel->removeRows(0, m_fileListModel->rowCount());
 
-    QTBEngine* tbewidget = m_parent->getTbeWidget();
-    SceneParser* parser = tbewidget->getSceneParser();
+    QTBEngine* tbewidget = m_parent->tbeWidget();
+    SceneParser* parser = tbewidget->sceneParser();
 
     parser->prepareScene();
 
@@ -85,7 +85,7 @@ void PackerDialog::exec()
     addRelativeFile(QString::fromStdString(descriptor.skybox.left));
     addRelativeFile(QString::fromStdString(descriptor.skybox.right));
 
-    foreach(QString path, m_parent->getTbeWidget()->usedRessources())
+    foreach(QString path, m_parent->tbeWidget()->usedRessources())
     addAbsoluteFile(path);
 
     for(unsigned i = 0; i < descriptor.nodes.size(); i++)
@@ -185,7 +185,7 @@ void PackerDialog::delFiles()
 
 void PackerDialog::exportPack()
 {
-    QFileInfo baseFileInfo(m_parent->getOpenFileName());
+    QFileInfo baseFileInfo(m_parent->openFileName());
 
     QString defaultName =
             m_baseDir.filePath(QString("%1-%2.zip")
@@ -225,7 +225,7 @@ void PackerDialog::exportPack()
 
         if(addScreenshot->isChecked())
         {
-            QImage screenshot = m_parent->getTbeWidget()->grabFrameBuffer();
+            QImage screenshot = m_parent->tbeWidget()->grabFrameBuffer();
 
             QuaZipFile zipfile(&ziparchive);
 
@@ -237,10 +237,10 @@ void PackerDialog::exportPack()
 
         QuaZipFile zipfile(&ziparchive);
 
-        QuaZipNewInfo newinfo(m_baseDir.relativeFilePath(m_parent->getOpenFileName()), m_parent->getOpenFileName());
+        QuaZipNewInfo newinfo(m_baseDir.relativeFilePath(m_parent->openFileName()), m_parent->openFileName());
         zipfile.open(QIODevice::WriteOnly, newinfo);
 
-        QFile reader(m_parent->getOpenFileName());
+        QFile reader(m_parent->openFileName());
         reader.open(QIODevice::ReadOnly);
 
         zipfile.write(reader.readAll());

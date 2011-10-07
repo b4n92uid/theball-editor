@@ -24,80 +24,7 @@
     <normaloff>:/Medias/medias/icon.ico</normaloff>:/Medias/medias/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="2,8,1">
-    <item>
-     <widget class="QWidget" name="sideBar" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout_16">
-       <property name="margin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QTreeView" name="node_list"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="node_list_up">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="node_list_down">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="node_list_makeparent">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="node_list_makechild">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ressource.qrc">
-             <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
+   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="10,1">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_8" stretch="9,0">
       <item>
@@ -1377,6 +1304,58 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="groupBox_7">
+          <property name="title">
+           <string>Frustum</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_10">
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="env_znear">
+             <property name="minimum">
+              <double>0.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>99999999.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="env_zfar">
+             <property name="maximum">
+              <double>99999999.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>1024.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_38">
+             <property name="text">
+              <string>zNear</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_39">
+             <property name="text">
+              <string>zFar</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="fog_enable">
           <property name="enabled">
            <bool>true</bool>
@@ -1709,6 +1688,77 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Liste</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_14">
+        <item>
+         <widget class="QTreeView" name="node_list"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_up">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_down">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_makeparent">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_makechild">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1758,6 +1808,8 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Edition</string>
     </property>
+    <addaction name="actionUndo"/>
+    <addaction name="separator"/>
     <addaction name="actionNewMesh"/>
     <addaction name="actionNewLight"/>
     <addaction name="actionNewParticles"/>
@@ -1888,31 +1940,55 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionNewMesh">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/mesh.png</normaloff>:/Medias/medias/mesh.png</iconset>
+   </property>
    <property name="text">
     <string>Inserer Mesh</string>
    </property>
   </action>
   <action name="actionNewParticles">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/particles.png</normaloff>:/Medias/medias/particles.png</iconset>
+   </property>
    <property name="text">
     <string>Inserer Particlules</string>
    </property>
   </action>
   <action name="actionNewMapMark">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/mark.png</normaloff>:/Medias/medias/mark.png</iconset>
+   </property>
    <property name="text">
     <string>Inserer Marqueur</string>
    </property>
   </action>
   <action name="actionNewLight">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/light.png</normaloff>:/Medias/medias/light.png</iconset>
+   </property>
    <property name="text">
     <string>Inserer Lumiere</string>
    </property>
   </action>
   <action name="actionDeleteNode">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
+   </property>
    <property name="text">
     <string>Supprmer le noeud</string>
    </property>
   </action>
   <action name="actionCloneNode">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
+   </property>
    <property name="text">
     <string>Cloner le noeud</string>
    </property>
@@ -1940,6 +2016,18 @@ p, li { white-space: pre-wrap; }
   <action name="actionPastFields">
    <property name="text">
     <string>Coller les champs</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/arrow_undo.png</normaloff>:/Medias/medias/arrow_undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Annuler</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
  </widget>

@@ -24,12 +24,12 @@ MainWindow::~MainWindow()
     delete m_rootNode;
 }
 
-QString MainWindow::getOpenFileName() const
+QString MainWindow::openFileName() const
 {
     return m_filename;
 }
 
-Ui_mainWindow* MainWindow::getUi()
+Ui_mainWindow* MainWindow::ui()
 {
     return m_uinterface;
 }
@@ -105,6 +105,8 @@ void MainWindow::initWidgets()
     m_packerDialog = new PackerDialog(this);
 
     buildFileHistory();
+
+    m_uinterface->actionUndo->setEnabled(false);
 
     // Générale ----------------------------------------------------------------
 
@@ -270,6 +272,8 @@ void MainWindow::initConnections()
     connect(genGui.delField, SIGNAL(clicked()), this, SLOT(guiDelSceneField()));
     connect(genGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearSceneField()));
 
+    // File Menu
+
     connect(m_uinterface->actionNewScene, SIGNAL(triggered()), this, SLOT(newScene()));
     connect(m_uinterface->actionOpen, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
     connect(m_uinterface->actionSave, SIGNAL(triggered()), this, SLOT(saveScene()));
@@ -279,21 +283,27 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(m_uinterface->actionScreenShot, SIGNAL(triggered()), this, SLOT(screenshot()));
 
+    // Edit Menu
+
+    connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
+
     connect(m_uinterface->actionNewMesh, SIGNAL(triggered()), this, SLOT(guiMeshNew()));
     connect(m_uinterface->actionNewLight, SIGNAL(triggered()), this, SLOT(guiLightNew()));
     connect(m_uinterface->actionNewParticles, SIGNAL(triggered()), this, SLOT(guiParticlesNew()));
     connect(m_uinterface->actionNewMapMark, SIGNAL(triggered()), this, SLOT(guiMarkNew()));
 
-    connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), this, SLOT(guiClone()));
-    connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), this, SLOT(guiDelete()));
-
-    connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
-
+    connect(m_uinterface->actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
     connect(m_uinterface->actionPastFields, SIGNAL(triggered()), this, SLOT(pastField()));
     connect(m_uinterface->actionPastPosition, SIGNAL(triggered()), this, SLOT(pastPosition()));
     connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
     connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
-    connect(m_uinterface->actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+
+    connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), this, SLOT(guiClone()));
+    connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), this, SLOT(guiDelete()));
+
+    // Tools Menu
+
+    connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
@@ -464,7 +474,7 @@ void MainWindow::openScene(const QString& filename)
 
         pushFileHistory(filename);
 
-        SceneParser* sceneParser = m_tbeWidget->getSceneParser();
+        SceneParser* sceneParser = m_tbeWidget->sceneParser();
 
         genGui.title->setText(QString::fromStdString(sceneParser->getSceneName()));
         genGui.author->setText(QString::fromStdString(sceneParser->getAuthorName()));
@@ -537,7 +547,7 @@ void MainWindow::saveScene()
 
 void MainWindow::saveScene(const QString& filename)
 {
-    tbe::scene::SceneParser* sceneParser = m_tbeWidget->getSceneParser();
+    tbe::scene::SceneParser* sceneParser = m_tbeWidget->sceneParser();
 
     sceneParser->setSceneName(genGui.title->text().toStdString());
     sceneParser->setAuthorName(genGui.author->text().toStdString());
@@ -706,6 +716,10 @@ void MainWindow::guiClone()
     {
         QNodeInteractor* clone = m_selectedNode->clone();
 
+        m_selectedNode->getTarget()->getParent()->addChild(clone->getTarget());
+
+        clone->setup();
+
         select(clone);
     }
     catch(std::exception& e)
@@ -868,7 +882,7 @@ void MainWindow::sceneAmbiantRegister(const tbe::Vector3f& value)
     envGui.sceneAmbiant->blockSignals(false);
 }
 
-QTBEngine* MainWindow::getTbeWidget() const
+QTBEngine* MainWindow::tbeWidget() const
 {
     return m_tbeWidget;
 }
@@ -917,7 +931,6 @@ void MainWindow::toggleFullWidget(bool full)
 {
     m_uinterface->propertyTab->setVisible(!full);
     m_uinterface->infoBox->setVisible(!full);
-    m_uinterface->sideBar->setVisible(!full);
 }
 
 void MainWindow::guiAddSceneField()
