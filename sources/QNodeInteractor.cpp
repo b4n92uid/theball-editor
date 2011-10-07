@@ -83,7 +83,7 @@ void QNodeInteractor::setPos(const tbe::Vector3f& v)
     {
         m_target->setPos(v);
 
-        m_mainwin->getTbeWidget()->placeCamera();
+        m_mainwin->tbeWidget()->placeCamera();
 
         m_mainwin->notifyChanges(true);
 
@@ -113,6 +113,7 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
     if(m_target)
     {
         m_target->getMatrix().setScale(v);
+
         m_mainwin->notifyChanges(true);
 
         update();
@@ -124,6 +125,8 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
     if(m_target)
     {
         m_target->setMatrix(m);
+
+        m_mainwin->tbeWidget()->placeCamera();
 
         m_mainwin->notifyChanges(true);
 
@@ -302,7 +305,7 @@ void QNodeInteractor::update()
         m_mainwin->nodesGui.additionalModel->appendRow(newfield);
     }
 
-    m_mainwin->getTbeWidget()->placeCamera();
+    m_mainwin->tbeWidget()->placeCamera();
 }
 
 QNodeInteractor* QNodeInteractor::clone()

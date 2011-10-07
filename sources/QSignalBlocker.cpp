@@ -31,4 +31,6 @@ void QSignalBlocker::unblock()
     {
         obj->blockSignals(false);
     }
+    
+    clear();
 }

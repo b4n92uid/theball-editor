@@ -442,12 +442,18 @@ void QTBEngine::enableGrid(bool stat)
     {
         m_grid->clear();
 
-        AABB zone = m_selectedNode->getTarget()->getAabb();
-
         Vector2i cuts;
-        cuts.x = zone.max.x - zone.min.x;
-        cuts.y = zone.max.z - zone.min.z;
-        cuts = math::nextPow2(cuts * 8);
+
+        if(m_selectedNode)
+        {
+            AABB zone = m_selectedNode->getTarget()->getAabb();
+
+            cuts.x = zone.max.x - zone.min.x;
+            cuts.y = zone.max.z - zone.min.z;
+            cuts = math::nextPow2(cuts * 8);
+        }
+        else
+            cuts = 16;
 
         Vector2f size = cuts;
 
@@ -456,10 +462,41 @@ void QTBEngine::enableGrid(bool stat)
         m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
 
         if(m_selectedNode)
+        {
             m_grid->setPos(m_selectedNode->getTarget()->getAbsoluteMatrix().getPos());
+        }
     }
 
     m_grid->setEnable(m_gridEnable);
+}
+
+void QTBEngine::pushHistoryStat()
+{
+    if(m_history.size() > 32)
+        m_history.pop_front();
+
+    HistoryStat hs = {m_selectedNode->clone(), m_selectedNode};
+
+    m_history.push(hs);
+
+    m_mainwin->ui()->actionUndo->setEnabled(true);
+}
+
+void QTBEngine::popHistoryStat()
+{
+    if(m_history.empty())
+        return;
+
+    HistoryStat hs = m_history.pop();
+
+    *hs.destination->getTarget() = *hs.source->getTarget();
+
+    hs.destination->update();
+
+    select(hs.destination);
+
+    if(m_history.empty())
+        m_mainwin->ui()->actionUndo->setEnabled(false);
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
@@ -468,20 +505,22 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Shift)
     {
+        pushHistoryStat();
+
         if(m_gridEnable)
             setCursor(Qt::ClosedHandCursor);
         else
             setCursor(Qt::BlankCursor);
     }
 
-    else if(m_selectedNode)
+    if(ev->key() == Qt::Key_Space)
+    {
+        m_mainwin->ui()->menuEditer->popup(QCursor::pos());
+    }
+
+    if(m_selectedNode)
     {
         tbe::scene::Node* selnode = m_selectedNode->getTarget();
-
-        if(ev->key() == Qt::Key_Space)
-        {
-            m_mainwin->getUi()->menuEditer->popup(QCursor::pos());
-        }
 
         if(ev->key() == Qt::Key_P && !selnode->getParent()->isRoot())
         {
@@ -495,6 +534,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         if(ev->key() == Qt::Key_Delete)
         {
             using namespace tbe::scene;
+
+            // pushHistoryStat();
 
             QNodeInteractor* todelete = m_selectedNode;
 
@@ -510,6 +551,10 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 using namespace tbe::scene;
 
                 QNodeInteractor* clone = m_selectedNode->clone();
+
+                m_selectedNode->getTarget()->getParent()->addChild(clone->getTarget());
+
+                clone->setup();
 
                 select(clone);
             }
@@ -547,6 +592,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_F)
         {
+            pushHistoryStat();
+
             m_grid->setEnable(false);
             m_axe->setEnable(false);
             m_meshScene->setInFloor(selnode);
@@ -558,6 +605,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_E)
         {
+            pushHistoryStat();
+
             m_grid->setEnable(false);
             m_axe->setEnable(false);
             m_meshScene->setInFloor(selnode);
@@ -1021,7 +1070,7 @@ void QTBEngine::fogClear()
     m_fog->clear();
 }
 
-tbe::scene::SceneParser* QTBEngine::getSceneParser() const
+tbe::scene::SceneParser* QTBEngine::sceneParser() const
 {
     return m_sceneParser;
 }

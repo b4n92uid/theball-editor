@@ -39,11 +39,11 @@ public:
     void initWidgets();
     void initConnections();
 
-    QTBEngine* getTbeWidget() const;
+    QTBEngine* tbeWidget() const;
 
-    QString getOpenFileName() const;
+    QString openFileName() const;
 
-    Ui_mainWindow* getUi();
+    Ui_mainWindow* ui();
 
 protected:
 
@@ -53,8 +53,6 @@ protected:
     bool leaveSafely();
 
 public slots:
-
-    void toggleFullWidget(bool full = true);
 
     void newScene();
 
@@ -76,6 +74,8 @@ public slots:
     void closeEvent(QCloseEvent *event);
 
     void skyboxWorkingDir(const QString& filename);
+    
+    void toggleFullWidget(bool full = true);
 
     void openFileHistory();
 
@@ -85,9 +85,6 @@ public slots:
     void pastScale();
     void pastRotation();
 
-public slots:
-
-    // On nodes list item select
     void guiSelect(const QModelIndex& index);
 
     void scopeNode(int move);
@@ -109,19 +106,9 @@ public slots:
     void select(QNodeInteractor* qnode);
     void deselect();
 
-public slots: // Env manager
-
-    // -------------------------------------------------------------------------
-    // GUI -> MANAGER
-    // -------------------------------------------------------------------------
-
     void guiSkyboxApply(bool enable = true);
     void guiFogApply(bool enable = true);
     void guiSceneAmbiantApply(const tbe::Vector3f& value);
-
-    // -------------------------------------------------------------------------
-    // MANAGER -> GUI
-    // -------------------------------------------------------------------------
 
     void skyboxRegister(tbe::scene::SkyBox* tbesky);
     void fogRegister(tbe::scene::Fog* tbefog);
@@ -153,8 +140,6 @@ private:
             setupUi(this);
         }
     };
-
-    QNodeInteractor* m_sourceCopy;
 
     struct NodesGuiTab
     {
@@ -299,6 +284,7 @@ private:
     QNodeInteractor* m_rootNode;
     QNodeInteractor* m_selectedNode;
     QNodeInteractor* m_lastSelectedNode;
+    QNodeInteractor* m_sourceCopy;
 
     QString m_filename;
 

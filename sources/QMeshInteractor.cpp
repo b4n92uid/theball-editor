@@ -23,6 +23,7 @@ void QMeshInteractor::setScale(const tbe::Vector3f& v)
     if(m_target)
     {
         m_target->setVertexScale(v);
+        m_mainwin->tbeWidget()->placeCamera();
         m_mainwin->notifyChanges(true);
     }
 }
@@ -531,6 +532,11 @@ void QMeshInteractor::deselect()
 
     m_mainwin->nodesGui.meshTab.materialsModel
             ->removeRows(0, m_mainwin->nodesGui.meshTab.materialsModel->rowCount());
+
+    m_mainwin->nodesGui.meshTab.saveMaterials->setChecked(false);
+
+    m_mainwin->nodesGui.meshTab.billboardX->setChecked(false);
+    m_mainwin->nodesGui.meshTab.billboardY->setChecked(false);
 }
 
 void QMeshInteractor::update()
@@ -588,6 +594,6 @@ void QMeshInteractor::update()
     axe->setEnable(true);
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
-    axe->setSize(selAabb.getSize() / 2.0f + 0.01f);
+    axe->setSize(selAabb.getSize() / 2.0f + 0.1f);
     axe->setColor(Vector4f(0, 0, 1, 0.25));
 }
