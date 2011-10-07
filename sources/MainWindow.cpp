@@ -156,6 +156,11 @@ void MainWindow::initWidgets()
     nodesGui.nodeRight = m_uinterface->node_list_makechild;
     nodesGui.nodeLeft = m_uinterface->node_list_makeparent;
 
+    nodesGui.displayMesh = m_uinterface->node_display_meshs;
+    nodesGui.displayLights = m_uinterface->node_display_lights;
+    nodesGui.displayParticles = m_uinterface->node_display_particules;
+    nodesGui.displayMarks = m_uinterface->node_display_marks;
+
     // -------- Mark
 
     nodesGui.markTab.add = m_uinterface->node_mark_add;
@@ -230,6 +235,7 @@ void MainWindow::initWidgets()
 
     nodesGui.nodesListView = m_uinterface->node_list;
     nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    nodesGui.nodesListView->setRootIsDecorated(false);
     nodesGui.nodesListView->header()->setResizeMode(QHeaderView::Stretch);
     nodesGui.nodesListView->setModel(nodesGui.nodesListModel);
 
@@ -251,6 +257,9 @@ void MainWindow::initWidgets()
     envGui.fog.start = m_uinterface->fog_start;
     envGui.fog.end = m_uinterface->fog_end;
     envGui.fog.enable = m_uinterface->fog_enable;
+
+    envGui.znear = m_uinterface->env_znear;
+    envGui.zfar = m_uinterface->env_zfar;
 }
 
 void MainWindow::initConnections()
@@ -321,6 +330,12 @@ void MainWindow::initConnections()
 
     connect(nodeMoveBind, SIGNAL(mapped(int)), this, SLOT(scopeNode(int)));
 
+
+    connect(nodesGui.displayMesh, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
+    connect(nodesGui.displayLights, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
+    connect(nodesGui.displayParticles, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
+    connect(nodesGui.displayMarks, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
+
     connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
@@ -337,12 +352,16 @@ void MainWindow::initConnections()
     connect(nodesGui.waterTab.blend, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetBlend(double)));
      */
 
-    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(sceneAmbiantRegister(const tbe::Vector3f&)));
-    connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fogRegister(tbe::scene::Fog*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skyboxRegister(tbe::scene::SkyBox*)));
+    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiant(const tbe::Vector3f&)));
+    connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fog(tbe::scene::Fog*)));
+    connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skybox(tbe::scene::SkyBox*)));
 
     connect(nodesGui.nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
 
+    connect(envGui.znear, SIGNAL(valueChanged(double)), this, SLOT(guiZNear(double)));
+    connect(envGui.zfar, SIGNAL(valueChanged(double)), this, SLOT(guiZFar(double)));
+
+    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
     connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
     connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogApply()));
     connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
@@ -358,7 +377,7 @@ void MainWindow::initConnections()
     connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxApply(bool)));
     connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxApply()));
 
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiSceneAmbiantApply(const tbe::Vector3f&)));
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbiantApply(const tbe::Vector3f&)));
 
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
@@ -875,7 +894,7 @@ void MainWindow::guiFogApply(bool enable)
     notifyChanges(true);
 }
 
-void MainWindow::sceneAmbiantRegister(const tbe::Vector3f& value)
+void MainWindow::ambiant(const tbe::Vector3f& value)
 {
     envGui.sceneAmbiant->blockSignals(true);
     envGui.sceneAmbiant->setValue(value);
@@ -887,14 +906,14 @@ QTBEngine* MainWindow::tbeWidget() const
     return m_tbeWidget;
 }
 
-void MainWindow::guiSceneAmbiantApply(const tbe::Vector3f& value)
+void MainWindow::guiAmbiantApply(const tbe::Vector3f& value)
 {
     m_tbeWidget->setSceneAmbiant(value);
 
     notifyChanges(true);
 }
 
-void MainWindow::fogRegister(tbe::scene::Fog* fog)
+void MainWindow::fog(tbe::scene::Fog* fog)
 {
     QSignalBlocker blocker;
     blocker << envGui.fog.enable << envGui.fog.color
@@ -910,7 +929,7 @@ void MainWindow::fogRegister(tbe::scene::Fog* fog)
     blocker.unblock();
 }
 
-void MainWindow::skyboxRegister(tbe::scene::SkyBox* sky)
+void MainWindow::skybox(tbe::scene::SkyBox* sky)
 {
     QSignalBlocker blocker;
     blocker << envGui.skybox.apply << envGui.skybox.enable;
@@ -1065,4 +1084,32 @@ void MainWindow::copy()
     m_sourceCopy = m_selectedNode;
 
     statusBar()->showMessage("Copie effectuer...", 2000);
+}
+
+void MainWindow::zNear(float value)
+{
+    envGui.znear->blockSignals(true);
+    envGui.znear->setValue(value);
+    envGui.znear->blockSignals(false);
+}
+
+void MainWindow::zFar(float value)
+{
+    envGui.zfar->blockSignals(true);
+    envGui.zfar->setValue(value);
+    envGui.zfar->blockSignals(false);
+}
+
+void MainWindow::guiZNear(double value)
+{
+    m_tbeWidget->setZNear(value);
+}
+
+void MainWindow::guiZFar(double value)
+{
+    m_tbeWidget->setZFar(value);
+}
+
+void MainWindow::guiNodeListFilterView()
+{
 }
