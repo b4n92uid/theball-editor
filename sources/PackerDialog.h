@@ -33,6 +33,10 @@ public slots:
     void addAbsoluteFile(QString filename);
 
     void delFiles();
+    
+    void fillList();
+    
+    void changeBaseDir();
 
     void exportPack();
 
@@ -43,6 +47,7 @@ private:
     MainWindow* m_parent;
     QStandardItemModel* m_fileListModel;
     QDir m_baseDir;
+    QDir m_sceneDir;
 };
 
 #endif	/* PACKERDIALOG_H */
