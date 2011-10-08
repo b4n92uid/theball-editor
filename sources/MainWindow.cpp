@@ -264,19 +264,6 @@ void MainWindow::initWidgets()
 
 void MainWindow::initConnections()
 {
-    /*
-     * Modification
-     * ------------
-     * Gui mod -> Node binder -> Engine
-     * Engine mod -> Gui display
-     *
-     * Allocation
-     * ----------
-     * Engine new -> Gui register -> Engine register
-     * Gui new -> Gui register -> Engine register
-     *
-     */
-
     connect(genGui.addField, SIGNAL(clicked()), this, SLOT(guiAddSceneField()));
     connect(genGui.delField, SIGNAL(clicked()), this, SLOT(guiDelSceneField()));
     connect(genGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearSceneField()));
@@ -343,14 +330,6 @@ void MainWindow::initConnections()
 
     connect(nodesGui.clone, SIGNAL(clicked()), this, SLOT(guiClone()));
     connect(nodesGui.del, SIGNAL(clicked()), this, SLOT(guiDelete()));
-
-    /*
-    connect(nodesGui.waterTab.deform, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetDeform(double)));
-    connect(nodesGui.waterTab.size, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(guiWaterSetSize(const tbe::Vector2f&)));
-    connect(nodesGui.waterTab.uvrepeat, SIGNAL(valueChanged(const tbe::Vector2f&)), this, SLOT(guiWaterSetUvRepeat(const tbe::Vector2f&)));
-    connect(nodesGui.waterTab.speed, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetSpeed(double)));
-    connect(nodesGui.waterTab.blend, SIGNAL(valueChanged(double)), this, SLOT(guiWaterSetBlend(double)));
-     */
 
     connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiant(const tbe::Vector3f&)));
     connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fog(tbe::scene::Fog*)));
@@ -512,13 +491,6 @@ void MainWindow::openScene(const QString& filename)
 
             genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
         }
-
-        /*
-        QVariant rootUserData;
-        rootUserData.setValue<tbe::scene::Node*>(m_tbeWidget->rootNode());
-
-        nodesGui.nodesListModel->invisibleRootItem()->setData(rootUserData);
-         */
 
         m_filename = filename;
 
