@@ -447,10 +447,8 @@ void QTBEngine::enableGrid(bool stat)
         if(m_selectedNode)
         {
             AABB zone = m_selectedNode->getTarget()->getAabb();
-
-            cuts.x = zone.max.x - zone.min.x;
-            cuts.y = zone.max.z - zone.min.z;
-            cuts = math::nextPow2(cuts * 8);
+            cuts.x = std::max(zone.getLength() * 2.0f, 16.0f);
+            cuts.y = std::max(zone.getLength() * 2.0f, 16.0f);
         }
         else
             cuts = 16;
@@ -472,6 +470,9 @@ void QTBEngine::enableGrid(bool stat)
 
 void QTBEngine::pushHistoryStat()
 {
+    if(!m_selectedNode)
+        return;
+
     if(m_history.size() > 32)
         m_history.pop_front();
 
@@ -629,10 +630,9 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 Vector3f pos = selnode->getPos();
 
                 if(ev->modifiers() & Qt::ALT)
-                    pos += m_camera->getUp().normalize().X(0).Z(0).pinpoint() * factor;
-
+                    pos += m_camera->getUp().X(0).Z(0).normalize() * factor;
                 else
-                    pos += m_camera->getTarget().normalize().Y(0).pinpoint() * factor;
+                    pos += m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
 
                 selnode->setPos(pos);
                 m_selectedNode->update();
@@ -643,9 +643,9 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 Vector3f pos = selnode->getPos();
 
                 if(ev->modifiers() & Qt::ALT)
-                    pos -= m_camera->getUp().normalize().X(0).Z(0).pinpoint() * factor;
+                    pos -= m_camera->getUp().X(0).Z(0).normalize() * factor;
                 else
-                    pos -= m_camera->getTarget().normalize().Y(0).pinpoint() * factor;
+                    pos -= m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
 
                 selnode->setPos(pos);
 
@@ -655,7 +655,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             else if(ev->key() == Qt::Key_Left)
             {
                 Vector3f pos = selnode->getPos();
-                pos -= m_camera->getLeft().normalize().Y(0).pinpoint() * factor;
+                pos -= m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
                 selnode->setPos(pos);
 
                 m_selectedNode->update();
@@ -664,7 +664,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             else if(ev->key() == Qt::Key_Right)
             {
                 Vector3f pos = selnode->getPos();
-                pos += m_camera->getLeft().normalize().Y(0).pinpoint() * factor;
+                pos += m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
                 selnode->setPos(pos);
 
                 m_selectedNode->update();
