@@ -35,6 +35,7 @@ PackerDialog::PackerDialog(MainWindow* parent) : QDialog(parent)
     connect(addFileButton, SIGNAL(clicked()), this, SLOT(openFilesDialog()));
     connect(delFileButton, SIGNAL(clicked()), this, SLOT(delFiles()));
     connect(exportButton, SIGNAL(clicked()), this, SLOT(exportPack()));
+    connect(browseBaseDirectory, SIGNAL(clicked()), this, SLOT(changeBaseDir()));
 }
 
 PackerDialog::~PackerDialog()
@@ -56,19 +57,8 @@ void PackerDialog::recursivFilesFind(const SceneParser::Relation& rel)
         recursivFilesFind(rel.child[i]);
 }
 
-void PackerDialog::exec()
+void PackerDialog::fillList()
 {
-    QString sceneFileName = m_parent->openFileName();
-
-    if(sceneFileName.isEmpty())
-    {
-        QMessageBox::warning(m_parent, "Packer !", "Aucun fichier scene spécfier !\n"
-                             "Enregistrer la scene en cour ou ouvrer un fichier scene");
-        return;
-    }
-
-    m_baseDir = QFileInfo(sceneFileName).dir();
-
     m_fileListModel->removeRows(0, m_fileListModel->rowCount());
 
     QTBEngine* tbewidget = m_parent->tbeWidget();
@@ -92,6 +82,38 @@ void PackerDialog::exec()
         recursivFilesFind(descriptor.nodes[i]);
 
     m_fileListModel->sort(0);
+}
+
+void PackerDialog::changeBaseDir()
+{
+    QString basedir = QFileDialog::getExistingDirectory(this, "", m_baseDir.path());
+
+    if(basedir.isEmpty())
+        return;
+
+    m_baseDir = basedir;
+
+    baseDirectory->setText(m_baseDir.path());
+
+    fillList();
+}
+
+void PackerDialog::exec()
+{
+    QString sceneFileName = m_parent->openFileName();
+
+    if(sceneFileName.isEmpty())
+    {
+        QMessageBox::warning(m_parent, "Packer !", "Aucun fichier scene spécfier !\n"
+                             "Enregistrer la scene en cour ou ouvrer un fichier scene");
+        return;
+    }
+
+    m_sceneDir = m_baseDir = QFileInfo(sceneFileName).dir();
+
+    baseDirectory->setText(m_baseDir.path());
+
+    fillList();
 
     QDialog::exec();
 }
@@ -119,19 +141,19 @@ inline QString humainSize(qint64 size)
         return QString("%1 Octet").arg(size);
 }
 
-void PackerDialog::addAbsoluteFile(QString filename)
+void PackerDialog::addAbsoluteFile(QString absolutePath)
 {
-    QString relativeFileName = m_baseDir.relativeFilePath(filename);
+    QString relativePath = m_baseDir.relativeFilePath(absolutePath);
 
-    if(filename.isEmpty() || !m_fileListModel->findItems(relativeFileName).isEmpty())
+    if(absolutePath.isEmpty() || !m_fileListModel->findItems(relativePath).isEmpty())
         return;
 
-    QFileInfo fileinfo = filename;
+    QFileInfo fileinfo = absolutePath;
 
     QVariant data;
     data.setValue(fileinfo);
 
-    QStandardItem* item = new QStandardItem(relativeFileName);
+    QStandardItem* item = new QStandardItem(relativePath);
     item->setData(data);
     item->setIcon(QFileIconProvider().icon(fileinfo.absoluteFilePath()));
 
@@ -142,17 +164,20 @@ void PackerDialog::addAbsoluteFile(QString filename)
 
 void PackerDialog::addRelativeFile(QString filename)
 {
-    if(filename.isEmpty() || !m_fileListModel->findItems(filename).isEmpty())
+    QString absolutePath = m_sceneDir.absoluteFilePath(filename);
+    QString relativePath = m_baseDir.relativeFilePath(absolutePath);
+
+    if(filename.isEmpty() || !m_fileListModel->findItems(relativePath).isEmpty())
         return;
 
-    QFileInfo fileinfo = m_baseDir.filePath(filename);
+    QFileInfo fileinfo = absolutePath;
 
     QVariant data;
     data.setValue(fileinfo);
 
-    QStandardItem* item = new QStandardItem(filename);
+    QStandardItem* item = new QStandardItem(relativePath);
     item->setData(data);
-    item->setIcon(QFileIconProvider().icon(fileinfo.absoluteFilePath()));
+    item->setIcon(QFileIconProvider().icon(absolutePath));
 
     QStandardItem* size = new QStandardItem(humainSize(fileinfo.size()));
 
