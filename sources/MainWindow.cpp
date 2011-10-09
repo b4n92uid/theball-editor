@@ -284,7 +284,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionEnableGrid, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleGridDisplay()));
     connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), m_tbeWidget, SLOT(cloneSelected()));
     connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), m_tbeWidget, SLOT(deleteSelected()));
-    connect(m_uinterface->actionEnableGrid, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleGridDisplay()));
 
     connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
 
