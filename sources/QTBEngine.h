@@ -45,6 +45,18 @@ public:
 
     QNodeInteractor* fetchInterface(tbe::scene::Node* node);
 
+    QMesh* meshNew(const QString& filename);
+    void meshRegister(QMesh* mesh);
+
+    QLight* lightNew();
+    void lightRegister(QLight* light);
+
+    QParticles* particlesNew();
+    void particlesRegister(QParticles* particles);
+
+    QMapMark* markNew();
+    void markRegister(QMapMark* mark);
+
 public slots:
 
     void select(QNodeInteractor* qnode);
@@ -58,8 +70,15 @@ public slots:
 
     void placeCamera();
 
-    void enableGrid(bool stat = true);
-    
+    void toggleGridDisplay();
+    void toggleLockedNode();
+
+    void cloneSelected();
+    void deleteSelected();
+
+    void baseOnFloor();
+    void centerOnFloor();
+
     void pushHistoryStat();
     void popHistoryStat();
 
@@ -67,7 +86,7 @@ public slots:
 
     void setZNear(float value);
     void setZFar(float value);
-    
+
     void skyboxApply(const QStringList& texs);
     void skyboxClear();
 
@@ -76,18 +95,6 @@ public slots:
 
     tbe::scene::Box* getAxe();
     tbe::scene::Grid* getGrid();
-
-    QMesh* meshNew(const QString& filename);
-    void meshRegister(QMesh* mesh);
-
-    QLight* lightNew();
-    void lightRegister(QLight* light);
-
-    QParticles* particlesNew();
-    void particlesRegister(QParticles* particles);
-
-    QMapMark* markNew();
-    void markRegister(QMapMark* mark);
 
 signals:
     void notifyInitAmbiant(const tbe::Vector3f&);
@@ -100,7 +107,7 @@ protected:
     void paintGL();
 
     void setupSelection();
-    
+
     void enterEvent(QEvent * event);
 
     void mousePressEvent(QMouseEvent* ev);
@@ -110,8 +117,9 @@ protected:
 
     void keyPressEvent(QKeyEvent* ev);
     void keyReleaseEvent(QKeyEvent* ev);
-
-    void moveApply();
+    
+    void applyTranslationEvents();
+    void applyCameraEvents();
 
 private:
     tbe::Device* m_device;

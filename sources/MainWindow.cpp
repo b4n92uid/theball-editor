@@ -146,9 +146,6 @@ void MainWindow::initWidgets()
     nodesGui.rotation = new QVectorBox(this, m_uinterface->node_rot_x, m_uinterface->node_rot_y, m_uinterface->node_rot_z);
     nodesGui.scale = new QVectorBox(this, m_uinterface->node_scl_x, m_uinterface->node_scl_y, m_uinterface->node_scl_z);
 
-    nodesGui.clone = m_uinterface->node_clone;
-    nodesGui.del = m_uinterface->node_delete;
-
     nodesGui.enable = m_uinterface->node_enable;
 
     nodesGui.nodeUp = m_uinterface->node_list_up;
@@ -281,6 +278,14 @@ void MainWindow::initConnections()
 
     // Edit Menu
 
+    connect(m_uinterface->actionLockNode, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleLockedNode()));
+    connect(m_uinterface->actionBaseOnFloor, SIGNAL(triggered()), m_tbeWidget, SLOT(baseOnFloor()));
+    connect(m_uinterface->actionCenterOnFloor, SIGNAL(triggered()), m_tbeWidget, SLOT(centerOnFloor()));
+    connect(m_uinterface->actionEnableGrid, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleGridDisplay()));
+    connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), m_tbeWidget, SLOT(cloneSelected()));
+    connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), m_tbeWidget, SLOT(deleteSelected()));
+    connect(m_uinterface->actionEnableGrid, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleGridDisplay()));
+
     connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
 
     connect(m_uinterface->actionNewMesh, SIGNAL(triggered()), this, SLOT(guiMeshNew()));
@@ -293,9 +298,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionPastPosition, SIGNAL(triggered()), this, SLOT(pastPosition()));
     connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
     connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
-
-    connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), this, SLOT(guiClone()));
-    connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), this, SLOT(guiDelete()));
 
     // Tools Menu
 
@@ -327,9 +329,6 @@ void MainWindow::initConnections()
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
     connect(nodesGui.lighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
-
-    connect(nodesGui.clone, SIGNAL(clicked()), this, SLOT(guiClone()));
-    connect(nodesGui.del, SIGNAL(clicked()), this, SLOT(guiDelete()));
 
     connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiant(const tbe::Vector3f&)));
     connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fog(tbe::scene::Fog*)));
@@ -699,33 +698,6 @@ void MainWindow::guiMarkNew()
     {
         QMessageBox::warning(parentWidget(), "Erreur", e.what());
     }
-}
-
-void MainWindow::guiClone()
-{
-    try
-    {
-        QNodeInteractor* clone = m_selectedNode->clone();
-
-        m_selectedNode->getTarget()->getParent()->addChild(clone->getTarget());
-
-        clone->setup();
-
-        select(clone);
-    }
-    catch(std::exception& e)
-    {
-        QMessageBox::warning(parentWidget(), "Erreur", e.what());
-    }
-}
-
-void MainWindow::guiDelete()
-{
-    QNodeInteractor* todelete = m_selectedNode;
-
-    deselect();
-
-    delete todelete;
 }
 
 void MainWindow::select(QNodeInteractor* qnode)

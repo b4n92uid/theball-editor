@@ -161,7 +161,7 @@
        <attribute name="title">
         <string>Noeuds</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0,8">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,8">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
@@ -344,32 +344,6 @@
            </item>
           </layout>
          </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_34">
-          <item>
-           <widget class="QPushButton" name="node_clone">
-            <property name="text">
-             <string>Cloner</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_delete">
-            <property name="text">
-             <string>Supprmier</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
         <item>
          <widget class="QTabWidget" name="attribTab">
@@ -1840,6 +1814,9 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
+    <addaction name="actionScreenShot"/>
+    <addaction name="actionOpenPacker"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu">
@@ -1853,13 +1830,8 @@ p, li { white-space: pre-wrap; }
      <string>Affichage</string>
     </property>
     <addaction name="actionToggleFullScreen"/>
-   </widget>
-   <widget class="QMenu" name="menuOutils">
-    <property name="title">
-     <string>Outils</string>
-    </property>
-    <addaction name="actionScreenShot"/>
-    <addaction name="actionOpenPacker"/>
+    <addaction name="separator"/>
+    <addaction name="actionEnableGrid"/>
    </widget>
    <widget class="QMenu" name="menuEditer">
     <property name="title">
@@ -1874,6 +1846,10 @@ p, li { white-space: pre-wrap; }
     <addaction name="separator"/>
     <addaction name="actionCloneNode"/>
     <addaction name="actionDeleteNode"/>
+    <addaction name="actionLockNode"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenterOnFloor"/>
+    <addaction name="actionBaseOnFloor"/>
     <addaction name="separator"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPastPosition"/>
@@ -1884,7 +1860,6 @@ p, li { white-space: pre-wrap; }
    <addaction name="menuFichier"/>
    <addaction name="menuEditer"/>
    <addaction name="menuAffichage"/>
-   <addaction name="menuOutils"/>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -2040,6 +2015,9 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string>Supprmer le noeud</string>
    </property>
+   <property name="shortcut">
+    <string>Del</string>
+   </property>
   </action>
   <action name="actionCloneNode">
    <property name="icon">
@@ -2049,28 +2027,51 @@ p, li { white-space: pre-wrap; }
    <property name="text">
     <string>Cloner le noeud</string>
    </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
   </action>
   <action name="actionCopy">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_white_copy.png</normaloff>:/Medias/medias/page_white_copy.png</iconset>
+   </property>
    <property name="text">
     <string>Copier</string>
    </property>
   </action>
   <action name="actionPastPosition">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+   </property>
    <property name="text">
     <string>Coller la position</string>
    </property>
   </action>
   <action name="actionPastRotation">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+   </property>
    <property name="text">
     <string>Coller la rotation</string>
    </property>
   </action>
   <action name="actionPastScale">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+   </property>
    <property name="text">
     <string>Coller le scale</string>
    </property>
   </action>
   <action name="actionPastFields">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+   </property>
    <property name="text">
     <string>Coller les champs</string>
    </property>
@@ -2085,6 +2086,57 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionLockNode">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/lock.png</normaloff>:/Medias/medias/lock.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vérouiller le noeud</string>
+   </property>
+   <property name="shortcut">
+    <string>L</string>
+   </property>
+  </action>
+  <action name="actionCenterOnFloor">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/shape_align_middle.png</normaloff>:/Medias/medias/shape_align_middle.png</iconset>
+   </property>
+   <property name="text">
+    <string>Centre au sol</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
+   </property>
+  </action>
+  <action name="actionBaseOnFloor">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/shape_align_bottom.png</normaloff>:/Medias/medias/shape_align_bottom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Base au sol</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F</string>
+   </property>
+  </action>
+  <action name="actionEnableGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/grid.png</normaloff>:/Medias/medias/grid.png</iconset>
+   </property>
+   <property name="text">
+    <string>Afficher la grille</string>
+   </property>
+   <property name="shortcut">
+    <string>G</string>
    </property>
   </action>
  </widget>
