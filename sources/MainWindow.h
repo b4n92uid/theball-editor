@@ -100,9 +100,6 @@ public slots:
     void guiParticlesNew();
     void guiMarkNew();
 
-    void guiClone();
-    void guiDelete();
-
     void guiNodeListFilterView();
 
     void select(QNodeInteractor* qnode);
@@ -228,9 +225,6 @@ private:
         QVectorBox* position;
         QVectorBox* rotation;
         QVectorBox* scale;
-
-        QPushButton* clone;
-        QPushButton* del;
 
         QCheckBox* enable;
 
