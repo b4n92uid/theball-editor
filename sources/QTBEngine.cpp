@@ -15,6 +15,7 @@
 #include "QNodeInteractor.h"
 
 #include "ui_interface.h"
+#include "HistoryState.h"
 
 #include <QDebug>
 
@@ -325,7 +326,7 @@ void QTBEngine::deleteSelected()
 {
     using namespace tbe::scene;
 
-    // pushHistoryStat();
+    pushHistoryStat(new DeletionState(m_selectedNode));
 
     QNodeInteractor* todelete = m_selectedNode;
 
@@ -334,15 +335,13 @@ void QTBEngine::deleteSelected()
     delete todelete;
 }
 
-void QTBEngine::pushHistoryStat()
+void QTBEngine::pushHistoryStat(HistoryState* hs)
 {
-    if(!m_selectedNode)
-        return;
-
     if(m_history.size() > 32)
+    {
+        delete m_history.front();
         m_history.pop_front();
-
-    HistoryStat hs = {m_selectedNode->clone(), m_selectedNode};
+    }
 
     m_history.push(hs);
 
@@ -354,13 +353,13 @@ void QTBEngine::popHistoryStat()
     if(m_history.empty())
         return;
 
-    HistoryStat hs = m_history.pop();
+    HistoryState* hs = m_history.pop();
 
-    *hs.destination->getTarget() = *hs.source->getTarget();
+    hs->restore();
 
-    hs.destination->update();
+    select(hs->node());
 
-    select(hs.destination);
+    delete hs;
 
     if(m_history.empty())
         m_mainwin->ui()->actionUndo->setEnabled(false);
@@ -378,7 +377,7 @@ void QTBEngine::baseOnFloor()
 {
     tbe::scene::Node* selnode = m_selectedNode->getTarget();
 
-    pushHistoryStat();
+    pushHistoryStat(new ModificationState(m_selectedNode));
 
     m_grid->setEnable(false);
     m_axe->setEnable(false);
@@ -393,7 +392,7 @@ void QTBEngine::centerOnFloor()
 {
     tbe::scene::Node* selnode = m_selectedNode->getTarget();
 
-    pushHistoryStat();
+    pushHistoryStat(new ModificationState(m_selectedNode));
 
     m_grid->setEnable(false);
     m_axe->setEnable(false);
@@ -587,7 +586,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Shift)
     {
-        pushHistoryStat();
+        pushHistoryStat(new ModificationState(m_selectedNode));
 
         if(m_gridEnable)
             setCursor(Qt::ClosedHandCursor);

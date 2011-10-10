@@ -61,6 +61,7 @@ SOURCES += \
     sources/QNodeInteractor.cpp \
     sources/QParticlesInteractor.cpp \
     sources/ClassFactory.cpp \
+    sources/HistoryState.cpp \
 
 HEADERS  += \
     sources/MainWindow.h \
@@ -80,6 +81,7 @@ HEADERS  += \
     sources/QNodeInteractor.h \
     sources/QParticlesInteractor.h \
     sources/ClassFactory.h \
+    sources/HistoryState.h \
 
 FORMS += \
     sources/about.ui \
