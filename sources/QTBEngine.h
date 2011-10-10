@@ -21,6 +21,7 @@ class QNodeInteractor;
 class MainWindow;
 
 class ClassFactory;
+class HistoryState;
 
 class QTBEngine : public QGLWidget
 {
@@ -79,7 +80,7 @@ public slots:
     void baseOnFloor();
     void centerOnFloor();
 
-    void pushHistoryStat();
+    void pushHistoryStat(HistoryState* hs);
     void popHistoryStat();
 
     void setSceneAmbiant(const tbe::Vector3f& value);
@@ -173,13 +174,7 @@ private:
 
     ClassFactory* m_classFactory;
 
-    struct HistoryStat
-    {
-        QNodeInteractor* source;
-        QNodeInteractor* destination;
-    };
-
-    QStack<HistoryStat> m_history;
+    QStack<HistoryState*> m_history;
 };
 
 
