@@ -28,7 +28,7 @@ void QNodeInteractor::clearChilds(QStandardItem* item)
 
         clearChilds(subitem);
 
-        QNodeInteractor* interface = subitem->data().value<QNodeInteractor*>();
+        QNodeInteractor* interface = subitem->data(ITEM_ROLE_NODE).value<QNodeInteractor*>();
         m_mainwin->nodesGui.nodeItemBinder.remove(interface);
     }
 }
@@ -43,13 +43,12 @@ QNodeInteractor::~QNodeInteractor()
 
         m_mainwin->nodesGui.nodeItemBinder.remove(this);
 
+        QModelIndex sindex = m_mainwin->nodesGui.nodesListModel->indexFromItem(item);
 
-        QStandardItem* parent = item->parent();
-
-        if(parent)
-            parent->removeRow(item->row());
+        if(sindex.parent().isValid())
+            m_mainwin->nodesGui.nodesListModel->removeRow(sindex.row(), sindex.parent());
         else
-            m_mainwin->nodesGui.nodesListModel->removeRow(item->row());
+            m_mainwin->nodesGui.nodesListModel->removeRow(sindex.row());
 
         m_mainwin->notifyChanges(true);
     }

@@ -308,7 +308,10 @@ void QTBEngine::toggleGridDisplay()
 
         if(m_selectedNode)
         {
-            m_grid->setPos(m_selectedNode->getTarget()->getAbsoluteMatrix().getPos());
+            Vector3f pos = m_selectedNode->getTarget()->getAbsoluteMatrix().getPos();
+            pos = math::round(pos).Y(pos.y);
+
+            m_grid->setPos(pos);
         }
     }
 
@@ -855,6 +858,9 @@ void QTBEngine::loadScene(const QString& filename)
     m_sceneParser->loadScene(filename.toStdString());
     m_sceneParser->buildScene();
 
+    m_camera->setDistance(m_meshScene->getSceneAabb().getLength()/2.0f);
+    m_camera->setRotate(Vector2f(45, -45));
+
     m_selectedNode = NULL;
     m_centerTarget = 0;
 
@@ -959,7 +965,7 @@ QMesh* QTBEngine::meshNew(const QString& filename)
     using namespace scene;
 
     QMesh* mesh = new QMesh(m_mainwin, OBJMesh(m_meshScene, filename.toStdString()));
-    
+
     mesh->addToConstructionMap("filename", filename.toStdString());
     mesh->addToConstructionMap("class", "OBJMesh");
 
