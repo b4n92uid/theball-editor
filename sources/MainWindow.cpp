@@ -6,6 +6,7 @@
  */
 
 #include "MainWindow.h"
+#include "HistoryState.h"
 
 #include "ui_interface.h"
 
@@ -107,6 +108,8 @@ void MainWindow::initWidgets()
     buildFileHistory();
 
     m_uinterface->actionUndo->setEnabled(false);
+
+    m_uinterface->node_list_sort->setMenu(m_uinterface->menuTrier);
 
     // Générale ----------------------------------------------------------------
 
@@ -230,11 +233,14 @@ void MainWindow::initWidgets()
     nodesGui.nodesListModel = new QStandardItemModel(this);
     nodesGui.nodesListModel->setHorizontalHeaderLabels(headerLabels);
 
+    nodesGui.nodesListProxyModel = new NodeListProxyModel(this);
+    nodesGui.nodesListProxyModel->setSourceModel(nodesGui.nodesListModel);
+
     nodesGui.nodesListView = m_uinterface->node_list;
+    nodesGui.nodesListView->setModel(nodesGui.nodesListProxyModel);
+    nodesGui.nodesListView->setAlternatingRowColors(true);
     nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    nodesGui.nodesListView->setRootIsDecorated(false);
     nodesGui.nodesListView->header()->setResizeMode(QHeaderView::Stretch);
-    nodesGui.nodesListView->setModel(nodesGui.nodesListModel);
 
     // Environment -------------------------------------------------------------
 
@@ -318,20 +324,23 @@ void MainWindow::initConnections()
 
     connect(nodeMoveBind, SIGNAL(mapped(int)), this, SLOT(scopeNode(int)));
 
+    connect(nodesGui.displayMesh, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMesh(bool)));
+    connect(nodesGui.displayLights, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleLight(bool)));
+    connect(nodesGui.displayParticles, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleParticles(bool)));
+    connect(nodesGui.displayMarks, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMapMark(bool)));
 
-    connect(nodesGui.displayMesh, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
-    connect(nodesGui.displayLights, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
-    connect(nodesGui.displayParticles, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
-    connect(nodesGui.displayMarks, SIGNAL(clicked()), this, SLOT(guiNodeListFilterView()));
+    connect(m_uinterface->actionSortByName, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortByName()));
+    connect(m_uinterface->actionSortByType, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortByType()));
+    connect(m_uinterface->actionSortFromCamera, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromCamera()));
+    connect(m_uinterface->actionSortFromSelection, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromSelection()));
 
     connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
     connect(nodesGui.lighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
 
-    connect(m_tbeWidget, SIGNAL(notifyInitAmbiant(const tbe::Vector3f&)), this, SLOT(ambiant(const tbe::Vector3f&)));
-    connect(m_tbeWidget, SIGNAL(notifyInitFog(tbe::scene::Fog*)), this, SLOT(fog(tbe::scene::Fog*)));
-    connect(m_tbeWidget, SIGNAL(notifyInitSkybox(tbe::scene::SkyBox*)), this, SLOT(skybox(tbe::scene::SkyBox*)));
+    connect(m_tbeWidget, SIGNAL(selection(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
+    connect(m_tbeWidget, SIGNAL(deselection()), this, SLOT(deselect()));
 
     connect(nodesGui.nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
 
@@ -424,7 +433,8 @@ void MainWindow::newScene()
         QVariant rootData;
         rootData.setValue(m_rootNode);
 
-        nodesGui.nodesListModel->invisibleRootItem()->setData(rootData);
+        nodesGui.nodesListModel->invisibleRootItem()->setData(rootData, ITEM_ROLE_NODE);
+        nodesGui.nodesListModel->invisibleRootItem()->setData("Root", ITEM_ROLE_NAME);
     }
 }
 
@@ -608,9 +618,7 @@ void MainWindow::guiSelect(const QModelIndex& index)
 {
     using namespace tbe::scene;
 
-    QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(index);
-
-    QNodeInteractor* interface = item->data().value<QNodeInteractor*>();
+    QNodeInteractor* interface = nodesGui.nodesListProxyModel->itemData(index)[ITEM_ROLE_NODE].value<QNodeInteractor*>();
 
     select(interface);
 }
@@ -703,9 +711,8 @@ void MainWindow::select(QNodeInteractor* qnode)
 {
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
-    m_tbeWidget->selectNode(qnode);
 
-    m_selectedNode->select();
+    m_tbeWidget->selectNode(qnode);
 }
 
 void MainWindow::deselect()
@@ -729,7 +736,9 @@ void MainWindow::scopeNode(int move)
     if(!m_selectedNode)
         return;
 
-    QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(nodesGui.nodesListView->currentIndex());
+    QModelIndex srcindex = nodesGui.nodesListProxyModel->mapToSource(nodesGui.nodesListView->currentIndex());
+    
+    QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(srcindex);
     QStandardItem* parent = item->parent() ? item->parent() : nodesGui.nodesListModel->invisibleRootItem();
 
     int currRow = item->row();
@@ -760,8 +769,8 @@ void MainWindow::scopeNode(int move)
 
             host->insertRow(parent->row() + 1, row);
 
-            Node* parentNode = host->data().value<QNodeInteractor*>()->getTarget();
-            Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
+            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
+            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
             currNode->setPos(parentNode->getPos() + currNode->getPos());
@@ -781,8 +790,8 @@ void MainWindow::scopeNode(int move)
 
             host->appendRow(row);
 
-            Node* parentNode = host->data().value<QNodeInteractor*>()->getTarget();
-            Node* currNode = item->data().value<QNodeInteractor*>()->getTarget();
+            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
+            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
 
             currNode->setParent(parentNode);
             currNode->setPos(currNode->getPos() - parentNode->getPos());
@@ -979,6 +988,8 @@ void MainWindow::pastField()
     using namespace tbe;
     using namespace scene;
 
+    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+
     Node* nearest = m_selectedNode->getTarget();
     nearest->clearUserData();
 
@@ -997,6 +1008,8 @@ void MainWindow::pastPosition()
     if(!m_sourceCopy)
         return;
 
+    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+
     m_selectedNode->setPos(m_sourceCopy->getTarget()->getPos());
 
     statusBar()->showMessage("Position coller...", 2000);
@@ -1007,6 +1020,8 @@ void MainWindow::pastScale()
     if(!m_sourceCopy)
         return;
 
+    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+
     m_selectedNode->setScale(m_sourceCopy->getTarget()->getMatrix().getScale());
 
     statusBar()->showMessage("Scale coller...", 2000);
@@ -1016,6 +1031,8 @@ void MainWindow::pastRotation()
 {
     if(!m_sourceCopy)
         return;
+
+    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
     m_selectedNode->setRotation(m_sourceCopy->getTarget()->getMatrix().getRotate().getEuler());
 
@@ -1051,8 +1068,4 @@ void MainWindow::guiZNear(double value)
 void MainWindow::guiZFar(double value)
 {
     m_tbeWidget->setZFar(value);
-}
-
-void MainWindow::guiNodeListFilterView()
-{
 }

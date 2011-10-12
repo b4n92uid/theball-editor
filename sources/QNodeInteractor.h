@@ -25,6 +25,7 @@ public:
     virtual ~QNodeInteractor();
 
     tbe::scene::Node* getTarget() const;
+    MainWindow* getMainwin() const;
 
     operator tbe::scene::Node*();
     tbe::scene::Node* operator->();

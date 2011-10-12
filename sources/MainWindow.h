@@ -22,6 +22,7 @@
 #include "QNodeBinders.h"
 #include "QSignalBlocker.h"
 #include "PackerDialog.h"
+#include "NodeListProxyModel.h"
 
 #include "Metatype.h"
 
@@ -85,11 +86,11 @@ public slots:
     void pastScale();
     void pastRotation();
 
-    void guiSelect(const QModelIndex& index);
-
     void scopeNode(int move);
 
     void screenshot();
+
+    void guiSelect(const QModelIndex& index);
 
     void guiAddSceneField();
     void guiDelSceneField();
@@ -99,8 +100,6 @@ public slots:
     void guiLightNew();
     void guiParticlesNew();
     void guiMarkNew();
-
-    void guiNodeListFilterView();
 
     void select(QNodeInteractor* qnode);
     void deselect();
@@ -238,6 +237,7 @@ private:
 
         QTreeView* nodesListView;
         QStandardItemModel* nodesListModel;
+        NodeListProxyModel* nodesListProxyModel;
         QCheckBox* displayMesh, *displayLights, *displayParticles, *displayMarks;
 
         QMap<QNodeInteractor*, QStandardItem*> nodeItemBinder;

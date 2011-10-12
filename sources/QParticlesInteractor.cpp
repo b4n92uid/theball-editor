@@ -122,13 +122,6 @@ void QParticlesInteractor::select()
 
     update();
 
-
-    QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
-
-    m_mainwin->nodesGui.nodesListView->blockSignals(true);
-    m_mainwin->nodesGui.nodesListView->setCurrentIndex(m_mainwin->nodesGui.nodesListModel->indexFromItem(item));
-    m_mainwin->nodesGui.nodesListView->blockSignals(false);
-
     m_mainwin->nodesGui.attribTab->setCurrentIndex(3);
 }
 
@@ -180,7 +173,7 @@ void QParticlesInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Box* axe = m_mainwin->m_tbeWidget->getAxe();
+    Box* axe = m_mainwin->m_tbeWidget->axe();
 
     Vector3f size = m_target->getBoxSize();
     size.y = 1;

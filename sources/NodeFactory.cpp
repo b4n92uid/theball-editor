@@ -48,15 +48,19 @@ void QMesh::setup()
 {
     using namespace tbe::scene;
 
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
+    QVariant interface;
+    interface.setValue((QNodeInteractor*)this);
 
     QStandardItem* itemType = new QStandardItem("Mesh");
     itemType->setIcon(QIcon(":/Medias/medias/mesh.png"));
-    itemType->setData(userdata);
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemType->setData("Mesh", ITEM_ROLE_TYPE);
 
     QStandardItem* itemName = new QStandardItem(QString::fromStdString(getName()));
-    itemName->setData(userdata);
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemName->setData("Mesh", ITEM_ROLE_TYPE);
 
     QItemsList items;
     items << itemType << itemName;
@@ -109,15 +113,19 @@ void QLight::setup()
 {
     using namespace tbe::scene;
 
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
+    QVariant interface;
+    interface.setValue((QNodeInteractor*)this);
 
     QStandardItem* itemType = new QStandardItem("Light");
     itemType->setIcon(QIcon(":/Medias/medias/light.png"));
-    itemType->setData(userdata);
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemType->setData("Light", ITEM_ROLE_TYPE);
 
     QStandardItem* itemName = new QStandardItem(QString::fromStdString(getName()));
-    itemName->setData(userdata);
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemName->setData("Light", ITEM_ROLE_TYPE);
 
     QItemsList items;
     items << itemType << itemName;
@@ -169,15 +177,19 @@ void QParticles::setup()
 {
     using namespace tbe::scene;
 
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
+    QVariant interface;
+    interface.setValue((QNodeInteractor*)this);
 
     QStandardItem* itemType = new QStandardItem("Particles");
     itemType->setIcon(QIcon(":/Medias/medias/particles.png"));
-    itemType->setData(userdata);
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemType->setData("Particles", ITEM_ROLE_TYPE);
 
     QStandardItem* itemName = new QStandardItem(QString::fromStdString(getName()));
-    itemName->setData(userdata);
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemName->setData("Particles", ITEM_ROLE_TYPE);
 
     QItemsList items;
     items << itemType << itemName;
@@ -230,15 +242,19 @@ void QMapMark::setup()
 {
     using namespace tbe::scene;
 
-    QVariant userdata;
-    userdata.setValue((QNodeInteractor*)this);
+    QVariant interface;
+    interface.setValue((QNodeInteractor*)this);
 
     QStandardItem* itemType = new QStandardItem("Mark");
     itemType->setIcon(QIcon(":/Medias/medias/mark.png"));
-    itemType->setData(userdata);
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemType->setData("Mark", ITEM_ROLE_TYPE);
 
     QStandardItem* itemName = new QStandardItem(QString::fromStdString(getName()));
-    itemName->setData(userdata);
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(getName()), ITEM_ROLE_NAME);
+    itemName->setData("Mark", ITEM_ROLE_TYPE);
 
     QItemsList items;
     items << itemType << itemName;

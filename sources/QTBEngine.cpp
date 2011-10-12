@@ -68,6 +68,9 @@ QTBEngine::QTBEngine(QWidget* parent)
 QTBEngine::~QTBEngine()
 {
     delete m_sceneParser;
+
+    foreach(HistoryState* hs, m_history)
+            delete hs;
 }
 
 void QTBEngine::initializeGL()
@@ -117,14 +120,24 @@ void QTBEngine::initializeGL()
     m_updateTimer->start(16);
 }
 
-tbe::scene::Box* QTBEngine::getAxe()
+tbe::scene::Box* QTBEngine::axe()
 {
     return m_axe;
 }
 
-tbe::scene::Grid* QTBEngine::getGrid()
+tbe::scene::Grid* QTBEngine::grid()
 {
     return m_grid;
+}
+
+tbe::scene::Camera* QTBEngine::camera() const
+{
+    return m_camera;
+}
+
+tbe::scene::SceneManager* QTBEngine::sceneManager() const
+{
+    return m_sceneManager;
 }
 
 void QTBEngine::setupSelection()
@@ -314,7 +327,7 @@ void QTBEngine::cloneSelected()
 
         clone->setup();
 
-        select(clone);
+        emit selection(clone);
     }
     catch(std::exception& e)
     {
@@ -330,7 +343,7 @@ void QTBEngine::deleteSelected()
 
     QNodeInteractor* todelete = m_selectedNode;
 
-    deselect();
+    emit deselection();
 
     delete todelete;
 }
@@ -357,7 +370,7 @@ void QTBEngine::popHistoryStat()
 
     hs->restore();
 
-    select(hs->node());
+    emit selection(hs->node());
 
     delete hs;
 
@@ -494,7 +507,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 m_selectedNode->getTarget()->setEnable(true);
 
             if(m_nodeInterface.contains(nearest))
-                select(m_nodeInterface[nearest]);
+                emit selection(m_nodeInterface[nearest]);
         }
         else
         {
@@ -601,7 +614,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Q)
     {
-        select(m_lastSelectedNode);
+        emit selection(m_lastSelectedNode);
     }
 
     if(ev->key() == Qt::Key_Plus)
@@ -750,12 +763,12 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
             Node* parent = selnode->getParent();
 
-            select(m_nodeInterface[parent]);
+            emit selection(m_nodeInterface[parent]);
         }
 
         if(ev->key() == Qt::Key_Escape)
         {
-            deselect();
+            emit deselection();
         }
 
     }
@@ -826,9 +839,11 @@ void QTBEngine::clearScene()
     m_mainwin->zNear(m_sceneManager->getZNear());
     m_mainwin->zFar(m_sceneManager->getZFar());
 
-    emit notifyInitFog(m_fog);
-    emit notifyInitSkybox(m_skybox);
-    emit notifyInitAmbiant(math::vec43(m_sceneManager->getAmbientLight()));
+    m_mainwin->zNear(m_sceneManager->getZNear());
+    m_mainwin->zFar(m_sceneManager->getZFar());
+    m_mainwin->fog(m_fog);
+    m_mainwin->skybox(m_skybox);
+    m_mainwin->ambiant(math::vec43(m_sceneManager->getAmbientLight()));
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -847,10 +862,9 @@ void QTBEngine::loadScene(const QString& filename)
 
     m_mainwin->zNear(m_sceneManager->getZNear());
     m_mainwin->zFar(m_sceneManager->getZFar());
-
-    emit notifyInitFog(m_fog);
-    emit notifyInitSkybox(m_skybox);
-    emit notifyInitAmbiant(math::vec43(m_sceneManager->getAmbientLight()));
+    m_mainwin->fog(m_fog);
+    m_mainwin->skybox(m_skybox);
+    m_mainwin->ambiant(math::vec43(m_sceneManager->getAmbientLight()));
 }
 
 struct RootSort
@@ -945,6 +959,9 @@ QMesh* QTBEngine::meshNew(const QString& filename)
     using namespace scene;
 
     QMesh* mesh = new QMesh(m_mainwin, OBJMesh(m_meshScene, filename.toStdString()));
+    
+    mesh->addToConstructionMap("filename", filename.toStdString());
+    mesh->addToConstructionMap("class", "OBJMesh");
 
     /*
     QMesh* mesh = NULL;
@@ -1077,11 +1094,8 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
 {
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
-}
 
-void QTBEngine::select(QNodeInteractor* qnode)
-{
-    m_mainwin->select(qnode);
+    m_selectedNode->select();
 }
 
 void QTBEngine::deselectNode()
@@ -1093,11 +1107,6 @@ void QTBEngine::deselectNode()
     }
 
     m_axe->setEnable(false);
-}
-
-void QTBEngine::deselect()
-{
-    m_mainwin->deselect();
 }
 
 QStringList QTBEngine::usedRessources()

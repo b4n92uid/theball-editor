@@ -57,7 +57,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
@@ -154,6 +154,139 @@
            </size>
           </property>
          </spacer>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Liste</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_14">
+        <item>
+         <widget class="QTreeView" name="node_list"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QPushButton" name="node_list_up">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_down">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_makeparent">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_makechild">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_sort">
+            <property name="text">
+             <string>Trier</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="node_display_meshs">
+            <property name="text">
+             <string>Afficher les Mailliages</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="node_display_particules">
+            <property name="text">
+             <string>Afficher les Particules</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="node_display_lights">
+            <property name="text">
+             <string>Afficher les Lumieres</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="node_display_marks">
+            <property name="text">
+             <string>Afficher les Marqeurs</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -354,21 +487,12 @@
            <enum>QTabWidget::East</enum>
           </property>
           <property name="tabShape">
-           <enum>QTabWidget::Rounded</enum>
+           <enum>QTabWidget::Triangular</enum>
           </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
           <property name="usesScrollButtons">
-           <bool>false</bool>
-          </property>
-          <property name="documentMode">
-           <bool>true</bool>
-          </property>
-          <property name="tabsClosable">
-           <bool>false</bool>
-          </property>
-          <property name="movable">
            <bool>false</bool>
           </property>
           <widget class="QWidget" name="tab_4">
@@ -377,95 +501,100 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_11">
+             <widget class="QListView" name="node_mesh_materials">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_65">
               <item>
-               <widget class="QGroupBox" name="groupBox_4">
-                <property name="title">
-                 <string>Materiaux</string>
+               <widget class="QCheckBox" name="node_mesh_savemat">
+                <property name="text">
+                 <string>Enregistrer les materiaux</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_2">
-                 <item>
-                  <widget class="QListView" name="node_mesh_materials">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="node_mesh_editmat">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="text">
-                    <string> Editer le materiau séléctioné</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="node_mesh_savemat">
-                   <property name="text">
-                    <string>Enregistrer les parametres materiaux</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_5">
-                <property name="title">
-                 <string>Mailliage</string>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
-                <layout class="QFormLayout" name="formLayout_9">
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_36">
-                   <property name="text">
-                    <string>Opacité</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QDoubleSpinBox" name="node_mesh_opacity">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <layout class="QHBoxLayout" name="horizontalLayout_32">
-                   <item>
-                    <widget class="QCheckBox" name="node_mesh_billboard_x">
-                     <property name="text">
-                      <string>Horizental</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QCheckBox" name="node_mesh_billboard_y">
-                     <property name="text">
-                      <string>Vertical</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_35">
-                   <property name="text">
-                    <string>Billboard</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="node_mesh_editmat">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string> Editer</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="node_mesh_billboard_x">
+              <property name="text">
+               <string>Billboard Horizental</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="node_mesh_billboard_y">
+              <property name="text">
+               <string>Billboard Vertical</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QFormLayout" name="formLayout_9">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_36">
+                <property name="text">
+                 <string>Opacité</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QDoubleSpinBox" name="node_mesh_opacity">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
                </widget>
               </item>
              </layout>
@@ -1668,128 +1797,6 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Liste</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_14">
-        <item>
-         <widget class="QTreeView" name="node_list"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_up">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_down">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_makeparent">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_makechild">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="node_display_meshs">
-            <property name="text">
-             <string>Afficher les Mailliages</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QCheckBox" name="node_display_particules">
-            <property name="text">
-             <string>Afficher les Particules</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="node_display_lights">
-            <property name="text">
-             <string>Afficher les Lumieres</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="node_display_marks">
-            <property name="text">
-             <string>Afficher les Marqeurs</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
      </widget>
     </item>
    </layout>
@@ -1857,9 +1864,20 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionPastRotation"/>
     <addaction name="actionPastFields"/>
    </widget>
+   <widget class="QMenu" name="menuTrier">
+    <property name="title">
+     <string>Trier</string>
+    </property>
+    <addaction name="actionSortByName"/>
+    <addaction name="actionSortByType"/>
+    <addaction name="separator"/>
+    <addaction name="actionSortFromCamera"/>
+    <addaction name="actionSortFromSelection"/>
+   </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuEditer"/>
    <addaction name="menuAffichage"/>
+   <addaction name="menuTrier"/>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -2139,6 +2157,26 @@ p, li { white-space: pre-wrap; }
     <string>G</string>
    </property>
   </action>
+  <action name="actionSortByName">
+   <property name="text">
+    <string>Trier par nom</string>
+   </property>
+  </action>
+  <action name="actionSortFromCamera">
+   <property name="text">
+    <string>Trier d'après la camera</string>
+   </property>
+  </action>
+  <action name="actionSortFromSelection">
+   <property name="text">
+    <string>Trier d'après la  séléction</string>
+   </property>
+  </action>
+  <action name="actionSortByType">
+   <property name="text">
+    <string>Trier par type</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -2191,7 +2229,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_addfield</tabstop>
   <tabstop>node_delfield</tabstop>
   <tabstop>node_clearfields</tabstop>
-  <tabstop>node_mesh_opacity</tabstop>
   <tabstop>node_mesh_add</tabstop>
   <tabstop>node_water_uvrepeat_x</tabstop>
   <tabstop>node_particles_gravity_z</tabstop>
@@ -2206,13 +2243,10 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_water_size_y</tabstop>
   <tabstop>node_light_type</tabstop>
   <tabstop>node_light_specular_z</tabstop>
-  <tabstop>node_mesh_materials</tabstop>
   <tabstop>node_light_radius</tabstop>
   <tabstop>node_mark_add</tabstop>
   <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_ambiant_y</tabstop>
-  <tabstop>node_mesh_editmat</tabstop>
-  <tabstop>node_mesh_savemat</tabstop>
   <tabstop>node_particles_add</tabstop>
   <tabstop>node_water_add</tabstop>
  </tabstops>

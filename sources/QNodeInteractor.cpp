@@ -146,6 +146,11 @@ tbe::scene::Node* QNodeInteractor::getTarget() const
     return m_target;
 }
 
+MainWindow* QNodeInteractor::getMainwin() const
+{
+    return m_mainwin;
+}
+
 void QNodeInteractor::addNodeField()
 {
     if(!m_target)
@@ -239,6 +244,18 @@ void QNodeInteractor::select()
     connect(m_mainwin->nodesGui.addField, SIGNAL(clicked()), this, SLOT(addNodeField()));
     connect(m_mainwin->nodesGui.delField, SIGNAL(clicked()), this, SLOT(delNodeField()));
     connect(m_mainwin->nodesGui.clearFields, SIGNAL(clicked()), this, SLOT(clearNodeField()));
+
+
+    QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
+
+    m_mainwin->nodesGui.nodesListView->blockSignals(true);
+
+    QModelIndex index = m_mainwin->nodesGui.nodesListProxyModel->mapFromSource(item->index());
+
+    if(index.isValid())
+        m_mainwin->nodesGui.nodesListView->setCurrentIndex(index);
+
+    m_mainwin->nodesGui.nodesListView->blockSignals(false);
 }
 
 void QNodeInteractor::deselect()

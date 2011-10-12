@@ -62,6 +62,7 @@ SOURCES += \
     sources/QParticlesInteractor.cpp \
     sources/ClassFactory.cpp \
     sources/HistoryState.cpp \
+    sources/NodeListProxyModel.cpp \
 
 HEADERS  += \
     sources/MainWindow.h \
@@ -82,6 +83,7 @@ HEADERS  += \
     sources/QParticlesInteractor.h \
     sources/ClassFactory.h \
     sources/HistoryState.h \
+    sources/NodeListProxyModel.h \
 
 FORMS += \
     sources/about.ui \

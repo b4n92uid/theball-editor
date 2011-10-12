@@ -21,16 +21,8 @@ public:
     tbe::scene::Light* newLight(tbe::scene::LightParallelScene* scene);
     tbe::scene::ParticlesEmiter* newParticles(tbe::scene::ParticlesParallelScene* scene);
     tbe::scene::MapMark* newMapMark(tbe::scene::MapMarkParallelScene* scene);
-    tbe::scene::Water* newWater(tbe::scene::WaterParallelScene* scene);
-
-    void setupMesh(tbe::scene::Mesh* node);
-    void setupLight(tbe::scene::Light* node);
-    void setupParticles(tbe::scene::ParticlesEmiter* node);
-    void setupMapMark(tbe::scene::MapMark* node);
-    void setupWater(tbe::scene::Water* node);
 
 protected:
     MainWindow* m_mainwin;
 };
 #endif	/* CLASSFACTORY_H */
-
