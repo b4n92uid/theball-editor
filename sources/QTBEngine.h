@@ -75,7 +75,9 @@ public slots:
     void placeCamera();
 
     void toggleGridDisplay();
-    void toggleLockedNode();
+
+    void setLockedNode(QNodeInteractor* node,bool state);
+    bool isLockedNode(QNodeInteractor* node);
 
     void cloneSelected();
     void deleteSelected();

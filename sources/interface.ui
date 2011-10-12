@@ -37,7 +37,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
@@ -450,6 +450,16 @@
               <widget class="QCheckBox" name="node_enable">
                <property name="text">
                 <string>Activé</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="node_lock">
+               <property name="text">
+                <string>Verouiller</string>
+               </property>
+               <property name="tristate">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1833,7 +1843,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="separator"/>
     <addaction name="actionCloneNode"/>
     <addaction name="actionDeleteNode"/>
-    <addaction name="actionLockNode"/>
     <addaction name="separator"/>
     <addaction name="actionCenterOnFloor"/>
     <addaction name="actionBaseOnFloor"/>
@@ -2086,18 +2095,6 @@ p, li { white-space: pre-wrap; }
     <string>Ctrl+Z</string>
    </property>
   </action>
-  <action name="actionLockNode">
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/lock.png</normaloff>:/Medias/medias/lock.png</iconset>
-   </property>
-   <property name="text">
-    <string>Vérouiller le noeud</string>
-   </property>
-   <property name="shortcut">
-    <string>L</string>
-   </property>
-  </action>
   <action name="actionCenterOnFloor">
    <property name="icon">
     <iconset resource="ressource.qrc">
@@ -2241,12 +2238,28 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>581</x>
-     <y>485</y>
+     <x>671</x>
+     <y>457</y>
     </hint>
     <hint type="destinationlabel">
-     <x>591</x>
+     <x>776</x>
      <y>460</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>node_mesh_savemat</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>node_mesh_opacity</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>623</x>
+     <y>450</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>633</x>
+     <y>546</y>
     </hint>
    </hints>
   </connection>

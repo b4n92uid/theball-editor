@@ -224,6 +224,7 @@ private:
         QVectorBox* scale;
 
         QCheckBox* enable;
+        QCheckBox* lock;
 
         QTabWidget* attribTab;
 

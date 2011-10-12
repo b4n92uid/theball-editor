@@ -381,12 +381,23 @@ void QTBEngine::popHistoryStat()
         m_mainwin->ui()->actionUndo->setEnabled(false);
 }
 
-void QTBEngine::toggleLockedNode()
+bool QTBEngine::isLockedNode(QNodeInteractor* node)
 {
-    if(m_lockedNode.contains(m_selectedNode))
-        m_lockedNode.remove(m_selectedNode);
+    return m_lockedNode.contains(node);
+}
+
+void QTBEngine::setLockedNode(QNodeInteractor* node, bool state)
+{
+    if(state)
+    {
+        m_lockedNode[node] = true;
+    }
+
     else
-        m_lockedNode[m_selectedNode] = true;
+    {
+        if(m_lockedNode.contains(node))
+            m_lockedNode.remove(node);
+    }
 }
 
 void QTBEngine::baseOnFloor()

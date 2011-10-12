@@ -50,10 +50,13 @@ public slots:
     virtual // Because mesh type are vertex scalled
     void setScale(const tbe::Vector3f& v);
     void setMatrix(const tbe::Matrix4& m);
-    void setEnalbe(bool stat);
+    void setEnalbe(bool state);
+    void setLocked(bool state);
 
 protected:
     void clearChilds(QStandardItem* item);
+    
+    QList<QStandardItem*> itemRows();
 
 protected:
     MainWindow* m_mainwin;
