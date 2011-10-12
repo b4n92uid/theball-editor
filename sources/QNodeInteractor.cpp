@@ -7,6 +7,7 @@
 
 #include "QNodeInteractor.h"
 #include "MainWindow.h"
+#include "ui_interface.h"
 
 QNodeInteractor::QNodeInteractor() :
 m_mainwin(NULL), m_target(NULL)
@@ -133,11 +134,39 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
     }
 }
 
-void QNodeInteractor::setEnalbe(bool stat)
+void QNodeInteractor::setEnalbe(bool state)
 {
-    m_target->setEnable(stat);
+    m_target->setEnable(state);
+
+    QList<QStandardItem*> list = itemRows();
+
+    foreach(QStandardItem* item, list)
+    item->setForeground(state ? Qt::black : Qt::gray);
 
     m_mainwin->notifyChanges(true);
+}
+
+void QNodeInteractor::setLocked(bool state)
+{
+    m_mainwin->tbeWidget()->setLockedNode(this, state);
+
+    QList<QStandardItem*> list = itemRows();
+
+    foreach(QStandardItem* item, list)
+    {
+        QFont font = item->font();
+        font.setItalic(state);
+
+        item->setFont(font);
+    }
+}
+
+QList<QStandardItem*> QNodeInteractor::itemRows()
+{
+    QStandardItem* itemc0 = m_mainwin->nodesGui.nodeItemBinder[this];
+    QStandardItem* itemc1 = m_mainwin->nodesGui.nodesListModel->item(itemc0->row(), 1);
+
+    return QList<QStandardItem*>() << itemc0 << itemc1;
 }
 
 tbe::scene::Node* QNodeInteractor::getTarget() const
@@ -237,6 +266,7 @@ void QNodeInteractor::select()
     connect(m_mainwin->nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setRotation(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setScale(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.enable, SIGNAL(clicked(bool)), this, SLOT(setEnalbe(bool)));
+    connect(m_mainwin->nodesGui.lock, SIGNAL(clicked(bool)), this, SLOT(setLocked(bool)));
 
     connect(m_mainwin->nodesGui.additionalModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(changeNodeField(QStandardItem*)));
 
@@ -264,6 +294,7 @@ void QNodeInteractor::deselect()
     disconnect(m_mainwin->nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
     disconnect(m_mainwin->nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
     disconnect(m_mainwin->nodesGui.enable, SIGNAL(clicked(bool)), 0, 0);
+    disconnect(m_mainwin->nodesGui.lock, SIGNAL(clicked(bool)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.additionalModel, SIGNAL(itemChanged(QStandardItem*)), 0, 0);
 
@@ -305,10 +336,11 @@ void QNodeInteractor::update()
     m_mainwin->nodesGui.name->setText(QString::fromStdString(m_target->getName()));
 
     m_mainwin->nodesGui.position->setValue(m_target->getPos());
-
     m_mainwin->nodesGui.scale->setValue(m_target->getMatrix().getScale());
     m_mainwin->nodesGui.rotation->setValue(m_target->getMatrix().getRotate().getEuler() * 180 / M_PI);
+
     m_mainwin->nodesGui.enable->setChecked(m_target->isEnable());
+    m_mainwin->nodesGui.lock->setChecked(m_mainwin->tbeWidget()->isLockedNode(this));
 
     blocker.unblock();
 

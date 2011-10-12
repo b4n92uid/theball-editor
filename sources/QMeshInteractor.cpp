@@ -48,9 +48,6 @@ void QMeshInteractor::setSaveMaterial(bool stat)
 
     m_target->setOutputMaterial(stat);
 
-    m_mainwin->nodesGui.meshTab.openmatedit->setEnabled(stat);
-    m_mainwin->nodesGui.meshTab.opacity->setEnabled(stat);
-
     m_mainwin->notifyChanges(true);
 }
 

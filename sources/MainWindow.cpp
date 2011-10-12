@@ -147,6 +147,7 @@ void MainWindow::initWidgets()
     nodesGui.rotation = new QVectorBox(this, m_uinterface->node_rot_x, m_uinterface->node_rot_y, m_uinterface->node_rot_z);
     nodesGui.scale = new QVectorBox(this, m_uinterface->node_scl_x, m_uinterface->node_scl_y, m_uinterface->node_scl_z);
 
+    nodesGui.lock = m_uinterface->node_lock;
     nodesGui.enable = m_uinterface->node_enable;
 
     nodesGui.nodeUp = m_uinterface->node_list_up;
@@ -282,7 +283,6 @@ void MainWindow::initConnections()
 
     // Edit Menu
 
-    connect(m_uinterface->actionLockNode, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleLockedNode()));
     connect(m_uinterface->actionBaseOnFloor, SIGNAL(triggered()), m_tbeWidget, SLOT(baseOnFloor()));
     connect(m_uinterface->actionCenterOnFloor, SIGNAL(triggered()), m_tbeWidget, SLOT(centerOnFloor()));
     connect(m_uinterface->actionEnableGrid, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleGridDisplay()));
@@ -364,8 +364,7 @@ void MainWindow::initConnections()
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbiantApply(const tbe::Vector3f&)));
 
     m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateInfoBox()));
-    m_timer->start(16);
+    // m_timer->start(16);
 }
 
 bool MainWindow::leaveSafely()
