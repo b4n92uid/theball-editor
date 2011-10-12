@@ -40,7 +40,15 @@ public:
 
     tbe::scene::Node* rootNode();
 
+    tbe::scene::SceneManager* sceneManager() const;
+
     tbe::scene::SceneParser* sceneParser() const;
+
+    tbe::scene::Camera* camera() const;
+
+    tbe::scene::Box* axe();
+
+    tbe::scene::Grid* grid();
 
     QStringList usedRessources();
 
@@ -60,10 +68,7 @@ public:
 
 public slots:
 
-    void select(QNodeInteractor* qnode);
     void selectNode(QNodeInteractor* qnode);
-
-    void deselect();
     void deselectNode();
 
     void pauseRendring();
@@ -94,13 +99,9 @@ public slots:
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
 
-    tbe::scene::Box* getAxe();
-    tbe::scene::Grid* getGrid();
-
 signals:
-    void notifyInitAmbiant(const tbe::Vector3f&);
-    void notifyInitFog(tbe::scene::Fog*);
-    void notifyInitSkybox(tbe::scene::SkyBox*);
+    void selection(QNodeInteractor*);
+    void deselection();
 
 protected:
     void initializeGL();
@@ -118,7 +119,7 @@ protected:
 
     void keyPressEvent(QKeyEvent* ev);
     void keyReleaseEvent(QKeyEvent* ev);
-    
+
     void applyTranslationEvents();
     void applyCameraEvents();
 

@@ -48,32 +48,3 @@ tbe::scene::MapMark* ClassFactory::newMapMark(tbe::scene::MapMarkParallelScene* 
 
     return mapmark;
 }
-
-tbe::scene::Water* ClassFactory::newWater(tbe::scene::WaterParallelScene* scene)
-{
-    return NULL;
-}
-
-void ClassFactory::setupMesh(tbe::scene::Mesh* node)
-{
-    m_mainwin->tbeWidget()->fetchInterface(node)->setup();
-}
-
-void ClassFactory::setupLight(tbe::scene::Light* node)
-{
-    m_mainwin->tbeWidget()->fetchInterface(node)->setup();
-}
-
-void ClassFactory::setupParticles(tbe::scene::ParticlesEmiter* node)
-{
-    m_mainwin->tbeWidget()->fetchInterface(node)->setup();
-}
-
-void ClassFactory::setupMapMark(tbe::scene::MapMark* node)
-{
-    m_mainwin->tbeWidget()->fetchInterface(node)->setup();
-}
-
-void ClassFactory::setupWater(tbe::scene::Water* node)
-{
-}
