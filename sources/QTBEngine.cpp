@@ -858,7 +858,7 @@ void QTBEngine::loadScene(const QString& filename)
     m_sceneParser->loadScene(filename.toStdString());
     m_sceneParser->buildScene();
 
-    m_camera->setDistance(m_meshScene->getSceneAabb().getLength()/2.0f);
+    m_camera->setDistance(m_meshScene->getSceneAabb().getLength() / 2.0f);
     m_camera->setRotate(Vector2f(45, -45));
 
     m_selectedNode = NULL;
@@ -893,62 +893,6 @@ struct RootSort
 tbe::scene::Node* QTBEngine::rootNode()
 {
     return m_rootNode;
-}
-
-void QTBEngine::fillTextInfo(QLabel* label)
-{
-
-    QString text;
-
-    if(m_gridEnable)
-        text += "<p><b>Déplacement en grille</b></p>";
-
-    if(m_lockedNode.contains(m_selectedNode))
-        text += "<p><b>Noeud verrouiller</b></p>";
-
-    text += QString("<p>Curseur 3D: %1 %2 %3</p>").arg(m_curCursor3D.x).arg(m_curCursor3D.y).arg(m_curCursor3D.z);
-
-    if(m_selectedNode)
-    {
-        tbe::scene::Node* selnode = m_selectedNode->getTarget();
-
-        QString name = QString::fromStdString(selnode->getName());
-        tbe::Vector3f pos = selnode->getPos();
-        tbe::AABB aabb = selnode->getAabb();
-
-        text += QString("<p>");
-        text += QString("Node: %1<br />").arg(name);
-        text += QString("|_Pos: %1 %2 %3<br />").arg(pos.x).arg(pos.y).arg(pos.z);
-        text += QString("|_Aabb: (%1,%2,%3) (%4,%5,%6)")
-                .arg(aabb.min.x).arg(aabb.min.y).arg(aabb.min.z)
-                .arg(aabb.max.x).arg(aabb.max.y).arg(aabb.max.z);
-
-        text += QString("</p>");
-
-
-        if(!selnode->getParent()->isRoot())
-        {
-            using namespace tbe::scene;
-
-            Node* parent = selnode->getParent();
-
-            QString name = QString::fromStdString(parent->getName());
-            tbe::Vector3f pos = parent->getPos();
-
-            text += QString("<p>");
-            text += QString("Parent: %1<br />").arg(name);
-            text += QString("|_Pos: %1 %2 %3").arg(pos.x).arg(pos.y).arg(pos.z);
-            text += QString("</p>");
-        }
-    }
-
-    else
-    {
-
-        text += QString("<p><i>Pas de séléction</i></p>");
-    }
-
-    label->setText(text);
 }
 
 void QTBEngine::meshRegister(QMesh* mesh)

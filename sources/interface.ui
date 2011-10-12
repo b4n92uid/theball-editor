@@ -24,29 +24,9 @@
     <normaloff>:/Medias/medias/icon.ico</normaloff>:/Medias/medias/icon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="7,1">
+   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="8,2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_8" stretch="9,0">
-      <item>
-       <widget class="QTBEngine" name="glwidget" native="true"/>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="infoBox">
-        <property name="title">
-         <string>Informations</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_9">
-         <item>
-          <widget class="QLabel" name="infoText">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QTBEngine" name="glwidget" native="true"/>
     </item>
     <item>
      <widget class="QTabWidget" name="propertyTab">

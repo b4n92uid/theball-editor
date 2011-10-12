@@ -64,8 +64,6 @@ public slots:
     void saveScene(const QString& filename);
     void saveScene();
 
-    void updateInfoBox();
-
     void about();
 
     void notifyChanges(bool stat = true);
@@ -292,8 +290,6 @@ private:
     QString m_filename;
 
     QTBEngine* m_tbeWidget;
-
-    QLabel* m_infoText;
 
     QTimer* m_timer;
 

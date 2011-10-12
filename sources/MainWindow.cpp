@@ -97,8 +97,6 @@ void MainWindow::initWidgets()
 
     m_tbeWidget = m_uinterface->glwidget;
 
-    m_infoText = m_uinterface->infoText;
-
     nodesGui.attribTab = m_uinterface->attribTab;
 
     m_config = new QSettings(this);
@@ -609,11 +607,6 @@ void MainWindow::about()
     aboutdlg->raise();
 }
 
-void MainWindow::updateInfoBox()
-{
-    m_tbeWidget->fillTextInfo(m_infoText);
-}
-
 void MainWindow::guiSelect(const QModelIndex& index)
 {
     using namespace tbe::scene;
@@ -737,7 +730,7 @@ void MainWindow::scopeNode(int move)
         return;
 
     QModelIndex srcindex = nodesGui.nodesListProxyModel->mapToSource(nodesGui.nodesListView->currentIndex());
-    
+
     QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(srcindex);
     QStandardItem* parent = item->parent() ? item->parent() : nodesGui.nodesListModel->invisibleRootItem();
 
@@ -901,7 +894,6 @@ void MainWindow::skybox(tbe::scene::SkyBox* sky)
 void MainWindow::toggleFullWidget(bool full)
 {
     m_uinterface->propertyTab->setVisible(!full);
-    m_uinterface->infoBox->setVisible(!full);
 }
 
 void MainWindow::guiAddSceneField()

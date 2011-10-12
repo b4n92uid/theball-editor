@@ -36,8 +36,6 @@ public:
     void loadScene(const QString& filename);
     void saveScene(const QString& filename);
 
-    void fillTextInfo(QLabel* label);
-
     tbe::scene::Node* rootNode();
 
     tbe::scene::SceneManager* sceneManager() const;
