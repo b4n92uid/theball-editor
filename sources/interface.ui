@@ -556,40 +556,6 @@
              </widget>
             </item>
             <item>
-             <widget class="Line" name="line_5">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QFormLayout" name="formLayout_9">
-              <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-              </property>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_36">
-                <property name="text">
-                 <string>Opacité</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QDoubleSpinBox" name="node_mesh_opacity">
-                <property name="maximum">
-                 <double>1.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>0.100000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
              <spacer name="verticalSpacer_6">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -1828,7 +1794,8 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionToggleFullScreen"/>
     <addaction name="separator"/>
-    <addaction name="actionEnableGrid"/>
+    <addaction name="actionToggleGrid"/>
+    <addaction name="actionToggleSelBox"/>
    </widget>
    <widget class="QMenu" name="menuEditer">
     <property name="title">
@@ -2119,7 +2086,7 @@ p, li { white-space: pre-wrap; }
     <string>Alt+F</string>
    </property>
   </action>
-  <action name="actionEnableGrid">
+  <action name="actionToggleGrid">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -2152,6 +2119,14 @@ p, li { white-space: pre-wrap; }
   <action name="actionSortByType">
    <property name="text">
     <string>Trier par type</string>
+   </property>
+  </action>
+  <action name="actionToggleSelBox">
+   <property name="text">
+    <string>Afficher la séléction</string>
+   </property>
+   <property name="shortcut">
+    <string>B</string>
    </property>
   </action>
  </widget>
@@ -2244,22 +2219,6 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>776</x>
      <y>460</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>node_mesh_savemat</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>node_mesh_opacity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>623</x>
-     <y>450</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>633</x>
-     <y>546</y>
     </hint>
    </hints>
   </connection>

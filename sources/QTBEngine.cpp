@@ -149,14 +149,14 @@ void QTBEngine::setupSelection()
     m_axe->getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD
                                        | Material::VERTEX_SORT_CULL_TRICK);
     m_axe->getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
-    m_axe->setColor(Vector4f(0, 0, 1, 0.25));
+    m_axe->getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
     m_axe->setEnable(m_selectedNode);
     m_rootNode->addChild(m_axe);
 
     m_grid = new Grid(m_meshScene, 8, 8);
     m_grid->setName("grid");
     m_grid->getMaterial("main")->disable(Material::FOGED);
-    m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
+    m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 1));
     m_grid->setEnable(false);
 
     m_rootNode->addChild(m_grid);
@@ -281,9 +281,14 @@ void QTBEngine::paintGL()
     m_device->endScene();
 }
 
-void QTBEngine::toggleGridDisplay()
+void QTBEngine::toggleSelBox(bool state)
 {
-    m_gridEnable = !m_gridEnable;
+    m_axe->setEnable(state);
+}
+
+void QTBEngine::toggleGridDisplay(bool state)
+{
+    m_gridEnable = state;
 
     if(m_gridEnable)
     {
@@ -304,7 +309,7 @@ void QTBEngine::toggleGridDisplay()
 
         m_grid->build(size, cuts);
         m_grid->getMaterial("main")->disable(scene::Material::FOGED);
-        m_grid->setColor(Vector4f(0.5, 0.5, 0.5, 1));
+        m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 1));
 
         if(m_selectedNode)
         {

@@ -38,8 +38,11 @@ public slots:
     void materialSetBlendMode();
 
     void setBillBoard();
-    void setOpacity(double value);
+    
     void setAlphaThreshold(double value);
+    
+    void setColor(const tbe::Vector3f& value);
+    void setOpacity(double value);
 
     void setFoged(bool stat);
     void setTextured(bool stat);
