@@ -94,6 +94,12 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
     m_mainwin->nodesGui.meshTab.matedit->lighted->setChecked(mat->isEnable(Material::LIGHTED));
     m_mainwin->nodesGui.meshTab.matedit->culltrick->setChecked(mat->isEnable(Material::VERTEX_SORT_CULL_TRICK));
 
+    Vector4f color = mat->getColor();
+    m_mainwin->nodesGui.meshTab.matedit->color_r->setValue(color.x);
+    m_mainwin->nodesGui.meshTab.matedit->color_g->setValue(color.y);
+    m_mainwin->nodesGui.meshTab.matedit->color_b->setValue(color.z);
+    m_mainwin->nodesGui.meshTab.matedit->color_a->setValue(color.w);
+
     // Blending stat
     bool blending = mat->isEnable(Material::BLEND_MOD)
             || mat->isEnable(Material::BLEND_ADD)
@@ -116,7 +122,6 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
     else
         m_mainwin->nodesGui.meshTab.matedit->blend_modulate->setChecked(true);
 
-    m_mainwin->nodesGui.meshTab.opacity->setValue(m_target->getOpacity());
 
     // Alpha
     bool alpha = mat->isEnable(Material::ALPHA);
@@ -374,12 +379,31 @@ void QMeshInteractor::setBillBoard()
     m_target->setBillBoard(apply);
 }
 
+void QMeshInteractor::setColor(const tbe::Vector3f& value)
+{
+    if(!m_target)
+        return;
+
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    tbe::Vector4f color = tbe::math::vec34(value);
+    color.w = m_mainwin->nodesGui.meshTab.matedit->color_a->value();
+
+    mat->setColor(color);
+}
+
 void QMeshInteractor::setOpacity(double value)
 {
     if(!m_target)
         return;
 
-    m_target->setOpacity((float)value);
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    mat->setOpacity((float)value);
 }
 
 void QMeshInteractor::setAlpha(bool stat)
@@ -454,8 +478,9 @@ void QMeshInteractor::select()
     connect(m_mainwin->nodesGui.meshTab.matedit->alpha, SIGNAL(clicked(bool)), this, SLOT(setAlpha(bool)));
     connect(m_mainwin->nodesGui.meshTab.matedit->blending, SIGNAL(clicked(bool)), this, SLOT(setBlend(bool)));
     connect(m_mainwin->nodesGui.meshTab.matedit->culltrick, SIGNAL(clicked(bool)), this, SLOT(setCullTrick(bool)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->rgb, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setColor(const tbe::Vector3f&)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->color_a, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
 
-    connect(m_mainwin->nodesGui.meshTab.opacity, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
     connect(m_mainwin->nodesGui.meshTab.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
     connect(m_mainwin->nodesGui.meshTab.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
 
@@ -496,8 +521,8 @@ void QMeshInteractor::deselect()
     disconnect(m_mainwin->nodesGui.meshTab.matedit->alpha, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->blending, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->culltrick, SIGNAL(clicked(bool)), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->color_a, SIGNAL(valueChanged(double)), 0, 0);
 
-    disconnect(m_mainwin->nodesGui.meshTab.opacity, SIGNAL(valueChanged(double)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.billboardX, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.billboardY, SIGNAL(clicked()), 0, 0);
 
@@ -553,8 +578,6 @@ void QMeshInteractor::update()
         m_mainwin->nodesGui.meshTab.materialsModel->appendRow(item);
     }
 
-    m_mainwin->nodesGui.meshTab.opacity->setValue(m_target->getOpacity());
-
     QModelIndex index = m_mainwin->nodesGui.meshTab.materialsModel->index(0, 0);
 
     m_mainwin->nodesGui.meshTab.materialsView->setCurrentIndex(index);
@@ -566,13 +589,10 @@ void QMeshInteractor::update()
 
     m_mainwin->nodesGui.meshTab.saveMaterials->setChecked(matset);
     m_mainwin->nodesGui.meshTab.openmatedit->setEnabled(matset);
-    m_mainwin->nodesGui.meshTab.opacity->setEnabled(matset);
 
     tbe::Vector2b billboard = m_target->getBillBoard();
     m_mainwin->nodesGui.meshTab.billboardX->setChecked(billboard.x);
     m_mainwin->nodesGui.meshTab.billboardY->setChecked(billboard.y);
-
-
 
     using namespace tbe;
     using namespace scene;
@@ -585,5 +605,5 @@ void QMeshInteractor::update()
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
     axe->setSize(selAabb.getSize() / 2.0f + 0.1f);
-    axe->setColor(Vector4f(0, 0, 1, 0.25));
+    axe->getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
 }

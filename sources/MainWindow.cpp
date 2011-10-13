@@ -65,7 +65,7 @@ void MainWindow::buildFileHistory()
 
         foreach(QString filepath, history)
         {
-            QAction* act = filehistory->addAction("..." + filepath.section('\\', -2),
+            QAction* act = filehistory->addAction("..." + filepath.section(QDir::separator(), -2),
                                                   this, SLOT(openFileHistory()));
             act->setData(filepath);
         }
@@ -171,8 +171,6 @@ void MainWindow::initWidgets()
     nodesGui.meshTab.openmatedit = m_uinterface->node_mesh_editmat;
 
     nodesGui.meshTab.textureModel = new QStandardItemModel(this);
-
-    nodesGui.meshTab.opacity = m_uinterface->node_mesh_opacity;
 
     nodesGui.meshTab.matedit = new MaterialEditDialog(this);
 
@@ -285,9 +283,11 @@ void MainWindow::initConnections()
 
     connect(m_uinterface->actionBaseOnFloor, SIGNAL(triggered()), m_tbeWidget, SLOT(baseOnFloor()));
     connect(m_uinterface->actionCenterOnFloor, SIGNAL(triggered()), m_tbeWidget, SLOT(centerOnFloor()));
-    connect(m_uinterface->actionEnableGrid, SIGNAL(triggered()), m_tbeWidget, SLOT(toggleGridDisplay()));
     connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), m_tbeWidget, SLOT(cloneSelected()));
     connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), m_tbeWidget, SLOT(deleteSelected()));
+
+    connect(m_uinterface->actionToggleGrid, SIGNAL(triggered(bool)), m_tbeWidget, SLOT(toggleGridDisplay(bool)));
+    connect(m_uinterface->actionToggleSelBox, SIGNAL(triggered(bool)), m_tbeWidget, SLOT(toggleSelBox(bool)));
 
     connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
 

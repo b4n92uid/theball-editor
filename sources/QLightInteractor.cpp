@@ -112,5 +112,5 @@ void QLightInteractor::update()
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
     axe->setSize(0.25);
-    axe->setColor(Vector4f(1, 1, 1, 0.25));
+    axe->getMaterial("main")->setColor(Vector4f(1, 1, 1, 0.25));
 }

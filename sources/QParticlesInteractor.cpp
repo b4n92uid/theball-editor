@@ -182,5 +182,5 @@ void QParticlesInteractor::update()
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix().getPos() + size / 2.0f);
     axe->setSize(size / 2.0f + 0.1f);
-    axe->setColor(Vector4f(0, 1, 1, 0.25));
+    axe->getMaterial("main")->setColor(Vector4f(0, 1, 1, 0.25));
 }

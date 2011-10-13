@@ -138,7 +138,11 @@ private:
         MaterialEditDialog(QWidget* parent) : QDialog(parent)
         {
             setupUi(this);
+
+            rgb = new QVectorBox(this, color_r, color_g, color_b);
         }
+
+        QVectorBox* rgb;
     };
 
     struct NodesGuiTab
