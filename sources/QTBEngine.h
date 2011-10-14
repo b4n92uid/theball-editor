@@ -12,6 +12,8 @@
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 
+#include "Metatype.h"
+
 class QMesh;
 class QLight;
 class QParticles;
@@ -44,25 +46,24 @@ public:
 
     tbe::scene::Camera* camera() const;
 
-    tbe::scene::Box* axe();
+    tbe::scene::Box* selbox();
 
     tbe::scene::Grid* grid();
 
     QStringList usedRessources();
 
-    QNodeInteractor* fetchInterface(tbe::scene::Node* node);
+    void registerInterface(QNodeInteractor* node);
+    void unregisterInterface(QNodeInteractor* node);
+
+    QNodeInteractor* interface(tbe::scene::Node* node);
 
     QMesh* meshNew(const QString& filename);
-    void meshRegister(QMesh* mesh);
 
     QLight* lightNew();
-    void lightRegister(QLight* light);
 
     QParticles* particlesNew();
-    void particlesRegister(QParticles* particles);
 
     QMapMark* markNew();
-    void markRegister(QMapMark* mark);
 
 public slots:
 
@@ -77,7 +78,7 @@ public slots:
     void toggleGridDisplay(bool state);
     void toggleSelBox(bool state);
 
-    void setLockedNode(QNodeInteractor* node,bool state);
+    void setLockedNode(QNodeInteractor* node, bool state);
     bool isLockedNode(QNodeInteractor* node);
 
     void cloneSelected();
@@ -158,17 +159,10 @@ private:
     QNodeInteractor* m_selectedNode;
     QNodeInteractor* m_lastSelectedNode;
 
-    tbe::scene::Box* m_axe;
+    tbe::scene::Box* m_selbox;
     tbe::scene::Grid* m_grid;
 
-    QList<QNodeInteractor*> m_nodes;
-
-    QList<QMesh*> m_meshs;
-    QList<QLight*> m_lights;
-    QList<QParticles*> m_particles;
-    QList<QMapMark*> m_marks;
-
-    QMap<tbe::scene::Node*, QNodeInteractor*> m_nodeInterface;
+    QNodeInterfaceMap m_nodeInterface;
 
     QMap<QNodeInteractor*, bool> m_lockedNode;
 

@@ -173,12 +173,10 @@ void QParticlesInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Box* axe = m_mainwin->m_tbeWidget->axe();
-
     Vector3f size = m_target->getBoxSize();
     size.y = 1;
 
-    axe->setEnable(true);
+    Box* axe = m_mainwin->m_tbeWidget->selbox();
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix().getPos() + size / 2.0f);
     axe->setSize(size / 2.0f + 0.1f);

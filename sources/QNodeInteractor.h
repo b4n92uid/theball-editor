@@ -13,6 +13,8 @@
 #include <QObject>
 #include <QtGui/QtGui>
 
+#include "Metatype.h"
+
 class MainWindow;
 
 class QNodeInteractor : public QObject
@@ -24,14 +26,12 @@ public:
     QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target);
     virtual ~QNodeInteractor();
 
-    tbe::scene::Node* getTarget() const;
-    MainWindow* getMainwin() const;
-
-    operator tbe::scene::Node*();
-    tbe::scene::Node* operator->();
+    tbe::scene::Node* target() const;
+    MainWindow* mainwin() const;
 
 public slots:
     virtual void setup();
+    virtual void unsetup();
     virtual void select();
     virtual void deselect();
     virtual void update();
@@ -54,9 +54,7 @@ public slots:
     void setLocked(bool state);
 
 protected:
-    void clearChilds(QStandardItem* item);
-    
-    QList<QStandardItem*> itemRows();
+    QItemsList itemRows();
 
 protected:
     MainWindow* m_mainwin;

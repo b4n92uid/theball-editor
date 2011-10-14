@@ -2122,6 +2122,16 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionToggleSelBox">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/selection_select.png</normaloff>:/Medias/medias/selection_select.png</iconset>
+   </property>
    <property name="text">
     <string>Afficher la séléction</string>
    </property>

@@ -35,6 +35,63 @@ Ui_mainWindow* MainWindow::ui()
     return m_uinterface;
 }
 
+void MainWindow::reg(QNodeInteractor* node, QItemsList& items)
+{
+    QNodeInteractor* parent = m_tbeWidget->interface(node->target()->getParent());
+
+    if(nodeItemBinder.count(parent))
+        nodeItemBinder[parent]->appendRow(items);
+    else
+        nodesGui.nodesListModel->appendRow(items);
+
+    nodeItemBinder[node] = items[0];
+
+    notifyChanges(true);
+
+    m_tbeWidget->registerInterface(node);
+}
+
+void unreg_clearChilds(QInterfaceItemsMap& nodeItemBinder, QStandardItem* item)
+{
+    int count = item->rowCount();
+
+    for(int i = 0; i < count; i++)
+    {
+        QStandardItem* subitem = item->child(i);
+
+        unreg_clearChilds(nodeItemBinder, subitem);
+
+        QNodeInteractor* interface = subitem->data(ITEM_ROLE_NODE).value<QNodeInteractor*>();
+        nodeItemBinder.remove(interface);
+    }
+}
+
+void MainWindow::unreg(QNodeInteractor* node)
+{
+    if(nodeItemBinder.count(node))
+    {
+        QStandardItem* item = nodeItemBinder[node];
+
+        unreg_clearChilds(nodeItemBinder, item);
+
+        nodeItemBinder.remove(node);
+
+        QModelIndex sindex = nodesGui.nodesListModel->indexFromItem(item);
+
+        if(sindex.parent().isValid())
+            nodesGui.nodesListModel->removeRow(sindex.row(), sindex.parent());
+        else
+            nodesGui.nodesListModel->removeRow(sindex.row());
+
+        notifyChanges(true);
+    }
+
+    if(m_sourceCopy == node)
+        m_sourceCopy = NULL;
+
+    m_tbeWidget->unregisterInterface(node);
+}
+
 void MainWindow::openFileHistory()
 {
     QAction* action = qobject_cast<QAction*>(sender());
@@ -286,8 +343,8 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), m_tbeWidget, SLOT(cloneSelected()));
     connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), m_tbeWidget, SLOT(deleteSelected()));
 
-    connect(m_uinterface->actionToggleGrid, SIGNAL(triggered(bool)), m_tbeWidget, SLOT(toggleGridDisplay(bool)));
-    connect(m_uinterface->actionToggleSelBox, SIGNAL(triggered(bool)), m_tbeWidget, SLOT(toggleSelBox(bool)));
+    connect(m_uinterface->actionToggleGrid, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleGridDisplay(bool)));
+    connect(m_uinterface->actionToggleSelBox, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleSelBox(bool)));
 
     connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
 
@@ -761,8 +818,8 @@ void MainWindow::scopeNode(int move)
 
             host->insertRow(parent->row() + 1, row);
 
-            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
-            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
+            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
 
             currNode->setParent(parentNode);
             currNode->setPos(parentNode->getPos() + currNode->getPos());
@@ -782,8 +839,8 @@ void MainWindow::scopeNode(int move)
 
             host->appendRow(row);
 
-            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
-            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->getTarget();
+            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
 
             currNode->setParent(parentNode);
             currNode->setPos(currNode->getPos() - parentNode->getPos());
@@ -938,7 +995,7 @@ void MainWindow::clearNodeList()
 {
     nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
-    nodesGui.nodeItemBinder.clear();
+    nodeItemBinder.clear();
 }
 
 void MainWindow::skyboxWorkingDir(const QString& filename)
@@ -981,10 +1038,10 @@ void MainWindow::pastField()
 
     m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
-    Node* nearest = m_selectedNode->getTarget();
+    Node* nearest = m_selectedNode->target();
     nearest->clearUserData();
 
-    const Any::Map& ud = m_sourceCopy->getTarget()->getUserDatas();
+    const Any::Map& ud = m_sourceCopy->target()->getUserDatas();
 
     foreach(Any::Map::value_type i, ud)
     {
@@ -1001,7 +1058,7 @@ void MainWindow::pastPosition()
 
     m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
-    m_selectedNode->setPos(m_sourceCopy->getTarget()->getPos());
+    m_selectedNode->setPos(m_sourceCopy->target()->getPos());
 
     statusBar()->showMessage("Position coller...", 2000);
 }
@@ -1013,7 +1070,7 @@ void MainWindow::pastScale()
 
     m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
-    m_selectedNode->setScale(m_sourceCopy->getTarget()->getMatrix().getScale());
+    m_selectedNode->setScale(m_sourceCopy->target()->getMatrix().getScale());
 
     statusBar()->showMessage("Scale coller...", 2000);
 }
@@ -1025,7 +1082,7 @@ void MainWindow::pastRotation()
 
     m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
-    m_selectedNode->setRotation(m_sourceCopy->getTarget()->getMatrix().getRotate().getEuler());
+    m_selectedNode->setRotation(m_sourceCopy->target()->getMatrix().getRotate().getEuler());
 
     statusBar()->showMessage("Rotation coller...", 2000);
 }
