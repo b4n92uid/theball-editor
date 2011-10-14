@@ -108,9 +108,9 @@ bool NodeListProxyModel::lessThan(const QModelIndex & left, const QModelIndex & 
         QNodeInteractor* nleft = sourceModel()->data(left, ITEM_ROLE_NODE).value<QNodeInteractor*>();
         QNodeInteractor* nright = sourceModel()->data(right, ITEM_ROLE_NODE).value<QNodeInteractor*>();
 
-        Vector3f campos = nleft->getMainwin()->tbeWidget()->camera()->getPos();
+        Vector3f campos = nleft->mainwin()->tbeWidget()->camera()->getPos();
 
-        return nleft->getTarget()->getPos() - campos < nright->getTarget()->getPos() - campos;
+        return nleft->target()->getPos() - campos < nright->target()->getPos() - campos;
     }
 
     else if(m_sort == SELECTION)
@@ -121,9 +121,9 @@ bool NodeListProxyModel::lessThan(const QModelIndex & left, const QModelIndex & 
         QNodeInteractor* nleft = sourceModel()->data(left, ITEM_ROLE_NODE).value<QNodeInteractor*>();
         QNodeInteractor* nright = sourceModel()->data(right, ITEM_ROLE_NODE).value<QNodeInteractor*>();
 
-        Vector3f selpos = nleft->getMainwin()->tbeWidget()->axe()->getPos();
+        Vector3f selpos = nleft->mainwin()->tbeWidget()->selbox()->getPos();
 
-        return nleft->getTarget()->getPos() - selpos < nright->getTarget()->getPos() - selpos;
+        return nleft->target()->getPos() - selpos < nright->target()->getPos() - selpos;
     }
 
     else

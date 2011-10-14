@@ -45,6 +45,9 @@ public:
     QString openFileName() const;
 
     Ui_mainWindow* ui();
+    
+    void reg(QNodeInteractor* node, QItemsList& items);
+    void unreg(QNodeInteractor* node);
 
 protected:
 
@@ -243,8 +246,6 @@ private:
         NodeListProxyModel* nodesListProxyModel;
         QCheckBox* displayMesh, *displayLights, *displayParticles, *displayMarks;
 
-        QMap<QNodeInteractor*, QStandardItem*> nodeItemBinder;
-
     } nodesGui;
 
     struct EnvGuiTab
@@ -305,6 +306,8 @@ private:
     QSettings* m_config;
 
     bool m_somethingChange;
+    
+    QInterfaceItemsMap nodeItemBinder;
 
     struct
     {

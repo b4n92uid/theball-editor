@@ -597,11 +597,9 @@ void QMeshInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Box* axe = m_mainwin->m_tbeWidget->axe();
-
     AABB selAabb = m_target->getAabb();
 
-    axe->setEnable(true);
+    Box* axe = m_mainwin->m_tbeWidget->selbox();
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
     axe->setSize(selAabb.getSize() / 2.0f + 0.1f);

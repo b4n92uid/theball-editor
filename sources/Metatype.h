@@ -13,9 +13,12 @@
 
 #include <Tbe.h>
 
-#include "QNodeInteractor.h"
+class QNodeInteractor;
 
 typedef QList<QStandardItem*> QItemsList;
+
+typedef QMap<QNodeInteractor*, QStandardItem*> QInterfaceItemsMap;
+typedef QMap<tbe::scene::Node*, QNodeInteractor*> QNodeInterfaceMap;
 
 Q_DECLARE_METATYPE(tbe::scene::Node*)
 Q_DECLARE_METATYPE(tbe::scene::Mesh*)

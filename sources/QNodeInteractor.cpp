@@ -19,53 +19,9 @@ m_mainwin(mainwin), m_target(target)
 {
 }
 
-void QNodeInteractor::clearChilds(QStandardItem* item)
-{
-    int count = item->rowCount();
-
-    for(int i = 0; i < count; i++)
-    {
-        QStandardItem* subitem = item->child(i);
-
-        clearChilds(subitem);
-
-        QNodeInteractor* interface = subitem->data(ITEM_ROLE_NODE).value<QNodeInteractor*>();
-        m_mainwin->nodesGui.nodeItemBinder.remove(interface);
-    }
-}
-
 QNodeInteractor::~QNodeInteractor()
 {
-    if(m_mainwin->nodesGui.nodeItemBinder.count(this))
-    {
-        QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
-
-        clearChilds(item);
-
-        m_mainwin->nodesGui.nodeItemBinder.remove(this);
-
-        QModelIndex sindex = m_mainwin->nodesGui.nodesListModel->indexFromItem(item);
-
-        if(sindex.parent().isValid())
-            m_mainwin->nodesGui.nodesListModel->removeRow(sindex.row(), sindex.parent());
-        else
-            m_mainwin->nodesGui.nodesListModel->removeRow(sindex.row());
-
-        m_mainwin->notifyChanges(true);
-    }
-
-    if(m_mainwin->m_sourceCopy == this)
-        m_mainwin->m_sourceCopy = NULL;
-}
-
-QNodeInteractor::operator tbe::scene::Node*()
-{
-    return m_target;
-}
-
-tbe::scene::Node* QNodeInteractor::operator->()
-{
-    return m_target;
+    unsetup();
 }
 
 void QNodeInteractor::setName(const QString& s)
@@ -161,20 +117,20 @@ void QNodeInteractor::setLocked(bool state)
     }
 }
 
-QList<QStandardItem*> QNodeInteractor::itemRows()
+QItemsList QNodeInteractor::itemRows()
 {
-    QStandardItem* itemc0 = m_mainwin->nodesGui.nodeItemBinder[this];
+    QStandardItem* itemc0 = m_mainwin->nodeItemBinder[this];
     QStandardItem* itemc1 = m_mainwin->nodesGui.nodesListModel->item(itemc0->row(), 1);
 
-    return QList<QStandardItem*>() << itemc0 << itemc1;
+    return QItemsList() << itemc0 << itemc1;
 }
 
-tbe::scene::Node* QNodeInteractor::getTarget() const
+tbe::scene::Node* QNodeInteractor::target() const
 {
     return m_target;
 }
 
-MainWindow* QNodeInteractor::getMainwin() const
+MainWindow* QNodeInteractor::mainwin() const
 {
     return m_mainwin;
 }
@@ -254,9 +210,13 @@ void QNodeInteractor::changeNodeField(QStandardItem* item)
     m_mainwin->notifyChanges(true);
 }
 
+void QNodeInteractor::unsetup()
+{
+    m_mainwin->unreg(this);
+}
+
 void QNodeInteractor::setup()
 {
-
 }
 
 void QNodeInteractor::select()
@@ -275,7 +235,7 @@ void QNodeInteractor::select()
     connect(m_mainwin->nodesGui.clearFields, SIGNAL(clicked()), this, SLOT(clearNodeField()));
 
 
-    QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
+    QStandardItem* item = m_mainwin->nodeItemBinder[this];
 
     m_mainwin->nodesGui.nodesListView->blockSignals(true);
 
@@ -326,7 +286,7 @@ void QNodeInteractor::update()
 
     blocker.block();
 
-    QStandardItem* item = m_mainwin->nodesGui.nodeItemBinder[this];
+    QStandardItem* item = m_mainwin->nodeItemBinder[this];
 
     if(item->parent())
         item->parent()->child(item->row(), 1)->setText(QString::fromStdString(m_target->getName()));

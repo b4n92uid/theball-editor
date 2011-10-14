@@ -65,18 +65,7 @@ void QMesh::setup()
     QItemsList items;
     items << itemType << itemName;
 
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
-
-    m_mainwin->tbeWidget()->meshRegister(this);
+    m_mainwin->reg(this, items);
 
     Node::setup();
 }
@@ -130,18 +119,7 @@ void QLight::setup()
     QItemsList items;
     items << itemType << itemName;
 
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
-
-    m_mainwin->tbeWidget()->lightRegister(this);
+    m_mainwin->reg(this, items);
 
     Node::setup();
 }
@@ -194,18 +172,7 @@ void QParticles::setup()
     QItemsList items;
     items << itemType << itemName;
 
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
-
-    m_mainwin->tbeWidget()->particlesRegister(this);
+    m_mainwin->reg(this, items);
 
     Node::setup();
 }
@@ -259,18 +226,7 @@ void QMapMark::setup()
     QItemsList items;
     items << itemType << itemName;
 
-    QNodeInteractor* parent = m_mainwin->m_tbeWidget->fetchInterface(getParent());
-
-    if(m_mainwin->nodesGui.nodeItemBinder.count(parent))
-        m_mainwin->nodesGui.nodeItemBinder[parent]->appendRow(items);
-    else
-        m_mainwin->nodesGui.nodesListModel->appendRow(items);
-
-    m_mainwin->nodesGui.nodeItemBinder[this] = itemType;
-
-    m_mainwin->notifyChanges(true);
-
-    m_mainwin->tbeWidget()->markRegister(this);
+    m_mainwin->reg(this, items);
 
     Node::setup();
 }

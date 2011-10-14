@@ -33,25 +33,30 @@ ModificationState::~ModificationState()
 
 void ModificationState::restore()
 {
-    *m_node->getTarget() = *m_source->getTarget();
+    *m_node->target() = *m_source->target();
 
     m_node->update();
 }
 
 DeletionState::DeletionState(QNodeInteractor* node)
 {
-    m_node = node->clone();
-    m_parent = node->getTarget()->getParent();
+    m_node = node;
+    m_parent = node->target()->getParent();
 }
 
 DeletionState::~DeletionState()
 {
+    if(m_node)
+        delete m_node;
 }
 
 void DeletionState::restore()
 {
+    m_parent->addChild(m_node->target());
+
     m_node->setup();
-    m_parent->addChild(m_node->getTarget());
 
     m_node->update();
+
+    m_node = NULL;
 }

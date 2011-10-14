@@ -104,11 +104,9 @@ void QLightInteractor::update()
     using namespace tbe;
     using namespace scene;
 
-    Box* axe = m_mainwin->m_tbeWidget->axe();
-
     AABB selAabb = m_target->getAabb();
 
-    axe->setEnable(true);
+    Box* axe = m_mainwin->m_tbeWidget->selbox();
     axe->setMatrix(m_target->getAbsoluteMatrix());
     axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
     axe->setSize(0.25);
