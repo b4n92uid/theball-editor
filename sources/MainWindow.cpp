@@ -164,6 +164,9 @@ void MainWindow::initWidgets()
 
     m_uinterface->actionUndo->setEnabled(false);
 
+    m_uinterface->baseAttribTab->setEnabled(false);
+    m_uinterface->attribTab->setEnabled(false);
+
     m_uinterface->node_list_sort->setMenu(m_uinterface->menuTrier);
 
     // Générale ----------------------------------------------------------------
@@ -762,6 +765,9 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_selectedNode = qnode;
 
     m_tbeWidget->selectNode(qnode);
+
+    m_uinterface->baseAttribTab->setEnabled(true);
+    m_uinterface->attribTab->setEnabled(true);
 }
 
 void MainWindow::deselect()
@@ -775,6 +781,9 @@ void MainWindow::deselect()
     nodesGui.nodesListView->clearSelection();
 
     m_tbeWidget->deselectNode();
+
+    m_uinterface->baseAttribTab->setEnabled(false);
+    m_uinterface->attribTab->setEnabled(false);
 }
 
 void MainWindow::scopeNode(int move)
