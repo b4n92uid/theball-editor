@@ -77,6 +77,7 @@ public slots:
 
     void toggleGridDisplay(bool state);
     void toggleSelBox(bool state);
+    void toggleStaticView(bool state);
 
     void setLockedNode(QNodeInteractor* node, bool state);
     bool isLockedNode(QNodeInteractor* node);
@@ -147,6 +148,7 @@ private:
 
     bool m_grabCamera;
     bool m_gridEnable;
+    bool m_staticView;
 
     tbe::Vector2i m_lastCursorPos;
     tbe::Vector2i m_curCursorPos;

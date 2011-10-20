@@ -1794,6 +1794,7 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionToggleFullScreen"/>
     <addaction name="separator"/>
+    <addaction name="actionToggleStaticView"/>
     <addaction name="actionToggleGrid"/>
     <addaction name="actionToggleSelBox"/>
    </widget>
@@ -2137,6 +2138,21 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>B</string>
+   </property>
+  </action>
+  <action name="actionToggleStaticView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/video_camera.png</normaloff>:/Medias/medias/video_camera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Vue statique</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
    </property>
   </action>
  </widget>

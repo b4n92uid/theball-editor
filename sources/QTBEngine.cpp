@@ -59,6 +59,7 @@ QTBEngine::QTBEngine(QWidget* parent)
     m_classFactory = new ClassFactory(m_mainwin);
 
     m_gridEnable = false;
+    m_staticView = false;
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -155,8 +156,6 @@ void QTBEngine::setupSelection()
 
     m_grid = new Grid(m_meshScene, 8, 8);
     m_grid->setName("grid");
-    m_grid->getMaterial("main")->disable(Material::FOGED);
-    m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 1));
     m_grid->setEnable(false);
 
     m_rootNode->addChild(m_grid);
@@ -164,7 +163,7 @@ void QTBEngine::setupSelection()
 
 void QTBEngine::placeCamera()
 {
-    if(!m_gridEnable && m_selectedNode)
+    if(!m_staticView && m_selectedNode)
         m_centerTarget = m_selectedNode->target()->getAbsoluteMatrix().getPos();
 }
 
@@ -195,59 +194,34 @@ void QTBEngine::applyTranslationEvents()
     Vector3f position = selnode->getMatrix().getPos();
     Quaternion rotation = selnode->getMatrix().getRotate();
     Vector3f scale = selnode->getMatrix().getScale();
-    Vector3f gridSize(1);
 
-    if(m_gridEnable)
+    float moveSpeed = 0.01;
+
+    Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+    Vector3f target = m_camera->getTarget();
+    target.y = 0;
+    target.normalize();
+
+    Vector3f left = m_camera->getLeft();
+    left.y = 0;
+    left.normalize();
+
+    Vector3f transform;
+
+    if(m_eventManager->keyState[EventManager::KEY_LALT])
     {
-        if(m_eventManager->keyState[EventManager::KEY_LCTRL])
-            gridSize /= 2.0f;
-
-        if(m_eventManager->keyState[EventManager::KEY_LALT])
-        {
-            setCursor(Qt::BlankCursor);
-
-            position.y += m_eventManager->mousePosRel.y / 2;
-            math::round(position, gridSize);
-        }
-        else
-        {
-            float backY = position.y;
-            position.x = m_curCursor3D.x;
-            position.z = m_curCursor3D.z;
-            math::round(position, gridSize);
-            position.y = backY;
-        }
+        transform.y -= mousePosRel.y * moveSpeed;
     }
     else
     {
-        float moveSpeed = 0.01;
-
-        Vector2f mousePosRel = m_eventManager->mousePosRel;
-
-        Vector3f target = m_camera->getTarget();
-        target.y = 0;
-        target.normalize();
-
-        Vector3f left = m_camera->getLeft();
-        left.y = 0;
-        left.normalize();
-
-        Vector3f transform;
-
-        if(m_eventManager->keyState[EventManager::KEY_LALT])
-        {
-            transform.y -= mousePosRel.y * moveSpeed;
-        }
-        else
-        {
-            Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
-            transform = rota * (-left * mousePosRel.x * moveSpeed);
-            transform -= rota * (target * mousePosRel.y * moveSpeed);
-            transform.y = 0;
-        }
-
-        position += transform;
+        Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
+        transform = rota * (-left * mousePosRel.x * moveSpeed);
+        transform -= rota * (target * mousePosRel.y * moveSpeed);
+        transform.y = 0;
     }
+
+    position += transform;
 
     Matrix4 apply;
     apply.setPos(position);
@@ -281,6 +255,11 @@ void QTBEngine::paintGL()
     m_device->endScene();
 }
 
+void QTBEngine::toggleStaticView(bool state)
+{
+    m_staticView = state;
+}
+
 void QTBEngine::toggleSelBox(bool state)
 {
     m_selbox->setEnable(state);
@@ -309,7 +288,7 @@ void QTBEngine::toggleGridDisplay(bool state)
 
         m_grid->build(size, cuts);
         m_grid->getMaterial("main")->disable(scene::Material::FOGED);
-        m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 1));
+        m_grid->getMaterial("main")->setColor(Vector4f(0.0, 0.0, 1.0, 1));
 
         if(m_selectedNode)
         {
@@ -612,8 +591,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     if(ev->modifiers() & Qt::ShiftModifier)
     {
-        if(!m_gridEnable)
-            QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+        QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
 }
 
@@ -625,10 +603,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     {
         pushHistoryStat(new ModificationState(m_selectedNode));
 
-        if(m_gridEnable)
-            setCursor(Qt::ClosedHandCursor);
-        else
-            setCursor(Qt::BlankCursor);
+        setCursor(Qt::BlankCursor);
     }
 
     if(ev->key() == Qt::Key_Space)
@@ -807,8 +782,35 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
 
+    Vector3f gridSize(1);
+
     if(ev->key() == Qt::Key_Shift)
+    {
         setCursor(Qt::OpenHandCursor);
+
+        if(m_selectedNode && m_gridEnable)
+        {
+            Vector3f position = m_selectedNode->target()->getPos();
+
+            position = math::round(position, gridSize).Y(position.y);
+
+            m_selectedNode->target()->setPos(position);
+            m_selectedNode->update();
+        }
+    }
+
+    if(ev->key() == Qt::Key_Alt)
+    {
+        if(m_selectedNode && m_gridEnable)
+        {
+            Vector3f position = m_selectedNode->target()->getPos();
+
+            position = math::round(position, gridSize).X(position.x).Z(position.z);
+
+            m_selectedNode->target()->setPos(position);
+            m_selectedNode->update();
+        }
+    }
 
     int c = std::tolower(ev->key());
     translate(c);
@@ -847,6 +849,7 @@ void QTBEngine::clearScene()
 
     m_grabCamera = false;
     m_gridEnable = false;
+    m_staticView = false;
 
     Texture::resetCache();
 
@@ -1021,6 +1024,9 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     m_selectedNode = qnode;
 
     m_selectedNode->select();
+
+    if(m_gridEnable)
+        toggleGridDisplay(true);
 }
 
 void QTBEngine::deselectNode()
