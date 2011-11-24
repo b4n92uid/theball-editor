@@ -203,9 +203,9 @@ void MainWindow::initWidgets()
     m_selectedNode = NULL;
 
     nodesGui.name = m_uinterface->node_name;
-    nodesGui.position = new QVectorBox(this, m_uinterface->node_pos_x, m_uinterface->node_pos_y, m_uinterface->node_pos_z);
-    nodesGui.rotation = new QVectorBox(this, m_uinterface->node_rot_x, m_uinterface->node_rot_y, m_uinterface->node_rot_z);
-    nodesGui.scale = new QVectorBox(this, m_uinterface->node_scl_x, m_uinterface->node_scl_y, m_uinterface->node_scl_z);
+    nodesGui.position = new QDoubleVector3Box(this, m_uinterface->node_pos_x, m_uinterface->node_pos_y, m_uinterface->node_pos_z);
+    nodesGui.rotation = new QDoubleVector3Box(this, m_uinterface->node_rot_x, m_uinterface->node_rot_y, m_uinterface->node_rot_z);
+    nodesGui.scale = new QDoubleVector3Box(this, m_uinterface->node_scl_x, m_uinterface->node_scl_y, m_uinterface->node_scl_z);
 
     nodesGui.lock = m_uinterface->node_lock;
     nodesGui.enable = m_uinterface->node_enable;
@@ -249,17 +249,17 @@ void MainWindow::initWidgets()
     // -------- Water
 
     nodesGui.waterTab.deform = m_uinterface->node_water_deform;
-    nodesGui.waterTab.size = new QVector2Box(this, m_uinterface->node_water_size_x, m_uinterface->node_water_size_y);
-    nodesGui.waterTab.uvrepeat = new QVector2Box(this, m_uinterface->node_water_uvrepeat_x, m_uinterface->node_water_uvrepeat_y);
+    nodesGui.waterTab.size = new QDoubleVector2Box(this, m_uinterface->node_water_size_x, m_uinterface->node_water_size_y);
+    nodesGui.waterTab.uvrepeat = new QDoubleVector2Box(this, m_uinterface->node_water_uvrepeat_x, m_uinterface->node_water_uvrepeat_y);
     nodesGui.waterTab.speed = m_uinterface->node_water_speed;
     nodesGui.waterTab.blend = m_uinterface->node_water_blend;
     nodesGui.waterTab.add = m_uinterface->node_water_add;
 
     // -------- Particles
 
-    nodesGui.particlesTab.gravity = new QVectorBox(this, m_uinterface->node_particles_gravity_x, m_uinterface->node_particles_gravity_y, m_uinterface->node_particles_gravity_z);
-    nodesGui.particlesTab.boxsize = new QVectorBox(this, m_uinterface->node_particles_boxsize_x, m_uinterface->node_particles_boxsize_y, m_uinterface->node_particles_boxsize_z);
-    nodesGui.particlesTab.bulletsize = new QVector2Box(this, m_uinterface->node_particles_bulletsize_x, m_uinterface->node_particles_bulletsize_y);
+    nodesGui.particlesTab.gravity = new QDoubleVector3Box(this, m_uinterface->node_particles_gravity_x, m_uinterface->node_particles_gravity_y, m_uinterface->node_particles_gravity_z);
+    nodesGui.particlesTab.boxsize = new QDoubleVector3Box(this, m_uinterface->node_particles_boxsize_x, m_uinterface->node_particles_boxsize_y, m_uinterface->node_particles_boxsize_z);
+    nodesGui.particlesTab.bulletsize = new QDoubleVector2Box(this, m_uinterface->node_particles_bulletsize_x, m_uinterface->node_particles_bulletsize_y);
     nodesGui.particlesTab.freemove = m_uinterface->node_particles_freemove;
     nodesGui.particlesTab.lifeinit = m_uinterface->node_particles_lifeinit;
     nodesGui.particlesTab.lifedown = m_uinterface->node_particles_lifedown;
@@ -274,9 +274,9 @@ void MainWindow::initWidgets()
 
     nodesGui.lighTab.type = m_uinterface->node_light_type;
 
-    nodesGui.lighTab.ambiant = new QVectorBox(this, m_uinterface->node_light_ambiant_x, m_uinterface->node_light_ambiant_y, m_uinterface->node_light_ambiant_z);
-    nodesGui.lighTab.diffuse = new QVectorBox(this, m_uinterface->node_light_diffuse_x, m_uinterface->node_light_diffuse_y, m_uinterface->node_light_diffuse_z);
-    nodesGui.lighTab.specular = new QVectorBox(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
+    nodesGui.lighTab.ambiant = new QDoubleVector3Box(this, m_uinterface->node_light_ambiant_x, m_uinterface->node_light_ambiant_y, m_uinterface->node_light_ambiant_z);
+    nodesGui.lighTab.diffuse = new QDoubleVector3Box(this, m_uinterface->node_light_diffuse_x, m_uinterface->node_light_diffuse_y, m_uinterface->node_light_diffuse_z);
+    nodesGui.lighTab.specular = new QDoubleVector3Box(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
 
     nodesGui.lighTab.radius = m_uinterface->node_light_radius;
 
@@ -301,7 +301,7 @@ void MainWindow::initWidgets()
 
     // Environment -------------------------------------------------------------
 
-    envGui.sceneAmbiant = new QVectorBox(this, m_uinterface->env_ambient_x, m_uinterface->env_ambient_y, m_uinterface->env_ambient_z);
+    envGui.sceneAmbiant = new QDoubleVector3Box(this, m_uinterface->env_ambient_x, m_uinterface->env_ambient_y, m_uinterface->env_ambient_z);
 
     envGui.skybox.apply = m_uinterface->skybox_apply;
     envGui.skybox.enable = m_uinterface->skybox_enable;
@@ -313,7 +313,7 @@ void MainWindow::initWidgets()
     envGui.skybox.textures[4] = new QBrowsEdit(this, m_uinterface->skybox_left, m_uinterface->skybox_left_browse);
     envGui.skybox.textures[5] = new QBrowsEdit(this, m_uinterface->skybox_right, m_uinterface->skybox_right_browse);
 
-    envGui.fog.color = new QVectorBox(this, m_uinterface->fog_x, m_uinterface->fog_y, m_uinterface->fog_z);
+    envGui.fog.color = new QDoubleVector3Box(this, m_uinterface->fog_x, m_uinterface->fog_y, m_uinterface->fog_z);
     envGui.fog.start = m_uinterface->fog_start;
     envGui.fog.end = m_uinterface->fog_end;
     envGui.fog.enable = m_uinterface->fog_enable;

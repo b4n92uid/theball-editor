@@ -48,6 +48,11 @@ public slots:
     void setTextured(bool stat);
     void setLighted(bool stat);
     void setCullTrick(bool stat);
+    
+    void setTextureClipping(bool state);
+    void setTextureFrameSize(const tbe::Vector2i& value);
+    void setFrameAnimation(bool state);
+    void setFrameDuration(int value);
 
     void setBlend(bool stat);
     void setAlpha(bool stat);
