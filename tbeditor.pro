@@ -47,7 +47,6 @@ UI_DIR = ../sources
 SOURCES += \
     sources/MainWindow.cpp \
     sources/QVectorBox.cpp \
-    sources/QVector2Box.cpp \
     sources/QTBEngine.cpp \
     sources/QNodeBinders.cpp \
     sources/QBrowsEdit.cpp \
@@ -68,7 +67,6 @@ HEADERS  += \
     sources/MainWindow.h \
     sources/Tools.h \
     sources/QVectorBox.h \
-    sources/QVector2Box.h \
     sources/QTBEngine.h \
     sources/QNodeBinders.h \
     sources/QBrowsEdit.h \

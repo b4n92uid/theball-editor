@@ -435,7 +435,7 @@ struct SelectionSort
         else if(type == 1)
             return node1->getAabb().getLength() < node2->getAabb().getLength();
         else if(type == 2)
-            return (node1->getPos() - cameraPos) < (node2->getPos() - cameraPos);
+            return(node1->getPos() - cameraPos) < (node2->getPos() - cameraPos);
         else
             return false;
     }
@@ -452,7 +452,7 @@ struct Nearest
 
     bool operator()(scene::Mesh* mesh1, scene::Mesh * mesh2)
     {
-        return (mesh1->getAbsoluteMatrix().getPos() - center <
+        return(mesh1->getAbsoluteMatrix().getPos() - center <
                 mesh2->getAbsoluteMatrix().getPos() - center);
     }
 };
@@ -478,7 +478,10 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
-        if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
+        if(ev->modifiers() & Qt::ControlModifier)
+            setCursor(Qt::BlankCursor);
+
+        else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
             m_centerTarget = m_curCursor3D;
     }
 
@@ -541,6 +544,11 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
         setCursor(Qt::OpenHandCursor);
     }
 
+    else if(ev->button() == Qt::MiddleButton)
+    {
+        setCursor(Qt::OpenHandCursor);
+    }
+
     else if(ev->button() == Qt::RightButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = 0;
@@ -592,6 +600,13 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     if(ev->modifiers() & Qt::ShiftModifier)
     {
         QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+    }
+
+    if(ev->buttons() & Qt::MiddleButton && ev->modifiers() & Qt::ControlModifier)
+    {
+        float sensitivty = 0.3;
+        m_centerTarget += m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
+        m_centerTarget += m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
     }
 }
 

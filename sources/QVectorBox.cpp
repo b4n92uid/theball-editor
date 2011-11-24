@@ -7,7 +7,7 @@
 
 #include "QVectorBox.h"
 
-QVectorBox::QVectorBox(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QDoubleSpinBox* z) : QObject(parent)
+QDoubleVector3Box::QDoubleVector3Box(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QDoubleSpinBox* z) : QObject(parent)
 {
     m_x = x;
     m_y = y;
@@ -18,30 +18,100 @@ QVectorBox::QVectorBox(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y, QD
     connect(m_z, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
 }
 
-QVectorBox::~QVectorBox()
+QDoubleVector3Box::~QDoubleVector3Box()
 {
 }
 
-tbe::Vector3f QVectorBox::value()
+tbe::Vector3f QDoubleVector3Box::value()
 {
     return tbe::Vector3f(m_x->value(), m_y->value(), m_z->value());
 }
 
-void QVectorBox::setValue(const tbe::Vector3f& value)
+void QDoubleVector3Box::setValue(const tbe::Vector3f& value)
 {
     m_x->setValue(value.x);
     m_y->setValue(value.y);
     m_z->setValue(value.z);
 }
 
-void QVectorBox::componentValueChanged(double d)
+void QDoubleVector3Box::componentValueChanged(double d)
 {
     emit valueChanged(value());
 }
 
-void QVectorBox::clear()
+void QDoubleVector3Box::clear()
 {
     m_x->clear();
     m_y->clear();
     m_z->clear();
+}
+
+QDoubleVector2Box::QDoubleVector2Box(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y)
+{
+    m_x = x;
+    m_y = y;
+
+    connect(m_x, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
+    connect(m_y, SIGNAL(valueChanged(double)), this, SLOT(componentValueChanged(double)));
+}
+
+QDoubleVector2Box::~QDoubleVector2Box()
+{
+}
+
+tbe::Vector2f QDoubleVector2Box::value()
+{
+    return tbe::Vector2f(m_x->value(), m_y->value());
+}
+
+void QDoubleVector2Box::setValue(const tbe::Vector2f& value)
+{
+    m_x->setValue(value.x);
+    m_y->setValue(value.y);
+}
+
+void QDoubleVector2Box::componentValueChanged(double d)
+{
+    emit valueChanged(value());
+}
+
+void QDoubleVector2Box::clear()
+{
+    m_x->clear();
+    m_y->clear();
+}
+
+QIntVector2Box::QIntVector2Box(QObject* parent, QSpinBox* x, QSpinBox* y)
+{
+    m_x = x;
+    m_y = y;
+
+    connect(m_x, SIGNAL(valueChanged(int)), this, SLOT(componentValueChanged(int)));
+    connect(m_y, SIGNAL(valueChanged(int)), this, SLOT(componentValueChanged(int)));
+}
+
+QIntVector2Box::~QIntVector2Box()
+{
+}
+
+tbe::Vector2i QIntVector2Box::value()
+{
+    return tbe::Vector2i(m_x->value(), m_y->value());
+}
+
+void QIntVector2Box::setValue(const tbe::Vector2i& value)
+{
+    m_x->setValue(value.x);
+    m_y->setValue(value.y);
+}
+
+void QIntVector2Box::componentValueChanged(int d)
+{
+    emit valueChanged(value());
+}
+
+void QIntVector2Box::clear()
+{
+    m_x->clear();
+    m_y->clear();
 }

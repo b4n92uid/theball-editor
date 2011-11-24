@@ -406,6 +406,40 @@ void QMeshInteractor::setOpacity(double value)
     mat->setOpacity((float)value);
 }
 
+void QMeshInteractor::setTextureClipping(bool state)
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    mat->setTextureClipped(state);
+}
+
+void QMeshInteractor::setTextureFrameSize(const tbe::Vector2i& size)
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    mat->setTextureFrameSize(size);
+}
+
+void QMeshInteractor::setFrameAnimation(bool state)
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+    mat->setTextureAnimation(state ? 500 : 0);
+}
+
+void QMeshInteractor::setFrameDuration(int value)
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+    mat->setTextureAnimation(value);
+}
+
 void QMeshInteractor::setAlpha(bool stat)
 {
     if(!m_target)
@@ -498,6 +532,11 @@ void QMeshInteractor::select()
     connect(m_mainwin->nodesGui.meshTab.matedit->texture_additive, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
     connect(m_mainwin->nodesGui.meshTab.matedit->texture_modulate, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
     connect(m_mainwin->nodesGui.meshTab.matedit->texture_replace, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
+
+    connect(m_mainwin->nodesGui.meshTab.matedit->cliping, SIGNAL(clicked(bool)), this, SLOT(setTextureClipping(bool)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation, SIGNAL(clicked(bool)), this, SLOT(setFrameAnimation(bool)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTextureFrameSize(const tbe::Vector2i&)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), this, SLOT(setFrameDuration(int)));
 
     connect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(textureSelected(const QModelIndex &)));
 

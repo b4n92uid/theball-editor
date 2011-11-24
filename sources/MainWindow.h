@@ -16,7 +16,6 @@
 
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
-#include "QVector2Box.h"
 #include "NodeFactory.h"
 #include "QTBEngine.h"
 #include "QNodeBinders.h"
@@ -142,10 +141,12 @@ private:
         {
             setupUi(this);
 
-            rgb = new QVectorBox(this, color_r, color_g, color_b);
+            rgb = new QDoubleVector3Box(this, color_r, color_g, color_b);
+            clipping_framesize = new QIntVector2Box(this, clipping_x, clipping_y);
         }
 
-        QVectorBox* rgb;
+        QDoubleVector3Box* rgb;
+        QIntVector2Box* clipping_framesize;
     };
 
     struct NodesGuiTab
@@ -154,9 +155,9 @@ private:
         struct LightGuiTab
         {
             QComboBox* type;
-            QVectorBox* ambiant;
-            QVectorBox* diffuse;
-            QVectorBox* specular;
+            QDoubleVector3Box* ambiant;
+            QDoubleVector3Box* diffuse;
+            QDoubleVector3Box* specular;
             QDoubleSpinBox* radius;
 
             QPushButton* add;
@@ -187,8 +188,8 @@ private:
         struct WaterGuiTab
         {
             QDoubleSpinBox* deform;
-            QVector2Box* size;
-            QVector2Box* uvrepeat;
+            QDoubleVector2Box* size;
+            QDoubleVector2Box* uvrepeat;
             QDoubleSpinBox* speed;
             QDoubleSpinBox* blend;
 
@@ -200,9 +201,9 @@ private:
 
         struct ParticlesGuiTab
         {
-            QVectorBox* gravity;
-            QVectorBox* boxsize;
-            QVector2Box* bulletsize;
+            QDoubleVector3Box* gravity;
+            QDoubleVector3Box* boxsize;
+            QDoubleVector2Box* bulletsize;
             QDoubleSpinBox* freemove;
             QDoubleSpinBox* lifeinit;
             QDoubleSpinBox* lifedown;
@@ -226,9 +227,9 @@ private:
         } markTab;
 
         QLineEdit* name;
-        QVectorBox* position;
-        QVectorBox* rotation;
-        QVectorBox* scale;
+        QDoubleVector3Box* position;
+        QDoubleVector3Box* rotation;
+        QDoubleVector3Box* scale;
 
         QCheckBox* enable;
         QCheckBox* lock;
@@ -261,7 +262,7 @@ private:
 
         struct FogGuiTab
         {
-            QVectorBox* color;
+            QDoubleVector3Box* color;
             QDoubleSpinBox* start;
             QDoubleSpinBox* end;
             QGroupBox* enable;
@@ -270,7 +271,7 @@ private:
 
         QDoubleSpinBox* znear, *zfar;
 
-        QVectorBox* sceneAmbiant;
+        QDoubleVector3Box* sceneAmbiant;
 
     } envGui;
 
