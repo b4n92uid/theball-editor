@@ -18,6 +18,11 @@ QParticlesInteractor::~QParticlesInteractor()
 {
 }
 
+QString QParticlesInteractor::typeName() const
+{
+    return "Particles";
+}
+
 void QParticlesInteractor::setGravity(const tbe::Vector3f& v)
 {
     m_target->setGravity(v);

@@ -18,6 +18,8 @@ public:
     QParticlesInteractor(MainWindow* mainwin, tbe::scene::ParticlesEmiter* target);
     virtual ~QParticlesInteractor();
 
+    virtual QString typeName() const;
+
 public slots:
     void select();
     void deselect();

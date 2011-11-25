@@ -18,6 +18,11 @@ QLightInteractor::~QLightInteractor()
 {
 }
 
+QString QLightInteractor::typeName() const
+{
+    return "Light";
+}
+
 void QLightInteractor::setType(int type)
 {
     m_target->setType((tbe::scene::Light::Type)type);

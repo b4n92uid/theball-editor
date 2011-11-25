@@ -169,6 +169,35 @@ void MainWindow::initWidgets()
 
     m_uinterface->node_list_sort->setMenu(m_uinterface->menuTrier);
 
+    m_selInfo = new QLabel(this);
+    m_selInfo->setText("Information du noeud...");
+
+    QToolBar* toolbar = addToolBar("Barre d'outils");
+    toolbar->setFloatable(false);
+    toolbar->setMovable(false);
+    toolbar->addAction(m_uinterface->actionNewScene);
+    toolbar->addAction(m_uinterface->actionOpen);
+    toolbar->addAction(m_uinterface->actionSave);
+    toolbar->addSeparator();
+    toolbar->addAction(m_uinterface->actionToggleSelBox);
+    toolbar->addAction(m_uinterface->actionToggleStaticView);
+    toolbar->addAction(m_uinterface->actionToggleGrid);
+    toolbar->addSeparator();
+    toolbar->addAction(m_uinterface->actionNewMesh);
+    toolbar->addAction(m_uinterface->actionNewLight);
+    toolbar->addAction(m_uinterface->actionNewParticles);
+    toolbar->addAction(m_uinterface->actionNewMapMark);
+    toolbar->addSeparator();
+    toolbar->addAction(m_uinterface->actionCloneNode);
+    toolbar->addAction(m_uinterface->actionDeleteNode);
+    toolbar->addSeparator();
+    toolbar->addAction(m_uinterface->actionScreenShot);
+    toolbar->addAction(m_uinterface->actionOpenPacker);
+    QWidget* spacer = new QWidget(toolbar);
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    toolbar->addWidget(spacer);
+    toolbar->addWidget(m_selInfo);
+
     // Générale ----------------------------------------------------------------
 
     genGui.title = m_uinterface->gen_title;
@@ -362,6 +391,7 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionPastPosition, SIGNAL(triggered()), this, SLOT(pastPosition()));
     connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
     connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
+    connect(m_uinterface->actionPastPolymorph, SIGNAL(triggered()), this, SLOT(pastPolymorph()));
 
     // Tools Menu
 
@@ -769,6 +799,37 @@ void MainWindow::select(QNodeInteractor* qnode)
 
     m_uinterface->baseAttribTab->setEnabled(true);
     m_uinterface->attribTab->setEnabled(true);
+
+
+    QString info;
+    QTextStream stream(&info);
+
+    QString br = " | ";
+
+    // Node Name
+    if(!m_selectedNode->target()->getName().empty())
+        stream << "<b>" << QString::fromStdString(m_selectedNode->target()->getName()) << "</b>" << br;
+    else
+        stream << "<b>[Aucun Nom]</b>" << br;
+
+    // Type name
+    stream << "<b>" << m_selectedNode->typeName() << "</b>" << br;
+
+    // Parent Node Name (if any)
+    if(m_selectedNode->target()->getParent() && !m_selectedNode->target()->getParent()->isRoot())
+        stream << "<i>" << QString::fromStdString(m_selectedNode->target()->getParent()->getName()) << "</i>" << br;
+    else
+        stream << "<i>[Pas de parent]</i>" << br;
+
+    // Child count
+    unsigned childcount = m_selectedNode->target()->getChildCount();
+
+    if(childcount > 0)
+        stream << "<i>" << childcount << " enfant(s)" << "</i>";
+    else
+        stream << "<i>[Pas d'enfants]</i>";
+
+    m_selInfo->setText(info);
 }
 
 void MainWindow::deselect()
@@ -1095,6 +1156,22 @@ void MainWindow::pastRotation()
     m_selectedNode->setRotation(m_sourceCopy->target()->getMatrix().getRotate().getEuler());
 
     statusBar()->showMessage("Rotation coller...", 2000);
+}
+
+void MainWindow::pastPolymorph()
+{
+    if(!m_sourceCopy)
+        return;
+
+    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+
+    tbe::Matrix4 backup = m_selectedNode->target()->getMatrix();
+
+    *m_selectedNode->target() = *m_sourceCopy->target();
+
+    m_selectedNode->target()->setMatrix(backup);
+
+    statusBar()->showMessage("Collage polymorphique...", 2000);
 }
 
 void MainWindow::copy()

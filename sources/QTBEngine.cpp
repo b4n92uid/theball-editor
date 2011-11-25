@@ -184,53 +184,61 @@ void QTBEngine::resizeGL(int w, int h)
 
 void QTBEngine::applyTranslationEvents()
 {
-    if(!m_selectedNode
-       || !m_eventManager->keyState[EventManager::KEY_LSHIFT]
-       || m_eventManager->notify != EventManager::EVENT_MOUSE_MOVE)
+    if(m_eventManager->notify != EventManager::EVENT_MOUSE_MOVE)
         return;
 
-    tbe::scene::Node* selnode = m_selectedNode->target();
-
-    Vector3f position = selnode->getMatrix().getPos();
-    Quaternion rotation = selnode->getMatrix().getRotate();
-    Vector3f scale = selnode->getMatrix().getScale();
-
-    float moveSpeed = 0.01;
-
-    Vector2f mousePosRel = m_eventManager->mousePosRel;
-
-    Vector3f target = m_camera->getTarget();
-    target.y = 0;
-    target.normalize();
-
-    Vector3f left = m_camera->getLeft();
-    left.y = 0;
-    left.normalize();
-
-    Vector3f transform;
-
-    if(m_eventManager->keyState[EventManager::KEY_LALT])
+    if(m_eventManager->keyState[EventManager::KEY_LCTRL] && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
-        transform.y -= mousePosRel.y * moveSpeed;
-    }
-    else
-    {
-        Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
-        transform = rota * (-left * mousePosRel.x * moveSpeed);
-        transform -= rota * (target * mousePosRel.y * moveSpeed);
-        transform.y = 0;
+        float sensitivty = 0.3;
+        m_centerTarget -= m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
+        m_centerTarget -= m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
     }
 
-    position += transform;
+    if(m_selectedNode && m_eventManager->keyState[EventManager::KEY_LSHIFT])
+    {
+        tbe::scene::Node* selnode = m_selectedNode->target();
 
-    Matrix4 apply;
-    apply.setPos(position);
-    apply.setRotate(rotation);
-    apply.setScale(scale);
+        Vector3f position = selnode->getMatrix().getPos();
+        Quaternion rotation = selnode->getMatrix().getRotate();
+        Vector3f scale = selnode->getMatrix().getScale();
 
-    selnode->setMatrix(apply);
+        float moveSpeed = 0.01;
 
-    m_selectedNode->update();
+        Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+        Vector3f target = m_camera->getTarget();
+        target.y = 0;
+        target.normalize();
+
+        Vector3f left = m_camera->getLeft();
+        left.y = 0;
+        left.normalize();
+
+        Vector3f transform;
+
+        if(m_eventManager->keyState[EventManager::KEY_LALT])
+        {
+            transform.y -= mousePosRel.y * moveSpeed;
+        }
+        else
+        {
+            Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
+            transform = rota * (-left * mousePosRel.x * moveSpeed);
+            transform -= rota * (target * mousePosRel.y * moveSpeed);
+            transform.y = 0;
+        }
+
+        position += transform;
+
+        Matrix4 apply;
+        apply.setPos(position);
+        apply.setRotate(rotation);
+        apply.setScale(scale);
+
+        selnode->setMatrix(apply);
+
+        m_selectedNode->update();
+    }
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 }
@@ -478,6 +486,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 1;
+
         if(ev->modifiers() & Qt::ControlModifier)
             setCursor(Qt::BlankCursor);
 
@@ -546,6 +556,8 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
+        m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 0;
+
         setCursor(Qt::OpenHandCursor);
     }
 
@@ -602,11 +614,9 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
 
-    if(ev->buttons() & Qt::MiddleButton && ev->modifiers() & Qt::ControlModifier)
+    if(ev->buttons() & Qt::MidButton && ev->modifiers() & Qt::ControlModifier)
     {
-        float sensitivty = 0.3;
-        m_centerTarget += m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
-        m_centerTarget += m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
+        QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
 }
 

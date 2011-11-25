@@ -135,6 +135,11 @@ MainWindow* QNodeInteractor::mainwin() const
     return m_mainwin;
 }
 
+QString QNodeInteractor::typeName() const
+{
+    return "Node";
+}
+
 void QNodeInteractor::addNodeField()
 {
     if(!m_target)

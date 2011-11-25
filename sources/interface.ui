@@ -1763,7 +1763,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>826</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -1816,10 +1816,10 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionBaseOnFloor"/>
     <addaction name="separator"/>
     <addaction name="actionCopy"/>
-    <addaction name="actionPastPosition"/>
     <addaction name="actionPastScale"/>
     <addaction name="actionPastRotation"/>
     <addaction name="actionPastFields"/>
+    <addaction name="actionPastPolymorph"/>
    </widget>
    <widget class="QMenu" name="menuTrier">
     <property name="title">
@@ -2153,6 +2153,15 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="shortcut">
     <string>S</string>
+   </property>
+  </action>
+  <action name="actionPastPolymorph">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Coller polymorph</string>
    </property>
   </action>
  </widget>

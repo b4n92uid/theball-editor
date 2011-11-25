@@ -28,6 +28,8 @@ public:
 
     tbe::scene::Node* target() const;
     MainWindow* mainwin() const;
+    
+    virtual QString typeName() const;
 
 public slots:
     virtual void setup();
