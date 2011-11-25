@@ -85,6 +85,7 @@ public slots:
     void pastPosition();
     void pastScale();
     void pastRotation();
+    void pastPolymorph();
 
     void scopeNode(int move);
 
@@ -143,10 +144,12 @@ private:
 
             rgb = new QDoubleVector3Box(this, color_r, color_g, color_b);
             clipping_framesize = new QIntVector2Box(this, clipping_x, clipping_y);
+            clipping_part = new QIntVector2Box(this, clipping_part_x, clipping_part_y);
         }
 
         QDoubleVector3Box* rgb;
         QIntVector2Box* clipping_framesize;
+        QIntVector2Box* clipping_part;
     };
 
     struct NodesGuiTab
@@ -299,6 +302,8 @@ private:
     QTBEngine* m_tbeWidget;
 
     QTimer* m_timer;
+    
+    QLabel* m_selInfo;
 
     Ui_mainWindow* m_uinterface;
 

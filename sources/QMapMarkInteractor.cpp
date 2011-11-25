@@ -14,9 +14,13 @@ QMapMarkInteractor::QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark*
 
 }
 
-
 QMapMarkInteractor::~QMapMarkInteractor()
 {
+}
+
+QString QMapMarkInteractor::typeName() const
+{
+    return "MapMark";
 }
 
 void QMapMarkInteractor::select()

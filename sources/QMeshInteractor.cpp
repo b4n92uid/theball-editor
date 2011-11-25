@@ -18,6 +18,11 @@ QMeshInteractor::~QMeshInteractor()
 {
 }
 
+QString QMeshInteractor::typeName() const
+{
+    return "Mesh";
+}
+
 void QMeshInteractor::setScale(const tbe::Vector3f& v)
 {
     if(m_target)
@@ -181,6 +186,13 @@ void QMeshInteractor::textureSelected(const QModelIndex& index)
 
     else if(mat->getTextureBlend(index.row()) == Material::REPLACE)
         m_mainwin->nodesGui.meshTab.matedit->texture_replace->setChecked(true);
+
+    // Clipping & animation
+    m_mainwin->nodesGui.meshTab.matedit->cliping->setChecked(mat->isTextureClipped(index.row()));
+    m_mainwin->nodesGui.meshTab.matedit->clipping_animation->setChecked(mat->getTextureAnimation(index.row()) > 0);
+    m_mainwin->nodesGui.meshTab.matedit->clipping_animation_msec->setValue(mat->getTextureAnimation(index.row()));
+    m_mainwin->nodesGui.meshTab.matedit->clipping_framesize->setValue(mat->getTextureFrameSize(index.row()));
+    m_mainwin->nodesGui.meshTab.matedit->clipping_part->setValue(mat->getTexturePart(index.row()));
 }
 
 void QMeshInteractor::addTexture()
@@ -424,6 +436,15 @@ void QMeshInteractor::setTextureFrameSize(const tbe::Vector2i& size)
     mat->setTextureFrameSize(size);
 }
 
+void QMeshInteractor::setTexturePart(const tbe::Vector2i& value)
+{
+    using namespace tbe::scene;
+
+    Material* mat = getSelectedMaterial();
+
+    mat->setTexturePart(value);
+}
+
 void QMeshInteractor::setFrameAnimation(bool state)
 {
     using namespace tbe::scene;
@@ -536,6 +557,7 @@ void QMeshInteractor::select()
     connect(m_mainwin->nodesGui.meshTab.matedit->cliping, SIGNAL(clicked(bool)), this, SLOT(setTextureClipping(bool)));
     connect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation, SIGNAL(clicked(bool)), this, SLOT(setFrameAnimation(bool)));
     connect(m_mainwin->nodesGui.meshTab.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTextureFrameSize(const tbe::Vector2i&)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->clipping_part, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTexturePart(const tbe::Vector2i&)));
     connect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), this, SLOT(setFrameDuration(int)));
 
     connect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(textureSelected(const QModelIndex &)));
@@ -579,6 +601,12 @@ void QMeshInteractor::deselect()
     disconnect(m_mainwin->nodesGui.meshTab.matedit->texture_additive, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->texture_modulate, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->texture_replace, SIGNAL(clicked()), 0, 0);
+
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->cliping, SIGNAL(clicked(bool)), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation, SIGNAL(clicked(bool)), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_part, SIGNAL(valueChanged(const tbe::Vector2i&)), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
 
