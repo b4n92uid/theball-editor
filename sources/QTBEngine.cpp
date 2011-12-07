@@ -270,7 +270,7 @@ void QTBEngine::toggleStaticView(bool state)
 
 void QTBEngine::toggleSelBox(bool state)
 {
-    m_selbox->setEnable(state);
+    m_selbox->setVisible(state);
 }
 
 void QTBEngine::toggleGridDisplay(bool state)
@@ -1048,6 +1048,8 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
 
+    m_selbox->setEnable(true);
+    
     m_selectedNode->select();
 
     if(m_gridEnable)

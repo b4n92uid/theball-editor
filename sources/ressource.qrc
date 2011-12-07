@@ -33,5 +33,7 @@
     <file>../medias/light.png</file>
     <file>../medias/particles.png</file>
     <file>../medias/splashscreen.png</file>
+    <file>../medias/assign.png</file>
+    <file>../medias/promot.png</file>
   </qresource>
 </RCC>
