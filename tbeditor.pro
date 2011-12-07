@@ -62,6 +62,7 @@ SOURCES += \
     sources/ClassFactory.cpp \
     sources/HistoryState.cpp \
     sources/NodeListProxyModel.cpp \
+    sources/QNodeListView.cpp \
 
 HEADERS  += \
     sources/MainWindow.h \
@@ -82,6 +83,7 @@ HEADERS  += \
     sources/ClassFactory.h \
     sources/HistoryState.h \
     sources/NodeListProxyModel.h \
+    sources/QNodeListView.h \
 
 FORMS += \
     sources/about.ui \

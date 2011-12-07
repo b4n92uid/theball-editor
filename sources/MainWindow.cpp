@@ -239,11 +239,6 @@ void MainWindow::initWidgets()
     nodesGui.lock = m_uinterface->node_lock;
     nodesGui.enable = m_uinterface->node_enable;
 
-    nodesGui.nodeUp = m_uinterface->node_list_up;
-    nodesGui.nodeDown = m_uinterface->node_list_down;
-    nodesGui.nodeRight = m_uinterface->node_list_makechild;
-    nodesGui.nodeLeft = m_uinterface->node_list_makeparent;
-
     nodesGui.displayMesh = m_uinterface->node_display_meshs;
     nodesGui.displayLights = m_uinterface->node_display_lights;
     nodesGui.displayParticles = m_uinterface->node_display_particules;
@@ -321,12 +316,14 @@ void MainWindow::initWidgets()
 
     nodesGui.nodesListProxyModel = new NodeListProxyModel(this);
     nodesGui.nodesListProxyModel->setSourceModel(nodesGui.nodesListModel);
+    nodesGui.nodesListProxyModel->setDynamicSortFilter(true);
 
     nodesGui.nodesListView = m_uinterface->node_list;
     nodesGui.nodesListView->setModel(nodesGui.nodesListProxyModel);
     nodesGui.nodesListView->setAlternatingRowColors(true);
     nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     nodesGui.nodesListView->header()->setResizeMode(QHeaderView::Stretch);
+    nodesGui.nodesListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     // Environment -------------------------------------------------------------
 
@@ -400,19 +397,6 @@ void MainWindow::initConnections()
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
 
-    QSignalMapper* nodeMoveBind = new QSignalMapper(this);
-    nodeMoveBind->setMapping(nodesGui.nodeUp, 1);
-    nodeMoveBind->setMapping(nodesGui.nodeDown, 2);
-    nodeMoveBind->setMapping(nodesGui.nodeLeft, 3);
-    nodeMoveBind->setMapping(nodesGui.nodeRight, 4);
-
-    connect(nodesGui.nodeUp, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
-    connect(nodesGui.nodeDown, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
-    connect(nodesGui.nodeLeft, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
-    connect(nodesGui.nodeRight, SIGNAL(clicked()), nodeMoveBind, SLOT(map()));
-
-    connect(nodeMoveBind, SIGNAL(mapped(int)), this, SLOT(scopeNode(int)));
-
     connect(nodesGui.displayMesh, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMesh(bool)));
     connect(nodesGui.displayLights, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleLight(bool)));
     connect(nodesGui.displayParticles, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleParticles(bool)));
@@ -431,7 +415,10 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(selection(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(m_tbeWidget, SIGNAL(deselection()), this, SLOT(deselect()));
 
-    connect(nodesGui.nodesListView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
+    connect(nodesGui.nodesListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
+
+    connect(nodesGui.nodesListView, SIGNAL(assignParent(QStandardItem*, QStandardItem*)), this, SLOT(assignParent(QStandardItem*, QStandardItem*)));
+    connect(nodesGui.nodesListView, SIGNAL(promoteChild(QStandardItem*)), this, SLOT(promoteChild(QStandardItem*)));
 
     connect(envGui.znear, SIGNAL(valueChanged(double)), this, SLOT(guiZNear(double)));
     connect(envGui.zfar, SIGNAL(valueChanged(double)), this, SLOT(guiZFar(double)));
@@ -800,6 +787,7 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->baseAttribTab->setEnabled(true);
     m_uinterface->attribTab->setEnabled(true);
 
+    nodesGui.meshTab.matedit->hide();
 
     QString info;
     QTextStream stream(&info);
@@ -848,83 +836,63 @@ void MainWindow::deselect()
     m_uinterface->attribTab->setEnabled(false);
 }
 
-void MainWindow::scopeNode(int move)
+void MainWindow::promoteChild(QStandardItem* child)
 {
     using namespace tbe;
     using namespace scene;
 
-    if(!m_selectedNode)
+    if(!child->parent())
+    {
+        statusBar()->showMessage("Le noeud ne peut etre promue", 2000);
         return;
-
-    QModelIndex srcindex = nodesGui.nodesListProxyModel->mapToSource(nodesGui.nodesListView->currentIndex());
-
-    QStandardItem* item = nodesGui.nodesListModel->itemFromIndex(srcindex);
-    QStandardItem* parent = item->parent() ? item->parent() : nodesGui.nodesListModel->invisibleRootItem();
-
-    int currRow = item->row();
-
-    QList<QStandardItem*> row = parent->takeRow(currRow);
-
-    if(move == 1) // Up
-    {
-        currRow = std::max(currRow - 1, 0);
-        parent->insertRow(currRow, row);
-
-        nodesGui.nodesListView->setCurrentIndex(item->index());
     }
-    else if(move == 2) // Down
+
+    QStandardItem* host = child->parent()->parent()
+            ? child->parent()->parent()
+            : nodesGui.nodesListModel->invisibleRootItem();
+
+    QStandardItem* parent = child->parent()
+            ? child->parent() : nodesGui.nodesListModel->invisibleRootItem();
+
+    if(parent != host)
     {
-        currRow = std::min(currRow + 1, parent->rowCount());
-        parent->insertRow(currRow, row);
+        QItemsList row = child->parent()->takeRow(child->row());
 
-        nodesGui.nodesListView->setCurrentIndex(item->index());
+        host->insertRow(parent->row() + 1, row);
     }
-    else if(move == 3) // Left
-    {
-        if(parent != nodesGui.nodesListModel->invisibleRootItem())
-        {
-            QStandardItem* host = parent->parent()
-                    ? parent->parent()
-                    : nodesGui.nodesListModel->invisibleRootItem();
 
-            host->insertRow(parent->row() + 1, row);
+    Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+    Node* currNode = child->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
 
-            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
-            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+    currNode->setParent(parentNode);
+    currNode->setPos(parentNode->getPos() + currNode->getPos());
 
-            currNode->setParent(parentNode);
-            currNode->setPos(parentNode->getPos() + currNode->getPos());
-
-            m_tbeWidget->placeCamera();
-        }
-        else
-            parent->insertRow(currRow, row);
-
-        nodesGui.nodesListView->setCurrentIndex(item->index());
-    }
-    else if(move == 4) // Right
-    {
-        if(currRow > 0)
-        {
-            QStandardItem* host = parent->child(currRow - 1);
-
-            host->appendRow(row);
-
-            Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
-            Node* currNode = item->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
-
-            currNode->setParent(parentNode);
-            currNode->setPos(currNode->getPos() - parentNode->getPos());
-
-            m_tbeWidget->placeCamera();
-        }
-        else
-            parent->insertRow(currRow, row);
-
-        nodesGui.nodesListView->setCurrentIndex(item->index());
-    }
+    m_tbeWidget->placeCamera();
 
     notifyChanges(true);
+
+    statusBar()->showMessage("Enfant promue", 2000);
+}
+
+void MainWindow::assignParent(QStandardItem* parent, QStandardItem* child)
+{
+    using namespace tbe;
+    using namespace scene;
+
+    QItemsList row = (child->parent() ? child->parent() : nodesGui.nodesListModel->invisibleRootItem())->takeRow(child->row());
+    parent->appendRow(row);
+
+    Node* parentNode = parent->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+    Node* currNode = child->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+
+    currNode->setParent(parentNode);
+    currNode->setPos(currNode->getPos() - parentNode->getPos());
+
+    m_tbeWidget->placeCamera();
+
+    notifyChanges(true);
+
+    statusBar()->showMessage("Parent assigné", 2000);
 }
 
 void MainWindow::guiSkyboxApply(bool enable)

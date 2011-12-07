@@ -31,6 +31,9 @@ public:
     
     virtual QString typeName() const;
 
+    QItemsList itemRows();
+    QStandardItem* item();
+    
 public slots:
     virtual void setup();
     virtual void unsetup();
@@ -54,9 +57,6 @@ public slots:
     void setMatrix(const tbe::Matrix4& m);
     void setEnalbe(bool state);
     void setLocked(bool state);
-
-protected:
-    QItemsList itemRows();
 
 protected:
     MainWindow* m_mainwin;

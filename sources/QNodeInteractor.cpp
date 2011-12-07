@@ -125,6 +125,11 @@ QItemsList QNodeInteractor::itemRows()
     return QItemsList() << itemc0 << itemc1;
 }
 
+QStandardItem* QNodeInteractor::item()
+{
+    return m_mainwin->nodeItemBinder[this];
+}
+
 tbe::scene::Node* QNodeInteractor::target() const
 {
     return m_target;

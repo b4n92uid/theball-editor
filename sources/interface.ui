@@ -143,86 +143,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_14">
         <item>
-         <widget class="QTreeView" name="node_list"/>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QPushButton" name="node_list_up">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_up.png</normaloff>:/Medias/medias/arrow_up.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_down">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_down.png</normaloff>:/Medias/medias/arrow_down.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_makeparent">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_left.png</normaloff>:/Medias/medias/arrow_left.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_makechild">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/arrow_right.png</normaloff>:/Medias/medias/arrow_right.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="node_list_sort">
-            <property name="text">
-             <string>Trier</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ressource.qrc">
-              <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="Line" name="line">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
+         <widget class="QNodeListView" name="node_list"/>
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
@@ -267,6 +188,17 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="node_list_sort">
+          <property name="text">
+           <string>Trier</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ressource.qrc">
+            <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -2172,6 +2104,11 @@ p, li { white-space: pre-wrap; }
    <header>QTBEngine.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>QNodeListView</class>
+   <extends>QTreeView</extends>
+   <header>QNodeListView.h</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>propertyTab</tabstop>
@@ -2191,10 +2128,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_rot_x</tabstop>
   <tabstop>node_rot_y</tabstop>
   <tabstop>node_rot_z</tabstop>
-  <tabstop>node_list_up</tabstop>
-  <tabstop>node_list_down</tabstop>
-  <tabstop>node_list_makeparent</tabstop>
-  <tabstop>node_list_makechild</tabstop>
   <tabstop>node_particles_boxsize_x</tabstop>
   <tabstop>node_particles_boxsize_y</tabstop>
   <tabstop>node_particles_boxsize_z</tabstop>

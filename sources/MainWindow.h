@@ -14,6 +14,7 @@
 #include "ui_about.h"
 #include "ui_matedit.h"
 
+#include "QNodeListView.h"
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
 #include "NodeFactory.h"
@@ -44,7 +45,7 @@ public:
     QString openFileName() const;
 
     Ui_mainWindow* ui();
-    
+
     void reg(QNodeInteractor* node, QItemsList& items);
     void unreg(QNodeInteractor* node);
 
@@ -71,6 +72,9 @@ public slots:
     void notifyChanges(bool stat = true);
 
     void clearNodeList();
+    
+    void assignParent(QStandardItem* parent, QStandardItem* child);
+    void promoteChild(QStandardItem* child);
 
     void closeEvent(QCloseEvent *event);
 
@@ -87,10 +91,8 @@ public slots:
     void pastRotation();
     void pastPolymorph();
 
-    void scopeNode(int move);
-
     void screenshot();
-
+    
     void guiSelect(const QModelIndex& index);
 
     void guiAddSceneField();
@@ -239,13 +241,11 @@ private:
 
         QTabWidget* attribTab;
 
-        QPushButton *nodeUp, *nodeDown, *nodeLeft, *nodeRight;
-
         QTreeView* additionalView;
         QStandardItemModel* additionalModel;
         QPushButton *addField, *delField, *clearFields;
 
-        QTreeView* nodesListView;
+        QNodeListView* nodesListView;
         QStandardItemModel* nodesListModel;
         NodeListProxyModel* nodesListProxyModel;
         QCheckBox* displayMesh, *displayLights, *displayParticles, *displayMarks;
@@ -302,7 +302,7 @@ private:
     QTBEngine* m_tbeWidget;
 
     QTimer* m_timer;
-    
+
     QLabel* m_selInfo;
 
     Ui_mainWindow* m_uinterface;
@@ -312,7 +312,7 @@ private:
     QSettings* m_config;
 
     bool m_somethingChange;
-    
+
     QInterfaceItemsMap nodeItemBinder;
 
     struct
