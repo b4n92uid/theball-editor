@@ -116,6 +116,8 @@ void QTBEngine::initializeGL()
     m_selbox = NULL;
     m_grid = NULL;
 
+    m_centerTarget = 0;
+
     m_updateTimer = new QTimer(this);
     connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
     m_updateTimer->start(16);
@@ -901,11 +903,11 @@ void QTBEngine::loadScene(const QString& filename)
     m_sceneParser->loadScene(filename.toStdString());
     m_sceneParser->buildScene();
 
-    m_camera->setDistance(m_meshScene->getSceneAabb().getLength() / 2.0f);
+    m_camera->setDistance(m_meshScene->getSceneAabb().getLength() / 8.0f);
     m_camera->setRotate(Vector2f(45, -45));
 
     m_selectedNode = NULL;
-    m_centerTarget = 0;
+    m_centerTarget = 1;
 
     m_selbox->setEnable(false);
 
@@ -963,6 +965,7 @@ QMesh* QTBEngine::meshNew(const QString& filename)
 
     m_rootNode->addChild(mesh);
 
+    mesh->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
     mesh->setup();
 
     return mesh;
@@ -974,6 +977,7 @@ QLight* QTBEngine::lightNew()
 
     m_rootNode->addChild(light);
 
+    light->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
     light->setup();
 
     return light;
@@ -985,6 +989,7 @@ QParticles* QTBEngine::particlesNew()
 
     m_rootNode->addChild(particles);
 
+    particles->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
     particles->setup();
 
     return particles;
@@ -996,6 +1001,7 @@ QMapMark* QTBEngine::markNew()
 
     m_rootNode->addChild(mark);
 
+    mark->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
     mark->setup();
 
     return mark;
@@ -1049,7 +1055,7 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     m_selectedNode = qnode;
 
     m_selbox->setEnable(true);
-    
+
     m_selectedNode->select();
 
     if(m_gridEnable)

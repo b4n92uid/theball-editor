@@ -518,6 +518,29 @@ void QMeshInteractor::setLighted(bool stat)
         mat->disable(Material::LIGHTED);
 }
 
+void QMeshInteractor::pastMaterials()
+{
+    using namespace tbe::scene;
+
+    if(!m_mainwin->nodesGui.meshTab.matedit->source_mesh)
+        return;
+
+    Mesh* src = m_mainwin->nodesGui.meshTab.matedit->source_mesh->m_target;
+
+    tbe::Matrix4 mat = m_target->getMatrix();
+
+    *m_target = *src;
+
+    m_target->setMatrix(mat);
+    
+    update();
+}
+
+void QMeshInteractor::copyMaterials()
+{
+    m_mainwin->nodesGui.meshTab.matedit->source_mesh = this;
+}
+
 void QMeshInteractor::select()
 {
     deselect();
@@ -559,6 +582,9 @@ void QMeshInteractor::select()
     connect(m_mainwin->nodesGui.meshTab.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTextureFrameSize(const tbe::Vector2i&)));
     connect(m_mainwin->nodesGui.meshTab.matedit->clipping_part, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTexturePart(const tbe::Vector2i&)));
     connect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), this, SLOT(setFrameDuration(int)));
+
+    connect(m_mainwin->nodesGui.meshTab.matedit->copy, SIGNAL(clicked()), this, SLOT(copyMaterials()));
+    connect(m_mainwin->nodesGui.meshTab.matedit->past, SIGNAL(clicked()), this, SLOT(pastMaterials()));
 
     connect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(textureSelected(const QModelIndex &)));
 
@@ -607,6 +633,9 @@ void QMeshInteractor::deselect()
     disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_part, SIGNAL(valueChanged(const tbe::Vector2i&)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), 0, 0);
+
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->copy, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->past, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
 

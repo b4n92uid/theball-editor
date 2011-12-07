@@ -1748,10 +1748,10 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionBaseOnFloor"/>
     <addaction name="separator"/>
     <addaction name="actionCopy"/>
+    <addaction name="actionPastPosition"/>
     <addaction name="actionPastScale"/>
     <addaction name="actionPastRotation"/>
     <addaction name="actionPastFields"/>
-    <addaction name="actionPastPolymorph"/>
    </widget>
    <widget class="QMenu" name="menuTrier">
     <property name="title">
