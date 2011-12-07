@@ -62,6 +62,9 @@ public slots:
 
     void setSaveMaterial(bool stat);
 
+    void pastMaterials();
+    void copyMaterials();
+
     tbe::scene::Material* getSelectedMaterial();
 
 private:

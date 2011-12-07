@@ -388,7 +388,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionPastPosition, SIGNAL(triggered()), this, SLOT(pastPosition()));
     connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
     connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
-    connect(m_uinterface->actionPastPolymorph, SIGNAL(triggered()), this, SLOT(pastPolymorph()));
 
     // Tools Menu
 
@@ -788,7 +787,7 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->attribTab->setEnabled(true);
 
     nodesGui.meshTab.matedit->hide();
-
+        
     QString info;
     QTextStream stream(&info);
 
@@ -1124,22 +1123,6 @@ void MainWindow::pastRotation()
     m_selectedNode->setRotation(m_sourceCopy->target()->getMatrix().getRotate().getEuler());
 
     statusBar()->showMessage("Rotation coller...", 2000);
-}
-
-void MainWindow::pastPolymorph()
-{
-    if(!m_sourceCopy)
-        return;
-
-    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
-
-    tbe::Matrix4 backup = m_selectedNode->target()->getMatrix();
-
-    *m_selectedNode->target() = *m_sourceCopy->target();
-
-    m_selectedNode->target()->setMatrix(backup);
-
-    statusBar()->showMessage("Collage polymorphique...", 2000);
 }
 
 void MainWindow::copy()

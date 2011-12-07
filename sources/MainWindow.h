@@ -72,7 +72,7 @@ public slots:
     void notifyChanges(bool stat = true);
 
     void clearNodeList();
-    
+
     void assignParent(QStandardItem* parent, QStandardItem* child);
     void promoteChild(QStandardItem* child);
 
@@ -89,10 +89,9 @@ public slots:
     void pastPosition();
     void pastScale();
     void pastRotation();
-    void pastPolymorph();
 
     void screenshot();
-    
+
     void guiSelect(const QModelIndex& index);
 
     void guiAddSceneField();
@@ -147,11 +146,15 @@ private:
             rgb = new QDoubleVector3Box(this, color_r, color_g, color_b);
             clipping_framesize = new QIntVector2Box(this, clipping_x, clipping_y);
             clipping_part = new QIntVector2Box(this, clipping_part_x, clipping_part_y);
+            
+            source_mesh = NULL;
         }
 
         QDoubleVector3Box* rgb;
         QIntVector2Box* clipping_framesize;
         QIntVector2Box* clipping_part;
+
+        QMeshInteractor* source_mesh;
     };
 
     struct NodesGuiTab
