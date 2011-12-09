@@ -89,8 +89,10 @@ public slots:
     void pastPosition();
     void pastScale();
     void pastRotation();
-
+    
     void screenshot();
+    
+    void setCurrentTool(int type);
 
     void guiSelect(const QModelIndex& index);
 
@@ -146,7 +148,7 @@ private:
             rgb = new QDoubleVector3Box(this, color_r, color_g, color_b);
             clipping_framesize = new QIntVector2Box(this, clipping_x, clipping_y);
             clipping_part = new QIntVector2Box(this, clipping_part_x, clipping_part_y);
-            
+
             source_mesh = NULL;
         }
 
@@ -230,8 +232,6 @@ private:
 
         struct MapMarkGuiTab
         {
-            QPushButton* add;
-
         } markTab;
 
         QLineEdit* name;

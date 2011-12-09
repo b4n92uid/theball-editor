@@ -90,7 +90,7 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
     }
 }
 
-void QNodeInteractor::setEnalbe(bool state)
+void QNodeInteractor::setEnable(bool state)
 {
     m_target->setEnable(state);
 
@@ -235,7 +235,7 @@ void QNodeInteractor::select()
     connect(m_mainwin->nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setPos(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.rotation, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setRotation(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.scale, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setScale(const tbe::Vector3f&)));
-    connect(m_mainwin->nodesGui.enable, SIGNAL(clicked(bool)), this, SLOT(setEnalbe(bool)));
+    connect(m_mainwin->nodesGui.enable, SIGNAL(clicked(bool)), this, SLOT(setEnable(bool)));
     connect(m_mainwin->nodesGui.lock, SIGNAL(clicked(bool)), this, SLOT(setLocked(bool)));
 
     connect(m_mainwin->nodesGui.additionalModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(changeNodeField(QStandardItem*)));

@@ -60,10 +60,17 @@ QTBEngine::QTBEngine(QWidget* parent)
 
     m_gridEnable = false;
     m_staticView = false;
+    m_magnetMove = false;
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     setCursor(Qt::OpenHandCursor);
+
+    m_toolMode[SELECTION_TOOL].type = SELECTION_TOOL;
+    m_toolMode[SELECTION_TOOL].cursor = Qt::OpenHandCursor;
+
+    m_toolMode[DRAW_TOOL].type = DRAW_TOOL;
+    m_toolMode[DRAW_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/draw.png"));
 }
 
 QTBEngine::~QTBEngine()
@@ -191,7 +198,7 @@ void QTBEngine::applyTranslationEvents()
 
     if(m_eventManager->keyState[EventManager::KEY_LCTRL] && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
-        float sensitivty = 0.3;
+        float sensitivty = 0.2;
         m_centerTarget -= m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
         m_centerTarget -= m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
     }
@@ -310,6 +317,11 @@ void QTBEngine::toggleGridDisplay(bool state)
     }
 
     m_grid->setEnable(m_gridEnable);
+}
+
+void QTBEngine::toggleMagnetMove(bool state)
+{
+    m_magnetMove = state;
 }
 
 void QTBEngine::cloneSelected()
@@ -504,40 +516,47 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         using namespace tbe;
         using namespace tbe::scene;
 
-        m_selbox->setEnable(false);
-        m_grid->setEnable(false);
-
-        foreach(QNodeInteractor* node, m_lockedNode.keys())
-        node->target()->setEnable(false);
-
-        if(m_selectedNode)
-            m_selectedNode->target()->setEnable(false);
-
-        Vector3f campos = m_camera->getPos();
-        Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
-
-        if(!nodes.empty())
+        if(m_currentTool->type == SELECTION_TOOL)
         {
-            Nearest pred = {campos};
-            Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
+            m_selbox->setEnable(false);
+            m_grid->setEnable(false);
+
+            foreach(QNodeInteractor* node, m_lockedNode.keys())
+            node->target()->setEnable(false);
 
             if(m_selectedNode)
-                m_selectedNode->target()->setEnable(true);
+                m_selectedNode->target()->setEnable(false);
 
-            if(m_nodeInterface.contains(nearest))
-                emit selection(m_nodeInterface[nearest]);
+            Vector3f campos = m_camera->getPos();
+            Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
+
+            if(!nodes.empty())
+            {
+                Nearest pred = {campos};
+                Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
+
+                if(m_selectedNode)
+                    m_selectedNode->target()->setEnable(true);
+
+                if(m_nodeInterface.contains(nearest))
+                    emit selection(m_nodeInterface[nearest]);
+            }
+            else
+            {
+                if(m_selectedNode)
+                    m_selectedNode->target()->setEnable(true);
+            }
+
+            foreach(QNodeInteractor* node, m_lockedNode.keys())
+            node->target()->setEnable(true);
+
+            m_selbox->setEnable(m_selectedNode);
+            m_grid->setEnable(m_gridEnable);
         }
-        else
+
+        else if(m_currentTool->type == DRAW_TOOL)
         {
-            if(m_selectedNode)
-                m_selectedNode->target()->setEnable(true);
         }
-
-        foreach(QNodeInteractor* node, m_lockedNode.keys())
-        node->target()->setEnable(true);
-
-        m_selbox->setEnable(m_selectedNode);
-        m_grid->setEnable(m_gridEnable);
     }
 }
 
@@ -553,14 +572,14 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 0;
         m_grabCamera = false;
 
-        setCursor(Qt::OpenHandCursor);
+        setCursor(m_currentTool->cursor);
     }
 
     else if(ev->button() == Qt::MiddleButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 0;
 
-        setCursor(Qt::OpenHandCursor);
+        setCursor(m_currentTool->cursor);
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -807,13 +826,16 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
 void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 {
+    using namespace tbe;
+    using namespace scene;
+
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
 
     Vector3f gridSize(1);
 
     if(ev->key() == Qt::Key_Shift)
     {
-        setCursor(Qt::OpenHandCursor);
+        setCursor(m_currentTool->cursor);
 
         if(m_selectedNode && m_gridEnable)
         {
@@ -823,6 +845,56 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
             m_selectedNode->target()->setPos(position);
             m_selectedNode->update();
+        }
+
+        if(m_selectedNode && m_magnetMove)
+        {
+            Node* current = m_selectedNode->target();
+            Node* colset = NULL;
+
+            Vector3f position = current->getPos();
+
+            float mindist = 2.0;
+
+            foreach(Node* node, m_nodeInterface.keys())
+            {
+                if(node != current)
+                {
+                    if(position - node->getAbsoluteMatrix().getPos() < mindist)
+                    {
+                        mindist = (position - node->getAbsoluteMatrix().getPos()).getMagnitude();
+                        colset = node;
+                    }
+                }
+            }
+
+            if(colset)
+            {
+                Vector3f magnetpts[60];
+
+                // ...
+
+                float mindist = 2.0;
+
+                int colsetindex = -1;
+
+                for(int i = 0; i < 60; i++)
+                {
+                    if(position - magnetpts[i] < mindist)
+                    {
+                        mindist = (position - magnetpts[i]).getMagnitude();
+                        colsetindex = i;
+                    }
+                }
+
+                if(colsetindex >= 0)
+                {
+                    position = magnetpts[colsetindex];
+
+                    m_selectedNode->target()->setPos(position);
+                    m_selectedNode->update();
+                }
+            }
         }
     }
 
@@ -1120,4 +1192,18 @@ void QTBEngine::setZFar(float value)
 {
     m_sceneManager->setZFar(value);
     m_sceneManager->updateViewParameter();
+}
+
+void QTBEngine::selectionTool()
+{
+    m_currentTool = &m_toolMode[SELECTION_TOOL];
+
+    setCursor(m_currentTool->cursor);
+}
+
+void QTBEngine::drawTool()
+{
+    m_currentTool = &m_toolMode[DRAW_TOOL];
+
+    setCursor(m_currentTool->cursor);
 }
