@@ -37,7 +37,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
@@ -412,7 +412,7 @@
            <enum>QTabWidget::Triangular</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <property name="usesScrollButtons">
            <bool>false</bool>
@@ -1129,65 +1129,6 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_9">
-           <attribute name="title">
-            <string>Marqeurs</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_13">
-            <item>
-             <widget class="QLabel" name="label_34">
-              <property name="text">
-               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;img src=&quot;:/Medias/medias/mark.png&quot; style=&quot;float:left&quot; /&gt;&lt;span style=&quot; font-size:8pt; font-weight:600; font-style:italic;&quot;&gt;Les marqueurs&lt;/span&gt;&lt;span style=&quot; font-size:8pt; font-style:italic;&quot;&gt; servent a indiquer une position absolue ou relative a un noude dans la scene afin d'etre utiliser dans les programme extern pour extraire une position précise&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt; font-style:italic;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
-              </property>
-              <property name="margin">
-               <number>0</number>
-              </property>
-              <property name="indent">
-               <number>-1</number>
-              </property>
-              <property name="openExternalLinks">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_30">
-              <item>
-               <widget class="QPushButton" name="node_mark_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
           <widget class="QWidget" name="tab_8">
            <attribute name="title">
             <string>[Champs]</string>
@@ -1727,7 +1668,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionToggleFullScreen"/>
     <addaction name="separator"/>
     <addaction name="actionToggleStaticView"/>
-    <addaction name="actionToggleGrid"/>
     <addaction name="actionToggleSelBox"/>
    </widget>
    <widget class="QMenu" name="menuEditer">
@@ -1743,9 +1683,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="separator"/>
     <addaction name="actionCloneNode"/>
     <addaction name="actionDeleteNode"/>
-    <addaction name="separator"/>
-    <addaction name="actionCenterOnFloor"/>
-    <addaction name="actionBaseOnFloor"/>
     <addaction name="separator"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPastPosition"/>
@@ -1763,9 +1700,28 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSortFromCamera"/>
     <addaction name="actionSortFromSelection"/>
    </widget>
+   <widget class="QMenu" name="menuOutils">
+    <property name="title">
+     <string>Outils</string>
+    </property>
+    <addaction name="actionSelectionTool"/>
+    <addaction name="actionDrawTool"/>
+   </widget>
+   <widget class="QMenu" name="menuMouvements">
+    <property name="title">
+     <string>Transformation</string>
+    </property>
+    <addaction name="actionToggleGrid"/>
+    <addaction name="actionToggleMagnetMove"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenterOnFloor"/>
+    <addaction name="actionBaseOnFloor"/>
+   </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuEditer"/>
    <addaction name="menuAffichage"/>
+   <addaction name="menuMouvements"/>
+   <addaction name="menuOutils"/>
    <addaction name="menuTrier"/>
    <addaction name="menu"/>
   </widget>
@@ -2028,7 +1984,7 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/Medias/medias/grid.png</normaloff>:/Medias/medias/grid.png</iconset>
    </property>
    <property name="text">
-    <string>Afficher la grille</string>
+    <string>Grille</string>
    </property>
    <property name="shortcut">
     <string>G</string>
@@ -2087,13 +2043,40 @@ p, li { white-space: pre-wrap; }
     <string>S</string>
    </property>
   </action>
-  <action name="actionPastPolymorph">
+  <action name="actionSelectionTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+     <normaloff>:/Medias/medias/hand.png</normaloff>:/Medias/medias/hand.png</iconset>
    </property>
    <property name="text">
-    <string>Coller polymorph</string>
+    <string>Outil séléction</string>
+   </property>
+  </action>
+  <action name="actionDrawTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/draw.png</normaloff>:/Medias/medias/draw.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outil pinceau</string>
+   </property>
+  </action>
+  <action name="actionToggleMagnetMove">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/magnet.png</normaloff>:/Medias/medias/magnet.png</iconset>
+   </property>
+   <property name="text">
+    <string>Magnitisme</string>
    </property>
   </action>
  </widget>
@@ -2164,7 +2147,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>node_light_type</tabstop>
   <tabstop>node_light_specular_z</tabstop>
   <tabstop>node_light_radius</tabstop>
-  <tabstop>node_mark_add</tabstop>
   <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_ambiant_y</tabstop>
   <tabstop>node_particles_add</tabstop>

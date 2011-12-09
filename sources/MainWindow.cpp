@@ -170,33 +170,41 @@ void MainWindow::initWidgets()
     m_uinterface->node_list_sort->setMenu(m_uinterface->menuTrier);
 
     m_selInfo = new QLabel(this);
-    m_selInfo->setText("Information du noeud...");
+    m_selInfo->setText("Pas de séléction");
+    m_selInfo->setContentsMargins(0, 0, 16, 0);
 
-    QToolBar* toolbar = addToolBar("Barre d'outils");
-    toolbar->setFloatable(false);
-    toolbar->setMovable(false);
-    toolbar->addAction(m_uinterface->actionNewScene);
-    toolbar->addAction(m_uinterface->actionOpen);
-    toolbar->addAction(m_uinterface->actionSave);
-    toolbar->addSeparator();
-    toolbar->addAction(m_uinterface->actionToggleSelBox);
-    toolbar->addAction(m_uinterface->actionToggleStaticView);
-    toolbar->addAction(m_uinterface->actionToggleGrid);
-    toolbar->addSeparator();
-    toolbar->addAction(m_uinterface->actionNewMesh);
-    toolbar->addAction(m_uinterface->actionNewLight);
-    toolbar->addAction(m_uinterface->actionNewParticles);
-    toolbar->addAction(m_uinterface->actionNewMapMark);
-    toolbar->addSeparator();
-    toolbar->addAction(m_uinterface->actionCloneNode);
-    toolbar->addAction(m_uinterface->actionDeleteNode);
-    toolbar->addSeparator();
-    toolbar->addAction(m_uinterface->actionScreenShot);
-    toolbar->addAction(m_uinterface->actionOpenPacker);
-    QWidget* spacer = new QWidget(toolbar);
+    QToolBar* toptoolbar = new QToolBar;
+    toptoolbar->setFloatable(false);
+    toptoolbar->setMovable(false);
+    toptoolbar->addAction(m_uinterface->actionNewScene);
+    toptoolbar->addAction(m_uinterface->actionOpen);
+    toptoolbar->addAction(m_uinterface->actionSave);
+    toptoolbar->addSeparator();
+    toptoolbar->addAction(m_uinterface->actionToggleSelBox);
+    toptoolbar->addAction(m_uinterface->actionToggleStaticView);
+    toptoolbar->addSeparator();
+    toptoolbar->addAction(m_uinterface->actionNewMesh);
+    toptoolbar->addAction(m_uinterface->actionNewLight);
+    toptoolbar->addAction(m_uinterface->actionNewParticles);
+    toptoolbar->addAction(m_uinterface->actionNewMapMark);
+    toptoolbar->addSeparator();
+    toptoolbar->addAction(m_uinterface->actionCloneNode);
+    toptoolbar->addAction(m_uinterface->actionDeleteNode);
+    toptoolbar->addSeparator();
+    toptoolbar->addAction(m_uinterface->actionBaseOnFloor);
+    toptoolbar->addAction(m_uinterface->actionCenterOnFloor);
+    toptoolbar->addAction(m_uinterface->actionToggleMagnetMove);
+    toptoolbar->addAction(m_uinterface->actionToggleGrid);
+    toptoolbar->addSeparator();
+    toptoolbar->addAction(m_uinterface->actionSelectionTool);
+    toptoolbar->addAction(m_uinterface->actionDrawTool);
+
+    QWidget* spacer = new QWidget(toptoolbar);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    toolbar->addWidget(spacer);
-    toolbar->addWidget(m_selInfo);
+    toptoolbar->addWidget(spacer);
+    toptoolbar->addWidget(m_selInfo);
+
+    addToolBar(Qt::TopToolBarArea, toptoolbar);
 
     // Générale ----------------------------------------------------------------
 
@@ -243,10 +251,6 @@ void MainWindow::initWidgets()
     nodesGui.displayLights = m_uinterface->node_display_lights;
     nodesGui.displayParticles = m_uinterface->node_display_particules;
     nodesGui.displayMarks = m_uinterface->node_display_marks;
-
-    // -------- Mark
-
-    nodesGui.markTab.add = m_uinterface->node_mark_add;
 
     // -------- Mesh
 
@@ -375,6 +379,7 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionToggleGrid, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleGridDisplay(bool)));
     connect(m_uinterface->actionToggleSelBox, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleSelBox(bool)));
     connect(m_uinterface->actionToggleStaticView, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleStaticView(bool)));
+    connect(m_uinterface->actionToggleMagnetMove, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleMagnetMove(bool)));
 
     connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
 
@@ -391,6 +396,15 @@ void MainWindow::initConnections()
 
     // Tools Menu
 
+    QSignalMapper* toolsigmap = new QSignalMapper(this);
+
+    connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
+    connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
+
+    connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
+
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
@@ -406,7 +420,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionSortFromCamera, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromCamera()));
     connect(m_uinterface->actionSortFromSelection, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromSelection()));
 
-    connect(nodesGui.markTab.add, SIGNAL(clicked()), this, SLOT(guiMarkNew()));
     connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
     connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
     connect(nodesGui.lighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
@@ -510,6 +523,8 @@ void MainWindow::newScene()
         nodesGui.nodesListModel->invisibleRootItem()->setData(rootData, ITEM_ROLE_NODE);
         nodesGui.nodesListModel->invisibleRootItem()->setData("Root", ITEM_ROLE_NAME);
     }
+
+    setCurrentTool(SELECTION_TOOL);
 }
 
 void MainWindow::openSceneDialog()
@@ -641,6 +656,25 @@ void MainWindow::saveScene(const QString& filename)
     notifyChanges(false);
 
     statusBar()->showMessage("Scene enregistrer...", 2000);
+}
+
+void MainWindow::setCurrentTool(int type)
+{
+    m_uinterface->actionSelectionTool->setChecked(false);
+    m_uinterface->actionDrawTool->setChecked(false);
+
+    switch(type)
+    {
+        case SELECTION_TOOL:
+            m_uinterface->actionSelectionTool->setChecked(true);
+            m_tbeWidget->selectionTool();
+            break;
+
+        case DRAW_TOOL:
+            m_uinterface->actionDrawTool->setChecked(true);
+            m_tbeWidget->drawTool();
+            break;
+    }
 }
 
 void MainWindow::notifyChanges(bool stat)
@@ -787,7 +821,7 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->attribTab->setEnabled(true);
 
     nodesGui.meshTab.matedit->hide();
-        
+
     QString info;
     QTextStream stream(&info);
 
@@ -833,6 +867,8 @@ void MainWindow::deselect()
 
     m_uinterface->baseAttribTab->setEnabled(false);
     m_uinterface->attribTab->setEnabled(false);
+
+    m_selInfo->setText("Pas de séléction");
 }
 
 void MainWindow::promoteChild(QStandardItem* child)

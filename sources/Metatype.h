@@ -38,5 +38,10 @@ enum ItemRole
     ITEM_ROLE_NODE = Qt::UserRole + 3
 };
 
+enum ToolType
+{
+    SELECTION_TOOL, DRAW_TOOL, TOOL_COUNT
+};
+
 #endif	/* METATYPE_H */
 

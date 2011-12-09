@@ -76,6 +76,7 @@ public slots:
     void placeCamera();
 
     void toggleGridDisplay(bool state);
+    void toggleMagnetMove(bool state);
     void toggleSelBox(bool state);
     void toggleStaticView(bool state);
 
@@ -101,6 +102,9 @@ public slots:
 
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
+    
+    void selectionTool();
+    void drawTool();
 
 signals:
     void selection(QNodeInteractor*);
@@ -148,7 +152,17 @@ private:
 
     bool m_grabCamera;
     bool m_gridEnable;
+    bool m_magnetMove;
     bool m_staticView;
+    
+    struct ToolMode
+    {
+        ToolType type;
+        QCursor cursor;
+    };
+    
+    ToolMode m_toolMode[TOOL_COUNT];
+    ToolMode* m_currentTool;
 
     tbe::Vector2i m_lastCursorPos;
     tbe::Vector2i m_curCursorPos;

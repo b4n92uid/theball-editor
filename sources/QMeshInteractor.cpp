@@ -532,7 +532,7 @@ void QMeshInteractor::pastMaterials()
     *m_target = *src;
 
     m_target->setMatrix(mat);
-    
+
     update();
 }
 
@@ -682,8 +682,8 @@ void QMeshInteractor::update()
     bool matset = m_target->isOutputMaterial();
 
     m_mainwin->nodesGui.meshTab.saveMaterials->setEnabled(true);
-
     m_mainwin->nodesGui.meshTab.saveMaterials->setChecked(matset);
+
     m_mainwin->nodesGui.meshTab.openmatedit->setEnabled(matset);
 
     tbe::Vector2b billboard = m_target->getBillBoard();
