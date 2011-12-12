@@ -71,6 +71,11 @@ QTBEngine::QTBEngine(QWidget* parent)
 
     m_toolMode[DRAW_TOOL].type = DRAW_TOOL;
     m_toolMode[DRAW_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/draw.png"));
+
+    m_toolMode[ERASER_TOOL].type = ERASER_TOOL;
+    m_toolMode[ERASER_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/eraser.png"));
+
+    m_currentTool = NULL;
 }
 
 QTBEngine::~QTBEngine()
@@ -239,6 +244,11 @@ void QTBEngine::applyTranslationEvents()
 
         position += transform;
 
+        if(m_gridEnable)
+        {
+            m_grid->setPos(m_grid->getPos().Y(position.y));
+        }
+
         Matrix4 apply;
         apply.setPos(position);
         apply.setRotate(rotation);
@@ -326,6 +336,9 @@ void QTBEngine::toggleMagnetMove(bool state)
 
 void QTBEngine::cloneSelected()
 {
+    if(!m_selectedNode)
+        return;
+
     try
     {
         using namespace tbe::scene;
@@ -347,6 +360,9 @@ void QTBEngine::cloneSelected()
 void QTBEngine::deleteSelected()
 {
     using namespace tbe::scene;
+
+    if(!m_selectedNode)
+        return;
 
     pushHistoryStat(new DeletionState(m_selectedNode));
 
@@ -413,21 +429,9 @@ void QTBEngine::setLockedNode(QNodeInteractor* node, bool state)
 
 void QTBEngine::baseOnFloor()
 {
-    tbe::scene::Node* selnode = m_selectedNode->target();
+    if(!m_selectedNode)
+        return;
 
-    pushHistoryStat(new ModificationState(m_selectedNode));
-
-    m_grid->setEnable(false);
-    m_selbox->setEnable(false);
-    m_meshScene->setInFloor(selnode);
-    m_selbox->setEnable(true);
-    m_grid->setEnable(m_gridEnable);
-
-    m_selectedNode->update();
-}
-
-void QTBEngine::centerOnFloor()
-{
     tbe::scene::Node* selnode = m_selectedNode->target();
 
     pushHistoryStat(new ModificationState(m_selectedNode));
@@ -440,8 +444,26 @@ void QTBEngine::centerOnFloor()
 
     Vector3f adjust = selnode->getPos();
     adjust.y += -selnode->getAabb().min.y;
-
     selnode->setPos(adjust);
+
+    m_selectedNode->update();
+}
+
+void QTBEngine::centerOnFloor()
+{
+    if(!m_selectedNode)
+        return;
+
+    tbe::scene::Node* selnode = m_selectedNode->target();
+
+    pushHistoryStat(new ModificationState(m_selectedNode));
+
+    m_grid->setEnable(false);
+    m_selbox->setEnable(false);
+    m_meshScene->setInFloor(selnode);
+    m_selbox->setEnable(true);
+    m_grid->setEnable(m_gridEnable);
+
     m_selectedNode->update();
 }
 
@@ -553,10 +575,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             m_selbox->setEnable(m_selectedNode);
             m_grid->setEnable(m_gridEnable);
         }
-
-        else if(m_currentTool->type == DRAW_TOOL)
-        {
-        }
     }
 }
 
@@ -630,7 +648,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         m_camera->onEvent(m_eventManager);
     }
 
-    if(ev->modifiers() & Qt::ShiftModifier)
+    if(ev->modifiers() & Qt::ShiftModifier && m_selectedNode)
     {
         QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
@@ -639,13 +657,22 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
+
+    if(ev->buttons() & Qt::RightButton && m_currentTool->type == DRAW_TOOL && m_selectedNode)
+    {
+        QNodeInteractor* painting = m_selectedNode->clone();
+
+        m_selectedNode->target()->getParent()->addChild(painting->target());
+        painting->target()->setPos(m_curCursor3D);
+        painting->setup();
+    }
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
 
-    if(ev->key() == Qt::Key_Shift)
+    if(ev->key() == Qt::Key_Shift && m_selectedNode)
     {
         pushHistoryStat(new ModificationState(m_selectedNode));
 
@@ -657,7 +684,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         m_mainwin->ui()->menuEditer->popup(QCursor::pos());
     }
 
-    if(ev->key() == Qt::Key_Q)
+    if(ev->key() == Qt::Key_Q && m_lastSelectedNode)
     {
         emit selection(m_lastSelectedNode);
     }
@@ -839,11 +866,11 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
         if(m_selectedNode && m_gridEnable)
         {
-            Vector3f position = m_selectedNode->target()->getPos();
+            Vector3f current_position = m_selectedNode->target()->getPos();
 
-            position = math::round(position, gridSize).Y(position.y);
+            current_position = math::round(current_position, gridSize).Y(current_position.y);
 
-            m_selectedNode->target()->setPos(position);
+            m_selectedNode->target()->setPos(current_position);
             m_selectedNode->update();
         }
 
@@ -852,17 +879,20 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
             Node* current = m_selectedNode->target();
             Node* colset = NULL;
 
-            Vector3f position = current->getPos();
+            Vector3f current_position = current->getAbsoluteMatrix().getPos();
 
-            float mindist = 2.0;
+            float mindist = m_meshScene->getSceneAabb().getLength();
 
             foreach(Node* node, m_nodeInterface.keys())
             {
                 if(node != current)
                 {
-                    if(position - node->getAbsoluteMatrix().getPos() < mindist)
+                    float dist = (current_position - node->getAbsoluteMatrix().getPos()).getMagnitude();
+                    dist -= node->getAabb().getLength() / 2;
+
+                    if(dist < mindist)
                     {
-                        mindist = (position - node->getAbsoluteMatrix().getPos()).getMagnitude();
+                        mindist = dist;
                         colset = node;
                     }
                 }
@@ -870,30 +900,43 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
             if(colset)
             {
-                Vector3f magnetpts[60];
+                m_selectedNode->target()->setPos(colset->getAbsoluteMatrix().getPos());
+                m_selectedNode->update();
 
-                // ...
+                #if 0
+                QList<Vector3f> magnetpts;
+                magnetpts.reserve(8 * 3);
 
-                float mindist = 2.0;
+                AABB colset_aabb = colset->getAabb();
+                Vector3f colset_pos = colset->getAbsoluteMatrix().getPos();
+
+                Vector3f::Array maincorner = colset_aabb.getPoints();
+
+                foreach(Vector3f corner, maincorner)
+                {
+                }
+
+                float mindist = colset_aabb.getLength() + 1;
 
                 int colsetindex = -1;
 
-                for(int i = 0; i < 60; i++)
+                for(int i = 0; i < magnetpts.size(); i++)
                 {
-                    if(position - magnetpts[i] < mindist)
+                    if(current_position - magnetpts[i] < mindist)
                     {
-                        mindist = (position - magnetpts[i]).getMagnitude();
+                        mindist = (current_position - magnetpts[i]).getMagnitude();
                         colsetindex = i;
                     }
                 }
 
                 if(colsetindex >= 0)
                 {
-                    position = magnetpts[colsetindex];
+                    current_position = magnetpts[colsetindex];
 
-                    m_selectedNode->target()->setPos(position);
+                    m_selectedNode->target()->setPos(current_position);
                     m_selectedNode->update();
                 }
+                #endif
             }
         }
     }
@@ -902,11 +945,11 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
     {
         if(m_selectedNode && m_gridEnable)
         {
-            Vector3f position = m_selectedNode->target()->getPos();
+            Vector3f current_position = m_selectedNode->target()->getPos();
 
-            position = math::round(position, gridSize).X(position.x).Z(position.z);
+            current_position = math::round(current_position, gridSize).X(current_position.x).Z(current_position.z);
 
-            m_selectedNode->target()->setPos(position);
+            m_selectedNode->target()->setPos(current_position);
             m_selectedNode->update();
         }
     }
@@ -955,9 +998,6 @@ void QTBEngine::clearScene()
     m_lockedNode.clear();
 
     setupSelection();
-
-    m_mainwin->zNear(m_sceneManager->getZNear());
-    m_mainwin->zFar(m_sceneManager->getZFar());
 
     m_mainwin->zNear(m_sceneManager->getZNear());
     m_mainwin->zFar(m_sceneManager->getZFar());
@@ -1204,6 +1244,13 @@ void QTBEngine::selectionTool()
 void QTBEngine::drawTool()
 {
     m_currentTool = &m_toolMode[DRAW_TOOL];
+
+    setCursor(m_currentTool->cursor);
+}
+
+void QTBEngine::eraserTool()
+{
+    m_currentTool = &m_toolMode[ERASER_TOOL];
 
     setCursor(m_currentTool->cursor);
 }

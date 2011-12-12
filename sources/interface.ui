@@ -37,13 +37,13 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
         <string>Générale</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,4,8">
+       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,8">
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
@@ -121,19 +121,6 @@
            </item>
           </layout>
          </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -1706,6 +1693,7 @@
     </property>
     <addaction name="actionSelectionTool"/>
     <addaction name="actionDrawTool"/>
+    <addaction name="actionEraserTool"/>
    </widget>
    <widget class="QMenu" name="menuMouvements">
     <property name="title">
@@ -1902,6 +1890,9 @@
    <property name="text">
     <string>Copier</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="actionPastPosition">
    <property name="icon">
@@ -2054,6 +2045,9 @@
    <property name="text">
     <string>Outil séléction</string>
    </property>
+   <property name="shortcut">
+    <string>&amp;</string>
+   </property>
   </action>
   <action name="actionDrawTool">
    <property name="checkable">
@@ -2066,6 +2060,9 @@
    <property name="text">
     <string>Outil pinceau</string>
    </property>
+   <property name="shortcut">
+    <string>É</string>
+   </property>
   </action>
   <action name="actionToggleMagnetMove">
    <property name="checkable">
@@ -2077,6 +2074,24 @@
    </property>
    <property name="text">
     <string>Magnitisme</string>
+   </property>
+   <property name="shortcut">
+    <string>M</string>
+   </property>
+  </action>
+  <action name="actionEraserTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/eraser.png</normaloff>:/Medias/medias/eraser.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outil gomme</string>
+   </property>
+   <property name="shortcut">
+    <string>&quot;</string>
    </property>
   </action>
  </widget>
