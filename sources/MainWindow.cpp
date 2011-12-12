@@ -198,6 +198,7 @@ void MainWindow::initWidgets()
     toptoolbar->addSeparator();
     toptoolbar->addAction(m_uinterface->actionSelectionTool);
     toptoolbar->addAction(m_uinterface->actionDrawTool);
+    toptoolbar->addAction(m_uinterface->actionEraserTool);
 
     QWidget* spacer = new QWidget(toptoolbar);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -402,6 +403,8 @@ void MainWindow::initConnections()
     toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
     connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
+    connect(m_uinterface->actionEraserTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    toolsigmap->setMapping(m_uinterface->actionEraserTool, ERASER_TOOL);
 
     connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
 
@@ -662,6 +665,7 @@ void MainWindow::setCurrentTool(int type)
 {
     m_uinterface->actionSelectionTool->setChecked(false);
     m_uinterface->actionDrawTool->setChecked(false);
+    m_uinterface->actionEraserTool->setChecked(false);
 
     switch(type)
     {
@@ -673,6 +677,11 @@ void MainWindow::setCurrentTool(int type)
         case DRAW_TOOL:
             m_uinterface->actionDrawTool->setChecked(true);
             m_tbeWidget->drawTool();
+            break;
+
+        case ERASER_TOOL:
+            m_uinterface->actionEraserTool->setChecked(true);
+            m_tbeWidget->eraserTool();
             break;
     }
 }
@@ -731,7 +740,7 @@ void MainWindow::guiMeshNew()
     m_tbeWidget->pauseRendring();
 
     QString filename = QFileDialog::getOpenFileName(parentWidget(), QString(),
-                                                    m_workingDir.mesh);
+                                                    m_workingDir.mesh, "Wavefrot Obj (*.obj);;Tout les fichier (*.*)");
 
     if(!filename.isNull())
     {
@@ -820,6 +829,15 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->baseAttribTab->setEnabled(true);
     m_uinterface->attribTab->setEnabled(true);
 
+    m_uinterface->actionCloneNode->setEnabled(true);
+    m_uinterface->actionDeleteNode->setEnabled(true);
+
+    m_uinterface->actionCopy->setEnabled(true);
+    m_uinterface->actionPastFields->setEnabled(true);
+    m_uinterface->actionPastPosition->setEnabled(true);
+    m_uinterface->actionPastRotation->setEnabled(true);
+    m_uinterface->actionPastScale->setEnabled(true);
+
     nodesGui.meshTab.matedit->hide();
 
     QString info;
@@ -868,6 +886,15 @@ void MainWindow::deselect()
     m_uinterface->baseAttribTab->setEnabled(false);
     m_uinterface->attribTab->setEnabled(false);
 
+    m_uinterface->actionCloneNode->setEnabled(false);
+    m_uinterface->actionDeleteNode->setEnabled(false);
+
+    m_uinterface->actionCopy->setEnabled(false);
+    m_uinterface->actionPastFields->setEnabled(false);
+    m_uinterface->actionPastPosition->setEnabled(false);
+    m_uinterface->actionPastRotation->setEnabled(false);
+    m_uinterface->actionPastScale->setEnabled(false);
+
     m_selInfo->setText("Pas de séléction");
 }
 
@@ -896,11 +923,11 @@ void MainWindow::promoteChild(QStandardItem* child)
         host->insertRow(parent->row() + 1, row);
     }
 
-    Node* parentNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
+    Node* hostNode = host->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
     Node* currNode = child->data(ITEM_ROLE_NODE).value<QNodeInteractor*>()->target();
 
-    currNode->setParent(parentNode);
-    currNode->setPos(parentNode->getPos() + currNode->getPos());
+    currNode->setPos(currNode->getParent()->getAbsoluteMatrix().getPos() + currNode->getPos());
+    currNode->setParent(hostNode);
 
     m_tbeWidget->placeCamera();
 

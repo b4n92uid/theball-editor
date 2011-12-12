@@ -105,6 +105,7 @@ public slots:
     
     void selectionTool();
     void drawTool();
+    void eraserTool();
 
 signals:
     void selection(QNodeInteractor*);
