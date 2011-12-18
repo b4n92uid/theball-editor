@@ -173,17 +173,5 @@ void QParticlesInteractor::update()
 
     blocker.unblock();
 
-
-
-    using namespace tbe;
-    using namespace scene;
-
-    Vector3f size = m_target->getBoxSize();
-    size.y = 1;
-
-    Box* axe = m_mainwin->m_tbeWidget->selbox();
-    axe->setMatrix(m_target->getAbsoluteMatrix());
-    axe->setPos(m_target->getAbsoluteMatrix().getPos() + size / 2.0f);
-    axe->setSize(size / 2.0f + 0.1f);
-    axe->getMaterial("main")->setColor(Vector4f(0, 1, 1, 0.25));
+    m_mainwin->m_tbeWidget->selectionToolSetAround(m_target, tbe::Vector4f(0, 1, 1, 0.25));
 }

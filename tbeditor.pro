@@ -63,6 +63,7 @@ SOURCES += \
     sources/HistoryState.cpp \
     sources/NodeListProxyModel.cpp \
     sources/QNodeListView.cpp \
+    sources/ToolsDialogs.cpp \
 
 HEADERS  += \
     sources/MainWindow.h \
@@ -84,12 +85,14 @@ HEADERS  += \
     sources/HistoryState.h \
     sources/NodeListProxyModel.h \
     sources/QNodeListView.h \
+    sources/ToolsDialogs.h \
 
 FORMS += \
     sources/about.ui \
     sources/interface.ui \
     sources/matedit.ui \
     sources/packer.ui \
+    sources/drawdialog.ui \
 
 RESOURCES += \
     sources/ressource.qrc

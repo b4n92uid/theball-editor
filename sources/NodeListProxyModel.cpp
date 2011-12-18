@@ -108,7 +108,7 @@ bool NodeListProxyModel::lessThan(const QModelIndex & left, const QModelIndex & 
         QNodeInteractor* nleft = sourceModel()->data(left, ITEM_ROLE_NODE).value<QNodeInteractor*>();
         QNodeInteractor* nright = sourceModel()->data(right, ITEM_ROLE_NODE).value<QNodeInteractor*>();
 
-        Vector3f campos = nleft->mainwin()->tbeWidget()->camera()->getPos();
+        Vector3f campos = nleft->mainwin()->tbeWidget()->cameraPos();
 
         return nleft->target()->getPos() - campos < nright->target()->getPos() - campos;
     }
@@ -121,7 +121,7 @@ bool NodeListProxyModel::lessThan(const QModelIndex & left, const QModelIndex & 
         QNodeInteractor* nleft = sourceModel()->data(left, ITEM_ROLE_NODE).value<QNodeInteractor*>();
         QNodeInteractor* nright = sourceModel()->data(right, ITEM_ROLE_NODE).value<QNodeInteractor*>();
 
-        Vector3f selpos = nleft->mainwin()->tbeWidget()->selbox()->getPos();
+        Vector3f selpos = nleft->mainwin()->tbeWidget()->selectionPos();
 
         return nleft->target()->getPos() - selpos < nright->target()->getPos() - selpos;
     }

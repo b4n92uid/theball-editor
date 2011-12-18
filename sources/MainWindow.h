@@ -12,7 +12,6 @@
 #include <Tbe.h>
 
 #include "ui_about.h"
-#include "ui_matedit.h"
 
 #include "QNodeListView.h"
 #include "QBrowsEdit.h"
@@ -22,9 +21,11 @@
 #include "QNodeBinders.h"
 #include "QSignalBlocker.h"
 #include "PackerDialog.h"
+#include "ToolsDialogs.h"
 #include "NodeListProxyModel.h"
 
 #include "Metatype.h"
+
 
 class Ui_mainWindow;
 
@@ -89,9 +90,9 @@ public slots:
     void pastPosition();
     void pastScale();
     void pastRotation();
-    
+
     void screenshot();
-    
+
     void setCurrentTool(int type);
 
     void guiSelect(const QModelIndex& index);
@@ -136,28 +137,6 @@ signals:
     friend class QMapMark;
 
 private:
-
-    class MaterialEditDialog : public QDialog, public Ui::MaterialEdit
-    {
-    public:
-
-        MaterialEditDialog(QWidget* parent) : QDialog(parent)
-        {
-            setupUi(this);
-
-            rgb = new QDoubleVector3Box(this, color_r, color_g, color_b);
-            clipping_framesize = new QIntVector2Box(this, clipping_x, clipping_y);
-            clipping_part = new QIntVector2Box(this, clipping_part_x, clipping_part_y);
-
-            source_mesh = NULL;
-        }
-
-        QDoubleVector3Box* rgb;
-        QIntVector2Box* clipping_framesize;
-        QIntVector2Box* clipping_part;
-
-        QMeshInteractor* source_mesh;
-    };
 
     struct NodesGuiTab
     {
@@ -311,6 +290,7 @@ private:
     Ui_mainWindow* m_uinterface;
 
     PackerDialog* m_packerDialog;
+    DrawToolDialog* m_drawToolDialog;
 
     QSettings* m_config;
 
