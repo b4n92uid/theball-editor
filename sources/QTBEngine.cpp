@@ -43,8 +43,7 @@ void swapcontainer(TC& c, T1& v1, T2& v2)
     c = (TC)v1 == c ? (TC)v2 : (TC)v1;
 }
 
-QTBEngine::QTBEngine(QWidget* parent)
-: QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
 {
     m_mainwin = dynamic_cast<MainWindow*>(parent->parentWidget());
 
@@ -693,11 +692,17 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 {
                     m_penarea->drawPos = m_penarea->getPos();
 
-                    QNodeInteractor* painting = m_selectedNode->clone();
+                    AABB area(m_penarea->GetAreaSize());
+                    int count(m_penarea->GetElemCount());
 
-                    m_selectedNode->target()->getParent()->addChild(painting->target());
-                    painting->target()->setPos(m_penarea->drawPos);
-                    painting->setup();
+                    for(int i = 0; i < count; i++)
+                    {
+                        QNodeInteractor* painting = m_selectedNode->clone();
+
+                        m_selectedNode->target()->getParent()->addChild(painting->target());
+                        painting->target()->setPos(m_penarea->drawPos + area.randPos());
+                        painting->setup();
+                    }
                 }
             }
 
@@ -1361,7 +1366,7 @@ void PenArea::SetAreaSize(double areaSize)
 
     this->m_areaSize = areaSize;
 
-    build(areaSize, 40, 40);
+    build(std::max(areaSize, 1.0), 40, 40);
     getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
     getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
     getMaterial("main")->setColor(Vector4f(0, 1, 0, 0.25));
