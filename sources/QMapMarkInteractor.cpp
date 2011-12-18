@@ -43,14 +43,5 @@ void QMapMarkInteractor::update()
 {
     QNodeInteractor::update();
 
-    using namespace tbe;
-    using namespace scene;
-
-    AABB selAabb = m_target->getAabb();
-
-    Box* axe = m_mainwin->m_tbeWidget->selbox();
-    axe->setMatrix(m_target->getAbsoluteMatrix());
-    axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
-    axe->setSize(0.25);
-    axe->getMaterial("main")->setColor(Vector4f(1, 1, 0, 0.25));
+    m_mainwin->m_tbeWidget->selectionToolSetAround(m_target, tbe::Vector4f(1, 1, 0, 0.25));
 }

@@ -207,6 +207,11 @@ void MainWindow::initWidgets()
 
     addToolBar(Qt::TopToolBarArea, toptoolbar);
 
+    m_drawToolDialog = new DrawToolDialog(this);
+    m_drawToolDialog->setWindowModality(Qt::NonModal);
+    m_drawToolDialog->setWindowFlags(Qt::Tool);
+    m_drawToolDialog->setWindowOpacity(0.8);
+
     // Générale ----------------------------------------------------------------
 
     genGui.title = m_uinterface->gen_title;
@@ -407,6 +412,10 @@ void MainWindow::initConnections()
     toolsigmap->setMapping(m_uinterface->actionEraserTool, ERASER_TOOL);
 
     connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
+
+    connect(m_drawToolDialog->zoneSize, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetAreaSize(double)));
+    connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetElemGap(double)));
+    connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetElemCount(double)));
 
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
@@ -672,11 +681,15 @@ void MainWindow::setCurrentTool(int type)
         case SELECTION_TOOL:
             m_uinterface->actionSelectionTool->setChecked(true);
             m_tbeWidget->selectionTool();
+            m_drawToolDialog->hide();
             break;
 
         case DRAW_TOOL:
             m_uinterface->actionDrawTool->setChecked(true);
+            m_drawToolDialog->show();
+            m_drawToolDialog->move(m_tbeWidget->mapToParent(m_tbeWidget->pos()));
             m_tbeWidget->drawTool();
+            m_tbeWidget->setFocus();
             break;
 
         case ERASER_TOOL:

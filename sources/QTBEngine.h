@@ -25,6 +25,9 @@ class MainWindow;
 class ClassFactory;
 class HistoryState;
 
+class PenArea;
+class SelBox;
+
 class QTBEngine : public QGLWidget
 {
     Q_OBJECT
@@ -38,17 +41,14 @@ public:
     void loadScene(const QString& filename);
     void saveScene(const QString& filename);
 
-    tbe::scene::Node* rootNode();
-
-    tbe::scene::SceneManager* sceneManager() const;
-
     tbe::scene::SceneParser* sceneParser() const;
 
-    tbe::scene::Camera* camera() const;
-
-    tbe::scene::Box* selbox();
+    tbe::scene::Node* rootNode();
 
     tbe::scene::Grid* grid();
+
+    tbe::Vector3f cameraPos() const;
+    tbe::Vector3f selectionPos() const;
 
     QStringList usedRessources();
 
@@ -102,9 +102,15 @@ public slots:
 
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
-    
+
     void selectionTool();
+    void selectionToolSetAround(tbe::scene::Node* node, tbe::Vector4f color);
+
     void drawTool();
+    void drawToolSetAreaSize(double areaSize);
+    void drawToolSetElemGap(double elemGap);
+    void drawToolSetElemCount(int elemCount);
+
     void eraserTool();
 
 signals:
@@ -155,13 +161,13 @@ private:
     bool m_gridEnable;
     bool m_magnetMove;
     bool m_staticView;
-    
+
     struct ToolMode
     {
         ToolType type;
         QCursor cursor;
     };
-    
+
     ToolMode m_toolMode[TOOL_COUNT];
     ToolMode* m_currentTool;
 
@@ -176,7 +182,9 @@ private:
     QNodeInteractor* m_selectedNode;
     QNodeInteractor* m_lastSelectedNode;
 
-    tbe::scene::Box* m_selbox;
+    PenArea* m_penarea;
+    SelBox* m_selbox;
+
     tbe::scene::Grid* m_grid;
 
     QNodeInterfaceMap m_nodeInterface;
@@ -190,6 +198,37 @@ private:
     QStack<HistoryState*> m_history;
 };
 
+class PenArea : public QObject, public tbe::scene::Sphere
+{
+    Q_OBJECT
+
+public:
+    PenArea(tbe::scene::MeshParallelScene* parallelScene);
+
+    int GetElemCount() const;
+    double GetElemGap() const;
+    double GetAreaSize() const;
+
+    tbe::Vector3f drawPos;
+
+public slots:
+    void SetElemCount(int elemCount);
+    void SetElemGap(double elemGap);
+    void SetAreaSize(double areaSize);
+
+protected:
+    double m_areaSize;
+    double m_elemGap;
+    int m_elemCount;
+};
+
+class SelBox : public QObject, public tbe::scene::Box
+{
+    Q_OBJECT
+
+public:
+    SelBox(tbe::scene::MeshParallelScene* parallelScene);
+};
 
 
 #endif	/* QTBENGINE_H */

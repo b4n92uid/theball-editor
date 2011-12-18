@@ -690,14 +690,5 @@ void QMeshInteractor::update()
     m_mainwin->nodesGui.meshTab.billboardX->setChecked(billboard.x);
     m_mainwin->nodesGui.meshTab.billboardY->setChecked(billboard.y);
 
-    using namespace tbe;
-    using namespace scene;
-
-    AABB selAabb = m_target->getAabb();
-
-    Box* axe = m_mainwin->m_tbeWidget->selbox();
-    axe->setMatrix(m_target->getAbsoluteMatrix());
-    axe->setPos(m_target->getAbsoluteMatrix() * selAabb.getCenter());
-    axe->setSize(selAabb.getSize() / 2.0f + 0.1f);
-    axe->getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
+    m_mainwin->m_tbeWidget->selectionToolSetAround(m_target, tbe::Vector4f(0, 0, 1, 0.25));
 }

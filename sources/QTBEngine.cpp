@@ -135,37 +135,31 @@ void QTBEngine::initializeGL()
     m_updateTimer->start(16);
 }
 
-tbe::scene::Box* QTBEngine::selbox()
-{
-    return m_selbox;
-}
-
 tbe::scene::Grid* QTBEngine::grid()
 {
     return m_grid;
 }
 
-tbe::scene::Camera* QTBEngine::camera() const
+tbe::Vector3f QTBEngine::cameraPos() const
 {
-    return m_camera;
+    return m_camera->getPos();
 }
 
-tbe::scene::SceneManager* QTBEngine::sceneManager() const
+tbe::Vector3f QTBEngine::selectionPos() const
 {
-    return m_sceneManager;
+    return m_selectedNode->target()->getAbsoluteMatrix().getPos();
 }
 
 void QTBEngine::setupSelection()
 {
     using namespace scene;
 
-    m_selbox = new Box(m_meshScene, 1);
-    m_selbox->setName("selection");
-    m_selbox->getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD
-                                          | Material::VERTEX_SORT_CULL_TRICK);
-    m_selbox->getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
-    m_selbox->getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
-    m_selbox->setEnable(m_selectedNode);
+    m_penarea = new PenArea(m_meshScene);
+    m_penarea->setEnable(false);
+    m_rootNode->addChild(m_penarea);
+
+    m_selbox = new SelBox(m_meshScene);
+    m_selbox->setEnable(false);
     m_rootNode->addChild(m_selbox);
 
     m_grid = new Grid(m_meshScene, 8, 8);
@@ -208,55 +202,83 @@ void QTBEngine::applyTranslationEvents()
         m_centerTarget -= m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
     }
 
-    if(m_selectedNode && m_eventManager->keyState[EventManager::KEY_LSHIFT])
+    if(m_currentTool->type == SELECTION_TOOL)
     {
-        tbe::scene::Node* selnode = m_selectedNode->target();
-
-        Vector3f position = selnode->getMatrix().getPos();
-        Quaternion rotation = selnode->getMatrix().getRotate();
-        Vector3f scale = selnode->getMatrix().getScale();
-
-        float moveSpeed = 0.01;
-
-        Vector2f mousePosRel = m_eventManager->mousePosRel;
-
-        Vector3f target = m_camera->getTarget();
-        target.y = 0;
-        target.normalize();
-
-        Vector3f left = m_camera->getLeft();
-        left.y = 0;
-        left.normalize();
-
-        Vector3f transform;
-
-        if(m_eventManager->keyState[EventManager::KEY_LALT])
+        if(m_selectedNode && m_eventManager->keyState[EventManager::KEY_LSHIFT])
         {
-            transform.y -= mousePosRel.y * moveSpeed;
+            tbe::scene::Node* selnode = m_selectedNode->target();
+
+            Vector3f position = selnode->getMatrix().getPos();
+            Quaternion rotation = selnode->getMatrix().getRotate();
+            Vector3f scale = selnode->getMatrix().getScale();
+
+            float moveSpeed = 0.01;
+
+            Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+            Vector3f target = m_camera->getTarget();
+            target.y = 0;
+            target.normalize();
+
+            Vector3f left = m_camera->getLeft();
+            left.y = 0;
+            left.normalize();
+
+            Vector3f transform;
+
+            if(m_eventManager->keyState[EventManager::KEY_LALT])
+            {
+                transform.y -= mousePosRel.y * moveSpeed;
+            }
+            else
+            {
+                Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
+                transform = rota * (-left * mousePosRel.x * moveSpeed);
+                transform -= rota * (target * mousePosRel.y * moveSpeed);
+                transform.y = 0;
+            }
+
+            position += transform;
+
+            if(m_gridEnable)
+            {
+                m_grid->setPos(m_grid->getPos().Y(position.y));
+            }
+
+            Matrix4 apply;
+            apply.setPos(position);
+            apply.setRotate(rotation);
+            apply.setScale(scale);
+
+            selnode->setMatrix(apply);
+
+            m_selectedNode->update();
         }
-        else
+    }
+
+    else if(m_currentTool->type == DRAW_TOOL)
+    {
+        if(m_eventManager->keyState[EventManager::KEY_LSHIFT])
         {
-            Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
-            transform = rota * (-left * mousePosRel.x * moveSpeed);
-            transform -= rota * (target * mousePosRel.y * moveSpeed);
-            transform.y = 0;
+            float moveSpeed = 0.05;
+
+            Vector2f mousePosRel = m_eventManager->mousePosRel;
+
+            Vector3f transform;
+
+            if(m_eventManager->keyState[EventManager::KEY_LALT])
+            {
+                transform.y -= mousePosRel.y * moveSpeed;
+            }
+            else
+            {
+                transform = -m_camera->getLeft() * mousePosRel.x * moveSpeed;
+                transform -= m_camera->getTarget() * mousePosRel.y * moveSpeed;
+                transform.y = 0;
+            }
+
+            m_penarea->setPos(m_penarea->getPos() + transform);
         }
-
-        position += transform;
-
-        if(m_gridEnable)
-        {
-            m_grid->setPos(m_grid->getPos().Y(position.y));
-        }
-
-        Matrix4 apply;
-        apply.setPos(position);
-        apply.setRotate(rotation);
-        apply.setScale(scale);
-
-        selnode->setMatrix(apply);
-
-        m_selectedNode->update();
     }
 
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
@@ -648,23 +670,39 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         m_camera->onEvent(m_eventManager);
     }
 
-    if(ev->modifiers() & Qt::ShiftModifier && m_selectedNode)
-    {
-        QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
-    }
-
     if(ev->buttons() & Qt::MidButton && ev->modifiers() & Qt::ControlModifier)
     {
         QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
     }
 
-    if(ev->buttons() & Qt::RightButton && m_currentTool->type == DRAW_TOOL && m_selectedNode)
+    if(m_currentTool->type == SELECTION_TOOL)
     {
-        QNodeInteractor* painting = m_selectedNode->clone();
+        if(ev->modifiers() & Qt::ShiftModifier && m_selectedNode)
+        {
+            QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+        }
+    }
 
-        m_selectedNode->target()->getParent()->addChild(painting->target());
-        painting->target()->setPos(m_curCursor3D);
-        painting->setup();
+    else if(m_currentTool->type == DRAW_TOOL)
+    {
+        if(ev->modifiers() & Qt::ShiftModifier)
+        {
+            if(ev->buttons() & Qt::RightButton && m_selectedNode)
+            {
+                if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->GetElemGap())
+                {
+                    m_penarea->drawPos = m_penarea->getPos();
+
+                    QNodeInteractor* painting = m_selectedNode->clone();
+
+                    m_selectedNode->target()->getParent()->addChild(painting->target());
+                    painting->target()->setPos(m_penarea->drawPos);
+                    painting->setup();
+                }
+            }
+
+            QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+        }
     }
 }
 
@@ -672,9 +710,10 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
 
-    if(ev->key() == Qt::Key_Shift && m_selectedNode)
+    if(ev->key() == Qt::Key_Shift)
     {
-        pushHistoryStat(new ModificationState(m_selectedNode));
+        if(m_selectedNode)
+            pushHistoryStat(new ModificationState(m_selectedNode));
 
         setCursor(Qt::BlankCursor);
     }
@@ -1239,6 +1278,18 @@ void QTBEngine::selectionTool()
     m_currentTool = &m_toolMode[SELECTION_TOOL];
 
     setCursor(m_currentTool->cursor);
+
+    m_penarea->setEnable(false);
+}
+
+void QTBEngine::selectionToolSetAround(tbe::scene::Node* node, tbe::Vector4f color)
+{
+    AABB selAabb = node->getAabb();
+
+    m_selbox->setMatrix(node->getAbsoluteMatrix());
+    m_selbox->setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
+    m_selbox->setSize(selAabb.getSize() / 2.0f + 0.1f);
+    m_selbox->getMaterial("main")->setColor(color);
 }
 
 void QTBEngine::drawTool()
@@ -1246,6 +1297,23 @@ void QTBEngine::drawTool()
     m_currentTool = &m_toolMode[DRAW_TOOL];
 
     setCursor(m_currentTool->cursor);
+
+    m_penarea->setEnable(true);
+}
+
+void QTBEngine::drawToolSetAreaSize(double areaSize)
+{
+    m_penarea->SetAreaSize(areaSize);
+}
+
+void QTBEngine::drawToolSetElemGap(double elemGap)
+{
+    m_penarea->SetElemGap(elemGap);
+}
+
+void QTBEngine::drawToolSetElemCount(int elemCount)
+{
+    m_penarea->SetElemCount(elemCount);
 }
 
 void QTBEngine::eraserTool()
@@ -1253,4 +1321,64 @@ void QTBEngine::eraserTool()
     m_currentTool = &m_toolMode[ERASER_TOOL];
 
     setCursor(m_currentTool->cursor);
+
+    m_penarea->setEnable(true);
+}
+
+PenArea::PenArea(tbe::scene::MeshParallelScene* parallelScene) : Sphere(parallelScene)
+{
+    setName("pencile");
+
+    SetAreaSize(1);
+    SetElemGap(1);
+    SetElemCount(1);
+}
+
+void PenArea::SetElemCount(int elemCount)
+{
+    this->m_elemCount = elemCount;
+}
+
+int PenArea::GetElemCount() const
+{
+    return m_elemCount;
+}
+
+void PenArea::SetElemGap(double elemGap)
+{
+    this->m_elemGap = elemGap;
+}
+
+double PenArea::GetElemGap() const
+{
+    return m_elemGap;
+}
+
+void PenArea::SetAreaSize(double areaSize)
+{
+    using namespace tbe;
+    using namespace scene;
+
+    this->m_areaSize = areaSize;
+
+    build(areaSize, 40, 40);
+    getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
+    getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
+    getMaterial("main")->setColor(Vector4f(0, 1, 0, 0.25));
+}
+
+double PenArea::GetAreaSize() const
+{
+    return m_areaSize;
+}
+
+SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene, 1)
+{
+    using namespace tbe;
+    using namespace scene;
+
+    setName("selection");
+    getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
+    getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
+    getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
 }
