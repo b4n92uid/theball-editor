@@ -210,7 +210,6 @@ void MainWindow::initWidgets()
     m_drawToolDialog = new DrawToolDialog(this);
     m_drawToolDialog->setWindowModality(Qt::NonModal);
     m_drawToolDialog->setWindowFlags(Qt::Tool);
-    m_drawToolDialog->setWindowOpacity(0.8);
 
     // Générale ----------------------------------------------------------------
 
@@ -415,7 +414,7 @@ void MainWindow::initConnections()
 
     connect(m_drawToolDialog->zoneSize, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetAreaSize(double)));
     connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetElemGap(double)));
-    connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetElemCount(double)));
+    connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(drawToolSetElemCount(int)));
 
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
