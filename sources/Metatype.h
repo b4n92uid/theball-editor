@@ -40,7 +40,7 @@ enum ItemRole
 
 enum ToolType
 {
-    SELECTION_TOOL, DRAW_TOOL, ERASER_TOOL, TOOL_COUNT
+    SELECTION_TOOL, DRAW_TOOL, TOOL_COUNT
 };
 
 #endif	/* METATYPE_H */

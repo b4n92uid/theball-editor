@@ -198,7 +198,6 @@ void MainWindow::initWidgets()
     toptoolbar->addSeparator();
     toptoolbar->addAction(m_uinterface->actionSelectionTool);
     toptoolbar->addAction(m_uinterface->actionDrawTool);
-    toptoolbar->addAction(m_uinterface->actionEraserTool);
 
     QWidget* spacer = new QWidget(toptoolbar);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -452,13 +451,11 @@ void MainWindow::initConnections()
     QSignalMapper* toolsigmap = new QSignalMapper(this);
     toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
     toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
-    toolsigmap->setMapping(m_uinterface->actionEraserTool, ERASER_TOOL);
 
     connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
 
     connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
-    connect(m_uinterface->actionEraserTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
 
     // Timer
 
@@ -684,7 +681,6 @@ void MainWindow::setCurrentTool(int type)
 {
     m_uinterface->actionSelectionTool->setChecked(false);
     m_uinterface->actionDrawTool->setChecked(false);
-    m_uinterface->actionEraserTool->setChecked(false);
 
     switch(type)
     {
@@ -700,11 +696,6 @@ void MainWindow::setCurrentTool(int type)
             m_drawToolDialog->move(m_tbeWidget->mapToParent(m_tbeWidget->pos()));
             m_tbeWidget->selectDrawTool();
             m_tbeWidget->setFocus();
-            break;
-
-        case ERASER_TOOL:
-            m_uinterface->actionEraserTool->setChecked(true);
-            m_tbeWidget->selectEraserTool();
             break;
     }
 }

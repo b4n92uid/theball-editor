@@ -93,6 +93,9 @@ public slots:
     void cloneSelected();
     void deleteSelected();
 
+    void deleteNode(QNodeInteractor* node);
+    QNodeInteractor* cloneNode(QNodeInteractor* node);
+
     void baseOnFloor();
     void centerOnFloor();
 
@@ -112,7 +115,6 @@ public slots:
 
     void selectSelectionTool();
     void selectDrawTool();
-    void selectEraserTool();
 
 signals:
     void selection(QNodeInteractor*);
