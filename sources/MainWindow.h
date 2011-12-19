@@ -57,6 +57,8 @@ protected:
 
     bool leaveSafely();
 
+    void initSceneConnections();
+
 public slots:
 
     void newScene();

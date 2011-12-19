@@ -105,5 +105,5 @@ void QLightInteractor::update()
 
     blocker.unblock();
 
-    m_mainwin->m_tbeWidget->selectionToolSetAround(m_target, tbe::Vector4f(1, 1, 1, 0.25));
+    m_mainwin->m_tbeWidget->selBox()->setAround(m_target, tbe::Vector4f(1, 1, 1, 0.25));
 }
