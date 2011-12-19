@@ -25,7 +25,10 @@ class MainWindow;
 class ClassFactory;
 class HistoryState;
 
+class PenAreaInterface;
 class PenArea;
+
+class SelBoxInterface;
 class SelBox;
 
 class QTBEngine : public QGLWidget
@@ -46,6 +49,10 @@ public:
     tbe::scene::Node* rootNode();
 
     tbe::scene::Grid* grid();
+
+    SelBoxInterface* selBox();
+    
+    PenAreaInterface* penArea();
 
     tbe::Vector3f cameraPos() const;
     tbe::Vector3f selectionPos() const;
@@ -103,15 +110,9 @@ public slots:
     void fogApply(tbe::Vector4f color, float start, float end);
     void fogClear();
 
-    void selectionTool();
-    void selectionToolSetAround(tbe::scene::Node* node, tbe::Vector4f color);
-
-    void drawTool();
-    void drawToolSetAreaSize(double areaSize);
-    void drawToolSetElemGap(double elemGap);
-    void drawToolSetElemCount(int elemCount);
-
-    void eraserTool();
+    void selectSelectionTool();
+    void selectDrawTool();
+    void selectEraserTool();
 
 signals:
     void selection(QNodeInteractor*);
@@ -198,36 +199,70 @@ private:
     QStack<HistoryState*> m_history;
 };
 
-class PenArea : public QObject, public tbe::scene::Sphere
+class PenAreaInterface : public QObject
+{
+    Q_OBJECT
+
+public:
+    PenAreaInterface();
+
+    tbe::Vector3f drawPos;
+
+    tbe::Vector3f getMaxScale() const;
+    tbe::Vector3f getMinScale() const;
+    tbe::Vector3f getMaxRot() const;
+    tbe::Vector3f getMinRot() const;
+    int getElemCount() const;
+    double getElemGap() const;
+    double getAreaSize() const;
+
+public slots:
+    void setMaxScale(tbe::Vector3f maxScale);
+    void setMinScale(tbe::Vector3f minScale);
+    void setMaxRot(tbe::Vector3f maxRot);
+    void setMinRot(tbe::Vector3f minRot);
+    void setElemCount(int elemCount);
+    void setElemGap(double elemGap);
+    virtual void setAreaSize(double areaSize) = 0;
+
+protected:
+    double m_areaSize;
+    double m_elemGap;
+    int m_elemCount;
+
+    tbe::Vector3f m_minRot, m_maxRot;
+    tbe::Vector3f m_minScale, m_maxScale;
+};
+
+class PenArea : public PenAreaInterface, public tbe::scene::Sphere
 {
     Q_OBJECT
 
 public:
     PenArea(tbe::scene::MeshParallelScene* parallelScene);
 
-    int GetElemCount() const;
-    double GetElemGap() const;
-    double GetAreaSize() const;
-
-    tbe::Vector3f drawPos;
-
 public slots:
-    void SetElemCount(int elemCount);
-    void SetElemGap(double elemGap);
-    void SetAreaSize(double areaSize);
-
-protected:
-    double m_areaSize;
-    double m_elemGap;
-    int m_elemCount;
+    void setAreaSize(double areaSize);
 };
 
-class SelBox : public QObject, public tbe::scene::Box
+class SelBoxInterface : public QObject
+{
+    Q_OBJECT
+    
+public:
+    SelBoxInterface();
+    
+    virtual void setAround(tbe::scene::Node* node, tbe::Vector4f color) = 0;
+};
+
+class SelBox : public SelBoxInterface, public tbe::scene::Box
 {
     Q_OBJECT
 
 public:
     SelBox(tbe::scene::MeshParallelScene* parallelScene);
+    
+    void setAround(tbe::scene::Node* node, tbe::Vector4f color);
 };
 
 

@@ -35,6 +35,10 @@ class DrawToolDialog : public QDialog, public Ui::DrawToolDialog
 {
 public:
     DrawToolDialog(QWidget* parent);
+
+    QDoubleVector3Box *minRotation, *maxRotation;
+    QDoubleVector3Box *minScale, *maxScale;
+
 };
 
 #endif	/* TOOLSDIALOGS_H */

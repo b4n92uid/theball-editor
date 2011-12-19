@@ -399,23 +399,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
     connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
 
-    // Tools Menu
-
-    QSignalMapper* toolsigmap = new QSignalMapper(this);
-
-    connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
-    toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
-    connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
-    toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
-    connect(m_uinterface->actionEraserTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
-    toolsigmap->setMapping(m_uinterface->actionEraserTool, ERASER_TOOL);
-
-    connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
-
-    connect(m_drawToolDialog->zoneSize, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetAreaSize(double)));
-    connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(drawToolSetElemGap(double)));
-    connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(drawToolSetElemCount(int)));
-
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
@@ -464,6 +447,21 @@ void MainWindow::initConnections()
 
     connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbiantApply(const tbe::Vector3f&)));
 
+    // Tools Menu
+
+    QSignalMapper* toolsigmap = new QSignalMapper(this);
+    toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
+    toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
+    toolsigmap->setMapping(m_uinterface->actionEraserTool, ERASER_TOOL);
+
+    connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
+
+    connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    connect(m_uinterface->actionEraserTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+
+    // Timer
+
     m_timer = new QTimer(this);
     // m_timer->start(16);
 }
@@ -503,6 +501,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     else
         event->ignore();
+}
+
+void MainWindow::initSceneConnections()
+{
+    PenAreaInterface* penArea = m_tbeWidget->penArea();
+
+    connect(m_drawToolDialog->zoneSize, SIGNAL(valueChanged(double)), penArea, SLOT(setAreaSize(double)));
+    connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), penArea, SLOT(setElemGap(double)));
+    connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(int)), penArea, SLOT(setElemCount(int)));
+    connect(m_drawToolDialog->minRotation, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMinRot(tbe::Vector3f)));
+    connect(m_drawToolDialog->maxRotation, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMaxRot(tbe::Vector3f)));
+    connect(m_drawToolDialog->minScale, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMinScale(tbe::Vector3f)));
+    connect(m_drawToolDialog->maxScale, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMaxScale(tbe::Vector3f)));
 }
 
 void MainWindow::newScene()
@@ -603,6 +614,8 @@ void MainWindow::openScene(const QString& filename)
         m_filename = filename;
 
         notifyChanges(false);
+
+        initSceneConnections();
     }
     catch(std::exception& e)
     {
@@ -679,7 +692,7 @@ void MainWindow::setCurrentTool(int type)
     {
         case SELECTION_TOOL:
             m_uinterface->actionSelectionTool->setChecked(true);
-            m_tbeWidget->selectionTool();
+            m_tbeWidget->selectSelectionTool();
             m_drawToolDialog->hide();
             break;
 
@@ -687,13 +700,13 @@ void MainWindow::setCurrentTool(int type)
             m_uinterface->actionDrawTool->setChecked(true);
             m_drawToolDialog->show();
             m_drawToolDialog->move(m_tbeWidget->mapToParent(m_tbeWidget->pos()));
-            m_tbeWidget->drawTool();
+            m_tbeWidget->selectDrawTool();
             m_tbeWidget->setFocus();
             break;
 
         case ERASER_TOOL:
             m_uinterface->actionEraserTool->setChecked(true);
-            m_tbeWidget->eraserTool();
+            m_tbeWidget->selectEraserTool();
             break;
     }
 }

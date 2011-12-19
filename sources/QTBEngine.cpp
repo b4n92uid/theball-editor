@@ -55,6 +55,11 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
     m_selectedNode = NULL;
     m_lastSelectedNode = NULL;
 
+    m_selbox = NULL;
+    m_penarea = NULL;
+
+    m_grid = NULL;
+
     m_classFactory = new ClassFactory(m_mainwin);
 
     m_gridEnable = false;
@@ -124,9 +129,6 @@ void QTBEngine::initializeGL()
 
     m_rootNode = m_sceneManager->getRootNode();
 
-    m_selbox = NULL;
-    m_grid = NULL;
-
     m_centerTarget = 0;
 
     m_updateTimer = new QTimer(this);
@@ -154,11 +156,11 @@ void QTBEngine::setupSelection()
     using namespace scene;
 
     m_penarea = new PenArea(m_meshScene);
-    m_penarea->setEnable(false);
+    m_penarea->Node::setEnable(false);
     m_rootNode->addChild(m_penarea);
 
     m_selbox = new SelBox(m_meshScene);
-    m_selbox->setEnable(false);
+    m_selbox->Node::setEnable(false);
     m_rootNode->addChild(m_selbox);
 
     m_grid = new Grid(m_meshScene, 8, 8);
@@ -458,9 +460,11 @@ void QTBEngine::baseOnFloor()
     pushHistoryStat(new ModificationState(m_selectedNode));
 
     m_grid->setEnable(false);
-    m_selbox->setEnable(false);
+    m_selbox->Node::setEnable(false);
+
     m_meshScene->setInFloor(selnode);
-    m_selbox->setEnable(true);
+
+    m_selbox->Node::setEnable(true);
     m_grid->setEnable(m_gridEnable);
 
     Vector3f adjust = selnode->getPos();
@@ -480,9 +484,11 @@ void QTBEngine::centerOnFloor()
     pushHistoryStat(new ModificationState(m_selectedNode));
 
     m_grid->setEnable(false);
-    m_selbox->setEnable(false);
+    m_selbox->Node::setEnable(false);
+
     m_meshScene->setInFloor(selnode);
-    m_selbox->setEnable(true);
+
+    m_selbox->Node::setEnable(true);
     m_grid->setEnable(m_gridEnable);
 
     m_selectedNode->update();
@@ -561,7 +567,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         if(m_currentTool->type == SELECTION_TOOL)
         {
-            m_selbox->setEnable(false);
+            m_selbox->Node::setEnable(false);
             m_grid->setEnable(false);
 
             foreach(QNodeInteractor* node, m_lockedNode.keys())
@@ -593,7 +599,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             foreach(QNodeInteractor* node, m_lockedNode.keys())
             node->target()->setEnable(true);
 
-            m_selbox->setEnable(m_selectedNode);
+            m_selbox->Node::setEnable(m_selectedNode);
             m_grid->setEnable(m_gridEnable);
         }
     }
@@ -688,12 +694,12 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         {
             if(ev->buttons() & Qt::RightButton && m_selectedNode)
             {
-                if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->GetElemGap())
+                if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->getElemGap())
                 {
                     m_penarea->drawPos = m_penarea->getPos();
 
-                    AABB area(m_penarea->GetAreaSize());
-                    int count(m_penarea->GetElemCount());
+                    AABB area(m_penarea->getAreaSize());
+                    int count(m_penarea->getElemCount());
 
                     for(int i = 0; i < count; i++)
                     {
@@ -1096,6 +1102,16 @@ tbe::scene::Node* QTBEngine::rootNode()
     return m_rootNode;
 }
 
+PenAreaInterface* QTBEngine::penArea()
+{
+    return m_penarea;
+}
+
+SelBoxInterface* QTBEngine::selBox()
+{
+    return m_selbox;
+}
+
 QMesh* QTBEngine::meshNew(const QString& filename)
 {
     using namespace tbe;
@@ -1121,7 +1137,7 @@ QMesh* QTBEngine::meshNew(const QString& filename)
 
     m_rootNode->addChild(mesh);
 
-    mesh->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
+    mesh->Node::setPos(m_selbox->getPos());
     mesh->setup();
 
     return mesh;
@@ -1133,7 +1149,7 @@ QLight* QTBEngine::lightNew()
 
     m_rootNode->addChild(light);
 
-    light->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
+    light->Node::setPos(m_selbox->getPos());
     light->setup();
 
     return light;
@@ -1145,7 +1161,7 @@ QParticles* QTBEngine::particlesNew()
 
     m_rootNode->addChild(particles);
 
-    particles->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
+    particles->Node::setPos(m_selbox->getPos());
     particles->setup();
 
     return particles;
@@ -1157,7 +1173,7 @@ QMapMark* QTBEngine::markNew()
 
     m_rootNode->addChild(mark);
 
-    mark->Node::setPos(m_selbox->getAbsoluteMatrix().getPos());
+    mark->Node::setPos(m_selbox->getPos());
     mark->setup();
 
     return mark;
@@ -1210,7 +1226,7 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
 
-    m_selbox->setEnable(true);
+    m_selbox->Node::setEnable(true);
 
     m_selectedNode->select();
 
@@ -1226,7 +1242,7 @@ void QTBEngine::deselectNode()
         m_selectedNode = NULL;
     }
 
-    m_selbox->setEnable(false);
+    m_selbox->Node::setEnable(false);
 }
 
 QStringList QTBEngine::usedRessources()
@@ -1278,88 +1294,119 @@ void QTBEngine::setZFar(float value)
     m_sceneManager->updateViewParameter();
 }
 
-void QTBEngine::selectionTool()
+void QTBEngine::selectSelectionTool()
 {
     m_currentTool = &m_toolMode[SELECTION_TOOL];
 
     setCursor(m_currentTool->cursor);
 
-    m_penarea->setEnable(false);
+    m_penarea->Node::setEnable(false);
 }
 
-void QTBEngine::selectionToolSetAround(tbe::scene::Node* node, tbe::Vector4f color)
-{
-    AABB selAabb = node->getAabb();
-
-    m_selbox->setMatrix(node->getAbsoluteMatrix());
-    m_selbox->setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
-    m_selbox->setSize(selAabb.getSize() / 2.0f + 0.1f);
-    m_selbox->getMaterial("main")->setColor(color);
-}
-
-void QTBEngine::drawTool()
+void QTBEngine::selectDrawTool()
 {
     m_currentTool = &m_toolMode[DRAW_TOOL];
 
     setCursor(m_currentTool->cursor);
 
-    m_penarea->setEnable(true);
+    m_penarea->Node::setEnable(true);
+    m_penarea->Node::setPos(m_curCursor3D);
 }
 
-void QTBEngine::drawToolSetAreaSize(double areaSize)
-{
-    m_penarea->SetAreaSize(areaSize);
-}
-
-void QTBEngine::drawToolSetElemGap(double elemGap)
-{
-    m_penarea->SetElemGap(elemGap);
-}
-
-void QTBEngine::drawToolSetElemCount(int elemCount)
-{
-    m_penarea->SetElemCount(elemCount);
-}
-
-void QTBEngine::eraserTool()
+void QTBEngine::selectEraserTool()
 {
     m_currentTool = &m_toolMode[ERASER_TOOL];
 
     setCursor(m_currentTool->cursor);
 
-    m_penarea->setEnable(true);
+    m_penarea->Node::setEnable(true);
+}
+
+PenAreaInterface::PenAreaInterface()
+{
+    m_areaSize = 0;
+    m_elemGap = 1;
+    m_elemCount = 1;
+}
+
+void PenAreaInterface::setMaxScale(tbe::Vector3f maxScale)
+{
+    this->m_maxScale = maxScale;
+}
+
+tbe::Vector3f PenAreaInterface::getMaxScale() const
+{
+    return m_maxScale;
+}
+
+void PenAreaInterface::setMinScale(tbe::Vector3f minScale)
+{
+    this->m_minScale = minScale;
+}
+
+tbe::Vector3f PenAreaInterface::getMinScale() const
+{
+    return m_minScale;
+}
+
+void PenAreaInterface::setMaxRot(tbe::Vector3f maxRot)
+{
+    this->m_maxRot = maxRot;
+}
+
+tbe::Vector3f PenAreaInterface::getMaxRot() const
+{
+    return m_maxRot;
+}
+
+void PenAreaInterface::setMinRot(tbe::Vector3f minRot)
+{
+    this->m_minRot = minRot;
+}
+
+tbe::Vector3f PenAreaInterface::getMinRot() const
+{
+    return m_minRot;
+}
+
+void PenAreaInterface::setElemCount(int elemCount)
+{
+    this->m_elemCount = elemCount;
+}
+
+int PenAreaInterface::getElemCount() const
+{
+    return m_elemCount;
+}
+
+void PenAreaInterface::setElemGap(double elemGap)
+{
+    this->m_elemGap = elemGap;
+}
+
+double PenAreaInterface::getElemGap() const
+{
+    return m_elemGap;
+}
+
+void PenAreaInterface::setAreaSize(double areaSize)
+{
+    this->m_areaSize = areaSize;
+}
+
+double PenAreaInterface::getAreaSize() const
+{
+    return m_areaSize;
 }
 
 PenArea::PenArea(tbe::scene::MeshParallelScene* parallelScene) : Sphere(parallelScene)
 {
     setName("pencile");
 
-    SetAreaSize(1);
-    SetElemGap(1);
-    SetElemCount(1);
+    setAreaSize(0);
 }
 
-void PenArea::SetElemCount(int elemCount)
-{
-    this->m_elemCount = elemCount;
-}
-
-int PenArea::GetElemCount() const
-{
-    return m_elemCount;
-}
-
-void PenArea::SetElemGap(double elemGap)
-{
-    this->m_elemGap = elemGap;
-}
-
-double PenArea::GetElemGap() const
-{
-    return m_elemGap;
-}
-
-void PenArea::SetAreaSize(double areaSize)
+void PenArea::setAreaSize(double areaSize)
 {
     using namespace tbe;
     using namespace scene;
@@ -1372,9 +1419,8 @@ void PenArea::SetAreaSize(double areaSize)
     getMaterial("main")->setColor(Vector4f(0, 1, 0, 0.25));
 }
 
-double PenArea::GetAreaSize() const
+SelBoxInterface::SelBoxInterface()
 {
-    return m_areaSize;
 }
 
 SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene, 1)
@@ -1386,4 +1432,14 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
     getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
     getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
+}
+
+void SelBox::setAround(tbe::scene::Node* node, tbe::Vector4f color)
+{
+    AABB selAabb = node->getAabb();
+
+    setMatrix(node->getAbsoluteMatrix());
+    setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
+    setSize(selAabb.getSize() / 2.0f + 0.1f);
+    getMaterial("main")->setColor(color);
 }
