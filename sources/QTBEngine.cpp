@@ -172,8 +172,16 @@ void QTBEngine::setupSelection()
 
 void QTBEngine::placeCamera()
 {
-    if(!m_staticView && m_selectedNode)
-        m_centerTarget = m_selectedNode->target()->getAbsoluteMatrix().getPos();
+    if(!m_selectedNode)
+        return;
+
+    if(m_staticView)
+        return;
+
+    if(m_toolMode->type != SELECTION_TOOL)
+        return;
+
+    m_centerTarget = m_selectedNode->target()->getAbsoluteMatrix().getPos();
 }
 
 void QTBEngine::pauseRendring()
@@ -701,13 +709,24 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                     AABB area(m_penarea->getAreaSize());
                     int count(m_penarea->getElemCount());
 
+                    Vector2f rotationRange = m_penarea->getRotationRange();
+                    Vector2f scaleRange = m_penarea->getScaleRange();
+
                     for(int i = 0; i < count; i++)
                     {
                         QNodeInteractor* painting = m_selectedNode->clone();
 
                         m_selectedNode->target()->getParent()->addChild(painting->target());
-                        painting->target()->setPos(m_penarea->drawPos + area.randPos());
+
                         painting->setup();
+
+                        Matrix4 mat;
+                        mat.setRotate(Quaternion(AABB(rotationRange.x, rotationRange.y).randPos()));
+                        mat.setPos(m_penarea->drawPos + area.randPos());
+
+                        painting->target()->setMatrix(mat);
+
+                        painting->setScale(math::rand(scaleRange.x, scaleRange.y));
                     }
                 }
             }
@@ -1329,44 +1348,24 @@ PenAreaInterface::PenAreaInterface()
     m_elemCount = 1;
 }
 
-void PenAreaInterface::setMaxScale(tbe::Vector3f maxScale)
+void PenAreaInterface::setScaleRange(tbe::Vector2f scale)
 {
-    this->m_maxScale = maxScale;
+    this->m_scaleRange = scale;
 }
 
-tbe::Vector3f PenAreaInterface::getMaxScale() const
+tbe::Vector2f PenAreaInterface::getScaleRange() const
 {
-    return m_maxScale;
+    return m_scaleRange;
 }
 
-void PenAreaInterface::setMinScale(tbe::Vector3f minScale)
+void PenAreaInterface::setRotationRange(tbe::Vector2f rotation)
 {
-    this->m_minScale = minScale;
+    this->m_rotationRange = rotation;
 }
 
-tbe::Vector3f PenAreaInterface::getMinScale() const
+tbe::Vector2f PenAreaInterface::getRotationRange() const
 {
-    return m_minScale;
-}
-
-void PenAreaInterface::setMaxRot(tbe::Vector3f maxRot)
-{
-    this->m_maxRot = maxRot;
-}
-
-tbe::Vector3f PenAreaInterface::getMaxRot() const
-{
-    return m_maxRot;
-}
-
-void PenAreaInterface::setMinRot(tbe::Vector3f minRot)
-{
-    this->m_minRot = minRot;
-}
-
-tbe::Vector3f PenAreaInterface::getMinRot() const
-{
-    return m_minRot;
+    return m_rotationRange;
 }
 
 void PenAreaInterface::setElemCount(int elemCount)
