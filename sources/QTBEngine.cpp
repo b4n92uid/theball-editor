@@ -76,9 +76,6 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
     m_toolMode[DRAW_TOOL].type = DRAW_TOOL;
     m_toolMode[DRAW_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/draw.png"));
 
-    m_toolMode[ERASER_TOOL].type = ERASER_TOOL;
-    m_toolMode[ERASER_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/eraser.png"));
-
     m_currentTool = NULL;
 }
 
@@ -365,6 +362,27 @@ void QTBEngine::toggleMagnetMove(bool state)
     m_magnetMove = state;
 }
 
+void QTBEngine::deleteNode(QNodeInteractor* node)
+{
+    pushHistoryStat(new DeletionState(node));
+
+    tbe::scene::Node* target = node->target();
+    target->dettach();
+
+    node->unsetup();
+}
+
+QNodeInteractor* QTBEngine::cloneNode(QNodeInteractor* node)
+{
+    QNodeInteractor* clone = node->clone();
+
+    node->target()->getParent()->addChild(clone->target());
+
+    clone->setup();
+
+    return clone;
+}
+
 void QTBEngine::cloneSelected()
 {
     if(!m_selectedNode)
@@ -374,11 +392,7 @@ void QTBEngine::cloneSelected()
     {
         using namespace tbe::scene;
 
-        QNodeInteractor* clone = m_selectedNode->clone();
-
-        m_selectedNode->target()->getParent()->addChild(clone->target());
-
-        clone->setup();
+        QNodeInteractor* clone = cloneNode(m_selectedNode);
 
         emit selection(clone);
     }
@@ -395,15 +409,7 @@ void QTBEngine::deleteSelected()
     if(!m_selectedNode)
         return;
 
-    pushHistoryStat(new DeletionState(m_selectedNode));
-
-    m_selectedNode->unsetup();
-
-    Node* node = m_selectedNode->target();
-
-    node->dettach();
-
-    unregisterInterface(m_selectedNode);
+    deleteNode(m_selectedNode);
 
     emit deselection();
 }
@@ -700,33 +706,48 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         if(ev->modifiers() & Qt::ShiftModifier)
         {
-            if(ev->buttons() & Qt::RightButton && m_selectedNode)
+            if(ev->buttons() & Qt::RightButton)
             {
-                if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->getElemGap())
+                if(ev->modifiers() & Qt::ControlModifier)
                 {
-                    m_penarea->drawPos = m_penarea->getPos();
+                    float areaSize = std::max(m_penarea->getAreaSize(), 1.0);
 
-                    AABB area(m_penarea->getAreaSize());
-                    int count(m_penarea->getElemCount());
-
-                    Vector2f rotationRange = m_penarea->getRotationRange();
-                    Vector2f scaleRange = m_penarea->getScaleRange();
-
-                    for(int i = 0; i < count; i++)
+                    foreach(QNodeInteractor* node, m_nodeInterface.values())
                     {
-                        QNodeInteractor* painting = m_selectedNode->clone();
+                        if(node->target()->getAbsoluteMatrix().getPos() - m_penarea->getPos() < areaSize)
+                        {
+                            deleteNode(node);
+                        }
+                    }
+                }
+                else if(m_selectedNode)
+                {
+                    if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->getElemGap())
+                    {
+                        m_penarea->drawPos = m_penarea->getPos();
 
-                        m_selectedNode->target()->getParent()->addChild(painting->target());
+                        AABB area(m_penarea->getAreaSize());
+                        int count(m_penarea->getElemCount());
 
-                        painting->setup();
+                        Vector2f rotationRange = m_penarea->getRotationRange();
+                        Vector2f scaleRange = m_penarea->getScaleRange();
 
-                        Matrix4 mat;
-                        mat.setRotate(Quaternion(AABB(rotationRange.x, rotationRange.y).randPos()));
-                        mat.setPos(m_penarea->drawPos + area.randPos());
+                        for(int i = 0; i < count; i++)
+                        {
+                            QNodeInteractor* painting = m_selectedNode->clone();
 
-                        painting->target()->setMatrix(mat);
+                            m_selectedNode->target()->getParent()->addChild(painting->target());
 
-                        painting->setScale(math::rand(scaleRange.x, scaleRange.y));
+                            painting->setup();
+
+                            Matrix4 mat;
+                            mat.setRotate(Quaternion(AABB(rotationRange.x, rotationRange.y).randPos()));
+                            mat.setPos(m_penarea->drawPos + area.randPos());
+
+                            painting->target()->setMatrix(mat);
+
+                            painting->setScale(math::rand(scaleRange.x, scaleRange.y));
+                        }
                     }
                 }
             }
@@ -1330,15 +1351,6 @@ void QTBEngine::selectDrawTool()
 
     m_penarea->Node::setEnable(true);
     m_penarea->Node::setPos(m_curCursor3D);
-}
-
-void QTBEngine::selectEraserTool()
-{
-    m_currentTool = &m_toolMode[ERASER_TOOL];
-
-    setCursor(m_currentTool->cursor);
-
-    m_penarea->Node::setEnable(true);
 }
 
 PenAreaInterface::PenAreaInterface()

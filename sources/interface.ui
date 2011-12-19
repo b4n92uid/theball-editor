@@ -1693,7 +1693,6 @@
     </property>
     <addaction name="actionSelectionTool"/>
     <addaction name="actionDrawTool"/>
-    <addaction name="actionEraserTool"/>
    </widget>
    <widget class="QMenu" name="menuMouvements">
     <property name="title">
@@ -2077,21 +2076,6 @@
    </property>
    <property name="shortcut">
     <string>M</string>
-   </property>
-  </action>
-  <action name="actionEraserTool">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/eraser.png</normaloff>:/Medias/medias/eraser.png</iconset>
-   </property>
-   <property name="text">
-    <string>Outil gomme</string>
-   </property>
-   <property name="shortcut">
-    <string>&quot;</string>
    </property>
   </action>
  </widget>
