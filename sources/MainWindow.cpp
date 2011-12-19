@@ -510,10 +510,8 @@ void MainWindow::initSceneConnections()
     connect(m_drawToolDialog->zoneSize, SIGNAL(valueChanged(double)), penArea, SLOT(setAreaSize(double)));
     connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), penArea, SLOT(setElemGap(double)));
     connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(int)), penArea, SLOT(setElemCount(int)));
-    connect(m_drawToolDialog->minRotation, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMinRot(tbe::Vector3f)));
-    connect(m_drawToolDialog->maxRotation, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMaxRot(tbe::Vector3f)));
-    connect(m_drawToolDialog->minScale, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMinScale(tbe::Vector3f)));
-    connect(m_drawToolDialog->maxScale, SIGNAL(valueChanged(tbe::Vector3f)), penArea, SLOT(setMaxScale(tbe::Vector3f)));
+    connect(m_drawToolDialog->rotationRange, SIGNAL(valueChanged(tbe::Vector2f)), penArea, SLOT(setRotationRange(tbe::Vector2f)));
+    connect(m_drawToolDialog->scaleRange, SIGNAL(valueChanged(tbe::Vector2f)), penArea, SLOT(setScaleRange(tbe::Vector2f)));
 }
 
 void MainWindow::newScene()

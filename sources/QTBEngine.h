@@ -51,7 +51,7 @@ public:
     tbe::scene::Grid* grid();
 
     SelBoxInterface* selBox();
-    
+
     PenAreaInterface* penArea();
 
     tbe::Vector3f cameraPos() const;
@@ -208,30 +208,30 @@ public:
 
     tbe::Vector3f drawPos;
 
-    tbe::Vector3f getMaxScale() const;
-    tbe::Vector3f getMinScale() const;
-    tbe::Vector3f getMaxRot() const;
-    tbe::Vector3f getMinRot() const;
-    int getElemCount() const;
-    double getElemGap() const;
     double getAreaSize() const;
 
+    double getElemGap() const;
+    int getElemCount() const;
+
+    tbe::Vector2f getRotationRange() const;
+    tbe::Vector2f getScaleRange() const;
+
 public slots:
-    void setMaxScale(tbe::Vector3f maxScale);
-    void setMinScale(tbe::Vector3f minScale);
-    void setMaxRot(tbe::Vector3f maxRot);
-    void setMinRot(tbe::Vector3f minRot);
-    void setElemCount(int elemCount);
-    void setElemGap(double elemGap);
     virtual void setAreaSize(double areaSize) = 0;
+
+    void setElemGap(double elemGap);
+    void setElemCount(int elemCount);
+
+    void setRotationRange(tbe::Vector2f rotation);
+    void setScaleRange(tbe::Vector2f scale);
 
 protected:
     double m_areaSize;
     double m_elemGap;
     int m_elemCount;
 
-    tbe::Vector3f m_minRot, m_maxRot;
-    tbe::Vector3f m_minScale, m_maxScale;
+    tbe::Vector2f m_rotationRange;
+    tbe::Vector2f m_scaleRange;
 };
 
 class PenArea : public PenAreaInterface, public tbe::scene::Sphere
@@ -248,10 +248,10 @@ public slots:
 class SelBoxInterface : public QObject
 {
     Q_OBJECT
-    
+
 public:
     SelBoxInterface();
-    
+
     virtual void setAround(tbe::scene::Node* node, tbe::Vector4f color) = 0;
 };
 
@@ -261,7 +261,7 @@ class SelBox : public SelBoxInterface, public tbe::scene::Box
 
 public:
     SelBox(tbe::scene::MeshParallelScene* parallelScene);
-    
+
     void setAround(tbe::scene::Node* node, tbe::Vector4f color);
 };
 

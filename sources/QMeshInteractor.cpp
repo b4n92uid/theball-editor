@@ -28,7 +28,6 @@ void QMeshInteractor::setScale(const tbe::Vector3f& v)
     if(m_target)
     {
         m_target->setVertexScale(v);
-        m_mainwin->tbeWidget()->placeCamera();
         m_mainwin->notifyChanges(true);
     }
 }

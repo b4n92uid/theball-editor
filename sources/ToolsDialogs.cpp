@@ -22,8 +22,6 @@ DrawToolDialog::DrawToolDialog(QWidget* parent) : QDialog(parent)
 {
     setupUi(this);
 
-    minRotation = new QDoubleVector3Box(this, rangeMinRotX, rangeMinRotY, rangeMinRotZ);
-    maxRotation = new QDoubleVector3Box(this, rangeMaxRotX, rangeMaxRotY, rangeMaxRotZ);
-    minScale = new QDoubleVector3Box(this, rangeMinScaleX, rangeMinScaleY, rangeMinScaleZ);
-    maxScale = new QDoubleVector3Box(this, rangeMaxScaleX, rangeMaxScaleY, rangeMaxScaleZ);
+    rotationRange = new QDoubleVector2Box(this, minRotation, maxRotation);
+    scaleRange = new QDoubleVector2Box(this, minScale, maxScale);
 }
