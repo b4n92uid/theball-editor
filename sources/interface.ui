@@ -422,9 +422,6 @@
                 <layout class="QHBoxLayout" name="horizontalLayout_24">
                  <item>
                   <widget class="QPushButton" name="node_mesh_editmat">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
                    <property name="text">
                     <string>Editer</string>
                    </property>
@@ -1892,7 +1889,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="ressource.qrc">
