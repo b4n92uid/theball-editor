@@ -36,23 +36,36 @@ tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
 {
     using namespace tbe::scene;
 
-    QModelIndex index = m_mainwin->nodesGui.meshTab.materialsView->currentIndex();
+    QModelIndex index = m_mainwin->nodesGui.meshTab.matedit->materialsView->currentIndex();
 
     if(index.isValid())
-        return m_mainwin->nodesGui.meshTab.materialsModel
+        return m_mainwin->nodesGui.meshTab.matedit->materialsModel
             ->itemFromIndex(index)->data().value<Material*>();
     else
         return NULL;
 }
 
-void QMeshInteractor::setSaveMaterial(bool stat)
+void QMeshInteractor::openMaterialFile()
 {
-    if(!m_target)
-        return;
+    QString filepath = QFileDialog::getOpenFileName(m_mainwin);
 
-    m_target->setOutputMaterial(stat);
+    m_mainwin->tbeWidget()->sceneParser()->setMaterialFile(m_target, filepath.toStdString());
+    m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
 
-    m_mainwin->notifyChanges(true);
+    m_mainwin->nodesGui.meshTab.matedit->materialInfo->setText(filepath);
+}
+
+void QMeshInteractor::saveMaterialFile()
+{
+    m_mainwin->tbeWidget()->sceneParser()->saveMaterialFile(m_target);
+    m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
+
+    m_mainwin->nodesGui.meshTab.matedit->hide();
+}
+
+void QMeshInteractor::delMaterialFile()
+{
+    m_mainwin->tbeWidget()->sceneParser()->deleteMaterialFile(m_target);
 }
 
 void QMeshInteractor::materialSelected(const QModelIndex& index)
@@ -69,8 +82,8 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
 
     m_mainwin->nodesGui.meshTab.matedit->textured->setChecked(mat->isEnable(Material::TEXTURED));
 
-    m_mainwin->nodesGui.meshTab.textureModel->
-            removeRows(0, m_mainwin->nodesGui.meshTab.textureModel->rowCount());
+    m_mainwin->nodesGui.meshTab.matedit->textureModel->
+            removeRows(0, m_mainwin->nodesGui.meshTab.matedit->textureModel->rowCount());
 
     unsigned count = mat->getTexturesCount();
     for(unsigned i = 0; i < count; i++)
@@ -85,10 +98,10 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
         QStandardItem* item = new QStandardItem(QFileInfo(path).baseName());
         item->setData(data);
 
-        m_mainwin->nodesGui.meshTab.textureModel->appendRow(item);
+        m_mainwin->nodesGui.meshTab.matedit->textureModel->appendRow(item);
     }
 
-    QModelIndex first = m_mainwin->nodesGui.meshTab.textureModel->index(0, 0);
+    QModelIndex first = m_mainwin->nodesGui.meshTab.matedit->textureModel->index(0, 0);
 
     m_mainwin->nodesGui.meshTab.matedit->textureView->setCurrentIndex(first);
     textureSelected(first);
@@ -221,7 +234,7 @@ void QMeshInteractor::addTexture()
             QStandardItem* item = new QStandardItem(QFileInfo(paths[i]).baseName());
             item->setData(data);
 
-            m_mainwin->nodesGui.meshTab.textureModel->appendRow(item);
+            m_mainwin->nodesGui.meshTab.matedit->textureModel->appendRow(item);
             mat->setTexture(tex, offset + i);
 
             m_mainwin->notifyChanges(true);
@@ -245,7 +258,7 @@ void QMeshInteractor::delTexture()
     QModelIndex index = m_mainwin->nodesGui.meshTab.matedit->textureView->currentIndex();
     mat->dropTexture(index.row());
 
-    m_mainwin->nodesGui.meshTab.textureModel->removeRow(index.row());
+    m_mainwin->nodesGui.meshTab.matedit->textureModel->removeRow(index.row());
 
     m_mainwin->notifyChanges(true);
 }
@@ -272,11 +285,11 @@ void QMeshInteractor::textureUp()
         mat->setTexture(src, dstindex);
         mat->setTexture(dst, srcindex);
 
-        QList<QStandardItem*> items = m_mainwin->nodesGui.meshTab.textureModel->takeRow(srcindex);
-        m_mainwin->nodesGui.meshTab.textureModel->insertRow(dstindex, items);
+        QList<QStandardItem*> items = m_mainwin->nodesGui.meshTab.matedit->textureModel->takeRow(srcindex);
+        m_mainwin->nodesGui.meshTab.matedit->textureModel->insertRow(dstindex, items);
 
         m_mainwin->nodesGui.meshTab.matedit->textureView
-                ->setCurrentIndex(m_mainwin->nodesGui.meshTab.textureModel->index(dstindex, 0));
+                ->setCurrentIndex(m_mainwin->nodesGui.meshTab.matedit->textureModel->index(dstindex, 0));
 
         m_mainwin->notifyChanges(true);
     }
@@ -292,7 +305,7 @@ void QMeshInteractor::textureDown()
 
     int srcindex = m_mainwin->nodesGui.meshTab.matedit->textureView->currentIndex().row();
 
-    if(srcindex < m_mainwin->nodesGui.meshTab.textureModel->rowCount() - 1)
+    if(srcindex < m_mainwin->nodesGui.meshTab.matedit->textureModel->rowCount() - 1)
     {
         int dstindex = srcindex + 1;
 
@@ -304,11 +317,11 @@ void QMeshInteractor::textureDown()
         mat->setTexture(src, dstindex);
         mat->setTexture(dst, srcindex);
 
-        QList<QStandardItem*> items = m_mainwin->nodesGui.meshTab.textureModel->takeRow(srcindex);
-        m_mainwin->nodesGui.meshTab.textureModel->insertRow(dstindex, items);
+        QList<QStandardItem*> items = m_mainwin->nodesGui.meshTab.matedit->textureModel->takeRow(srcindex);
+        m_mainwin->nodesGui.meshTab.matedit->textureModel->insertRow(dstindex, items);
 
         m_mainwin->nodesGui.meshTab.matedit->textureView
-                ->setCurrentIndex(m_mainwin->nodesGui.meshTab.textureModel->index(dstindex, 0));
+                ->setCurrentIndex(m_mainwin->nodesGui.meshTab.matedit->textureModel->index(dstindex, 0));
 
         m_mainwin->notifyChanges(true);
     }
@@ -546,8 +559,11 @@ void QMeshInteractor::select()
 
     QNodeInteractor::select();
 
-    connect(m_mainwin->nodesGui.meshTab.saveMaterials, SIGNAL(clicked(bool)), this, SLOT(setSaveMaterial(bool)));
-    connect(m_mainwin->nodesGui.meshTab.openmatedit, SIGNAL(clicked()), m_mainwin->nodesGui.meshTab.matedit, SLOT(show()));
+    connect(m_mainwin->nodesGui.meshTab.matedit->save, SIGNAL(clicked()), this, SLOT(saveMaterialFile()));
+
+    connect(m_mainwin->nodesGui.meshTab.editmatfile, SIGNAL(clicked()), m_mainwin->nodesGui.meshTab.matedit, SLOT(show()));
+    connect(m_mainwin->nodesGui.meshTab.openmatfile, SIGNAL(clicked()), this, SLOT(openMaterialFile()));
+    connect(m_mainwin->nodesGui.meshTab.delmatfile, SIGNAL(clicked()), this, SLOT(delMaterialFile()));
 
     connect(m_mainwin->nodesGui.meshTab.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
     connect(m_mainwin->nodesGui.meshTab.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(setLighted(bool)));
@@ -587,7 +603,7 @@ void QMeshInteractor::select()
 
     connect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(textureSelected(const QModelIndex &)));
 
-    connect(m_mainwin->nodesGui.meshTab.materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialSelected(const QModelIndex &)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialSelected(const QModelIndex &)));
 
     update();
 
@@ -598,8 +614,11 @@ void QMeshInteractor::deselect()
 {
     QNodeInteractor::deselect();
 
-    disconnect(m_mainwin->nodesGui.meshTab.saveMaterials, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.meshTab.openmatedit, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->save, SIGNAL(clicked()), 0, 0);
+
+    disconnect(m_mainwin->nodesGui.meshTab.editmatfile, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.openmatfile, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.delmatfile, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.meshTab.matedit->textured, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->lighted, SIGNAL(clicked(bool)), 0, 0);
@@ -638,12 +657,13 @@ void QMeshInteractor::deselect()
 
     disconnect(m_mainwin->nodesGui.meshTab.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
 
-    disconnect(m_mainwin->nodesGui.meshTab.materialsView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
 
-    m_mainwin->nodesGui.meshTab.materialsModel
-            ->removeRows(0, m_mainwin->nodesGui.meshTab.materialsModel->rowCount());
+    m_mainwin->nodesGui.meshTab.matedit->materialsModel
+            ->removeRows(0, m_mainwin->nodesGui.meshTab.matedit->materialsModel->rowCount());
 
-    m_mainwin->nodesGui.meshTab.saveMaterials->setChecked(false);
+    m_mainwin->nodesGui.meshTab.materialFilePath->clear();
+    m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(false);
 
     m_mainwin->nodesGui.meshTab.billboardX->setChecked(false);
     m_mainwin->nodesGui.meshTab.billboardY->setChecked(false);
@@ -657,8 +677,8 @@ void QMeshInteractor::update()
 
     m_mainwin->nodesGui.scale->setValue(m_target->getVertexScale());
 
-    m_mainwin->nodesGui.meshTab.materialsModel->
-            removeRows(0, m_mainwin->nodesGui.meshTab.materialsModel->rowCount());
+    m_mainwin->nodesGui.meshTab.matedit->materialsModel->
+            removeRows(0, m_mainwin->nodesGui.meshTab.matedit->materialsModel->rowCount());
 
     Material::Array matarr = m_target->getAllMaterial();
 
@@ -670,20 +690,31 @@ void QMeshInteractor::update()
         QStandardItem* item = new QStandardItem(QString::fromStdString(mat->getName()));
         item->setData(data);
 
-        m_mainwin->nodesGui.meshTab.materialsModel->appendRow(item);
+        m_mainwin->nodesGui.meshTab.matedit->materialsModel->appendRow(item);
     }
 
-    QModelIndex index = m_mainwin->nodesGui.meshTab.materialsModel->index(0, 0);
+    QModelIndex index = m_mainwin->nodesGui.meshTab.matedit->materialsModel->index(0, 0);
 
-    m_mainwin->nodesGui.meshTab.materialsView->setCurrentIndex(index);
+    m_mainwin->nodesGui.meshTab.matedit->materialsView->setCurrentIndex(index);
     materialSelected(index);
 
-    bool matset = m_target->isOutputMaterial();
+    std::string matfile = m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target);
 
-    m_mainwin->nodesGui.meshTab.saveMaterials->setEnabled(true);
-    m_mainwin->nodesGui.meshTab.saveMaterials->setChecked(matset);
+    if(!matfile.empty())
+    {
+        m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(true);
+        m_mainwin->nodesGui.meshTab.materialFilePath->setText(QString::fromStdString(matfile));
 
-    m_mainwin->nodesGui.meshTab.openmatedit->setEnabled(matset);
+        m_mainwin->nodesGui.meshTab.editmatfile->setEnabled(true);
+        m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(true);
+    }
+    else
+    {
+        m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(false);
+
+        m_mainwin->nodesGui.meshTab.editmatfile->setEnabled(false);
+        m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(false);
+    }
 
     tbe::Vector2b billboard = m_target->getBillBoard();
     m_mainwin->nodesGui.meshTab.billboardX->setChecked(billboard.x);

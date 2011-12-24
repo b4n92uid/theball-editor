@@ -45,46 +45,46 @@ LIBS += $$TBENGINE_LIB $$DEVIL_LIB $$FREETYPE_LIB $$QUAZIP_LIB $$ZLIB_LIB -lopen
 UI_DIR = ../sources
 
 SOURCES += \
-    sources/MainWindow.cpp \
-    sources/QVectorBox.cpp \
-    sources/QTBEngine.cpp \
-    sources/QNodeBinders.cpp \
-    sources/QBrowsEdit.cpp \
-    sources/QSignalBlocker.cpp \
-    sources/PackerDialog.cpp \
+    sources/ClassFactory.cpp \
+    sources/HistoryState.cpp \
     sources/main.cpp \
+    sources/MainWindow.cpp \
     sources/NodeFactory.cpp \
+    sources/NodeListProxyModel.cpp \
+    sources/PackerDialog.cpp \
+    sources/QBrowsEdit.cpp \
     sources/QLightInteractor.cpp \
     sources/QMapMarkInteractor.cpp \
     sources/QMeshInteractor.cpp \
+    sources/QNodeBinders.cpp \
     sources/QNodeInteractor.cpp \
-    sources/QParticlesInteractor.cpp \
-    sources/ClassFactory.cpp \
-    sources/HistoryState.cpp \
-    sources/NodeListProxyModel.cpp \
     sources/QNodeListView.cpp \
+    sources/QParticlesInteractor.cpp \
+    sources/QSignalBlocker.cpp \
+    sources/QTBEngine.cpp \
+    sources/QVectorBox.cpp \
     sources/ToolsDialogs.cpp \
 
 HEADERS  += \
+    sources/ClassFactory.h \
+    sources/HistoryState.h \
     sources/MainWindow.h \
-    sources/Tools.h \
-    sources/QVectorBox.h \
-    sources/QTBEngine.h \
-    sources/QNodeBinders.h \
-    sources/QBrowsEdit.h \
-    sources/QSignalBlocker.h \
-    sources/PackerDialog.h \
     sources/Metatype.h \
     sources/NodeFactory.h \
+    sources/NodeListProxyModel.h \
+    sources/PackerDialog.h \
+    sources/QBrowsEdit.h \
     sources/QLightInteractor.h \
     sources/QMapMarkInteractor.h \
     sources/QMeshInteractor.h \
+    sources/QNodeBinders.h \
     sources/QNodeInteractor.h \
-    sources/QParticlesInteractor.h \
-    sources/ClassFactory.h \
-    sources/HistoryState.h \
-    sources/NodeListProxyModel.h \
     sources/QNodeListView.h \
+    sources/QParticlesInteractor.h \
+    sources/QSignalBlocker.h \
+    sources/QTBEngine.h \
+    sources/QVectorBox.h \
+    sources/Tools.h \
     sources/ToolsDialogs.h \
 
 FORMS += \

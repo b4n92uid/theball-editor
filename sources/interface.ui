@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>826</width>
-    <height>677</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>826</width>
-    <height>677</height>
+    <width>800</width>
+    <height>600</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
@@ -399,7 +399,7 @@
            <enum>QTabWidget::Triangular</enum>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <property name="usesScrollButtons">
            <bool>false</bool>
@@ -410,68 +410,81 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QListView" name="node_mesh_materials">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+             <widget class="QGroupBox" name="groupBox_4">
+              <property name="title">
+               <string>Materieux</string>
               </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QLineEdit" name="node_mesh_matfile"/>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_24">
+                 <item>
+                  <widget class="QPushButton" name="node_mesh_editmat">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Editer</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="node_mesh_delmatfile">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="text">
+                    <string>Supprimer</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="node_mesh_setmatfile">
+                   <property name="text">
+                    <string>Ouvrir</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_65">
-              <item>
-               <widget class="QCheckBox" name="node_mesh_savemat">
-                <property name="text">
-                 <string>Enregistrer les materiaux</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="node_mesh_editmat">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string> Editer</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="Line" name="line_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="title">
+               <string>Billboard</string>
               </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="node_mesh_billboard_x">
-              <property name="text">
-               <string>Billboard Horizental</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="node_mesh_billboard_y">
-              <property name="text">
-               <string>Billboard Vertical</string>
-              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QCheckBox" name="node_mesh_billboard_y">
+                 <property name="text">
+                  <string>Vertical</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="node_mesh_billboard_x">
+                 <property name="text">
+                  <string>Horizental</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
@@ -708,132 +721,6 @@
              <layout class="QHBoxLayout" name="horizontalLayout_26">
               <item>
                <widget class="QPushButton" name="node_light_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_5">
-           <attribute name="title">
-            <string>Water</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QWidget" name="widget_2" native="true">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <layout class="QFormLayout" name="formLayout_2">
-               <property name="margin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_19">
-                 <property name="text">
-                  <string>Deform</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QDoubleSpinBox" name="node_water_deform">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_18">
-                 <property name="text">
-                  <string>Size</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_9">
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_water_size_x"/>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_water_size_y"/>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_17">
-                 <property name="text">
-                  <string>Uv repeat</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_8">
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_water_uvrepeat_x"/>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_water_uvrepeat_y"/>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_16">
-                 <property name="text">
-                  <string>Speed</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="node_water_speed">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_15">
-                 <property name="text">
-                  <string>Blend</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="node_water_blend">
-                 <property name="singleStep">
-                  <double>0.100000000000000</double>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_24">
-              <item>
-               <widget class="QPushButton" name="node_water_add">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
                 <property name="text">
                  <string>Ajouter</string>
                 </property>
@@ -1622,7 +1509,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>826</width>
+     <width>800</width>
      <height>21</height>
     </rect>
    </property>
@@ -2121,9 +2008,6 @@
   <tabstop>node_particles_texture</tabstop>
   <tabstop>node_particles_texture_browse</tabstop>
   <tabstop>node_particles_continousmode</tabstop>
-  <tabstop>node_water_uvrepeat_y</tabstop>
-  <tabstop>node_water_speed</tabstop>
-  <tabstop>node_water_blend</tabstop>
   <tabstop>node_particles_gravity_x</tabstop>
   <tabstop>node_particles_gravity_y</tabstop>
   <tabstop>node_light_ambiant_x</tabstop>
@@ -2132,7 +2016,6 @@
   <tabstop>node_delfield</tabstop>
   <tabstop>node_clearfields</tabstop>
   <tabstop>node_mesh_add</tabstop>
-  <tabstop>node_water_uvrepeat_x</tabstop>
   <tabstop>node_particles_gravity_z</tabstop>
   <tabstop>node_light_specular_y</tabstop>
   <tabstop>node_light_diffuse_x</tabstop>
@@ -2140,36 +2023,15 @@
   <tabstop>node_light_diffuse_z</tabstop>
   <tabstop>node_light_specular_x</tabstop>
   <tabstop>node_light_add</tabstop>
-  <tabstop>node_water_deform</tabstop>
-  <tabstop>node_water_size_x</tabstop>
-  <tabstop>node_water_size_y</tabstop>
   <tabstop>node_light_type</tabstop>
   <tabstop>node_light_specular_z</tabstop>
   <tabstop>node_light_radius</tabstop>
   <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_ambiant_y</tabstop>
   <tabstop>node_particles_add</tabstop>
-  <tabstop>node_water_add</tabstop>
  </tabstops>
  <resources>
   <include location="ressource.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>node_mesh_savemat</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>node_mesh_editmat</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>671</x>
-     <y>457</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>776</x>
-     <y>460</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -29,6 +29,9 @@ public:
     QIntVector2Box* clipping_part;
 
     QMeshInteractor* source_mesh;
+
+    QStandardItemModel* materialsModel;
+    QStandardItemModel* textureModel;
 };
 
 class DrawToolDialog : public QDialog, public Ui::DrawToolDialog
