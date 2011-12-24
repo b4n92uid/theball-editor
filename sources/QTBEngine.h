@@ -99,6 +99,9 @@ public slots:
     void baseOnFloor();
     void centerOnFloor();
 
+    void baseOnFloor(QNodeInteractor* node);
+    void centerOnFloor(QNodeInteractor* node);
+
     void pushHistoryStat(HistoryState* hs);
     void popHistoryStat();
 
@@ -218,6 +221,10 @@ public:
     tbe::Vector2f getRotationRange() const;
     tbe::Vector2f getScaleRange() const;
 
+    bool rotX, rotY, rotZ;
+    bool scaleX, scaleY, scaleZ;
+    int onFloor;
+
 public slots:
     virtual void setAreaSize(double areaSize) = 0;
 
@@ -226,6 +233,13 @@ public slots:
 
     void setRotationRange(tbe::Vector2f rotation);
     void setScaleRange(tbe::Vector2f scale);
+
+    void setRotationAxe(bool x, bool y, bool z);
+    void setScaleAxe(bool x, bool y, bool z);
+
+    void setNotOnFloor();
+    void setCenterOnFloor();
+    void setBaseOnFloor();
 
 protected:
     double m_areaSize;

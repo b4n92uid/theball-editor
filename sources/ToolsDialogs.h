@@ -21,6 +21,8 @@
 
 class MaterialEditDialog : public QDialog, public Ui::MaterialEdit
 {
+    Q_OBJECT
+
 public:
     MaterialEditDialog(QWidget* parent);
 
@@ -36,12 +38,21 @@ public:
 
 class DrawToolDialog : public QDialog, public Ui::DrawToolDialog
 {
+    Q_OBJECT
+
 public:
     DrawToolDialog(QWidget* parent);
 
-    QDoubleVector2Box *rotationRange;
-    QDoubleVector2Box *scaleRange;
+    QDoubleVector2Box* rotationRange;
+    QDoubleVector2Box* scaleRange;
 
+public slots:
+    void rotationAxeChanged();
+    void scaleAxeChanged();
+
+signals:
+    void rotationAxe(bool, bool, bool);
+    void scaleAxe(bool, bool, bool);
 };
 
 #endif	/* TOOLSDIALOGS_H */
