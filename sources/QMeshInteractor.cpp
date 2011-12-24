@@ -53,6 +53,8 @@ void QMeshInteractor::openMaterialFile()
     m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
 
     m_mainwin->nodesGui.meshTab.matedit->materialInfo->setText(filepath);
+    
+    update();
 }
 
 void QMeshInteractor::saveMaterialFile()
@@ -61,11 +63,15 @@ void QMeshInteractor::saveMaterialFile()
     m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
 
     m_mainwin->nodesGui.meshTab.matedit->hide();
+    
+    update();
 }
 
 void QMeshInteractor::delMaterialFile()
 {
     m_mainwin->tbeWidget()->sceneParser()->deleteMaterialFile(m_target);
+    
+    update();
 }
 
 void QMeshInteractor::materialSelected(const QModelIndex& index)
@@ -711,6 +717,7 @@ void QMeshInteractor::update()
     else
     {
         m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(false);
+        m_mainwin->nodesGui.meshTab.materialFilePath->clear();
 
         m_mainwin->nodesGui.meshTab.editmatfile->setEnabled(false);
         m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(false);
