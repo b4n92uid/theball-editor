@@ -60,7 +60,9 @@ public slots:
     void setBlend(bool stat);
     void setAlpha(bool stat);
 
-    void setSaveMaterial(bool stat);
+    void openMaterialFile();
+    void saveMaterialFile();
+    void delMaterialFile();
 
     void pastMaterials();
     void copyMaterials();

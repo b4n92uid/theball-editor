@@ -159,36 +159,18 @@ private:
         {
             QPushButton* add;
 
-            QDoubleSpinBox* opacity;
+            QPushButton* editmatfile;
+            QPushButton* openmatfile;
+            QPushButton* delmatfile;
 
-            QPushButton* openmatedit;
-
-            QListView* materialsView;
-            QStandardItemModel* materialsModel;
+            QLineEdit* materialFilePath;
 
             MaterialEditDialog* matedit;
-            QStandardItemModel* textureModel;
-
-            QCheckBox* saveMaterials;
 
             QCheckBox* billboardX;
             QCheckBox* billboardY;
 
         } meshTab;
-
-        struct WaterGuiTab
-        {
-            QDoubleSpinBox* deform;
-            QDoubleVector2Box* size;
-            QDoubleVector2Box* uvrepeat;
-            QDoubleSpinBox* speed;
-            QDoubleSpinBox* blend;
-
-            QPushButton* add;
-
-            QMap<QObject*, QString> sourcMap;
-
-        } waterTab;
 
         struct ParticlesGuiTab
         {

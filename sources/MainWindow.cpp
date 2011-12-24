@@ -260,32 +260,23 @@ void MainWindow::initWidgets()
 
     nodesGui.meshTab.add = m_uinterface->node_mesh_add;
 
-    nodesGui.meshTab.openmatedit = m_uinterface->node_mesh_editmat;
-
-    nodesGui.meshTab.textureModel = new QStandardItemModel(this);
+    nodesGui.meshTab.editmatfile = m_uinterface->node_mesh_editmat;
 
     nodesGui.meshTab.matedit = new MaterialEditDialog(this);
 
-    nodesGui.meshTab.matedit->textureView->setModel(nodesGui.meshTab.textureModel);
+    nodesGui.meshTab.matedit->textureModel = new QStandardItemModel(this);
+    nodesGui.meshTab.matedit->textureView->setModel(nodesGui.meshTab.matedit->textureModel);
 
-    nodesGui.meshTab.materialsModel = new QStandardItemModel(this);
+    nodesGui.meshTab.matedit->materialsModel = new QStandardItemModel(this);
+    nodesGui.meshTab.matedit->materialsView->setModel(nodesGui.meshTab.matedit->materialsModel);
 
-    nodesGui.meshTab.materialsView = m_uinterface->node_mesh_materials;
-    nodesGui.meshTab.materialsView->setModel(nodesGui.meshTab.materialsModel);
+    nodesGui.meshTab.materialFilePath = m_uinterface->node_mesh_matfile;
 
-    nodesGui.meshTab.saveMaterials = m_uinterface->node_mesh_savemat;
+    nodesGui.meshTab.openmatfile = m_uinterface->node_mesh_setmatfile;
+    nodesGui.meshTab.delmatfile = m_uinterface->node_mesh_delmatfile;
 
     nodesGui.meshTab.billboardX = m_uinterface->node_mesh_billboard_x;
     nodesGui.meshTab.billboardY = m_uinterface->node_mesh_billboard_y;
-
-    // -------- Water
-
-    nodesGui.waterTab.deform = m_uinterface->node_water_deform;
-    nodesGui.waterTab.size = new QDoubleVector2Box(this, m_uinterface->node_water_size_x, m_uinterface->node_water_size_y);
-    nodesGui.waterTab.uvrepeat = new QDoubleVector2Box(this, m_uinterface->node_water_uvrepeat_x, m_uinterface->node_water_uvrepeat_y);
-    nodesGui.waterTab.speed = m_uinterface->node_water_speed;
-    nodesGui.waterTab.blend = m_uinterface->node_water_blend;
-    nodesGui.waterTab.add = m_uinterface->node_water_add;
 
     // -------- Particles
 
