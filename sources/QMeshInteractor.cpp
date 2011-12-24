@@ -49,28 +49,48 @@ void QMeshInteractor::openMaterialFile()
 {
     QString filepath = QFileDialog::getOpenFileName(m_mainwin);
 
-    m_mainwin->tbeWidget()->sceneParser()->setMaterialFile(m_target, filepath.toStdString());
-    m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
+    if(!filepath.isEmpty())
+    {
+        m_mainwin->tbeWidget()->sceneParser()->setMaterialFile(m_target, filepath.toStdString());
+        m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
 
-    m_mainwin->nodesGui.meshTab.matedit->materialInfo->setText(filepath);
-    
-    update();
+        m_mainwin->nodesGui.meshTab.matedit->materialInfo->setText(filepath);
+
+        update();
+    }
 }
 
 void QMeshInteractor::saveMaterialFile()
 {
-    m_mainwin->tbeWidget()->sceneParser()->saveMaterialFile(m_target);
-    m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
+    if(m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target).empty())
+    {
+        QString filepath = QFileDialog::getSaveFileName(m_mainwin);
 
-    m_mainwin->nodesGui.meshTab.matedit->hide();
-    
+        if(!filepath.isEmpty())
+        {
+            m_mainwin->tbeWidget()->sceneParser()->setMaterialFile(m_target, filepath.toStdString());
+            m_mainwin->tbeWidget()->sceneParser()->saveMaterialFile(m_target);
+            m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
+
+            m_mainwin->nodesGui.meshTab.matedit->hide();
+        }
+    }
+
+    else
+    {
+        m_mainwin->tbeWidget()->sceneParser()->saveMaterialFile(m_target);
+        m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
+
+        m_mainwin->nodesGui.meshTab.matedit->hide();
+    }
+
     update();
 }
 
 void QMeshInteractor::delMaterialFile()
 {
     m_mainwin->tbeWidget()->sceneParser()->deleteMaterialFile(m_target);
-    
+
     update();
 }
 
@@ -711,7 +731,6 @@ void QMeshInteractor::update()
         m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(true);
         m_mainwin->nodesGui.meshTab.materialFilePath->setText(QString::fromStdString(matfile));
 
-        m_mainwin->nodesGui.meshTab.editmatfile->setEnabled(true);
         m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(true);
     }
     else
@@ -719,7 +738,6 @@ void QMeshInteractor::update()
         m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(false);
         m_mainwin->nodesGui.meshTab.materialFilePath->clear();
 
-        m_mainwin->nodesGui.meshTab.editmatfile->setEnabled(false);
         m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(false);
     }
 

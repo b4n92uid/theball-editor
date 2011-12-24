@@ -506,6 +506,9 @@ void MainWindow::initSceneConnections()
     connect(m_drawToolDialog->noSetOnFloor, SIGNAL(clicked()), penArea, SLOT(setNotOnFloor()));
     connect(m_drawToolDialog->centerOnFloor, SIGNAL(clicked()), penArea, SLOT(setCenterOnFloor()));
     connect(m_drawToolDialog->baseOnFloor, SIGNAL(clicked()), penArea, SLOT(setBaseOnFloor()));
+
+    m_uinterface->actionToggleSelBox->setChecked(true);
+    m_uinterface->actionToggleStaticView->setChecked(true);
 }
 
 void MainWindow::newScene()
