@@ -499,7 +499,13 @@ void MainWindow::initSceneConnections()
     connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), penArea, SLOT(setElemGap(double)));
     connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(int)), penArea, SLOT(setElemCount(int)));
     connect(m_drawToolDialog->rotationRange, SIGNAL(valueChanged(tbe::Vector2f)), penArea, SLOT(setRotationRange(tbe::Vector2f)));
-    connect(m_drawToolDialog->scaleRange, SIGNAL(valueChanged(tbe::Vector2f)), penArea, SLOT(setScaleRange(tbe::Vector2f)));
+
+    connect(m_drawToolDialog, SIGNAL(rotationAxe(bool, bool, bool)), penArea, SLOT(setRotationAxe(bool, bool, bool)));
+    connect(m_drawToolDialog, SIGNAL(scaleAxe(bool, bool, bool)), penArea, SLOT(setScaleAxe(bool, bool, bool)));
+
+    connect(m_drawToolDialog->noSetOnFloor, SIGNAL(clicked()), penArea, SLOT(setNotOnFloor()));
+    connect(m_drawToolDialog->centerOnFloor, SIGNAL(clicked()), penArea, SLOT(setCenterOnFloor()));
+    connect(m_drawToolDialog->baseOnFloor, SIGNAL(clicked()), penArea, SLOT(setBaseOnFloor()));
 }
 
 void MainWindow::newScene()

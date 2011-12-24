@@ -24,4 +24,22 @@ DrawToolDialog::DrawToolDialog(QWidget* parent) : QDialog(parent)
 
     rotationRange = new QDoubleVector2Box(this, minRotation, maxRotation);
     scaleRange = new QDoubleVector2Box(this, minScale, maxScale);
+
+    connect(rotationX, SIGNAL(clicked(bool)), this, SLOT(rotationAxeChanged()));
+    connect(rotationY, SIGNAL(clicked(bool)), this, SLOT(rotationAxeChanged()));
+    connect(rotationZ, SIGNAL(clicked(bool)), this, SLOT(rotationAxeChanged()));
+
+    connect(scaleX, SIGNAL(clicked(bool)), this, SLOT(scaleAxeChanged()));
+    connect(scaleY, SIGNAL(clicked(bool)), this, SLOT(scaleAxeChanged()));
+    connect(scaleZ, SIGNAL(clicked(bool)), this, SLOT(scaleAxeChanged()));
+}
+
+void DrawToolDialog::rotationAxeChanged()
+{
+    emit rotationAxe(rotationX->isChecked(), rotationY->isChecked(), rotationZ->isChecked());
+}
+
+void DrawToolDialog::scaleAxeChanged()
+{
+    emit scaleAxe(scaleX->isChecked(), scaleY->isChecked(), scaleZ->isChecked());
 }

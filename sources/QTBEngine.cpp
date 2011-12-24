@@ -469,21 +469,7 @@ void QTBEngine::baseOnFloor()
     if(!m_selectedNode)
         return;
 
-    tbe::scene::Node* selnode = m_selectedNode->target();
-
-    pushHistoryStat(new ModificationState(m_selectedNode));
-
-    m_grid->setEnable(false);
-    m_selbox->Node::setEnable(false);
-
-    m_meshScene->setInFloor(selnode);
-
-    m_selbox->Node::setEnable(true);
-    m_grid->setEnable(m_gridEnable);
-
-    Vector3f adjust = selnode->getPos();
-    adjust.y += -selnode->getAabb().min.y;
-    selnode->setPos(adjust);
+    baseOnFloor(m_selectedNode);
 
     m_selectedNode->update();
 }
@@ -493,19 +479,47 @@ void QTBEngine::centerOnFloor()
     if(!m_selectedNode)
         return;
 
-    tbe::scene::Node* selnode = m_selectedNode->target();
+    centerOnFloor(m_selectedNode);
 
-    pushHistoryStat(new ModificationState(m_selectedNode));
+    m_selectedNode->update();
+}
 
-    m_grid->setEnable(false);
+void QTBEngine::baseOnFloor(QNodeInteractor* node)
+{
+    tbe::scene::Node* selnode = node->target();
+
+    pushHistoryStat(new ModificationState(node));
+
+    m_penarea->Node::setEnable(false);
     m_selbox->Node::setEnable(false);
+    m_grid->setEnable(false);
 
     m_meshScene->setInFloor(selnode);
 
     m_selbox->Node::setEnable(true);
+    m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
     m_grid->setEnable(m_gridEnable);
 
-    m_selectedNode->update();
+    Vector3f adjust = selnode->getPos();
+    adjust.y += -selnode->getAabb().min.y;
+    selnode->setPos(adjust);
+}
+
+void QTBEngine::centerOnFloor(QNodeInteractor* node)
+{
+    tbe::scene::Node* selnode = node->target();
+
+    pushHistoryStat(new ModificationState(node));
+
+    m_selbox->Node::setEnable(false);
+    m_penarea->Node::setEnable(false);
+    m_grid->setEnable(false);
+
+    m_meshScene->setInFloor(selnode);
+
+    m_selbox->Node::setEnable(true);
+    m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
+    m_grid->setEnable(m_gridEnable);
 }
 
 struct SelectionSort
@@ -740,13 +754,47 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
                             painting->setup();
 
-                            Matrix4 mat;
-                            mat.setRotate(Quaternion(AABB(rotationRange.x, rotationRange.y).randPos()));
-                            mat.setPos(m_penarea->drawPos + area.randPos());
+                            Matrix4 matset;
 
-                            painting->target()->setMatrix(mat);
+                            {// Scaling
 
-                            painting->setScale(math::rand(scaleRange.x, scaleRange.y));
+                                Vector3f scale = math::rand(scaleRange.x, scaleRange.y);
+
+                                if(!m_penarea->rotX)
+                                    scale.x = 0;
+                                if(m_penarea->rotY)
+                                    scale.y = 0;
+                                if(m_penarea->rotZ)
+                                    scale.z = 0;
+
+                                painting->setScale(scale);
+                            }
+
+                            {// Rotation
+
+                                Vector3f rot = AABB(rotationRange.x, rotationRange.y).randPos();
+
+                                if(!m_penarea->rotX)
+                                    rot.x = 0;
+                                if(!m_penarea->rotY)
+                                    rot.y = 0;
+                                if(!m_penarea->rotZ)
+                                    rot.z = 0;
+
+                                matset.setRotate(Quaternion(rot));
+                            }
+
+                            // Position
+                            matset.setPos(m_penarea->drawPos + area.randPos());
+
+                            painting->target()->setMatrix(matset);
+
+                            if(m_penarea->onFloor == 1)
+                                centerOnFloor(painting);
+
+                            else if(m_penarea->onFloor == 2)
+                                baseOnFloor(painting);
+
                         }
                     }
                 }
@@ -1408,6 +1456,35 @@ void PenAreaInterface::setAreaSize(double areaSize)
 double PenAreaInterface::getAreaSize() const
 {
     return m_areaSize;
+}
+
+void PenAreaInterface::setRotationAxe(bool x, bool y, bool z)
+{
+    rotX = x;
+    rotY = y;
+    rotZ = z;
+}
+
+void PenAreaInterface::setScaleAxe(bool x, bool y, bool z)
+{
+    scaleX = x;
+    scaleY = y;
+    scaleZ = z;
+}
+
+void PenAreaInterface::setNotOnFloor()
+{
+    onFloor = 0;
+}
+
+void PenAreaInterface::setCenterOnFloor()
+{
+    onFloor = 1;
+}
+
+void PenAreaInterface::setBaseOnFloor()
+{
+    onFloor = 2;
 }
 
 PenArea::PenArea(tbe::scene::MeshParallelScene* parallelScene) : Sphere(parallelScene)
