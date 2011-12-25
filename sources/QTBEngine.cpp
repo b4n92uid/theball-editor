@@ -84,6 +84,7 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
 QTBEngine::~QTBEngine()
 {
     delete m_sceneParser;
+    delete m_device;
 
     foreach(HistoryState* hs, m_history)
             delete hs;
