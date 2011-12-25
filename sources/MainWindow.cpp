@@ -260,8 +260,6 @@ void MainWindow::initWidgets()
 
     nodesGui.meshTab.add = m_uinterface->node_mesh_add;
 
-    nodesGui.meshTab.editmatfile = m_uinterface->node_mesh_editmat;
-
     nodesGui.meshTab.matedit = new MaterialEditDialog(this);
 
     nodesGui.meshTab.matedit->textureModel = new QStandardItemModel(this);
@@ -272,6 +270,8 @@ void MainWindow::initWidgets()
 
     nodesGui.meshTab.materialFilePath = m_uinterface->node_mesh_matfile;
 
+    nodesGui.meshTab.includedmat = m_uinterface->node_mesh_includedmat;
+    nodesGui.meshTab.editmatfile = m_uinterface->node_mesh_editmat;
     nodesGui.meshTab.openmatfile = m_uinterface->node_mesh_setmatfile;
     nodesGui.meshTab.delmatfile = m_uinterface->node_mesh_delmatfile;
 

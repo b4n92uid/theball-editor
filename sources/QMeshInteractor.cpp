@@ -45,6 +45,16 @@ tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
         return NULL;
 }
 
+void QMeshInteractor::setIncludedMaterial(bool state)
+{
+    m_mainwin->tbeWidget()->sceneParser()->setIncludedMaterialFile(m_target, state);
+
+    if(state)
+        delMaterialFile();
+
+    m_mainwin->nodesGui.meshTab.openmatfile->setEnabled(!state);
+}
+
 void QMeshInteractor::openMaterialFile()
 {
     QString filepath = QFileDialog::getOpenFileName(m_mainwin);
@@ -62,7 +72,13 @@ void QMeshInteractor::openMaterialFile()
 
 void QMeshInteractor::saveMaterialFile()
 {
-    if(m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target).empty())
+    if(m_mainwin->nodesGui.meshTab.includedmat->isChecked())
+    {
+        m_mainwin->nodesGui.meshTab.matedit->hide();
+        return;
+    }
+
+    else if(m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target).empty())
     {
         QString filepath = QFileDialog::getSaveFileName(m_mainwin);
 
@@ -83,8 +99,6 @@ void QMeshInteractor::saveMaterialFile()
 
         m_mainwin->nodesGui.meshTab.matedit->hide();
     }
-
-    update();
 }
 
 void QMeshInteractor::delMaterialFile()
@@ -585,11 +599,13 @@ void QMeshInteractor::select()
 
     QNodeInteractor::select();
 
-    connect(m_mainwin->nodesGui.meshTab.matedit->save, SIGNAL(clicked()), this, SLOT(saveMaterialFile()));
+    connect(m_mainwin->nodesGui.meshTab.matedit->ok, SIGNAL(clicked()), this, SLOT(saveMaterialFile()));
 
     connect(m_mainwin->nodesGui.meshTab.editmatfile, SIGNAL(clicked()), m_mainwin->nodesGui.meshTab.matedit, SLOT(show()));
     connect(m_mainwin->nodesGui.meshTab.openmatfile, SIGNAL(clicked()), this, SLOT(openMaterialFile()));
     connect(m_mainwin->nodesGui.meshTab.delmatfile, SIGNAL(clicked()), this, SLOT(delMaterialFile()));
+
+    connect(m_mainwin->nodesGui.meshTab.includedmat, SIGNAL(clicked(bool)), this, SLOT(setIncludedMaterial(bool)));
 
     connect(m_mainwin->nodesGui.meshTab.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
     connect(m_mainwin->nodesGui.meshTab.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(setLighted(bool)));
@@ -640,11 +656,13 @@ void QMeshInteractor::deselect()
 {
     QNodeInteractor::deselect();
 
-    disconnect(m_mainwin->nodesGui.meshTab.matedit->save, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.meshTab.matedit->ok, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.meshTab.editmatfile, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.openmatfile, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.delmatfile, SIGNAL(clicked()), 0, 0);
+
+    disconnect(m_mainwin->nodesGui.meshTab.includedmat, SIGNAL(clicked(bool)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.meshTab.matedit->textured, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.meshTab.matedit->lighted, SIGNAL(clicked(bool)), 0, 0);

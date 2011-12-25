@@ -1109,6 +1109,7 @@ void QTBEngine::saveScene(const QString& filename)
 
     m_sceneParser->exclude(m_selbox);
     m_sceneParser->exclude(m_grid);
+    m_sceneParser->exclude(m_penarea);
 
     m_sceneParser->prepareScene();
     m_sceneParser->saveScene(filename.toStdString());

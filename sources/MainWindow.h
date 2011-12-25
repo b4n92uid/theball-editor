@@ -162,6 +162,8 @@ private:
             QPushButton* editmatfile;
             QPushButton* openmatfile;
             QPushButton* delmatfile;
+            
+            QCheckBox* includedmat;
 
             QLineEdit* materialFilePath;
 
