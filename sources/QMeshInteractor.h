@@ -46,6 +46,10 @@ public slots:
     void setColor(const tbe::Vector3f& value);
     void setOpacity(double value);
 
+    void setAmbiant(tbe::Vector3f color);
+    void setDiffuse(tbe::Vector3f color);
+    void setSpecular(tbe::Vector3f color);
+
     void setFoged(bool stat);
     void setTextured(bool stat);
     void setLighted(bool stat);
@@ -61,7 +65,7 @@ public slots:
     void setAlpha(bool stat);
 
     void setIncludedMaterial(bool state);
-    
+
     void openMaterialFile();
     void saveMaterialFile();
     void delMaterialFile();

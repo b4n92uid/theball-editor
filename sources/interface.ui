@@ -414,64 +414,62 @@
               <property name="title">
                <string>Matériaux</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_24">
-                 <item>
-                  <widget class="QLineEdit" name="node_mesh_matfile">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="node_mesh_delmatfile">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="node_mesh_setmatfile">
-                   <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+              <layout class="QGridLayout" name="gridLayout">
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="node_mesh_matfile">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="placeholderText">
+                  <string>&lt;Chemin du fichier matériaux&gt;</string>
+                 </property>
+                </widget>
                </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_8">
-                 <item>
-                  <widget class="QPushButton" name="node_mesh_editmat">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Editer</string>
-                   </property>
-                   <property name="icon">
-                    <iconset resource="ressource.qrc">
-                     <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="node_mesh_includedmat">
-                   <property name="text">
-                    <string>Charger depuis la scene</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+               <item row="0" column="2">
+                <widget class="QPushButton" name="node_mesh_setmatfile">
+                 <property name="icon">
+                  <iconset resource="ressource.qrc">
+                   <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QPushButton" name="node_mesh_delmatfile">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="ressource.qrc">
+                   <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="2">
+                <widget class="QPushButton" name="node_mesh_editmat">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Editer</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="ressource.qrc">
+                   <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="node_mesh_includedmat">
+                 <property name="text">
+                  <string>Charger depuis la scene</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>

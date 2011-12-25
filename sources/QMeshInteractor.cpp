@@ -51,8 +51,8 @@ void QMeshInteractor::setIncludedMaterial(bool state)
 
     if(state)
         delMaterialFile();
-
-    m_mainwin->nodesGui.meshTab.openmatfile->setEnabled(!state);
+    else
+        update();
 }
 
 void QMeshInteractor::openMaterialFile()
@@ -118,8 +118,7 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
 
     Material* mat = getSelectedMaterial();
 
-    // Textures
-
+    // Reload textures list
     m_mainwin->nodesGui.meshTab.matedit->textured->setChecked(mat->isEnable(Material::TEXTURED));
 
     m_mainwin->nodesGui.meshTab.matedit->textureModel->
@@ -141,23 +140,24 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
         m_mainwin->nodesGui.meshTab.matedit->textureModel->appendRow(item);
     }
 
+    // Select the first texture unit and update GUI
     QModelIndex first = m_mainwin->nodesGui.meshTab.matedit->textureModel->index(0, 0);
 
     m_mainwin->nodesGui.meshTab.matedit->textureView->setCurrentIndex(first);
     textureSelected(first);
 
-    // Material stat
+    // Update material gui flag
     m_mainwin->nodesGui.meshTab.matedit->foged->setChecked(mat->isEnable(Material::FOGED));
     m_mainwin->nodesGui.meshTab.matedit->lighted->setChecked(mat->isEnable(Material::LIGHTED));
     m_mainwin->nodesGui.meshTab.matedit->culltrick->setChecked(mat->isEnable(Material::VERTEX_SORT_CULL_TRICK));
 
-    Vector4f color = mat->getColor();
-    m_mainwin->nodesGui.meshTab.matedit->color_r->setValue(color.x);
-    m_mainwin->nodesGui.meshTab.matedit->color_g->setValue(color.y);
-    m_mainwin->nodesGui.meshTab.matedit->color_b->setValue(color.z);
-    m_mainwin->nodesGui.meshTab.matedit->color_a->setValue(color.w);
+    // Update material colors and lighting value
+    m_mainwin->nodesGui.meshTab.matedit->rgb->setValue(tbe::math::vec43(mat->getColor()));
+    m_mainwin->nodesGui.meshTab.matedit->ambiant->setValue(tbe::math::vec43(mat->getAmbient()));
+    m_mainwin->nodesGui.meshTab.matedit->diffuse->setValue(tbe::math::vec43(mat->getDiffuse()));
+    m_mainwin->nodesGui.meshTab.matedit->specular->setValue(tbe::math::vec43(mat->getSpecular()));
 
-    // Blending stat
+    // Update material blending state
     bool blending = mat->isEnable(Material::BLEND_MOD)
             || mat->isEnable(Material::BLEND_ADD)
             || mat->isEnable(Material::BLEND_MUL);
@@ -182,7 +182,6 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
 
     // Alpha
     bool alpha = mat->isEnable(Material::ALPHA);
-
     m_mainwin->nodesGui.meshTab.matedit->alpha->setChecked(alpha);
     m_mainwin->nodesGui.meshTab.matedit->alphathreshold->setValue(mat->getAlphaThershold());
 }
@@ -230,6 +229,7 @@ void QMeshInteractor::textureSelected(const QModelIndex& index)
 
     Material* mat = getSelectedMaterial();
 
+    // Texture's blending
     if(mat->getTextureBlend(index.row()) == Material::MODULATE)
         m_mainwin->nodesGui.meshTab.matedit->texture_modulate->setChecked(true);
 
@@ -470,6 +470,21 @@ void QMeshInteractor::setOpacity(double value)
     mat->setOpacity((float)value);
 }
 
+void QMeshInteractor::setAmbiant(tbe::Vector3f color)
+{
+    getSelectedMaterial()->setAmbient(tbe::math::vec34(color));
+}
+
+void QMeshInteractor::setDiffuse(tbe::Vector3f color)
+{
+    getSelectedMaterial()->setDiffuse(tbe::math::vec34(color));
+}
+
+void QMeshInteractor::setSpecular(tbe::Vector3f color)
+{
+    getSelectedMaterial()->setSpecular(tbe::math::vec34(color));
+}
+
 void QMeshInteractor::setTextureClipping(bool state)
 {
     using namespace tbe::scene;
@@ -616,6 +631,10 @@ void QMeshInteractor::select()
     connect(m_mainwin->nodesGui.meshTab.matedit->rgb, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setColor(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.meshTab.matedit->color_a, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
 
+    connect(m_mainwin->nodesGui.meshTab.matedit->ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setAmbiant(const tbe::Vector3f&)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setDiffuse(const tbe::Vector3f&)));
+    connect(m_mainwin->nodesGui.meshTab.matedit->specular, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setSpecular(const tbe::Vector3f&)));
+
     connect(m_mainwin->nodesGui.meshTab.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
     connect(m_mainwin->nodesGui.meshTab.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
 
@@ -719,8 +738,10 @@ void QMeshInteractor::update()
 
     QNodeInteractor::update();
 
+    // Vertex scaling
     m_mainwin->nodesGui.scale->setValue(m_target->getVertexScale());
 
+    // Reload materials list
     m_mainwin->nodesGui.meshTab.matedit->materialsModel->
             removeRows(0, m_mainwin->nodesGui.meshTab.matedit->materialsModel->rowCount());
 
@@ -737,31 +758,52 @@ void QMeshInteractor::update()
         m_mainwin->nodesGui.meshTab.matedit->materialsModel->appendRow(item);
     }
 
+    // Select the first material and update GUI
     QModelIndex index = m_mainwin->nodesGui.meshTab.matedit->materialsModel->index(0, 0);
 
     m_mainwin->nodesGui.meshTab.matedit->materialsView->setCurrentIndex(index);
     materialSelected(index);
 
+    // Get if the mesh has included material or materia file
+
     std::string matfile = m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target);
+
+    m_mainwin->nodesGui.meshTab.includedmat->blockSignals(true);
 
     if(!matfile.empty())
     {
+        m_mainwin->nodesGui.meshTab.openmatfile->setEnabled(true);
+
         m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(true);
         m_mainwin->nodesGui.meshTab.materialFilePath->setText(QString::fromStdString(matfile));
 
         m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(true);
+
+        m_mainwin->nodesGui.meshTab.includedmat->setChecked(false);
     }
-    else
+    else if(m_mainwin->tbeWidget()->sceneParser()->isIncludedMaterialFile(m_target))
     {
+        m_mainwin->nodesGui.meshTab.openmatfile->setEnabled(false);
+
         m_mainwin->nodesGui.meshTab.materialFilePath->setEnabled(false);
         m_mainwin->nodesGui.meshTab.materialFilePath->clear();
 
         m_mainwin->nodesGui.meshTab.delmatfile->setEnabled(false);
+
+        m_mainwin->nodesGui.meshTab.includedmat->setChecked(true);
+    }
+    else
+    {
+        m_mainwin->nodesGui.meshTab.openmatfile->setEnabled(true);
     }
 
+    m_mainwin->nodesGui.meshTab.includedmat->blockSignals(false);
+
+    // Update GUI by Billboard settings
     tbe::Vector2b billboard = m_target->getBillBoard();
     m_mainwin->nodesGui.meshTab.billboardX->setChecked(billboard.x);
     m_mainwin->nodesGui.meshTab.billboardY->setChecked(billboard.y);
 
+    // Surroun the mesh
     m_mainwin->m_tbeWidget->selBox()->setAround(m_target, tbe::Vector4f(0, 0, 1, 0.25));
 }

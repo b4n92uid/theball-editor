@@ -26,6 +26,10 @@ class MaterialEditDialog : public QDialog, public Ui::MaterialEdit
 public:
     MaterialEditDialog(QWidget* parent);
 
+    QDoubleVector3Box* ambiant;
+    QDoubleVector3Box* diffuse;
+    QDoubleVector3Box* specular;
+
     QDoubleVector3Box* rgb;
     QIntVector2Box* clipping_framesize;
     QIntVector2Box* clipping_part;
