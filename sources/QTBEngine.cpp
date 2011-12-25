@@ -705,14 +705,14 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     if(ev->buttons() & Qt::MidButton && ev->modifiers() & Qt::ControlModifier)
     {
-        QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+        QCursor::setPos(m_cursorRelativeMove);
     }
 
     if(m_currentTool->type == SELECTION_TOOL)
     {
         if(ev->modifiers() & Qt::ShiftModifier && m_selectedNode)
         {
-            QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+            QCursor::setPos(m_cursorRelativeMove);
         }
     }
 
@@ -800,8 +800,11 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 }
             }
 
-            QCursor::setPos(mapToGlobal(QPoint(size().width() / 2, size().height() / 2)));
+            QCursor::setPos(m_cursorRelativeMove);
         }
+
+        else
+            m_penarea->setPos(m_curCursor3D);
     }
 }
 
@@ -815,6 +818,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             pushHistoryStat(new ModificationState(m_selectedNode));
 
         setCursor(Qt::BlankCursor);
+
+        m_cursorRelativeMove = QCursor::pos();
     }
 
     if(ev->key() == Qt::Key_Space)
