@@ -62,13 +62,15 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
 
     m_classFactory = new ClassFactory(m_mainwin);
 
-    m_gridEnable = false;
     m_staticView = false;
     m_magnetMove = false;
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     setCursor(Qt::OpenHandCursor);
+
+    m_gridset.enable = false;
+    m_gridset.size = 1;
 
     m_toolMode[SELECTION_TOOL].type = SELECTION_TOOL;
     m_toolMode[SELECTION_TOOL].cursor = Qt::OpenHandCursor;
@@ -246,7 +248,7 @@ void QTBEngine::applyTranslationEvents()
 
             position += transform;
 
-            if(m_gridEnable)
+            if(m_gridset.enable)
             {
                 m_grid->setPos(m_grid->getPos().Y(position.y));
             }
@@ -322,9 +324,9 @@ void QTBEngine::toggleSelBox(bool state)
 
 void QTBEngine::toggleGridDisplay(bool state)
 {
-    m_gridEnable = state;
+    m_gridset.enable = state;
 
-    if(m_gridEnable)
+    if(state)
     {
         m_grid->clear();
 
@@ -354,7 +356,7 @@ void QTBEngine::toggleGridDisplay(bool state)
         }
     }
 
-    m_grid->setEnable(m_gridEnable);
+    m_grid->setEnable(m_gridset.enable);
 }
 
 void QTBEngine::toggleMagnetMove(bool state)
@@ -498,7 +500,7 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
 
     m_selbox->Node::setEnable(true);
     m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
-    m_grid->setEnable(m_gridEnable);
+    m_grid->setEnable(m_gridset.enable);
 
     Vector3f adjust = selnode->getPos();
     adjust.y += -selnode->getAabb().min.y;
@@ -519,7 +521,7 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
 
     m_selbox->Node::setEnable(true);
     m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
-    m_grid->setEnable(m_gridEnable);
+    m_grid->setEnable(m_gridset.enable);
 }
 
 struct SelectionSort
@@ -628,7 +630,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             node->target()->setEnable(true);
 
             m_selbox->Node::setEnable(m_selectedNode);
-            m_grid->setEnable(m_gridEnable);
+            m_grid->setEnable(m_gridset.enable);
         }
     }
 }
@@ -795,6 +797,15 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                             else if(m_penarea->onFloor == 2)
                                 baseOnFloor(painting);
 
+                            if(m_gridset.enable)
+                            {
+                                Vector3f current_position = painting->target()->getPos();
+
+                                current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
+
+                                painting->target()->setPos(current_position);
+                                painting->update();
+                            }
                         }
                     }
                 }
@@ -1001,17 +1012,15 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
 
-    Vector3f gridSize(1);
-
     if(ev->key() == Qt::Key_Shift)
     {
         setCursor(m_currentTool->cursor);
 
-        if(m_selectedNode && m_gridEnable)
+        if(m_selectedNode && m_gridset.enable)
         {
             Vector3f current_position = m_selectedNode->target()->getPos();
 
-            current_position = math::round(current_position, gridSize).Y(current_position.y);
+            current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
 
             m_selectedNode->target()->setPos(current_position);
             m_selectedNode->update();
@@ -1086,11 +1095,11 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Alt)
     {
-        if(m_selectedNode && m_gridEnable)
+        if(m_selectedNode && m_gridset.enable)
         {
             Vector3f current_position = m_selectedNode->target()->getPos();
 
-            current_position = math::round(current_position, gridSize).X(current_position.x).Z(current_position.z);
+            current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
 
             m_selectedNode->target()->setPos(current_position);
             m_selectedNode->update();
@@ -1134,12 +1143,14 @@ void QTBEngine::clearScene()
     m_curCursor3D = 0;
 
     m_grabCamera = false;
-    m_gridEnable = false;
     m_staticView = false;
 
     Texture::resetCache();
 
     m_lockedNode.clear();
+
+    m_gridset.enable = false;
+    m_gridset.size = 1;
 
     setupSelection();
 
@@ -1324,7 +1335,7 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
 
     m_selectedNode->select();
 
-    if(m_gridEnable)
+    if(m_gridset.enable)
         toggleGridDisplay(true);
 }
 

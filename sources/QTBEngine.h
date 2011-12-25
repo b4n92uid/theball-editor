@@ -164,9 +164,15 @@ private:
     QTimer* m_updateTimer;
 
     bool m_grabCamera;
-    bool m_gridEnable;
     bool m_magnetMove;
     bool m_staticView;
+
+    struct GridSet
+    {
+        bool enable;
+        tbe::Vector3f size;
+
+    } m_gridset;
 
     struct ToolMode
     {
@@ -202,7 +208,7 @@ private:
     ClassFactory* m_classFactory;
 
     QStack<HistoryState*> m_history;
-    
+
     QPoint m_cursorRelativeMove;
 };
 
