@@ -202,6 +202,8 @@ private:
     ClassFactory* m_classFactory;
 
     QStack<HistoryState*> m_history;
+    
+    QPoint m_cursorRelativeMove;
 };
 
 class PenAreaInterface : public QObject
