@@ -87,9 +87,6 @@ public slots:
     void toggleSelBox(bool state);
     void toggleStaticView(bool state);
 
-    void setLockedNode(QNodeInteractor* node, bool state);
-    bool isLockedNode(QNodeInteractor* node);
-
     void cloneSelected();
     void deleteSelected();
 
@@ -200,8 +197,6 @@ private:
     tbe::scene::Grid* m_grid;
 
     QNodeInterfaceMap m_nodeInterface;
-
-    QMap<QNodeInteractor*, bool> m_lockedNode;
 
     MainWindow* m_mainwin;
 

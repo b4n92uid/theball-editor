@@ -415,6 +415,8 @@ void MainWindow::initConnections()
 
     connect(nodesGui.nodesListView, SIGNAL(assignParent(QStandardItem*, QStandardItem*)), this, SLOT(assignParent(QStandardItem*, QStandardItem*)));
     connect(nodesGui.nodesListView, SIGNAL(promoteChild(QStandardItem*)), this, SLOT(promoteChild(QStandardItem*)));
+    connect(nodesGui.nodesListView, SIGNAL(removeNode(QNodeInteractor*)), m_tbeWidget, SLOT(deleteNode(QNodeInteractor*)));
+    connect(nodesGui.nodesListView, SIGNAL(setOnFloorNode(QNodeInteractor*)), m_tbeWidget, SLOT(baseOnFloor(QNodeInteractor*)));
 
     connect(envGui.znear, SIGNAL(valueChanged(double)), this, SLOT(guiZNear(double)));
     connect(envGui.zfar, SIGNAL(valueChanged(double)), this, SLOT(guiZFar(double)));

@@ -6,7 +6,8 @@
  */
 
 #include "QNodeListView.h"
-#include "QNodeInteractor.h"
+
+#define nodeInterface() data(ITEM_ROLE_NODE).value<QNodeInteractor*>()
 
 QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
 {
@@ -14,24 +15,41 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
 
     m_promote = m_itemedit->addAction("Promouvoir le(s) noeud(s)");
     m_promote->setIcon(QIcon(":/Medias/medias/promot.png"));
-    connect(m_promote, SIGNAL(triggered()), this, SLOT(onPromoteChild()));
 
-    m_assign = m_itemedit->addAction("Attacher la sélection");
+    m_assign = m_itemedit->addAction("Attacher au noeud");
     m_assign->setIcon(QIcon(":/Medias/medias/assign.png"));
+
+    QAction* remove = m_itemedit->addAction("Supprimer");
+    remove->setIcon(QIcon(":/Medias/medias/cross.png"));
+
+    QAction* enable = m_itemedit->addAction("Activer/Désactiver");
+    enable->setIcon(QIcon(":/Medias/medias/accept.png"));
+
+    QAction* lock = m_itemedit->addAction("Vérouiller/Dévérouiller");
+    lock->setIcon(QIcon(":/Medias/medias/selection_select.png"));
+
+    QAction* onfloor = m_itemedit->addAction("Mise au sol");
+    onfloor->setIcon(QIcon(":/Medias/medias/shape_align_bottom.png"));
+
+    connect(m_promote, SIGNAL(triggered()), this, SLOT(onPromoteChild()));
     connect(m_assign, SIGNAL(triggered()), this, SLOT(onAssignParent()));
+    connect(remove, SIGNAL(triggered()), this, SLOT(onRemoveNode()));
+    connect(enable, SIGNAL(triggered()), this, SLOT(onEnableNode()));
+    connect(lock, SIGNAL(triggered()), this, SLOT(onLockNode()));
+    connect(onfloor, SIGNAL(triggered()), this, SLOT(onSetOnFloorNode()));
 }
 
 QNodeListView::~QNodeListView()
 {
 }
 
-void QNodeListView::onPromoteChild()
+QItemsList QNodeListView::selection()
 {
-    QModelIndexList indexes = selectionModel()->selectedRows();
     QItemsList items;
+    QModelIndexList indexes = selectionModel()->selectedRows();
 
     if(indexes.empty())
-        return;
+        return items;
 
     foreach(QModelIndex index, indexes)
     {
@@ -40,6 +58,13 @@ void QNodeListView::onPromoteChild()
     }
 
     clearSelection();
+
+    return items;
+}
+
+void QNodeListView::onPromoteChild()
+{
+    QItemsList items = selection();
 
     foreach(QStandardItem* item, items)
     {
@@ -54,18 +79,7 @@ void QNodeListView::onAssignParent()
 
     QStandardItem* parent = model()->itemData(curIndex)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
 
-    QModelIndexList indexes = selectionModel()->selectedRows();
-    QItemsList items;
-
-    if(indexes.empty())
-        return;
-
-    foreach(QModelIndex index, indexes)
-    {
-        items << model()->itemData(index)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
-    }
-
-    clearSelection();
+    QItemsList items = selection();
 
     foreach(QStandardItem* child, items)
     {
@@ -93,5 +107,49 @@ void QNodeListView::mousePressEvent(QMouseEvent * event)
     else
     {
         event->ignore();
+    }
+}
+
+void QNodeListView::onRemoveNode()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit removeNode(item->nodeInterface());
+    }
+}
+
+void QNodeListView::onEnableNode()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        QNodeInteractor* interface = item->nodeInterface();
+
+        interface->setEnable(!interface->isEnable());
+    }
+}
+
+void QNodeListView::onLockNode()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        QNodeInteractor* interface = item->nodeInterface();
+
+        interface->setLocked(!interface->isLocked());
+    }
+}
+
+void QNodeListView::onSetOnFloorNode()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit setOnFloorNode(item->nodeInterface());
     }
 }

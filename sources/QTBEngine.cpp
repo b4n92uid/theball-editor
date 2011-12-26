@@ -456,25 +456,6 @@ void QTBEngine::popHistoryStat()
         m_mainwin->ui()->actionUndo->setEnabled(false);
 }
 
-bool QTBEngine::isLockedNode(QNodeInteractor* node)
-{
-    return m_lockedNode.contains(node);
-}
-
-void QTBEngine::setLockedNode(QNodeInteractor* node, bool state)
-{
-    if(state)
-    {
-        m_lockedNode[node] = true;
-    }
-
-    else
-    {
-        if(m_lockedNode.contains(node))
-            m_lockedNode.remove(node);
-    }
-}
-
 void QTBEngine::baseOnFloor()
 {
     if(!m_selectedNode)
@@ -614,8 +595,16 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             m_selbox->Node::setEnable(false);
             m_grid->setEnable(false);
 
-            foreach(QNodeInteractor* node, m_lockedNode.keys())
-            node->target()->setEnable(false);
+            QMap < QNodeInteractor*, bool> initialState;
+
+            foreach(QNodeInteractor* node, m_nodeInterface.values())
+            {
+                if(node->isLocked())
+                {
+                    initialState[node] = node->target()->isEnable();
+                    node->target()->setEnable(false);
+                }
+            }
 
             if(m_selectedNode)
                 m_selectedNode->target()->setEnable(false);
@@ -640,8 +629,10 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                     m_selectedNode->target()->setEnable(true);
             }
 
-            foreach(QNodeInteractor* node, m_lockedNode.keys())
-            node->target()->setEnable(true);
+            foreach(QNodeInteractor* node, initialState.keys())
+            {
+                node->target()->setEnable(initialState[node]);
+            }
 
             m_selbox->Node::setEnable(m_selectedNode);
             m_grid->setEnable(m_gridset.enable);
@@ -1160,8 +1151,6 @@ void QTBEngine::clearScene()
     m_staticView = false;
 
     Texture::resetCache();
-
-    m_lockedNode.clear();
 
     m_gridset.enable = false;
     m_gridset.size = 1;

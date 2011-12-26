@@ -10,6 +10,9 @@
 
 #include <QtGui/QtGui>
 
+#include "Metatype.h"
+#include "QNodeInteractor.h"
+
 class QNodeListView : public QTreeView
 {
     Q_OBJECT
@@ -24,9 +27,22 @@ public slots:
     void onPromoteChild();
     void onAssignParent();
 
+    void onRemoveNode();
+    void onEnableNode();
+    void onLockNode();
+    void onSetOnFloorNode();
+
 signals:
     void assignParent(QStandardItem*, QStandardItem*);
     void promoteChild(QStandardItem*);
+
+    void removeNode(QNodeInteractor*);
+    void enableNode(QNodeInteractor*);
+    void lockNode(QNodeInteractor*);
+    void setOnFloorNode(QNodeInteractor*);
+
+private:
+    QItemsList selection();
 
 private:
     QMenu* m_itemedit;

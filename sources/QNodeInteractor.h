@@ -32,6 +32,10 @@ public:
 
     QItemsList itemRows();
     QStandardItem* item();
+    
+    bool isLocked();
+    bool isEnable();
+    
 
 public slots:
     virtual void setup();
@@ -60,6 +64,8 @@ public slots:
 protected:
     MainWindow* m_mainwin;
     tbe::scene::Node* m_target;
+
+    bool m_locked;
 };
 
 #endif	/* QNODEINTERACTOR_H */
