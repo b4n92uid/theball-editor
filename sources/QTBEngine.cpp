@@ -207,11 +207,19 @@ void QTBEngine::applyTranslationEvents()
     if(m_eventManager->keyState[EventManager::KEY_LCTRL] && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
         float sensitivty = 0.2;
-        m_centerTarget -= m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
-        m_centerTarget -= m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
+
+        if(m_eventManager->keyState[EventManager::KEY_LALT])
+        {
+            m_centerTarget.y += -m_eventManager->mousePosRel.y * sensitivty;
+        }
+        else
+        {
+            m_centerTarget += -m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
+            m_centerTarget += -m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
+        }
     }
 
-    if(m_currentTool->type == SELECTION_TOOL)
+    else if(m_currentTool->type == SELECTION_TOOL)
     {
         if(m_selectedNode && m_eventManager->keyState[EventManager::KEY_LSHIFT])
         {
@@ -583,10 +591,15 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 1;
 
         if(ev->modifiers() & Qt::ControlModifier)
+        {
             setCursor(Qt::BlankCursor);
+            m_cursorRelativeMove = QCursor::pos();
+        }
 
         else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
+        {
             m_centerTarget = m_curCursor3D;
+        }
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -711,7 +724,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         QCursor::setPos(m_cursorRelativeMove);
     }
 
-    if(m_currentTool->type == SELECTION_TOOL)
+    else if(m_currentTool->type == SELECTION_TOOL)
     {
         if(ev->modifiers() & Qt::ShiftModifier && m_selectedNode)
         {
