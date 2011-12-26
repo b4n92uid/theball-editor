@@ -12,7 +12,7 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
 {
     m_itemedit = new QMenu(this);
 
-    m_promote = m_itemedit->addAction("Promouvoir le noeud");
+    m_promote = m_itemedit->addAction("Promouvoir le(s) noeud(s)");
     m_promote->setIcon(QIcon(":/Medias/medias/promot.png"));
     connect(m_promote, SIGNAL(triggered()), this, SLOT(onPromoteChild()));
 
@@ -28,17 +28,23 @@ QNodeListView::~QNodeListView()
 void QNodeListView::onPromoteChild()
 {
     QModelIndexList indexes = selectionModel()->selectedRows();
+    QItemsList items;
 
-    if(!indexes.empty())
+    if(indexes.empty())
+        return;
+
+    foreach(QModelIndex index, indexes)
     {
+        items << model()->itemData(index)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
 
-        foreach(QModelIndex index, indexes)
-        {
-            QStandardItem* item = model()->itemData(index)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
+    }
 
-            if(item->parent())
-                emit promoteChild(item);
-        }
+    clearSelection();
+
+    foreach(QStandardItem* item, items)
+    {
+        if(item->parent())
+            emit promoteChild(item);
     }
 }
 
@@ -49,17 +55,22 @@ void QNodeListView::onAssignParent()
     QStandardItem* parent = model()->itemData(curIndex)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
 
     QModelIndexList indexes = selectionModel()->selectedRows();
+    QItemsList items;
 
-    if(!indexes.empty())
+    if(indexes.empty())
+        return;
+
+    foreach(QModelIndex index, indexes)
     {
+        items << model()->itemData(index)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
+    }
 
-        foreach(QModelIndex index, indexes)
-        {
-            QStandardItem* child = model()->itemData(index)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
+    clearSelection();
 
-            if(child != parent)
-                emit assignParent(parent, child);
-        }
+    foreach(QStandardItem* child, items)
+    {
+        if(child != parent)
+            emit assignParent(parent, child);
     }
 }
 
