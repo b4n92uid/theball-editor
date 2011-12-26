@@ -9,11 +9,6 @@
 #include "MainWindow.h"
 #include "ui_interface.h"
 
-QNodeInteractor::QNodeInteractor() :
-m_mainwin(NULL), m_target(NULL)
-{
-}
-
 QNodeInteractor::QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target) :
 m_mainwin(mainwin), m_target(target)
 {
@@ -29,6 +24,7 @@ void QNodeInteractor::setName(const QString& s)
     if(m_target)
     {
         m_target->setName(s.toStdString());
+
         m_mainwin->notifyChanges(true);
     }
 }
@@ -98,8 +94,6 @@ void QNodeInteractor::setEnable(bool state)
 
     foreach(QStandardItem* item, list)
     item->setForeground(state ? Qt::black : Qt::gray);
-
-    m_mainwin->notifyChanges(true);
 }
 
 void QNodeInteractor::setLocked(bool state)

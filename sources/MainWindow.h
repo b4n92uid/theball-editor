@@ -153,7 +153,7 @@ private:
 
             QPushButton* add;
 
-        } lighTab;
+        } light;
 
         struct MeshGuiTab
         {
@@ -172,7 +172,7 @@ private:
             QCheckBox* billboardX;
             QCheckBox* billboardY;
 
-        } meshTab;
+        } mesh;
 
         struct ParticlesGuiTab
         {
@@ -193,11 +193,7 @@ private:
 
             QMap<QObject*, QString> sourcMap;
 
-        } particlesTab;
-
-        struct MapMarkGuiTab
-        {
-        } markTab;
+        } particles;
 
         QLineEdit* name;
         QDoubleVector3Box* position;
@@ -225,7 +221,7 @@ private:
 
         struct SkyboxGuiTab
         {
-            QBrowsEdit * textures[6];
+            QBrowsEdit* textures[6];
             QPushButton* apply;
             QGroupBox* enable;
 

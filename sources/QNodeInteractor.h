@@ -22,18 +22,17 @@ class QNodeInteractor : public QObject
     Q_OBJECT
 
 public:
-    QNodeInteractor();
     QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target);
     virtual ~QNodeInteractor();
 
     tbe::scene::Node* target() const;
     MainWindow* mainwin() const;
-    
+
     virtual QString typeName() const;
 
     QItemsList itemRows();
     QStandardItem* item();
-    
+
 public slots:
     virtual void setup();
     virtual void unsetup();

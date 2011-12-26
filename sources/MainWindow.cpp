@@ -258,52 +258,52 @@ void MainWindow::initWidgets()
 
     // -------- Mesh
 
-    nodesGui.meshTab.add = m_uinterface->node_mesh_add;
+    nodesGui.mesh.add = m_uinterface->node_mesh_add;
 
-    nodesGui.meshTab.matedit = new MaterialEditDialog(this);
+    nodesGui.mesh.matedit = new MaterialEditDialog(this);
 
-    nodesGui.meshTab.matedit->textureModel = new QStandardItemModel(this);
-    nodesGui.meshTab.matedit->textureView->setModel(nodesGui.meshTab.matedit->textureModel);
+    nodesGui.mesh.matedit->textureModel = new QStandardItemModel(this);
+    nodesGui.mesh.matedit->textureView->setModel(nodesGui.mesh.matedit->textureModel);
 
-    nodesGui.meshTab.matedit->materialsModel = new QStandardItemModel(this);
-    nodesGui.meshTab.matedit->materialsView->setModel(nodesGui.meshTab.matedit->materialsModel);
+    nodesGui.mesh.matedit->materialsModel = new QStandardItemModel(this);
+    nodesGui.mesh.matedit->materialsView->setModel(nodesGui.mesh.matedit->materialsModel);
 
-    nodesGui.meshTab.materialFilePath = m_uinterface->node_mesh_matfile;
+    nodesGui.mesh.materialFilePath = m_uinterface->node_mesh_matfile;
 
-    nodesGui.meshTab.includedmat = m_uinterface->node_mesh_includedmat;
-    nodesGui.meshTab.editmatfile = m_uinterface->node_mesh_editmat;
-    nodesGui.meshTab.openmatfile = m_uinterface->node_mesh_setmatfile;
-    nodesGui.meshTab.delmatfile = m_uinterface->node_mesh_delmatfile;
+    nodesGui.mesh.includedmat = m_uinterface->node_mesh_includedmat;
+    nodesGui.mesh.editmatfile = m_uinterface->node_mesh_editmat;
+    nodesGui.mesh.openmatfile = m_uinterface->node_mesh_setmatfile;
+    nodesGui.mesh.delmatfile = m_uinterface->node_mesh_delmatfile;
 
-    nodesGui.meshTab.billboardX = m_uinterface->node_mesh_billboard_x;
-    nodesGui.meshTab.billboardY = m_uinterface->node_mesh_billboard_y;
+    nodesGui.mesh.billboardX = m_uinterface->node_mesh_billboard_x;
+    nodesGui.mesh.billboardY = m_uinterface->node_mesh_billboard_y;
 
     // -------- Particles
 
-    nodesGui.particlesTab.gravity = new QDoubleVector3Box(this, m_uinterface->node_particles_gravity_x, m_uinterface->node_particles_gravity_y, m_uinterface->node_particles_gravity_z);
-    nodesGui.particlesTab.boxsize = new QDoubleVector3Box(this, m_uinterface->node_particles_boxsize_x, m_uinterface->node_particles_boxsize_y, m_uinterface->node_particles_boxsize_z);
-    nodesGui.particlesTab.bulletsize = new QDoubleVector2Box(this, m_uinterface->node_particles_bulletsize_x, m_uinterface->node_particles_bulletsize_y);
-    nodesGui.particlesTab.freemove = m_uinterface->node_particles_freemove;
-    nodesGui.particlesTab.lifeinit = m_uinterface->node_particles_lifeinit;
-    nodesGui.particlesTab.lifedown = m_uinterface->node_particles_lifedown;
-    nodesGui.particlesTab.number = m_uinterface->node_particles_number;
-    nodesGui.particlesTab.texture = new QBrowsEdit(this, m_uinterface->node_particles_texture, m_uinterface->node_particles_texture_browse);
-    nodesGui.particlesTab.continiousmode = m_uinterface->node_particles_continousmode;
-    nodesGui.particlesTab.pointsprite = m_uinterface->node_particles_pointsprite;
-    nodesGui.particlesTab.build = m_uinterface->node_particles_build;
-    nodesGui.particlesTab.add = m_uinterface->node_particles_add;
+    nodesGui.particles.gravity = new QDoubleVector3Box(this, m_uinterface->node_particles_gravity_x, m_uinterface->node_particles_gravity_y, m_uinterface->node_particles_gravity_z);
+    nodesGui.particles.boxsize = new QDoubleVector3Box(this, m_uinterface->node_particles_boxsize_x, m_uinterface->node_particles_boxsize_y, m_uinterface->node_particles_boxsize_z);
+    nodesGui.particles.bulletsize = new QDoubleVector2Box(this, m_uinterface->node_particles_bulletsize_x, m_uinterface->node_particles_bulletsize_y);
+    nodesGui.particles.freemove = m_uinterface->node_particles_freemove;
+    nodesGui.particles.lifeinit = m_uinterface->node_particles_lifeinit;
+    nodesGui.particles.lifedown = m_uinterface->node_particles_lifedown;
+    nodesGui.particles.number = m_uinterface->node_particles_number;
+    nodesGui.particles.texture = new QBrowsEdit(this, m_uinterface->node_particles_texture, m_uinterface->node_particles_texture_browse);
+    nodesGui.particles.continiousmode = m_uinterface->node_particles_continousmode;
+    nodesGui.particles.pointsprite = m_uinterface->node_particles_pointsprite;
+    nodesGui.particles.build = m_uinterface->node_particles_build;
+    nodesGui.particles.add = m_uinterface->node_particles_add;
 
     // -------- Lights
 
-    nodesGui.lighTab.type = m_uinterface->node_light_type;
+    nodesGui.light.type = m_uinterface->node_light_type;
 
-    nodesGui.lighTab.ambiant = new QDoubleVector3Box(this, m_uinterface->node_light_ambiant_x, m_uinterface->node_light_ambiant_y, m_uinterface->node_light_ambiant_z);
-    nodesGui.lighTab.diffuse = new QDoubleVector3Box(this, m_uinterface->node_light_diffuse_x, m_uinterface->node_light_diffuse_y, m_uinterface->node_light_diffuse_z);
-    nodesGui.lighTab.specular = new QDoubleVector3Box(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
+    nodesGui.light.ambiant = new QDoubleVector3Box(this, m_uinterface->node_light_ambiant_x, m_uinterface->node_light_ambiant_y, m_uinterface->node_light_ambiant_z);
+    nodesGui.light.diffuse = new QDoubleVector3Box(this, m_uinterface->node_light_diffuse_x, m_uinterface->node_light_diffuse_y, m_uinterface->node_light_diffuse_z);
+    nodesGui.light.specular = new QDoubleVector3Box(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
 
-    nodesGui.lighTab.radius = m_uinterface->node_light_radius;
+    nodesGui.light.radius = m_uinterface->node_light_radius;
 
-    nodesGui.lighTab.add = m_uinterface->node_light_add;
+    nodesGui.light.add = m_uinterface->node_light_add;
 
     // Nodes liste -------------------------------------------------------------
 
@@ -404,9 +404,9 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionSortFromCamera, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromCamera()));
     connect(m_uinterface->actionSortFromSelection, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromSelection()));
 
-    connect(nodesGui.meshTab.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
-    connect(nodesGui.particlesTab.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
-    connect(nodesGui.lighTab.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
+    connect(nodesGui.mesh.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
+    connect(nodesGui.particles.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
+    connect(nodesGui.light.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
 
     connect(m_tbeWidget, SIGNAL(selection(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(m_tbeWidget, SIGNAL(deselection()), this, SLOT(deselect()));
@@ -579,7 +579,7 @@ void MainWindow::openScene(const QString& filename)
                 = m_workingDir.meshTexture
                 = QFileInfo(filename).path();
 
-        nodesGui.particlesTab.texture->setWorkDir(m_workingDir.scene);
+        nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
 
         for(unsigned i = 0; i < 6; i++)
             envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
@@ -631,7 +631,7 @@ void MainWindow::saveSceneDialog()
                 = m_workingDir.meshTexture
                 = QFileInfo(filename).path();
 
-        nodesGui.particlesTab.texture->setWorkDir(m_workingDir.scene);
+        nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
 
         for(unsigned i = 0; i < 6; i++)
             envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
@@ -852,7 +852,7 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->actionPastRotation->setEnabled(true);
     m_uinterface->actionPastScale->setEnabled(true);
 
-    nodesGui.meshTab.matedit->hide();
+    nodesGui.mesh.matedit->hide();
 
     QString info;
     QTextStream stream(&info);
