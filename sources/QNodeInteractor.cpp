@@ -12,6 +12,7 @@
 QNodeInteractor::QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target) :
 m_mainwin(mainwin), m_target(target)
 {
+    m_locked = false;
 }
 
 QNodeInteractor::~QNodeInteractor()
@@ -86,6 +87,11 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
     }
 }
 
+bool QNodeInteractor::isEnable()
+{
+    return m_target->isEnable();
+}
+
 void QNodeInteractor::setEnable(bool state)
 {
     m_target->setEnable(state);
@@ -96,9 +102,14 @@ void QNodeInteractor::setEnable(bool state)
     item->setForeground(state ? Qt::black : Qt::gray);
 }
 
+bool QNodeInteractor::isLocked()
+{
+    return m_locked;
+}
+
 void QNodeInteractor::setLocked(bool state)
 {
-    m_mainwin->tbeWidget()->setLockedNode(this, state);
+    m_locked = state;
 
     QList<QStandardItem*> list = itemRows();
 
@@ -304,7 +315,7 @@ void QNodeInteractor::update()
     m_mainwin->nodesGui.rotation->setValue(m_target->getMatrix().getRotate().getEuler() * 180 / M_PI);
 
     m_mainwin->nodesGui.enable->setChecked(m_target->isEnable());
-    m_mainwin->nodesGui.lock->setChecked(m_mainwin->tbeWidget()->isLockedNode(this));
+    m_mainwin->nodesGui.lock->setChecked(m_locked);
 
     blocker.unblock();
 
