@@ -161,6 +161,7 @@ private:
     QTimer* m_updateTimer;
 
     bool m_grabCamera;
+    bool m_moveCamera;
     bool m_magnetMove;
     bool m_staticView;
 

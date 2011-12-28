@@ -51,6 +51,7 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
     m_sceneManager = NULL;
 
     m_grabCamera = false;
+    m_moveCamera = false;
 
     m_selectedNode = NULL;
     m_lastSelectedNode = NULL;
@@ -207,7 +208,7 @@ void QTBEngine::applyTranslationEvents()
     if(m_eventManager->notify != EventManager::EVENT_MOUSE_MOVE)
         return;
 
-    if(m_eventManager->keyState[EventManager::KEY_LCTRL] && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
+    if(m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
         if(m_eventManager->keyState[EventManager::KEY_LALT])
         {
@@ -566,17 +567,14 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
     else if(ev->button() == Qt::MiddleButton)
     {
+        m_moveCamera = false;
+
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 1;
 
-        if(ev->modifiers() & Qt::ControlModifier)
+        if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
         {
             setCursor(Qt::BlankCursor);
             m_cursorRelativeMove = QCursor::pos();
-        }
-
-        else if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
-        {
-            m_centerTarget = m_curCursor3D;
         }
     }
 
@@ -657,6 +655,9 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 0;
 
         setCursor(m_currentTool->cursor);
+
+        if(!m_moveCamera)
+            m_centerTarget = m_curCursor3D;
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -707,9 +708,11 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         m_camera->onEvent(m_eventManager);
     }
 
-    if(ev->buttons() & Qt::MidButton && ev->modifiers() & Qt::ControlModifier)
+    if(ev->buttons() & Qt::MidButton)
     {
         QCursor::setPos(m_cursorRelativeMove);
+
+        m_moveCamera = true;
     }
 
     else if(m_currentTool->type == SELECTION_TOOL)
@@ -1150,6 +1153,7 @@ void QTBEngine::clearScene()
     m_curCursor3D = 0;
 
     m_grabCamera = false;
+    m_moveCamera = false;
 
     Texture::resetCache();
 
