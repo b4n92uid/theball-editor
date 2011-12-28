@@ -79,15 +79,18 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
     m_toolMode[DRAW_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/draw.png"));
 
     m_currentTool = NULL;
+
+    m_sensivitySet.selection = 0.2;
+    m_sensivitySet.camera = 0.1;
 }
 
 QTBEngine::~QTBEngine()
 {
-    delete m_sceneParser;
-    delete m_device;
+    clearScene();
 
-    foreach(HistoryState* hs, m_history)
-            delete hs;
+    delete m_sceneParser;
+
+    delete m_device;
 }
 
 void QTBEngine::initializeGL()
@@ -206,16 +209,14 @@ void QTBEngine::applyTranslationEvents()
 
     if(m_eventManager->keyState[EventManager::KEY_LCTRL] && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
-        float sensitivty = 0.2;
-
         if(m_eventManager->keyState[EventManager::KEY_LALT])
         {
-            m_centerTarget.y += -m_eventManager->mousePosRel.y * sensitivty;
+            m_centerTarget.y += -m_eventManager->mousePosRel.y * m_sensivitySet.camera;
         }
         else
         {
-            m_centerTarget += -m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * sensitivty;
-            m_centerTarget += -m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * sensitivty;
+            m_centerTarget += -m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * m_sensivitySet.camera;
+            m_centerTarget += -m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * m_sensivitySet.camera;
         }
     }
 
@@ -228,8 +229,6 @@ void QTBEngine::applyTranslationEvents()
             Vector3f position = selnode->getMatrix().getPos();
             Quaternion rotation = selnode->getMatrix().getRotate();
             Vector3f scale = selnode->getMatrix().getScale();
-
-            float moveSpeed = 0.01;
 
             Vector2f mousePosRel = m_eventManager->mousePosRel;
 
@@ -245,13 +244,13 @@ void QTBEngine::applyTranslationEvents()
 
             if(m_eventManager->keyState[EventManager::KEY_LALT])
             {
-                transform.y -= mousePosRel.y * moveSpeed;
+                transform.y -= mousePosRel.y * m_sensivitySet.selection;
             }
             else
             {
                 Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
-                transform = rota * (-left * mousePosRel.x * moveSpeed);
-                transform -= rota * (target * mousePosRel.y * moveSpeed);
+                transform = rota * (-left * mousePosRel.x * m_sensivitySet.selection);
+                transform -= rota * (target * mousePosRel.y * m_sensivitySet.selection);
                 transform.y = 0;
             }
 
@@ -277,20 +276,18 @@ void QTBEngine::applyTranslationEvents()
     {
         if(m_eventManager->keyState[EventManager::KEY_LSHIFT])
         {
-            float moveSpeed = 0.05;
-
             Vector2f mousePosRel = m_eventManager->mousePosRel;
 
             Vector3f transform;
 
             if(m_eventManager->keyState[EventManager::KEY_LALT])
             {
-                transform.y -= mousePosRel.y * moveSpeed;
+                transform.y -= mousePosRel.y * m_sensivitySet.selection;
             }
             else
             {
-                transform = -m_camera->getLeft() * mousePosRel.x * moveSpeed;
-                transform -= m_camera->getTarget() * mousePosRel.y * moveSpeed;
+                transform = -m_camera->getLeft() * mousePosRel.x * m_sensivitySet.selection;
+                transform -= m_camera->getTarget() * mousePosRel.y * m_sensivitySet.selection;
                 transform.y = 0;
             }
 
@@ -1131,6 +1128,11 @@ void QTBEngine::saveScene(const QString& filename)
 
 void QTBEngine::clearScene()
 {
+    foreach(HistoryState* hs, m_history)
+            delete hs;
+
+    m_history.clear();
+
     m_rootNode->clearAllChild();
 
     m_sceneManager->clearParallelScenes(false);
@@ -1148,7 +1150,6 @@ void QTBEngine::clearScene()
     m_curCursor3D = 0;
 
     m_grabCamera = false;
-    m_staticView = false;
 
     Texture::resetCache();
 
@@ -1173,7 +1174,19 @@ void QTBEngine::loadScene(const QString& filename)
     m_sceneParser->loadScene(filename.toStdString());
     m_sceneParser->buildScene();
 
-    m_camera->setDistance(m_meshScene->getSceneAabb().getLength() / 8.0f);
+    AABB sceneAabb = m_meshScene->getSceneAabb();
+
+    m_sensivitySet.selection = sceneAabb.getLength() * 0.001;
+
+    if(m_sensivitySet.selection > 1)
+        m_sensivitySet.selection *= 0.25;
+
+    m_sensivitySet.camera = sceneAabb.getLength() * 0.001;
+
+    if(m_sensivitySet.camera > 1)
+        m_sensivitySet.camera *= 0.5;
+
+    m_camera->setDistance(sceneAabb.getLength() / 8.0f);
     m_camera->setRotate(Vector2f(45, -45));
 
     m_selectedNode = NULL;

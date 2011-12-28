@@ -164,13 +164,6 @@ private:
     bool m_magnetMove;
     bool m_staticView;
 
-    struct GridSet
-    {
-        bool enable;
-        tbe::Vector3f size;
-
-    } m_gridset;
-
     struct ToolMode
     {
         ToolType type;
@@ -205,6 +198,20 @@ private:
     QStack<HistoryState*> m_history;
 
     QPoint m_cursorRelativeMove;
+
+    struct GridSet
+    {
+        bool enable;
+        tbe::Vector3f size;
+
+    } m_gridset;
+
+    struct SensivitySet
+    {
+        float selection;
+        float camera;
+
+    } m_sensivitySet;
 };
 
 class PenAreaInterface : public QObject
