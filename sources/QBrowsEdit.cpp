@@ -38,6 +38,13 @@ void QBrowsEdit::openFileName()
     emit endChoose();
 }
 
+void QBrowsEdit::clear()
+{
+    m_lineEdit->blockSignals(true);
+    m_lineEdit->clear();
+    m_lineEdit->blockSignals(false);
+}
+
 void QBrowsEdit::setWorkDir(QString workDir)
 {
     this->m_workDir = workDir;

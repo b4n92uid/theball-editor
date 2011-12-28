@@ -617,6 +617,9 @@ void MainWindow::openScene(const QString& filename)
     catch(std::exception& e)
     {
         QMessageBox::critical(this, "Erreur de chargement", e.what());
+
+        notifyChanges(false);
+        newScene();
     }
 }
 

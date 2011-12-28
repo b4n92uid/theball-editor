@@ -69,6 +69,7 @@ void QParticlesInteractor::setTexture(const QString& v)
         catch(std::exception& e)
         {
             QMessageBox::critical(m_mainwin, "Chargement de texture", e.what());
+            m_mainwin->nodesGui.particles.texture->clear();
         }
     }
 
@@ -107,7 +108,7 @@ void QParticlesInteractor::select()
 
     update();
 
-    m_mainwin->nodesGui.attribTab->setCurrentIndex(3);
+    m_mainwin->nodesGui.attribTab->setCurrentIndex(2);
 }
 
 void QParticlesInteractor::deselect()

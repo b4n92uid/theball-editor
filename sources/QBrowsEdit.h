@@ -26,6 +26,7 @@ public:
 
 public slots:
     void openFileName();
+    void clear();
 
 signals:
     void textChanged(const QString& filename);
