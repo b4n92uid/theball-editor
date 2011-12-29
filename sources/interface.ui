@@ -1589,6 +1589,8 @@
      <string>Outils</string>
     </property>
     <addaction name="actionSelectionTool"/>
+    <addaction name="actionRotateTool"/>
+    <addaction name="actionScaleTool"/>
     <addaction name="actionDrawTool"/>
    </widget>
    <widget class="QMenu" name="menuMouvements">
@@ -1957,7 +1959,7 @@
     <string>Outil pinceau</string>
    </property>
    <property name="shortcut">
-    <string>É</string>
+    <string>'</string>
    </property>
   </action>
   <action name="actionToggleMagnetMove">
@@ -1973,6 +1975,36 @@
    </property>
    <property name="shortcut">
     <string>M</string>
+   </property>
+  </action>
+  <action name="actionRotateTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/rotate.png</normaloff>:/Medias/medias/rotate.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outil Rotation</string>
+   </property>
+   <property name="shortcut">
+    <string>É</string>
+   </property>
+  </action>
+  <action name="actionScaleTool">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/resize.png</normaloff>:/Medias/medias/resize.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outil Mise a l'échele</string>
+   </property>
+   <property name="shortcut">
+    <string>&quot;</string>
    </property>
   </action>
  </widget>

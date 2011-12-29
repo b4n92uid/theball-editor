@@ -22,14 +22,6 @@ QString QMeshInteractor::typeName() const
     return "Mesh";
 }
 
-void QMeshInteractor::setScale(const tbe::Vector3f& v)
-{
-    if(m_target)
-    {
-        m_target->setVertexScale(v);
-    }
-}
-
 tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
 {
     using namespace tbe::scene;
@@ -724,9 +716,6 @@ void QMeshInteractor::update()
     using namespace tbe::scene;
 
     QNodeInteractor::update();
-
-    // Vertex scaling
-    m_mainwin->nodesGui.scale->setValue(m_target->getVertexScale());
 
     // Reload materials list
     m_mainwin->nodesGui.mesh.matedit->materialsModel->

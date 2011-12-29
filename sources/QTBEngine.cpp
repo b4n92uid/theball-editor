@@ -76,6 +76,12 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
     m_toolMode[SELECTION_TOOL].type = SELECTION_TOOL;
     m_toolMode[SELECTION_TOOL].cursor = Qt::OpenHandCursor;
 
+    m_toolMode[ROTATE_TOOL].type = ROTATE_TOOL;
+    m_toolMode[ROTATE_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/rotate.png"));
+
+    m_toolMode[SCALE_TOOL].type = SCALE_TOOL;
+    m_toolMode[SCALE_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/resize.png"));
+
     m_toolMode[DRAW_TOOL].type = DRAW_TOOL;
     m_toolMode[DRAW_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/draw.png"));
 
@@ -227,9 +233,9 @@ void QTBEngine::applyTranslationEvents()
         {
             tbe::scene::Node* selnode = m_selectedNode->target();
 
-            Vector3f position = selnode->getMatrix().getPos();
-            Quaternion rotation = selnode->getMatrix().getRotate();
-            Vector3f scale = selnode->getMatrix().getScale();
+            Vector3f position, scale;
+            Quaternion rotation;
+            selnode->getMatrix().decompose(position, rotation, scale);
 
             Vector2f mousePosRel = m_eventManager->mousePosRel;
 
@@ -249,7 +255,7 @@ void QTBEngine::applyTranslationEvents()
             }
             else
             {
-                Quaternion rota = selnode->getAbsoluteMatrix(false).getRotate();
+                Quaternion rota(selnode->getAbsoluteMatrix(false));
                 transform = rota * (-left * mousePosRel.x * m_sensivitySet.selection);
                 transform -= rota * (target * mousePosRel.y * m_sensivitySet.selection);
                 transform.y = 0;
@@ -263,9 +269,7 @@ void QTBEngine::applyTranslationEvents()
             }
 
             Matrix4 apply;
-            apply.setPos(position);
-            apply.setRotate(rotation);
-            apply.setScale(scale);
+            apply.transform(position, rotation, scale);
 
             selnode->setMatrix(apply);
 
@@ -723,6 +727,55 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
         }
     }
 
+    else if(m_currentTool->type == ROTATE_TOOL)
+    {
+        if(ev->buttons() & Qt::RightButton && m_selectedNode)
+        {
+            Quaternion qrot;
+
+            if(m_movementAxe.x > 0)
+                qrot.setAxisAngle(-mousePosRel.x * m_sensivitySet.selection, Vector3f(0, 1, 0));
+
+            if(m_movementAxe.y > 0)
+                qrot.setAxisAngle(-mousePosRel.y * m_sensivitySet.selection, Vector3f(1, 0, 0));
+
+            if(m_movementAxe.z > 0)
+                qrot.setAxisAngle(-mousePosRel.y * m_sensivitySet.selection, Vector3f(0, 0, 1));
+
+            tbe::Vector3f position, scale;
+            tbe::Quaternion rotation;
+
+            Matrix4& mat = m_selectedNode->target()->getMatrix();
+            mat.decompose(position, rotation, scale);
+            mat.identity();
+            mat.transform(position, rotation*qrot, scale);
+
+            m_selectedNode->update();
+        }
+    }
+
+    else if(m_currentTool->type == SCALE_TOOL)
+    {
+        if(ev->buttons() & Qt::RightButton && m_selectedNode)
+        {
+            Vector3f setscale = 1;
+
+            if(m_movementAxe.x > 0)
+                setscale.x += mousePosRel.x * m_sensivitySet.selection;
+
+            if(m_movementAxe.y > 0)
+                setscale.y += mousePosRel.y * m_sensivitySet.selection;
+
+            if(m_movementAxe.z > 0)
+                setscale.z += -mousePosRel.y * m_sensivitySet.selection;
+
+            Matrix4& mat = m_selectedNode->target()->getMatrix();
+            mat.scale(setscale);
+
+            m_selectedNode->update();
+        }
+    }
+
     else if(m_currentTool->type == DRAW_TOOL)
     {
         if(ev->modifiers() & Qt::ShiftModifier)
@@ -774,7 +827,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                                 if(m_penarea->rotZ)
                                     scale.z = 0;
 
-                                painting->setScale(scale);
+                                matset.scale(scale);
                             }
 
                             {// Rotation
@@ -788,7 +841,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                                 if(!m_penarea->rotZ)
                                     rot.z = 0;
 
-                                matset.setRotate(Quaternion(rot));
+                                matset.rotate(Quaternion(rot));
                             }
 
                             // Position
@@ -841,6 +894,27 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     if(ev->key() == Qt::Key_Space)
     {
         m_mainwin->ui()->menuEditer->popup(QCursor::pos());
+    }
+
+    if(ev->key() == Qt::Key_X)
+    {
+        m_movementAxe(1, 0, 0);
+        m_mainwin->statusBar()->showMessage("Movement sur l'axe X");
+    }
+    if(ev->key() == Qt::Key_Y)
+    {
+        m_movementAxe(0, 1, 0);
+        m_mainwin->statusBar()->showMessage("Movement sur l'axe Y");
+    }
+    if(ev->key() == Qt::Key_Z)
+    {
+        m_movementAxe(0, 0, 1);
+        m_mainwin->statusBar()->showMessage("Movement sur l'axe Z");
+    }
+    if(ev->key() == Qt::Key_A)
+    {
+        m_movementAxe = 1;
+        m_mainwin->statusBar()->showMessage("Movement sur tout les axes X, Y, Z");
     }
 
     if(ev->key() == Qt::Key_Q && m_lastSelectedNode)
@@ -1152,6 +1226,8 @@ void QTBEngine::clearScene()
     m_curCursorPos = 0;
     m_curCursor3D = 0;
 
+    m_movementAxe = 1;
+
     m_grabCamera = false;
     m_moveCamera = false;
 
@@ -1436,6 +1512,24 @@ void QTBEngine::selectDrawTool()
 
     m_penarea->Node::setEnable(true);
     m_penarea->Node::setPos(m_curCursor3D);
+}
+
+void QTBEngine::selectScaleTool()
+{
+    m_currentTool = &m_toolMode[SCALE_TOOL];
+
+    setCursor(m_currentTool->cursor);
+
+    m_penarea->Node::setEnable(false);
+}
+
+void QTBEngine::selectRotateTool()
+{
+    m_currentTool = &m_toolMode[ROTATE_TOOL];
+
+    setCursor(m_currentTool->cursor);
+
+    m_penarea->Node::setEnable(false);
 }
 
 PenAreaInterface::PenAreaInterface()

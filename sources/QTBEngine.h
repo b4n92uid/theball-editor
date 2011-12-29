@@ -114,6 +114,8 @@ public slots:
     void fogClear();
 
     void selectSelectionTool();
+    void selectRotateTool();
+    void selectScaleTool();
     void selectDrawTool();
 
 signals:
@@ -178,6 +180,7 @@ private:
     tbe::Vector2i m_curCursorPos;
     tbe::Vector3f m_curCursor3D;
 
+    tbe::Vector3f m_movementAxe;
     tbe::Vector3f m_centerTarget;
 
     tbe::scene::Node* m_rootNode;

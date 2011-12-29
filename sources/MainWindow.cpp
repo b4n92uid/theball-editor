@@ -197,6 +197,8 @@ void MainWindow::initWidgets()
     toptoolbar->addAction(m_uinterface->actionToggleGrid);
     toptoolbar->addSeparator();
     toptoolbar->addAction(m_uinterface->actionSelectionTool);
+    toptoolbar->addAction(m_uinterface->actionRotateTool);
+    toptoolbar->addAction(m_uinterface->actionScaleTool);
     toptoolbar->addAction(m_uinterface->actionDrawTool);
 
     QWidget* spacer = new QWidget(toptoolbar);
@@ -443,11 +445,15 @@ void MainWindow::initConnections()
 
     QSignalMapper* toolsigmap = new QSignalMapper(this);
     toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
+    toolsigmap->setMapping(m_uinterface->actionRotateTool, ROTATE_TOOL);
+    toolsigmap->setMapping(m_uinterface->actionScaleTool, SCALE_TOOL);
     toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
 
     connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
 
     connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    connect(m_uinterface->actionRotateTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
+    connect(m_uinterface->actionScaleTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
 
     // Timer
@@ -685,7 +691,11 @@ void MainWindow::saveScene(const QString& filename)
 void MainWindow::setCurrentTool(int type)
 {
     m_uinterface->actionSelectionTool->setChecked(false);
+    m_uinterface->actionRotateTool->setChecked(false);
+    m_uinterface->actionScaleTool->setChecked(false);
     m_uinterface->actionDrawTool->setChecked(false);
+
+    m_drawToolDialog->hide();
 
     switch(type)
     {
@@ -693,6 +703,18 @@ void MainWindow::setCurrentTool(int type)
             m_uinterface->actionSelectionTool->setChecked(true);
             m_tbeWidget->selectSelectionTool();
             m_drawToolDialog->hide();
+            break;
+
+        case SCALE_TOOL:
+            m_uinterface->actionScaleTool->setChecked(true);
+            m_tbeWidget->selectScaleTool();
+            m_tbeWidget->setFocus();
+            break;
+
+        case ROTATE_TOOL:
+            m_uinterface->actionRotateTool->setChecked(true);
+            m_tbeWidget->selectRotateTool();
+            m_tbeWidget->setFocus();
             break;
 
         case DRAW_TOOL:
@@ -1190,7 +1212,12 @@ void MainWindow::pastScale()
 
     m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
-    m_selectedNode->setScale(m_sourceCopy->target()->getMatrix().getScale());
+    tbe::Vector3f position, scale;
+    tbe::Quaternion rotation;
+
+    m_sourceCopy->target()->getMatrix().decompose(position, rotation, scale);
+
+    m_selectedNode->setScale(scale);
 
     statusBar()->showMessage("Scale coller...", 2000);
 }
@@ -1202,7 +1229,12 @@ void MainWindow::pastRotation()
 
     m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
 
-    m_selectedNode->setRotation(m_sourceCopy->target()->getMatrix().getRotate().getEuler());
+    tbe::Vector3f position, scale;
+    tbe::Quaternion rotation;
+
+    m_sourceCopy->target()->getMatrix().decompose(position, rotation, scale);
+
+    m_selectedNode->setRotation(rotation.getEuler());
 
     statusBar()->showMessage("Rotation coller...", 2000);
 }

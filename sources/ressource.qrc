@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="Medias">
+    <file>../medias/resize.png</file>
+    <file>../medias/rotate.png</file>
     <file>../medias/draw.png</file>
     <file>../medias/logo-big.png</file>
     <file>../medias/package.png</file>

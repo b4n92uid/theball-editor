@@ -50,10 +50,14 @@ void QNodeInteractor::setRotation(const tbe::Vector3f& v)
     {
         using namespace tbe;
 
-        Matrix4 newmat = m_target->getMatrix();
-        newmat.setRotate(tbe::Quaternion(v * M_PI / 180));
+        tbe::Matrix4& newmat = m_target->getMatrix();
 
-        m_target->setMatrix(newmat);
+        tbe::Vector3f position, scale;
+        tbe::Quaternion rotation;
+
+        newmat.decompose(position, rotation, scale);
+        newmat.identity();
+        newmat.transform(position, Quaternion(v * M_PI / 180), scale);
 
         m_mainwin->notifyChanges(true);
 
@@ -65,7 +69,14 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
 {
     if(m_target)
     {
-        m_target->getMatrix().setScale(v);
+        tbe::Matrix4& newmat = m_target->getMatrix();
+
+        tbe::Vector3f position, scale;
+        tbe::Quaternion rotation;
+
+        newmat.decompose(position, rotation, scale);
+        newmat.identity();
+        newmat.transform(position, rotation, v);
 
         m_mainwin->notifyChanges(true);
 
@@ -310,9 +321,14 @@ void QNodeInteractor::update()
 
     m_mainwin->nodesGui.name->setText(QString::fromStdString(m_target->getName()));
 
-    m_mainwin->nodesGui.position->setValue(m_target->getPos());
-    m_mainwin->nodesGui.scale->setValue(m_target->getMatrix().getScale());
-    m_mainwin->nodesGui.rotation->setValue(m_target->getMatrix().getRotate().getEuler() * 180 / M_PI);
+    tbe::Vector3f position, scale;
+    tbe::Quaternion rotation;
+
+    m_target->getMatrix().decompose(position, rotation, scale);
+
+    m_mainwin->nodesGui.position->setValue(position);
+    m_mainwin->nodesGui.scale->setValue(scale);
+    m_mainwin->nodesGui.rotation->setValue(rotation.getEuler() * 180 / M_PI);
 
     m_mainwin->nodesGui.enable->setChecked(m_target->isEnable());
     m_mainwin->nodesGui.lock->setChecked(m_locked);
