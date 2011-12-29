@@ -55,7 +55,6 @@ public slots:
     void setName(const QString& s);
     void setPos(const tbe::Vector3f& v);
     void setRotation(const tbe::Vector3f& v);
-    virtual // Because mesh type are vertex scalled
     void setScale(const tbe::Vector3f& v);
     void setMatrix(const tbe::Matrix4& m);
     void setEnable(bool state);
