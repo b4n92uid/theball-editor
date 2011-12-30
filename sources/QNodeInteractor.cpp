@@ -308,7 +308,8 @@ void QNodeInteractor::update()
             << m_mainwin->nodesGui.position
             << m_mainwin->nodesGui.scale
             << m_mainwin->nodesGui.rotation
-            << m_mainwin->nodesGui.enable;
+            << m_mainwin->nodesGui.enable
+            << m_mainwin->nodesGui.lock;
 
     blocker.block();
 

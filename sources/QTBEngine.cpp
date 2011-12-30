@@ -636,6 +636,11 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             m_selbox->Node::setEnable(m_selectedNode);
             m_grid->setEnable(m_gridset.enable);
         }
+
+        else if(m_currentTool->type == ROTATE_TOOL || m_currentTool->type == SCALE_TOOL)
+        {
+            pushHistoryStat(new ModificationState(m_selectedNode));
+        }
     }
 }
 
@@ -731,24 +736,24 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         if(ev->buttons() & Qt::RightButton && m_selectedNode)
         {
-            Quaternion qrot;
-
-            if(m_movementAxe.x > 0)
-                qrot.setAxisAngle(-mousePosRel.x * m_sensivitySet.selection, Vector3f(0, 1, 0));
-
-            if(m_movementAxe.y > 0)
-                qrot.setAxisAngle(-mousePosRel.y * m_sensivitySet.selection, Vector3f(1, 0, 0));
-
-            if(m_movementAxe.z > 0)
-                qrot.setAxisAngle(-mousePosRel.y * m_sensivitySet.selection, Vector3f(0, 0, 1));
+            Matrix4& mat = m_selectedNode->target()->getMatrix();
 
             tbe::Vector3f position, scale;
             tbe::Quaternion rotation;
 
-            Matrix4& mat = m_selectedNode->target()->getMatrix();
             mat.decompose(position, rotation, scale);
+
+            if(m_movementAxe.x > 0)
+                rotation *= tbe::Quaternion(-mousePosRel.x * m_sensivitySet.selection, Vector3f(0, 1, 0));
+
+            if(m_movementAxe.y > 0)
+                rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection, Vector3f(1, 0, 0));
+
+            if(m_movementAxe.z > 0)
+                rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection, Vector3f(0, 0, 1));
+
             mat.identity();
-            mat.transform(position, rotation*qrot, scale);
+            mat.transform(position, rotation, scale);
 
             m_selectedNode->update();
         }
@@ -758,19 +763,32 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         if(ev->buttons() & Qt::RightButton && m_selectedNode)
         {
-            Vector3f setscale = 1;
-
-            if(m_movementAxe.x > 0)
-                setscale.x += mousePosRel.x * m_sensivitySet.selection;
-
-            if(m_movementAxe.y > 0)
-                setscale.y += mousePosRel.y * m_sensivitySet.selection;
-
-            if(m_movementAxe.z > 0)
-                setscale.z += -mousePosRel.y * m_sensivitySet.selection;
-
             Matrix4& mat = m_selectedNode->target()->getMatrix();
-            mat.scale(setscale);
+
+            tbe::Vector3f position, scale;
+            tbe::Quaternion rotation;
+
+            mat.decompose(position, rotation, scale);
+
+            if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
+            {
+                scale += mousePosRel.y * m_sensivitySet.selection / 2;
+            }
+            else
+            {
+                if(m_movementAxe.x > 0)
+                    scale.x += mousePosRel.x * m_sensivitySet.selection;
+
+                if(m_movementAxe.y > 0)
+                    scale.y += mousePosRel.y * m_sensivitySet.selection;
+
+                if(m_movementAxe.z > 0)
+                    scale.z += -mousePosRel.y * m_sensivitySet.selection;
+            }
+
+
+            mat.identity();
+            mat.transform(position, rotation, scale);
 
             m_selectedNode->update();
         }
@@ -894,6 +912,23 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     if(ev->key() == Qt::Key_Space)
     {
         m_mainwin->ui()->menuEditer->popup(QCursor::pos());
+    }
+
+    if(ev->key() == Qt::Key_U && m_selectedNode)
+    {
+        tbe::Vector3f position, scale;
+        tbe::Quaternion rotation;
+
+        m_selectedNode->target()->getMatrix().decompose(position, rotation, scale);
+
+        if(m_currentTool->type == ROTATE_TOOL)
+            rotation.identity();
+
+        else if(m_currentTool->type == SCALE_TOOL)
+            scale = 1;
+
+        m_selectedNode->target()->getMatrix().identity();
+        m_selectedNode->target()->getMatrix().transform(position, rotation, scale);
     }
 
     if(ev->key() == Qt::Key_X)
