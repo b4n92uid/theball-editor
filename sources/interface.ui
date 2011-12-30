@@ -311,39 +311,48 @@
              <item>
               <widget class="QDoubleSpinBox" name="node_rot_x">
                <property name="minimum">
-                <double>-1024.000000000000000</double>
+                <double>-90.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>1024.000000000000000</double>
+                <double>90.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>1.000000000000000</double>
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.000000000000000</double>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="node_rot_y">
                <property name="minimum">
-                <double>-1024.000000000000000</double>
+                <double>-90.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>1024.000000000000000</double>
+                <double>90.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>1.000000000000000</double>
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.000000000000000</double>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="node_rot_z">
                <property name="minimum">
-                <double>-1024.000000000000000</double>
+                <double>-90.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>1024.000000000000000</double>
+                <double>90.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>1.000000000000000</double>
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.000000000000000</double>
                </property>
               </widget>
              </item>

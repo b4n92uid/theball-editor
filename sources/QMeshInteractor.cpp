@@ -717,6 +717,37 @@ void QMeshInteractor::update()
 
     QNodeInteractor::update();
 
+    QSignalBlocker blocker;
+    blocker
+            << m_mainwin->nodesGui.mesh.add
+            << m_mainwin->nodesGui.mesh.billboardX
+            << m_mainwin->nodesGui.mesh.billboardY
+            << m_mainwin->nodesGui.mesh.delmatfile
+            << m_mainwin->nodesGui.mesh.editmatfile
+            << m_mainwin->nodesGui.mesh.includedmat
+            << m_mainwin->nodesGui.mesh.materialFilePath
+            << m_mainwin->nodesGui.mesh.openmatfile
+
+            << m_mainwin->nodesGui.mesh.matedit->alpha
+            << m_mainwin->nodesGui.mesh.matedit->alphathreshold
+            << m_mainwin->nodesGui.mesh.matedit->ambiant
+            << m_mainwin->nodesGui.mesh.matedit->blend_additive
+            << m_mainwin->nodesGui.mesh.matedit->blend_modulate
+            << m_mainwin->nodesGui.mesh.matedit->blend_mul
+            << m_mainwin->nodesGui.mesh.matedit->blending
+            << m_mainwin->nodesGui.mesh.matedit->cliping
+            << m_mainwin->nodesGui.mesh.matedit->clipping_animation
+            << m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec
+            << m_mainwin->nodesGui.mesh.matedit->clipping_framesize
+            << m_mainwin->nodesGui.mesh.matedit->clipping_part
+            << m_mainwin->nodesGui.mesh.matedit->culltrick
+            << m_mainwin->nodesGui.mesh.matedit->diffuse
+            << m_mainwin->nodesGui.mesh.matedit->foged
+            << m_mainwin->nodesGui.mesh.matedit->rgb
+            << m_mainwin->nodesGui.mesh.matedit->specular;
+
+    blocker.block();
+
     // Reload materials list
     m_mainwin->nodesGui.mesh.matedit->materialsModel->
             removeRows(0, m_mainwin->nodesGui.mesh.matedit->materialsModel->rowCount());
@@ -782,4 +813,6 @@ void QMeshInteractor::update()
 
     // Surroun the mesh
     m_mainwin->m_tbeWidget->selBox()->setAround(m_target, tbe::Vector4f(0, 0, 1, 0.25));
+
+    blocker.unblock();
 }
