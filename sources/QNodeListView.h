@@ -31,6 +31,10 @@ public slots:
     void onEnableNode();
     void onLockNode();
     void onSetOnFloorNode();
+    void onPastPosition();
+    void onPastScale();
+    void onPastRotation();
+    void onPastFields();
 
 signals:
     void assignParent(QStandardItem*, QStandardItem*);
@@ -40,6 +44,10 @@ signals:
     void enableNode(QNodeInteractor*);
     void lockNode(QNodeInteractor*);
     void setOnFloorNode(QNodeInteractor*);
+    void pastPosition(QNodeInteractor*);
+    void pastScale(QNodeInteractor*);
+    void pastRotation(QNodeInteractor*);
+    void pastFields(QNodeInteractor*);
 
 private:
     QItemsList selection();

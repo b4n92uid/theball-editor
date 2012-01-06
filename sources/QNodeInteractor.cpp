@@ -136,7 +136,11 @@ void QNodeInteractor::setLocked(bool state)
 QItemsList QNodeInteractor::itemRows()
 {
     QStandardItem* itemc0 = m_mainwin->nodeItemBinder[this];
-    QStandardItem* itemc1 = m_mainwin->nodesGui.nodesListModel->item(itemc0->row(), 1);
+
+    QStandardItem* itemc1 = (itemc0->parent()
+            ? itemc0->parent()
+            : m_mainwin->nodesGui.nodesListModel->invisibleRootItem())
+            ->child(itemc0->row(), 1);
 
     return QItemsList() << itemc0 << itemc1;
 }
@@ -271,6 +275,16 @@ void QNodeInteractor::select()
         m_mainwin->nodesGui.nodesListView->setCurrentIndex(index);
 
     m_mainwin->nodesGui.nodesListView->blockSignals(false);
+
+    QList<QStandardItem*> list = itemRows();
+
+    foreach(QStandardItem* it, list)
+    {
+        QFont font = it->font();
+        font.setBold(true);
+
+        it->setFont(font);
+    }
 }
 
 void QNodeInteractor::deselect()
@@ -296,6 +310,16 @@ void QNodeInteractor::deselect()
 
     m_mainwin->nodesGui.additionalModel
             ->removeRows(0, m_mainwin->nodesGui.additionalModel->rowCount());
+
+    QList<QStandardItem*> list = itemRows();
+
+    foreach(QStandardItem* it, list)
+    {
+        QFont font = it->font();
+        font.setBold(false);
+
+        it->setFont(font);
+    }
 }
 
 void QNodeInteractor::update()

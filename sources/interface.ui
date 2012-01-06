@@ -268,39 +268,48 @@
              <item>
               <widget class="QDoubleSpinBox" name="node_scl_x">
                <property name="minimum">
-                <double>-1024.000000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="maximum">
                 <double>1024.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.010000000000000</double>
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="node_scl_y">
                <property name="minimum">
-                <double>-1024.000000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="maximum">
                 <double>1024.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.010000000000000</double>
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QDoubleSpinBox" name="node_scl_z">
                <property name="minimum">
-                <double>-1024.000000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="maximum">
                 <double>1024.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.010000000000000</double>
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -311,10 +320,10 @@
              <item>
               <widget class="QDoubleSpinBox" name="node_rot_x">
                <property name="minimum">
-                <double>-90.000000000000000</double>
+                <double>-180.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>90.000000000000000</double>
+                <double>180.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>10.000000000000000</double>
@@ -327,10 +336,10 @@
              <item>
               <widget class="QDoubleSpinBox" name="node_rot_y">
                <property name="minimum">
-                <double>-90.000000000000000</double>
+                <double>-180.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>90.000000000000000</double>
+                <double>180.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>10.000000000000000</double>
@@ -343,10 +352,10 @@
              <item>
               <widget class="QDoubleSpinBox" name="node_rot_z">
                <property name="minimum">
-                <double>-90.000000000000000</double>
+                <double>-180.000000000000000</double>
                </property>
                <property name="maximum">
-                <double>90.000000000000000</double>
+                <double>180.000000000000000</double>
                </property>
                <property name="singleStep">
                 <double>10.000000000000000</double>
@@ -1576,12 +1585,6 @@
     <addaction name="separator"/>
     <addaction name="actionCloneNode"/>
     <addaction name="actionDeleteNode"/>
-    <addaction name="separator"/>
-    <addaction name="actionCopy"/>
-    <addaction name="actionPastPosition"/>
-    <addaction name="actionPastScale"/>
-    <addaction name="actionPastRotation"/>
-    <addaction name="actionPastFields"/>
    </widget>
    <widget class="QMenu" name="menuTrier">
     <property name="title">
@@ -1787,54 +1790,6 @@
    </property>
    <property name="shortcut">
     <string>C</string>
-   </property>
-  </action>
-  <action name="actionCopy">
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_copy.png</normaloff>:/Medias/medias/page_white_copy.png</iconset>
-   </property>
-   <property name="text">
-    <string>Copier</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
-   </property>
-  </action>
-  <action name="actionPastPosition">
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Coller la position</string>
-   </property>
-  </action>
-  <action name="actionPastRotation">
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Coller la rotation</string>
-   </property>
-  </action>
-  <action name="actionPastScale">
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Coller le scale</string>
-   </property>
-  </action>
-  <action name="actionPastFields">
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
-   </property>
-   <property name="text">
-    <string>Coller les champs</string>
    </property>
   </action>
   <action name="actionUndo">
