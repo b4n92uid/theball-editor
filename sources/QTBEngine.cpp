@@ -1459,6 +1459,9 @@ void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 
 void QTBEngine::selectNode(QNodeInteractor* qnode)
 {
+    if(m_selectedNode)
+        m_selectedNode->deselect();
+
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
 

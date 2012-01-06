@@ -87,11 +87,10 @@ public slots:
 
     void openFileHistory();
 
-    void copy();
-    void pastField();
-    void pastPosition();
-    void pastScale();
-    void pastRotation();
+    void pastFields(QNodeInteractor*);
+    void pastPosition(QNodeInteractor*);
+    void pastScale(QNodeInteractor*);
+    void pastRotation(QNodeInteractor*);
 
     void screenshot();
 
@@ -259,7 +258,6 @@ private:
     QNodeInteractor* m_rootNode;
     QNodeInteractor* m_selectedNode;
     QNodeInteractor* m_lastSelectedNode;
-    QNodeInteractor* m_sourceCopy;
 
     QString m_filename;
 

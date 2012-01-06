@@ -16,7 +16,6 @@ MainWindow::MainWindow()
 
     m_uinterface = new Ui_mainWindow;
     m_rootNode = NULL;
-    m_sourceCopy = NULL;
 }
 
 MainWindow::~MainWindow()
@@ -85,9 +84,6 @@ void MainWindow::unreg(QNodeInteractor* node)
 
         notifyChanges(true);
     }
-
-    if(m_sourceCopy == node)
-        m_sourceCopy = NULL;
 
     m_tbeWidget->unregisterInterface(node);
 }
@@ -385,12 +381,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionNewParticles, SIGNAL(triggered()), this, SLOT(guiParticlesNew()));
     connect(m_uinterface->actionNewMapMark, SIGNAL(triggered()), this, SLOT(guiMarkNew()));
 
-    connect(m_uinterface->actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
-    connect(m_uinterface->actionPastFields, SIGNAL(triggered()), this, SLOT(pastField()));
-    connect(m_uinterface->actionPastPosition, SIGNAL(triggered()), this, SLOT(pastPosition()));
-    connect(m_uinterface->actionPastScale, SIGNAL(triggered()), this, SLOT(pastScale()));
-    connect(m_uinterface->actionPastRotation, SIGNAL(triggered()), this, SLOT(pastRotation()));
-
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
@@ -417,6 +407,10 @@ void MainWindow::initConnections()
 
     connect(nodesGui.nodesListView, SIGNAL(assignParent(QStandardItem*, QStandardItem*)), this, SLOT(assignParent(QStandardItem*, QStandardItem*)));
     connect(nodesGui.nodesListView, SIGNAL(promoteChild(QStandardItem*)), this, SLOT(promoteChild(QStandardItem*)));
+    connect(nodesGui.nodesListView, SIGNAL(pastPosition(QNodeInteractor*)), this, SLOT(pastPosition(QNodeInteractor*)));
+    connect(nodesGui.nodesListView, SIGNAL(pastScale(QNodeInteractor*)), this, SLOT(pastScale(QNodeInteractor*)));
+    connect(nodesGui.nodesListView, SIGNAL(pastRotation(QNodeInteractor*)), this, SLOT(pastRotation(QNodeInteractor*)));
+    connect(nodesGui.nodesListView, SIGNAL(pastFields(QNodeInteractor*)), this, SLOT(pastFields(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(removeNode(QNodeInteractor*)), m_tbeWidget, SLOT(deleteNode(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(setOnFloorNode(QNodeInteractor*)), m_tbeWidget, SLOT(baseOnFloor(QNodeInteractor*)));
 
@@ -873,12 +867,6 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->actionCloneNode->setEnabled(true);
     m_uinterface->actionDeleteNode->setEnabled(true);
 
-    m_uinterface->actionCopy->setEnabled(true);
-    m_uinterface->actionPastFields->setEnabled(true);
-    m_uinterface->actionPastPosition->setEnabled(true);
-    m_uinterface->actionPastRotation->setEnabled(true);
-    m_uinterface->actionPastScale->setEnabled(true);
-
     nodesGui.mesh.matedit->hide();
 
     QString info;
@@ -929,12 +917,6 @@ void MainWindow::deselect()
 
     m_uinterface->actionCloneNode->setEnabled(false);
     m_uinterface->actionDeleteNode->setEnabled(false);
-
-    m_uinterface->actionCopy->setEnabled(false);
-    m_uinterface->actionPastFields->setEnabled(false);
-    m_uinterface->actionPastPosition->setEnabled(false);
-    m_uinterface->actionPastRotation->setEnabled(false);
-    m_uinterface->actionPastScale->setEnabled(false);
 
     m_selInfo->setText("Pas de séléction");
 }
@@ -1170,20 +1152,20 @@ void MainWindow::screenshot()
     }
 }
 
-void MainWindow::pastField()
+void MainWindow::pastFields(QNodeInteractor* node)
 {
-    if(!m_sourceCopy)
+    if(!m_selectedNode)
         return;
 
     using namespace tbe;
     using namespace scene;
 
-    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+    m_tbeWidget->pushHistoryStat(new ModificationState(node));
 
-    Node* nearest = m_selectedNode->target();
+    Node* nearest = node->target();
     nearest->clearUserData();
 
-    const Any::Map& ud = m_sourceCopy->target()->getUserDatas();
+    const Any::Map& ud = m_selectedNode->target()->getUserDatas();
 
     foreach(Any::Map::value_type i, ud)
     {
@@ -1193,57 +1175,50 @@ void MainWindow::pastField()
     statusBar()->showMessage("Champs coller...", 2000);
 }
 
-void MainWindow::pastPosition()
+void MainWindow::pastPosition(QNodeInteractor* node)
 {
-    if(!m_sourceCopy)
+    if(!m_selectedNode)
         return;
 
-    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+    m_tbeWidget->pushHistoryStat(new ModificationState(node));
 
-    m_selectedNode->setPos(m_sourceCopy->target()->getPos());
+    node->setPos(m_selectedNode->target()->getPos());
 
     statusBar()->showMessage("Position coller...", 2000);
 }
 
-void MainWindow::pastScale()
+void MainWindow::pastScale(QNodeInteractor* node)
 {
-    if(!m_sourceCopy)
+    if(!m_selectedNode)
         return;
 
-    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+    m_tbeWidget->pushHistoryStat(new ModificationState(node));
 
     tbe::Vector3f position, scale;
     tbe::Quaternion rotation;
 
-    m_sourceCopy->target()->getMatrix().decompose(position, rotation, scale);
+    m_selectedNode->target()->getMatrix().decompose(position, rotation, scale);
 
-    m_selectedNode->setScale(scale);
+    node->setScale(scale);
 
     statusBar()->showMessage("Scale coller...", 2000);
 }
 
-void MainWindow::pastRotation()
+void MainWindow::pastRotation(QNodeInteractor* node)
 {
-    if(!m_sourceCopy)
+    if(!m_selectedNode)
         return;
 
-    m_tbeWidget->pushHistoryStat(new ModificationState(m_selectedNode));
+    m_tbeWidget->pushHistoryStat(new ModificationState(node));
 
     tbe::Vector3f position, scale;
     tbe::Quaternion rotation;
 
-    m_sourceCopy->target()->getMatrix().decompose(position, rotation, scale);
+    m_selectedNode->target()->getMatrix().decompose(position, rotation, scale);
 
-    m_selectedNode->setRotation(rotation.getEuler());
+    node->setRotation(rotation.getEuler());
 
     statusBar()->showMessage("Rotation coller...", 2000);
-}
-
-void MainWindow::copy()
-{
-    m_sourceCopy = m_selectedNode;
-
-    statusBar()->showMessage("Copie effectuer...", 2000);
 }
 
 void MainWindow::zNear(float value)

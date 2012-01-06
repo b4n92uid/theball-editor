@@ -31,12 +31,28 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     QAction* onfloor = m_itemedit->addAction("Mise au sol");
     onfloor->setIcon(QIcon(":/Medias/medias/shape_align_bottom.png"));
 
+    QAction* pastScale = m_itemedit->addAction("Appliquer le scale");
+    pastScale->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
+
+    QAction* pastPosition = m_itemedit->addAction("Appliquer la position");
+    pastPosition->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
+
+    QAction* pastRotation = m_itemedit->addAction("Appliquer la rotation");
+    pastRotation->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
+
+    QAction* pastFields = m_itemedit->addAction("Appliquer la champs");
+    pastFields->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
+
     connect(m_promote, SIGNAL(triggered()), this, SLOT(onPromoteChild()));
     connect(m_assign, SIGNAL(triggered()), this, SLOT(onAssignParent()));
     connect(remove, SIGNAL(triggered()), this, SLOT(onRemoveNode()));
     connect(enable, SIGNAL(triggered()), this, SLOT(onEnableNode()));
     connect(lock, SIGNAL(triggered()), this, SLOT(onLockNode()));
     connect(onfloor, SIGNAL(triggered()), this, SLOT(onSetOnFloorNode()));
+    connect(pastPosition, SIGNAL(triggered()), this, SLOT(onPastPosition()));
+    connect(pastScale, SIGNAL(triggered()), this, SLOT(onPastScale()));
+    connect(pastRotation, SIGNAL(triggered()), this, SLOT(onPastRotation()));
+    connect(pastFields, SIGNAL(triggered()), this, SLOT(onPastFields()));
 }
 
 QNodeListView::~QNodeListView()
@@ -151,5 +167,45 @@ void QNodeListView::onSetOnFloorNode()
     foreach(QStandardItem* item, items)
     {
         emit setOnFloorNode(item->nodeInterface());
+    }
+}
+
+void QNodeListView::onPastPosition()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit pastPosition(item->nodeInterface());
+    }
+}
+
+void QNodeListView::onPastScale()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit pastScale(item->nodeInterface());
+    }
+}
+
+void QNodeListView::onPastRotation()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit pastRotation(item->nodeInterface());
+    }
+}
+
+void QNodeListView::onPastFields()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit pastFields(item->nodeInterface());
     }
 }
