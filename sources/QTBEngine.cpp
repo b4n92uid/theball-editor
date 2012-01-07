@@ -422,9 +422,11 @@ void QTBEngine::deleteSelected()
     if(!m_selectedNode)
         return;
 
-    deleteNode(m_selectedNode);
+    QNodeInteractor* todel = m_selectedNode;
 
     emit deselection();
+
+    deleteNode(todel);
 }
 
 void QTBEngine::pushHistoryStat(HistoryState* hs)
@@ -772,7 +774,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
             if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
             {
-                scale += mousePosRel.y * m_sensivitySet.selection / 2;
+                scale += mousePosRel.y * m_sensivitySet.selection * scale;
             }
             else
             {
@@ -1166,43 +1168,58 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
             if(colset)
             {
-                m_selectedNode->target()->setPos(colset->getAbsoluteMatrix().getPos());
-                m_selectedNode->update();
+                Vector3f _position, _scale;
+                Quaternion _rotation;
 
-                #if 0
-                QList<Vector3f> magnetpts;
-                magnetpts.reserve(8 * 3);
+                colset->getMatrix().decompose(_position, _rotation, _scale);
 
                 AABB colset_aabb = colset->getAabb();
-                Vector3f colset_pos = colset->getAbsoluteMatrix().getPos();
+                colset_aabb.min *= _scale;
+                colset_aabb.max *= _scale;
 
-                Vector3f::Array maincorner = colset_aabb.getPoints();
+                Vector3f::Array maincorners = colset_aabb.getPoints();
 
-                foreach(Vector3f corner, maincorner)
+                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x, 0, 0));
+                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y, 0));
+                maincorners.push_back(colset_aabb.min + Vector3f(0, 0, colset_aabb.max.z));
+
+                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x, colset_aabb.max.y, 0));
+                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y, colset_aabb.max.z));
+
+                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x, colset_aabb.max.y * 2, 0));
+                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y * 2, colset_aabb.max.z));
+
+                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y, colset_aabb.max.z * 2));
+                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x * 2, colset_aabb.max.y, 0));
+
+                maincorners.push_back(colset_aabb.max + Vector3f(colset_aabb.min.x, 0, 0));
+                maincorners.push_back(colset_aabb.max + Vector3f(0, colset_aabb.min.y, 0));
+                maincorners.push_back(colset_aabb.max + Vector3f(0, 0, colset_aabb.min.z));
+
+                maincorners.push_back(colset_aabb.max + Vector3f(colset_aabb.min.x, colset_aabb.min.y, 0));
+                maincorners.push_back(colset_aabb.max + Vector3f(0, colset_aabb.min.y, colset_aabb.min.z));
+
+                maincorners.push_back(colset_aabb.max + Vector3f(colset_aabb.min.x, colset_aabb.min.y * 2, 0));
+                maincorners.push_back(colset_aabb.max + Vector3f(0, colset_aabb.min.y * 2, colset_aabb.min.z));
+
+                Vector3f colsetToNode = current->getAbsoluteMatrix().getPos()
+                        - colset->getAbsoluteMatrix().getPos();
+
+                foreach(Vector3f corner, maincorners)
                 {
-                }
+                    float dot = Vector3f::dot(Vector3f::normalize(colsetToNode),
+                                              Vector3f::normalize(corner));
 
-                float mindist = colset_aabb.getLength() + 1;
-
-                int colsetindex = -1;
-
-                for(int i = 0; i < magnetpts.size(); i++)
-                {
-                    if(current_position - magnetpts[i] < mindist)
+                    if(dot >= 0.9)
                     {
-                        mindist = (current_position - magnetpts[i]).getMagnitude();
-                        colsetindex = i;
+                        Vector3f finalpos = _position + corner;
+
+                        m_selectedNode->target()->setPos(finalpos);
+                        m_selectedNode->update();
+
+                        break;
                     }
                 }
-
-                if(colsetindex >= 0)
-                {
-                    current_position = magnetpts[colsetindex];
-
-                    m_selectedNode->target()->setPos(current_position);
-                    m_selectedNode->update();
-                }
-                #endif
             }
         }
     }
