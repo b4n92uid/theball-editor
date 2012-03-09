@@ -115,6 +115,8 @@ void QTBEngine::initializeGL()
     m_sceneManager->addParallelScene(m_lightScene);
 
     m_meshScene = new MeshParallelScene;
+    m_meshScene->setEnableFrustumTest(true);
+    m_meshScene->setTransparencySort(true);
     m_sceneManager->addParallelScene(m_meshScene);
 
     m_particlesScene = new ParticlesParallelScene;
@@ -466,8 +468,6 @@ void QTBEngine::baseOnFloor()
         return;
 
     baseOnFloor(m_selectedNode);
-
-    m_selectedNode->update();
 }
 
 void QTBEngine::centerOnFloor()
@@ -476,8 +476,6 @@ void QTBEngine::centerOnFloor()
         return;
 
     centerOnFloor(m_selectedNode);
-
-    m_selectedNode->update();
 }
 
 void QTBEngine::baseOnFloor(QNodeInteractor* node)
@@ -499,6 +497,8 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
     Vector3f adjust = selnode->getPos();
     adjust.y += -selnode->getAabb().min.y;
     selnode->setPos(adjust);
+
+    node->update();
 }
 
 void QTBEngine::centerOnFloor(QNodeInteractor* node)
@@ -516,6 +516,8 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
     m_selbox->Node::setEnable(true);
     m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
     m_grid->setEnable(m_gridset.enable);
+
+    node->update();
 }
 
 struct SelectionSort
