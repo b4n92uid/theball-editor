@@ -87,7 +87,7 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
 
     m_currentTool = NULL;
 
-    m_sensivitySet.selection = 0.2;
+    m_sensivitySet.selection = 0.05;
     m_sensivitySet.camera = 0.1;
 }
 
@@ -969,6 +969,18 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     if(ev->key() == Qt::Key_Minus)
     {
         m_camera->setDistance(m_camera->getDistance() + 1);
+    }
+
+    if(ev->key() == Qt::Key_PageUp)
+    {
+        m_sensivitySet.selection += 0.05;
+        m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
+    }
+
+    if(ev->key() == Qt::Key_PageDown)
+    {
+        m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.05, 0.01);
+        m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
     }
 
     if(ev->key() == Qt::Key_1)
