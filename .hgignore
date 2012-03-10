@@ -2,9 +2,3 @@ build
 ignore
 debug
 release
-
-qtcreator
-qmake
-nbproject
-
-ui_*
