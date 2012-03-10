@@ -76,7 +76,7 @@ public slots:
 
     void clearNodeList();
 
-    void assignParent(QStandardItem* parent, QStandardItem* child);
+    void assignParent(QStandardItem* child);
     void promoteChild(QStandardItem* child);
 
     void closeEvent(QCloseEvent *event);
@@ -87,6 +87,7 @@ public slots:
 
     void openFileHistory();
 
+    void pastMaterials(QMeshInteractor*);
     void pastFields(QNodeInteractor*);
     void pastPosition(QNodeInteractor*);
     void pastScale(QNodeInteractor*);

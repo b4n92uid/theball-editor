@@ -65,11 +65,8 @@ public:
     QNodeInteractor* interface(tbe::scene::Node* node);
 
     QMesh* meshNew(const QString& filename);
-
     QLight* lightNew();
-
     QParticles* particlesNew();
-
     QMapMark* markNew();
 
 public slots:
@@ -141,6 +138,8 @@ protected:
 
     void applyTranslationEvents();
     void applyCameraEvents();
+
+    void placeNewNode(tbe::scene::Node* thenew);
 
 private:
     tbe::Device* m_device;

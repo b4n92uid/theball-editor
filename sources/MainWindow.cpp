@@ -405,12 +405,13 @@ void MainWindow::initConnections()
 
     connect(nodesGui.nodesListView, SIGNAL(activated(const QModelIndex&)), this, SLOT(guiSelect(const QModelIndex&)));
 
-    connect(nodesGui.nodesListView, SIGNAL(assignParent(QStandardItem*, QStandardItem*)), this, SLOT(assignParent(QStandardItem*, QStandardItem*)));
+    connect(nodesGui.nodesListView, SIGNAL(assignParent(QStandardItem*)), this, SLOT(assignParent(QStandardItem*)));
     connect(nodesGui.nodesListView, SIGNAL(promoteChild(QStandardItem*)), this, SLOT(promoteChild(QStandardItem*)));
     connect(nodesGui.nodesListView, SIGNAL(pastPosition(QNodeInteractor*)), this, SLOT(pastPosition(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(pastScale(QNodeInteractor*)), this, SLOT(pastScale(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(pastRotation(QNodeInteractor*)), this, SLOT(pastRotation(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(pastFields(QNodeInteractor*)), this, SLOT(pastFields(QNodeInteractor*)));
+    connect(nodesGui.nodesListView, SIGNAL(pastMaterials(QMeshInteractor*)), this, SLOT(pastMaterials(QMeshInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(removeNode(QNodeInteractor*)), m_tbeWidget, SLOT(deleteNode(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(setOnFloorNode(QNodeInteractor*)), m_tbeWidget, SLOT(baseOnFloor(QNodeInteractor*)));
 
@@ -959,10 +960,12 @@ void MainWindow::promoteChild(QStandardItem* child)
     statusBar()->showMessage("Enfant promue", 2000);
 }
 
-void MainWindow::assignParent(QStandardItem* parent, QStandardItem* child)
+void MainWindow::assignParent(QStandardItem* child)
 {
     using namespace tbe;
     using namespace scene;
+    
+    QStandardItem* parent = m_selectedNode->item();
 
     QItemsList row = (child->parent() ? child->parent() : nodesGui.nodesListModel->invisibleRootItem())->takeRow(child->row());
     parent->appendRow(row);
@@ -1150,6 +1153,23 @@ void MainWindow::screenshot()
         output.open(QIODevice::WriteOnly);
         shot.save(&output, "PNG");
     }
+}
+
+void MainWindow::pastMaterials(QMeshInteractor* node)
+{
+    if(!m_selectedNode || node == m_selectedNode || m_selectedNode->typeName() != "Mesh")
+        return;
+
+    using namespace tbe;
+    using namespace scene;
+
+    m_tbeWidget->pushHistoryStat(new ModificationState(node));
+
+    Mesh* target = node->target();
+
+    target->fetchMaterials(*dynamic_cast<QMeshInteractor*>(m_selectedNode)->target());
+
+    statusBar()->showMessage("Materieaux coller...", 2000);
 }
 
 void MainWindow::pastFields(QNodeInteractor* node)
