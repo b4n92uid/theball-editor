@@ -18,7 +18,9 @@ public:
     QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target);
     virtual ~QMeshInteractor();
 
-    virtual QString typeName() const;
+    QString typeName() const;
+    
+    tbe::scene::Mesh* target();
 
 public slots:
     void select();

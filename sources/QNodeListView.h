@@ -12,6 +12,7 @@
 
 #include "Metatype.h"
 #include "QNodeInteractor.h"
+#include "QMeshInteractor.h"
 
 class QNodeListView : public QTreeView
 {
@@ -31,19 +32,21 @@ public slots:
     void onEnableNode();
     void onLockNode();
     void onSetOnFloorNode();
+    void onPastMaterials();
     void onPastPosition();
     void onPastScale();
     void onPastRotation();
     void onPastFields();
 
 signals:
-    void assignParent(QStandardItem*, QStandardItem*);
+    void assignParent(QStandardItem*);
     void promoteChild(QStandardItem*);
 
     void removeNode(QNodeInteractor*);
     void enableNode(QNodeInteractor*);
     void lockNode(QNodeInteractor*);
     void setOnFloorNode(QNodeInteractor*);
+    void pastMaterials(QMeshInteractor*);
     void pastPosition(QNodeInteractor*);
     void pastScale(QNodeInteractor*);
     void pastRotation(QNodeInteractor*);

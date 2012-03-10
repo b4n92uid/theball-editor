@@ -22,6 +22,11 @@ QString QMeshInteractor::typeName() const
     return "Mesh";
 }
 
+tbe::scene::Mesh* QMeshInteractor::target()
+{
+    return m_target;
+}
+
 tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
 {
     using namespace tbe::scene;

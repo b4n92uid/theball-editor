@@ -14,6 +14,7 @@
 #include <Tbe.h>
 
 class QNodeInteractor;
+class QMeshInteractor;
 
 typedef QList<QStandardItem*> QItemsList;
 
@@ -30,6 +31,7 @@ Q_DECLARE_METATYPE(tbe::scene::MapMark*)
 Q_DECLARE_METATYPE(tbe::Texture)
 Q_DECLARE_METATYPE(tbe::Vector3f)
 Q_DECLARE_METATYPE(QNodeInteractor*)
+Q_DECLARE_METATYPE(QMeshInteractor*)
 
 enum ItemRole
 {

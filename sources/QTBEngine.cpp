@@ -1379,6 +1379,24 @@ SelBoxInterface* QTBEngine::selBox()
     return m_selbox;
 }
 
+void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
+{
+    using namespace tbe;
+    using namespace scene;
+
+    if(m_selectedNode)
+    {
+        Node* taget = m_selectedNode->target();
+
+        taget->addChild(thenew);
+    }
+    else
+    {
+        m_rootNode->addChild(thenew);
+        thenew->Node::setPos(m_curCursor3D);
+    }
+}
+
 QMesh* QTBEngine::meshNew(const QString& filename)
 {
     using namespace tbe;
@@ -1389,22 +1407,8 @@ QMesh* QTBEngine::meshNew(const QString& filename)
     mesh->addToConstructionMap("filename", filename.toStdString());
     mesh->addToConstructionMap("class", "OBJMesh");
 
-    /*
-    QMesh* mesh = NULL;
+    placeNewNode(mesh);
 
-    if(filename.endsWith("ball3d"))
-        mesh = new QMesh(m_mainwin, Ball3DMesh(m_meshScene, filename.toStdString()));
-
-    else if(filename.endsWith("obj"))
-        mesh = new QMesh(m_mainwin, OBJMesh(m_meshScene, filename.toStdString()));
-
-    else
-        throw Exception("Format du fichier non reconnue \"%s\"", filename.toStdString().c_str());
-     */
-
-    m_rootNode->addChild(mesh);
-
-    mesh->Node::setPos(m_selbox->getPos());
     mesh->setup();
 
     return mesh;
@@ -1414,9 +1418,8 @@ QLight* QTBEngine::lightNew()
 {
     QLight* light = new QLight(m_mainwin);
 
-    m_rootNode->addChild(light);
+    placeNewNode(light);
 
-    light->Node::setPos(m_selbox->getPos());
     light->setup();
 
     return light;
@@ -1426,9 +1429,8 @@ QParticles* QTBEngine::particlesNew()
 {
     QParticles* particles = new QParticles(m_mainwin);
 
-    m_rootNode->addChild(particles);
+    placeNewNode(particles);
 
-    particles->Node::setPos(m_selbox->getPos());
     particles->setup();
 
     return particles;
@@ -1438,9 +1440,8 @@ QMapMark* QTBEngine::markNew()
 {
     QMapMark* mark = new QMapMark(m_mainwin);
 
-    m_rootNode->addChild(mark);
+    placeNewNode(mark);
 
-    mark->Node::setPos(m_selbox->getPos());
     mark->setup();
 
     return mark;

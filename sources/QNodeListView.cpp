@@ -43,6 +43,9 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     QAction* pastFields = m_itemedit->addAction("Appliquer la champs");
     pastFields->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
 
+    QAction* pastMaterials = m_itemedit->addAction("Appliquer les matériaux");
+    pastMaterials->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
+
     connect(m_promote, SIGNAL(triggered()), this, SLOT(onPromoteChild()));
     connect(m_assign, SIGNAL(triggered()), this, SLOT(onAssignParent()));
     connect(remove, SIGNAL(triggered()), this, SLOT(onRemoveNode()));
@@ -53,6 +56,7 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     connect(pastScale, SIGNAL(triggered()), this, SLOT(onPastScale()));
     connect(pastRotation, SIGNAL(triggered()), this, SLOT(onPastRotation()));
     connect(pastFields, SIGNAL(triggered()), this, SLOT(onPastFields()));
+    connect(pastMaterials, SIGNAL(triggered()), this, SLOT(onPastMaterials()));
 }
 
 QNodeListView::~QNodeListView()
@@ -91,16 +95,11 @@ void QNodeListView::onPromoteChild()
 
 void QNodeListView::onAssignParent()
 {
-    QModelIndex curIndex = currentIndex();
-
-    QStandardItem* parent = model()->itemData(curIndex)[ITEM_ROLE_NODE].value<QNodeInteractor*>()->item();
-
     QItemsList items = selection();
 
     foreach(QStandardItem* child, items)
     {
-        if(child != parent)
-            emit assignParent(parent, child);
+        emit assignParent(child);
     }
 }
 
@@ -207,5 +206,15 @@ void QNodeListView::onPastFields()
     foreach(QStandardItem* item, items)
     {
         emit pastFields(item->nodeInterface());
+    }
+}
+
+void QNodeListView::onPastMaterials()
+{
+    QItemsList items = selection();
+
+    foreach(QStandardItem* item, items)
+    {
+        emit pastMaterials(dynamic_cast<QMeshInteractor*>(item->nodeInterface()));
     }
 }
