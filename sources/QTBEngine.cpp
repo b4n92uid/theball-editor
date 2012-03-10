@@ -43,7 +43,7 @@ void swapcontainer(TC& c, T1& v1, T2& v2)
     c = (TC)v1 == c ? (TC)v2 : (TC)v1;
 }
 
-QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(), parent)
+QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     m_mainwin = dynamic_cast<MainWindow*>(parent->parentWidget());
 
