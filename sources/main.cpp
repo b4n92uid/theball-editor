@@ -35,22 +35,24 @@ int main(int argc, char *argv[])
     QApplication::setOrganizationName("b4n92uid software");
     QApplication::setApplicationName("theBall Editor");
 
-    MainWindow window;
-    window.initWidgets();
-    window.initConnections();
-    window.showMaximized();
-    window.newScene();
+    MainWindow* window = new MainWindow;
+    window->initWidgets();
+    window->initConnections();
+    window->showMaximized();
+    window->newScene();
 
     splash.raise();
 
     if(argc > 1)
     {
-        window.openScene(argv[1]);
+        window->openScene(argv[1]);
     }
 
-    splash.finish(&window);
+    splash.finish(window);
 
     int ret = app.exec();
+
+    delete window, window = NULL;
 
     #ifndef _DEBUG
     cout.rdbuf(defaultCout);
