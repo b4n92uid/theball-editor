@@ -25,32 +25,28 @@ public:
 public slots:
     void mousePressEvent(QMouseEvent * event);
 
-    void onPromoteChild();
-    void onAssignParent();
-
-    void onRemoveNode();
     void onEnableNode();
     void onLockNode();
-    void onSetOnFloorNode();
-    void onPastMaterials();
-    void onPastPosition();
-    void onPastScale();
-    void onPastRotation();
-    void onPastFields();
 
 signals:
-    void assignParent(QStandardItem*);
-    void promoteChild(QStandardItem*);
+    void assignParent();
+    void promoteChild();
 
-    void removeNode(QNodeInteractor*);
-    void enableNode(QNodeInteractor*);
-    void lockNode(QNodeInteractor*);
-    void setOnFloorNode(QNodeInteractor*);
-    void pastMaterials(QMeshInteractor*);
-    void pastPosition(QNodeInteractor*);
-    void pastScale(QNodeInteractor*);
-    void pastRotation(QNodeInteractor*);
-    void pastFields(QNodeInteractor*);
+    void removeNode();
+    void enableNode();
+    void lockNode();
+    void setOnFloorNode();
+    void pastMaterials();
+    void pastPosition();
+    void pastScale();
+    void pastRotation();
+    void pastFields();
+
+    void select(QNodeInteractor*);
+    void deselect(QNodeInteractor*);
+
+protected:
+    void selectionChanged(const QItemSelection&, const QItemSelection&);
 
 private:
     QItemsList selection();

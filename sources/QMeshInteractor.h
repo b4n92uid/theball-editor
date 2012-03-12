@@ -20,12 +20,10 @@ public:
 
     QString typeName() const;
     
-    tbe::scene::Mesh* target();
-
 public slots:
-    void select();
-    void deselect();
-    void update();
+    void bindWithGui();
+    void unbindFromGui();
+    void updateGui();
 
 public slots:
     void materialSelected(const QModelIndex& index);

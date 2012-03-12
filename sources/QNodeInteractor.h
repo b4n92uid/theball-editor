@@ -40,9 +40,9 @@ public:
 public slots:
     virtual void setup();
     virtual void unsetup();
-    virtual void select();
-    virtual void deselect();
-    virtual void update();
+    virtual void bindWithGui();
+    virtual void unbindFromGui();
+    virtual void updateGui();
 
     virtual QNodeInteractor* clone();
 

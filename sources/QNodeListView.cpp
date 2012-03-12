@@ -22,14 +22,16 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     QAction* remove = m_itemedit->addAction("Supprimer");
     remove->setIcon(QIcon(":/Medias/medias/cross.png"));
 
-    QAction* enable = m_itemedit->addAction("Activer/Désactiver");
+    QAction* enable = m_itemedit->addAction("Activer/DÃ©sactiver");
     enable->setIcon(QIcon(":/Medias/medias/accept.png"));
 
-    QAction* lock = m_itemedit->addAction("Vérouiller/Dévérouiller");
+    QAction* lock = m_itemedit->addAction("VÃ©rouiller/DÃ©vÃ©rouiller");
     lock->setIcon(QIcon(":/Medias/medias/selection_select.png"));
 
     QAction* onfloor = m_itemedit->addAction("Mise au sol");
     onfloor->setIcon(QIcon(":/Medias/medias/shape_align_bottom.png"));
+
+    m_itemedit->addSeparator();
 
     QAction* pastScale = m_itemedit->addAction("Appliquer le scale");
     pastScale->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
@@ -43,20 +45,20 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     QAction* pastFields = m_itemedit->addAction("Appliquer la champs");
     pastFields->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
 
-    QAction* pastMaterials = m_itemedit->addAction("Appliquer les matériaux");
+    QAction* pastMaterials = m_itemedit->addAction("Appliquer les matÃ©riaux");
     pastMaterials->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
 
-    connect(m_promote, SIGNAL(triggered()), this, SLOT(onPromoteChild()));
-    connect(m_assign, SIGNAL(triggered()), this, SLOT(onAssignParent()));
-    connect(remove, SIGNAL(triggered()), this, SLOT(onRemoveNode()));
-    connect(enable, SIGNAL(triggered()), this, SLOT(onEnableNode()));
-    connect(lock, SIGNAL(triggered()), this, SLOT(onLockNode()));
-    connect(onfloor, SIGNAL(triggered()), this, SLOT(onSetOnFloorNode()));
-    connect(pastPosition, SIGNAL(triggered()), this, SLOT(onPastPosition()));
-    connect(pastScale, SIGNAL(triggered()), this, SLOT(onPastScale()));
-    connect(pastRotation, SIGNAL(triggered()), this, SLOT(onPastRotation()));
-    connect(pastFields, SIGNAL(triggered()), this, SLOT(onPastFields()));
-    connect(pastMaterials, SIGNAL(triggered()), this, SLOT(onPastMaterials()));
+    connect(m_promote, SIGNAL(triggered()), this, SIGNAL(promoteChild()));
+    connect(m_assign, SIGNAL(triggered()), this, SIGNAL(assignParent()));
+    connect(remove, SIGNAL(triggered()), this, SIGNAL(removeNode()));
+    connect(enable, SIGNAL(triggered()), this, SIGNAL(enableNode()));
+    connect(lock, SIGNAL(triggered()), this, SIGNAL(lockNode()));
+    connect(onfloor, SIGNAL(triggered()), this, SIGNAL(setOnFloorNode()));
+    connect(pastPosition, SIGNAL(triggered()), this, SIGNAL(pastPosition()));
+    connect(pastScale, SIGNAL(triggered()), this, SIGNAL(pastScale()));
+    connect(pastRotation, SIGNAL(triggered()), this, SIGNAL(pastRotation()));
+    connect(pastFields, SIGNAL(triggered()), this, SIGNAL(pastFields()));
+    connect(pastMaterials, SIGNAL(triggered()), this, SIGNAL(pastMaterials()));
 }
 
 QNodeListView::~QNodeListView()
@@ -82,27 +84,6 @@ QItemsList QNodeListView::selection()
     return items;
 }
 
-void QNodeListView::onPromoteChild()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        if(item->parent())
-            emit promoteChild(item);
-    }
-}
-
-void QNodeListView::onAssignParent()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* child, items)
-    {
-        emit assignParent(child);
-    }
-}
-
 void QNodeListView::mousePressEvent(QMouseEvent * event)
 {
     QTreeView::mousePressEvent(event);
@@ -125,13 +106,18 @@ void QNodeListView::mousePressEvent(QMouseEvent * event)
     }
 }
 
-void QNodeListView::onRemoveNode()
+void QNodeListView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    QItemsList items = selection();
+    QTreeView::selectionChanged(selected, deselected);
 
-    foreach(QStandardItem* item, items)
+    foreach(QModelIndex index, deselected.indexes())
     {
-        emit removeNode(item->nodeInterface());
+        emit deselect(index.data(ITEM_ROLE_NODE).value<QNodeInteractor*>());
+    }
+
+    foreach(QModelIndex index, selected.indexes())
+    {
+        emit select(index.data(ITEM_ROLE_NODE).value<QNodeInteractor*>());
     }
 }
 
@@ -156,65 +142,5 @@ void QNodeListView::onLockNode()
         QNodeInteractor* interface = item->nodeInterface();
 
         interface->setLocked(!interface->isLocked());
-    }
-}
-
-void QNodeListView::onSetOnFloorNode()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        emit setOnFloorNode(item->nodeInterface());
-    }
-}
-
-void QNodeListView::onPastPosition()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        emit pastPosition(item->nodeInterface());
-    }
-}
-
-void QNodeListView::onPastScale()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        emit pastScale(item->nodeInterface());
-    }
-}
-
-void QNodeListView::onPastRotation()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        emit pastRotation(item->nodeInterface());
-    }
-}
-
-void QNodeListView::onPastFields()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        emit pastFields(item->nodeInterface());
-    }
-}
-
-void QNodeListView::onPastMaterials()
-{
-    QItemsList items = selection();
-
-    foreach(QStandardItem* item, items)
-    {
-        emit pastMaterials(dynamic_cast<QMeshInteractor*>(item->nodeInterface()));
     }
 }

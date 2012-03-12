@@ -40,7 +40,7 @@ void QNodeInteractor::setPos(const tbe::Vector3f& v)
 
         m_mainwin->notifyChanges(true);
 
-        update();
+        updateGui();
     }
 }
 
@@ -61,7 +61,7 @@ void QNodeInteractor::setRotation(const tbe::Vector3f& v)
 
         m_mainwin->notifyChanges(true);
 
-        update();
+        updateGui();
     }
 }
 
@@ -80,7 +80,7 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
 
         m_mainwin->notifyChanges(true);
 
-        update();
+        updateGui();
     }
 }
 
@@ -94,7 +94,7 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
 
         m_mainwin->notifyChanges(true);
 
-        update();
+        updateGui();
     }
 }
 
@@ -249,7 +249,7 @@ void QNodeInteractor::setup()
 {
 }
 
-void QNodeInteractor::select()
+void QNodeInteractor::bindWithGui()
 {
     connect(m_mainwin->nodesGui.name, SIGNAL(textChanged(const QString&)), this, SLOT(setName(const QString&)));
     connect(m_mainwin->nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setPos(const tbe::Vector3f&)));
@@ -287,7 +287,7 @@ void QNodeInteractor::select()
     }
 }
 
-void QNodeInteractor::deselect()
+void QNodeInteractor::unbindFromGui()
 {
     disconnect(m_mainwin->nodesGui.name, SIGNAL(textChanged(const QString&)), 0, 0);
     disconnect(m_mainwin->nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
@@ -322,7 +322,7 @@ void QNodeInteractor::deselect()
     }
 }
 
-void QNodeInteractor::update()
+void QNodeInteractor::updateGui()
 {
     using namespace tbe;
 

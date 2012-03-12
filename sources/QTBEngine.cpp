@@ -233,11 +233,7 @@ void QTBEngine::applyTranslationEvents()
     {
         if(m_selectedNode && m_eventManager->keyState[EventManager::KEY_LSHIFT])
         {
-            tbe::scene::Node* selnode = m_selectedNode->target();
-
-            Vector3f position, scale;
-            Quaternion rotation;
-            selnode->getMatrix().decompose(position, rotation, scale);
+            Vector3f position;
 
             Vector2f mousePosRel = m_eventManager->mousePosRel;
 
@@ -257,7 +253,7 @@ void QTBEngine::applyTranslationEvents()
             }
             else
             {
-                Quaternion rota(selnode->getAbsoluteMatrix(false));
+                Quaternion rota;
                 transform = rota * (-left * mousePosRel.x * m_sensivitySet.selection);
                 transform -= rota * (target * mousePosRel.y * m_sensivitySet.selection);
                 transform.y = 0;
@@ -265,17 +261,19 @@ void QTBEngine::applyTranslationEvents()
 
             position += transform;
 
-            if(m_gridset.enable)
+            foreach(QNodeInteractor* qnode, m_selection)
             {
-                m_grid->setPos(m_grid->getPos().Y(position.y));
+                pushHistoryStat(new ModificationState(qnode));
+
+                tbe::scene::Node* selnode = qnode->target();
+
+                Matrix4 transform;
+                transform.translate(position);
+
+                selnode->mulMatrix(transform);
             }
 
-            Matrix4 apply;
-            apply.transform(position, rotation, scale);
-
-            selnode->setMatrix(apply);
-
-            m_selectedNode->update();
+            m_selectedNode->updateGui();
         }
     }
 
@@ -426,7 +424,7 @@ void QTBEngine::deleteSelected()
 
     QNodeInteractor* todel = m_selectedNode;
 
-    emit deselection();
+    emit deselection(todel);
 
     deleteNode(todel);
 }
@@ -498,7 +496,7 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
     adjust.y += -selnode->getAabb().min.y;
     selnode->setPos(adjust);
 
-    node->update();
+    node->updateGui();
 }
 
 void QTBEngine::centerOnFloor(QNodeInteractor* node)
@@ -517,26 +515,8 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
     m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
     m_grid->setEnable(m_gridset.enable);
 
-    node->update();
+    node->updateGui();
 }
-
-struct SelectionSort
-{
-    tbe::Vector3f cameraPos;
-    int type;
-
-    bool operator()(const tbe::scene::Node* node1, const tbe::scene::Node * node2)
-    {
-        if(!node1->getParent()->isRoot())
-            return false;
-        else if(type == 1)
-            return node1->getAabb().getLength() < node2->getAabb().getLength();
-        else if(type == 2)
-            return(node1->getPos() - cameraPos) < (node2->getPos() - cameraPos);
-        else
-            return false;
-    }
-};
 
 void QTBEngine::enterEvent(QEvent * event)
 {
@@ -624,7 +604,23 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                     m_selectedNode->target()->setEnable(true);
 
                 if(m_nodeInterface.contains(nearest))
-                    emit selection(m_nodeInterface[nearest]);
+                {
+                    QNodeInteractor* qnode = m_nodeInterface[nearest];
+
+                    if(ev->modifiers() & Qt::ControlModifier)
+                    {
+                        if(m_selection.contains(qnode))
+                            emit deselection(qnode);
+                        else
+                            emit selection(qnode);
+                    }
+
+                    else
+                    {
+                        emit deselectionAll();
+                        emit selection(qnode);
+                    }
+                }
             }
             else
             {
@@ -759,7 +755,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
             mat.identity();
             mat.transform(position, rotation, scale);
 
-            m_selectedNode->update();
+            m_selectedNode->updateGui();
         }
     }
 
@@ -794,7 +790,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
             mat.identity();
             mat.transform(position, rotation, scale);
 
-            m_selectedNode->update();
+            m_selectedNode->updateGui();
         }
     }
 
@@ -884,7 +880,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                                 current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
 
                                 painting->target()->setPos(current_position);
-                                painting->update();
+                                painting->updateGui();
                             }
                         }
                     }
@@ -1077,7 +1073,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                     pos += m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
 
                 selnode->setPos(pos);
-                m_selectedNode->update();
+                m_selectedNode->updateGui();
             }
 
             else if(ev->key() == Qt::Key_Down)
@@ -1091,7 +1087,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
                 selnode->setPos(pos);
 
-                m_selectedNode->update();
+                m_selectedNode->updateGui();
             }
 
             else if(ev->key() == Qt::Key_Left)
@@ -1100,7 +1096,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 pos -= m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
                 selnode->setPos(pos);
 
-                m_selectedNode->update();
+                m_selectedNode->updateGui();
             }
 
             else if(ev->key() == Qt::Key_Right)
@@ -1109,7 +1105,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                 pos += m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
                 selnode->setPos(pos);
 
-                m_selectedNode->update();
+                m_selectedNode->updateGui();
             }
         }
 
@@ -1124,7 +1120,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
         if(ev->key() == Qt::Key_Escape)
         {
-            emit deselection();
+            emit deselectionAll();
         }
 
     }
@@ -1153,7 +1149,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
             current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
 
             m_selectedNode->target()->setPos(current_position);
-            m_selectedNode->update();
+            m_selectedNode->updateGui();
         }
 
         if(m_selectedNode && m_magnetMove)
@@ -1229,7 +1225,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                         Vector3f finalpos = _position + corner;
 
                         m_selectedNode->target()->setPos(finalpos);
-                        m_selectedNode->update();
+                        m_selectedNode->updateGui();
 
                         break;
                     }
@@ -1247,7 +1243,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
             current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
 
             m_selectedNode->target()->setPos(current_position);
-            m_selectedNode->update();
+            m_selectedNode->updateGui();
         }
     }
 
@@ -1491,27 +1487,40 @@ void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 
 void QTBEngine::selectNode(QNodeInteractor* qnode)
 {
-    if(m_selectedNode)
-        m_selectedNode->deselect();
+    qnode->bindWithGui();
+
+    m_selection.push_back(qnode);
 
     m_lastSelectedNode = m_selectedNode;
     m_selectedNode = qnode;
 
     m_selbox->Node::setEnable(true);
 
-    m_selectedNode->select();
-
     if(m_gridset.enable)
         toggleGridDisplay(true);
 }
 
-void QTBEngine::deselectNode()
+void QTBEngine::deselectNode(QNodeInteractor* qnode)
 {
-    if(m_selectedNode)
+    qnode->unbindFromGui();
+
+    m_selection.removeAll(qnode);
+
+    if(m_selectedNode = qnode)
     {
-        m_lastSelectedNode = m_selectedNode;
         m_selectedNode = NULL;
+        m_selbox->Node::setEnable(false);
     }
+}
+
+void QTBEngine::deselectAllNode()
+{
+    std::for_each(m_selection.begin(), m_selection.end(), std::mem_fun(&QNodeInteractor::unbindFromGui));
+
+    m_selection.clear();
+
+    m_lastSelectedNode = m_selectedNode;
+    m_selectedNode = NULL;
 
     m_selbox->Node::setEnable(false);
 }
@@ -1551,6 +1560,11 @@ QNodeInteractor* QTBEngine::interface(tbe::scene::Node* node)
         return m_nodeInterface[node];
     else
         return NULL;
+}
+
+QList<QNodeInteractor*> QTBEngine::selection()
+{
+    return m_selection;
 }
 
 void QTBEngine::setZNear(float value)

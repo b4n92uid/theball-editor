@@ -21,9 +21,9 @@ public:
     virtual QString typeName() const;
 
 public slots:
-    void select();
-    void deselect();
-    void update();
+    void bindWithGui();
+    void unbindFromGui();
+    void updateGui();
 
 private:
     tbe::scene::MapMark* m_target;
