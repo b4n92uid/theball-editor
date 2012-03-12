@@ -62,17 +62,21 @@ public:
     void registerInterface(QNodeInteractor* node);
     void unregisterInterface(QNodeInteractor* node);
 
-    QNodeInteractor* interface(tbe::scene::Node* node);
-
     QMesh* meshNew(const QString& filename);
     QLight* lightNew();
     QParticles* particlesNew();
     QMapMark* markNew();
 
+    QNodeInteractor* interface(tbe::scene::Node* node);
+
+    QList<QNodeInteractor*> selection();
+
 public slots:
 
     void selectNode(QNodeInteractor* qnode);
-    void deselectNode();
+
+    void deselectAllNode();
+    void deselectNode(QNodeInteractor* qnode);
 
     void pauseRendring();
     void resumeRendring();
@@ -84,11 +88,11 @@ public slots:
     void toggleSelBox(bool state);
     void toggleStaticView(bool state);
 
-    void cloneSelected();
+    void deleteNode(QNodeInteractor* node);
     void deleteSelected();
 
-    void deleteNode(QNodeInteractor* node);
     QNodeInteractor* cloneNode(QNodeInteractor* node);
+    void cloneSelected();
 
     void baseOnFloor();
     void centerOnFloor();
@@ -117,7 +121,8 @@ public slots:
 
 signals:
     void selection(QNodeInteractor*);
-    void deselection();
+    void deselection(QNodeInteractor*);
+    void deselectionAll();
 
 protected:
     void initializeGL();
@@ -186,6 +191,8 @@ private:
 
     QNodeInteractor* m_selectedNode;
     QNodeInteractor* m_lastSelectedNode;
+
+    QList<QNodeInteractor*> m_selection;
 
     PenArea* m_penarea;
     SelBox* m_selbox;

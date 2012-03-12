@@ -90,9 +90,9 @@ void QParticlesInteractor::build()
     m_target->build();
 }
 
-void QParticlesInteractor::select()
+void QParticlesInteractor::bindWithGui()
 {
-    QNodeInteractor::select();
+    QNodeInteractor::bindWithGui();
 
     connect(m_mainwin->nodesGui.particles.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setGravity(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.particles.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setBoxsize(const tbe::Vector3f&)));
@@ -106,14 +106,14 @@ void QParticlesInteractor::select()
     connect(m_mainwin->nodesGui.particles.pointsprite, SIGNAL(clicked(bool)), this, SLOT(setPointSprite(bool)));
     connect(m_mainwin->nodesGui.particles.build, SIGNAL(clicked()), this, SLOT(build()));
 
-    update();
+    updateGui();
 
     m_mainwin->nodesGui.attribTab->setCurrentIndex(2);
 }
 
-void QParticlesInteractor::deselect()
+void QParticlesInteractor::unbindFromGui()
 {
-    QNodeInteractor::deselect();
+    QNodeInteractor::unbindFromGui();
 
     disconnect(m_mainwin->nodesGui.particles.gravity, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
     disconnect(m_mainwin->nodesGui.particles.boxsize, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
@@ -128,9 +128,9 @@ void QParticlesInteractor::deselect()
     disconnect(m_mainwin->nodesGui.particles.build, SIGNAL(clicked()), 0, 0);
 }
 
-void QParticlesInteractor::update()
+void QParticlesInteractor::updateGui()
 {
-    QNodeInteractor::update();
+    QNodeInteractor::updateGui();
 
     QSignalBlocker blocker;
     blocker << m_mainwin->nodesGui.particles.gravity << m_mainwin->nodesGui.particles.boxsize

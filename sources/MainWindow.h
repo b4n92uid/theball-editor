@@ -76,9 +76,6 @@ public slots:
 
     void clearNodeList();
 
-    void assignParent(QStandardItem* child);
-    void promoteChild(QStandardItem* child);
-
     void closeEvent(QCloseEvent *event);
 
     void skyboxWorkingDir(const QString& filename);
@@ -87,17 +84,18 @@ public slots:
 
     void openFileHistory();
 
-    void pastMaterials(QMeshInteractor*);
-    void pastFields(QNodeInteractor*);
-    void pastPosition(QNodeInteractor*);
-    void pastScale(QNodeInteractor*);
-    void pastRotation(QNodeInteractor*);
+    void assignParent();
+    void promoteChild();
+    
+    void pastMaterials();
+    void pastFields();
+    void pastPosition();
+    void pastScale();
+    void pastRotation();
 
     void screenshot();
 
     void setCurrentTool(int type);
-
-    void guiSelect(const QModelIndex& index);
 
     void guiAddSceneField();
     void guiDelSceneField();
@@ -109,7 +107,8 @@ public slots:
     void guiMarkNew();
 
     void select(QNodeInteractor* qnode);
-    void deselect();
+    void deselect(QNodeInteractor* qnode);
+    void deselectAll();
 
     void guiSkyboxApply(bool enable = true);
     void guiFogApply(bool enable = true);
@@ -257,8 +256,6 @@ private:
     } genGui;
 
     QNodeInteractor* m_rootNode;
-    QNodeInteractor* m_selectedNode;
-    QNodeInteractor* m_lastSelectedNode;
 
     QString m_filename;
 

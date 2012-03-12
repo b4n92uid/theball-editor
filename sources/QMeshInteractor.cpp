@@ -22,11 +22,6 @@ QString QMeshInteractor::typeName() const
     return "Mesh";
 }
 
-tbe::scene::Mesh* QMeshInteractor::target()
-{
-    return m_target;
-}
-
 tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
 {
     using namespace tbe::scene;
@@ -47,7 +42,7 @@ void QMeshInteractor::setIncludedMaterial(bool state)
     if(state)
         delMaterialFile();
     else
-        update();
+        updateGui();
 }
 
 void QMeshInteractor::openMaterialFile()
@@ -61,7 +56,7 @@ void QMeshInteractor::openMaterialFile()
 
         m_mainwin->nodesGui.mesh.matedit->materialInfo->setText(filepath);
 
-        update();
+        updateGui();
     }
 }
 
@@ -100,7 +95,7 @@ void QMeshInteractor::delMaterialFile()
 {
     m_mainwin->tbeWidget()->sceneParser()->deleteMaterialFile(m_target);
 
-    update();
+    updateGui();
 }
 
 void QMeshInteractor::materialSelected(const QModelIndex& index)
@@ -583,7 +578,7 @@ void QMeshInteractor::pastMaterials()
 
     m_target->setMatrix(mat);
 
-    update();
+    updateGui();
 }
 
 void QMeshInteractor::copyMaterials()
@@ -591,11 +586,9 @@ void QMeshInteractor::copyMaterials()
     m_mainwin->nodesGui.mesh.matedit->source_mesh = this;
 }
 
-void QMeshInteractor::select()
+void QMeshInteractor::bindWithGui()
 {
-    deselect();
-
-    QNodeInteractor::select();
+    QNodeInteractor::bindWithGui();
 
     connect(m_mainwin->nodesGui.mesh.matedit->ok, SIGNAL(clicked()), this, SLOT(saveMaterialFile()));
 
@@ -649,14 +642,14 @@ void QMeshInteractor::select()
 
     connect(m_mainwin->nodesGui.mesh.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialSelected(const QModelIndex &)));
 
-    update();
+    updateGui();
 
     m_mainwin->nodesGui.attribTab->setCurrentIndex(0);
 }
 
-void QMeshInteractor::deselect()
+void QMeshInteractor::unbindFromGui()
 {
-    QNodeInteractor::deselect();
+    QNodeInteractor::unbindFromGui();
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->ok, SIGNAL(clicked()), 0, 0);
 
@@ -716,11 +709,11 @@ void QMeshInteractor::deselect()
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
 }
 
-void QMeshInteractor::update()
+void QMeshInteractor::updateGui()
 {
     using namespace tbe::scene;
 
-    QNodeInteractor::update();
+    QNodeInteractor::updateGui();
 
     QSignalBlocker blocker;
     blocker

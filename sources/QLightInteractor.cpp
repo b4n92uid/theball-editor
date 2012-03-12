@@ -48,11 +48,9 @@ void QLightInteractor::setRadius(double value)
     m_target->setRadius((float)value);
 }
 
-void QLightInteractor::select()
+void QLightInteractor::bindWithGui()
 {
-    deselect();
-
-    QNodeInteractor::select();
+    QNodeInteractor::bindWithGui();
 
     connect(m_mainwin->nodesGui.light.type, SIGNAL(activated(int)), this, SLOT(setType(int)));
     connect(m_mainwin->nodesGui.light.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setAmbiant(const tbe::Vector3f&)));
@@ -60,14 +58,14 @@ void QLightInteractor::select()
     connect(m_mainwin->nodesGui.light.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setSpecular(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.light.radius, SIGNAL(valueChanged(double)), this, SLOT(setRadius(double)));
 
-    update();
+    updateGui();
 
     m_mainwin->nodesGui.attribTab->setCurrentIndex(1);
 }
 
-void QLightInteractor::deselect()
+void QLightInteractor::unbindFromGui()
 {
-    QNodeInteractor::deselect();
+    QNodeInteractor::unbindFromGui();
 
     disconnect(m_mainwin->nodesGui.light.type, SIGNAL(activated(int)), 0, 0);
     disconnect(m_mainwin->nodesGui.light.ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
@@ -76,9 +74,9 @@ void QLightInteractor::deselect()
     disconnect(m_mainwin->nodesGui.light.radius, SIGNAL(valueChanged(double)), 0, 0);
 }
 
-void QLightInteractor::update()
+void QLightInteractor::updateGui()
 {
-    QNodeInteractor::update();
+    QNodeInteractor::updateGui();
 
     QSignalBlocker blocker;
     blocker << m_mainwin->nodesGui.light.type << m_mainwin->nodesGui.light.ambiant

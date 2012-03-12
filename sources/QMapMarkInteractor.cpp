@@ -23,25 +23,23 @@ QString QMapMarkInteractor::typeName() const
     return "MapMark";
 }
 
-void QMapMarkInteractor::select()
+void QMapMarkInteractor::bindWithGui()
 {
-    deselect();
+    QNodeInteractor::bindWithGui();
 
-    QNodeInteractor::select();
-
-    update();
+    updateGui();
 
     m_mainwin->nodesGui.attribTab->setCurrentIndex(4);
 }
 
-void QMapMarkInteractor::deselect()
+void QMapMarkInteractor::unbindFromGui()
 {
-    QNodeInteractor::deselect();
+    QNodeInteractor::unbindFromGui();
 }
 
-void QMapMarkInteractor::update()
+void QMapMarkInteractor::updateGui()
 {
-    QNodeInteractor::update();
+    QNodeInteractor::updateGui();
 
     m_mainwin->m_tbeWidget->selBox()->setAround(m_target, tbe::Vector4f(1, 1, 0, 0.25));
 }

@@ -35,7 +35,7 @@ void ModificationState::restore()
 {
     *m_node->target() = *m_source->target();
 
-    m_node->update();
+    m_node->updateGui();
 }
 
 DeletionState::DeletionState(QNodeInteractor* node)
@@ -56,7 +56,7 @@ void DeletionState::restore()
 
     m_node->setup();
 
-    m_node->update();
+    m_node->updateGui();
 
     m_node = NULL;
 }
