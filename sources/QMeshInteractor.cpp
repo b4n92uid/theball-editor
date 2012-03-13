@@ -809,8 +809,7 @@ void QMeshInteractor::updateGui()
     m_mainwin->nodesGui.mesh.billboardX->setChecked(billboard.x);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(billboard.y);
 
-    // Surroun the mesh
-    m_mainwin->m_tbeWidget->selBox()->setAround(m_target, tbe::Vector4f(0, 0, 1, 0.25));
-
     blocker.unblock();
+
+    m_mainwin->m_tbeWidget->highlight(this);
 }

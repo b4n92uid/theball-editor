@@ -59,6 +59,8 @@ public:
 
     QStringList usedRessources();
 
+    void highlight(QNodeInteractor* node);
+    
     void registerInterface(QNodeInteractor* node);
     void unregisterInterface(QNodeInteractor* node);
 
@@ -70,7 +72,7 @@ public:
     QNodeInteractor* interface(tbe::scene::Node* node);
 
     QList<QNodeInteractor*> selection();
-
+    
 public slots:
 
     void selectNode(QNodeInteractor* qnode);
@@ -196,6 +198,7 @@ private:
 
     PenArea* m_penarea;
     SelBox* m_selbox;
+    QMap<QNodeInteractor*, SelBox*> m_selboxArray;
 
     tbe::scene::Grid* m_grid;
 
@@ -288,7 +291,7 @@ class SelBoxInterface : public QObject
 public:
     SelBoxInterface();
 
-    virtual void setAround(tbe::scene::Node* node, tbe::Vector4f color) = 0;
+    virtual void setAround(tbe::scene::Node* node) = 0;
 };
 
 class SelBox : public SelBoxInterface, public tbe::scene::Box
@@ -298,7 +301,7 @@ class SelBox : public SelBoxInterface, public tbe::scene::Box
 public:
     SelBox(tbe::scene::MeshParallelScene* parallelScene);
 
-    void setAround(tbe::scene::Node* node, tbe::Vector4f color);
+    void setAround(tbe::scene::Node* node);
 };
 
 
