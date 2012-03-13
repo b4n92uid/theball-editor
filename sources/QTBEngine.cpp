@@ -271,6 +271,8 @@ void QTBEngine::applyTranslationEvents()
                 transform.translate(position);
 
                 selnode->mulMatrix(transform);
+
+                highlight(qnode);
             }
 
             m_selectedNode->updateGui();
@@ -570,12 +572,15 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = 1;
 
+        using namespace std;
         using namespace tbe;
-        using namespace tbe::scene;
+        using namespace scene;
 
         if(m_currentTool->type == SELECTION_TOOL)
         {
             m_selbox->Node::setEnable(false);
+            for_each(m_selboxArray.begin(), m_selboxArray.end(), bind2nd(mem_fun(&Node::setEnable), false));
+
             m_grid->setEnable(false);
 
             QMap < QNodeInteractor*, bool> initialState;
@@ -589,9 +594,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 }
             }
 
-            if(m_selectedNode)
-                m_selectedNode->target()->setEnable(false);
-
             Vector3f campos = m_camera->getPos();
             Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
 
@@ -599,9 +601,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             {
                 Nearest pred = {campos};
                 Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
-
-                if(m_selectedNode)
-                    m_selectedNode->target()->setEnable(true);
 
                 if(m_nodeInterface.contains(nearest))
                 {
@@ -622,11 +621,6 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                     }
                 }
             }
-            else
-            {
-                if(m_selectedNode)
-                    m_selectedNode->target()->setEnable(true);
-            }
 
             foreach(QNodeInteractor* node, initialState.keys())
             {
@@ -634,6 +628,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             }
 
             m_selbox->Node::setEnable(m_selectedNode);
+            for_each(m_selboxArray.begin(), m_selboxArray.end(), bind2nd(mem_fun(&Node::setEnable), true));
+
             m_grid->setEnable(m_gridset.enable);
         }
 
@@ -1142,14 +1138,18 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
     {
         setCursor(m_currentTool->cursor);
 
-        if(m_selectedNode && m_gridset.enable)
+        if(!m_selection.empty() && m_gridset.enable)
         {
-            Vector3f current_position = m_selectedNode->target()->getPos();
 
-            current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
+            foreach(QNodeInteractor* qnode, m_selection)
+            {
+                Vector3f current_position = qnode->target()->getPos();
 
-            m_selectedNode->target()->setPos(current_position);
-            m_selectedNode->updateGui();
+                current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
+
+                qnode->target()->setPos(current_position);
+                qnode->updateGui();
+            }
         }
 
         if(m_selectedNode && m_magnetMove)
@@ -1236,14 +1236,15 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Alt)
     {
-        if(m_selectedNode && m_gridset.enable)
+
+        foreach(QNodeInteractor* qnode, m_selection)
         {
-            Vector3f current_position = m_selectedNode->target()->getPos();
+            Vector3f current_position = qnode->target()->getPos();
 
             current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
 
-            m_selectedNode->target()->setPos(current_position);
-            m_selectedNode->updateGui();
+            qnode->target()->setPos(current_position);
+            qnode->updateGui();
         }
     }
 
@@ -1487,12 +1488,20 @@ void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 
 void QTBEngine::selectNode(QNodeInteractor* qnode)
 {
+    if(m_selection.empty())
+    {
+        m_selectedNode = qnode;
+    }
+    else
+    {
+        m_selboxArray[qnode] = new SelBox(m_meshScene);
+
+        m_rootNode->addChild(m_selboxArray[qnode]);
+    }
+
     qnode->bindWithGui();
 
     m_selection.push_back(qnode);
-
-    m_lastSelectedNode = m_selectedNode;
-    m_selectedNode = qnode;
 
     m_selbox->Node::setEnable(true);
 
@@ -1506,7 +1515,10 @@ void QTBEngine::deselectNode(QNodeInteractor* qnode)
 
     m_selection.removeAll(qnode);
 
-    if(m_selectedNode = qnode)
+    delete m_selboxArray[qnode];
+    m_selboxArray.remove(qnode);
+
+    if(m_selectedNode == qnode)
     {
         m_selectedNode = NULL;
         m_selbox->Node::setEnable(false);
@@ -1519,7 +1531,13 @@ void QTBEngine::deselectAllNode()
 
     m_selection.clear();
 
-    m_lastSelectedNode = m_selectedNode;
+    foreach(SelBox* box, m_selboxArray.values())
+    {
+        delete box;
+    }
+
+    m_selboxArray.clear();
+
     m_selectedNode = NULL;
 
     m_selbox->Node::setEnable(false);
@@ -1542,6 +1560,14 @@ QStringList QTBEngine::usedRessources()
     }
 
     return ressPath;
+}
+
+void QTBEngine::highlight(QNodeInteractor* node)
+{
+    if(m_selboxArray.contains(node))
+        m_selboxArray[node]->setAround(node->target());
+    else
+        m_selbox->setAround(node->target());
 }
 
 void QTBEngine::unregisterInterface(QNodeInteractor* node)
@@ -1737,12 +1763,11 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
 }
 
-void SelBox::setAround(tbe::scene::Node* node, tbe::Vector4f color)
+void SelBox::setAround(tbe::scene::Node* node)
 {
     AABB selAabb = node->getAabb();
 
     setMatrix(node->getAbsoluteMatrix());
     setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
-    setSize(selAabb.getSize() / 2.0f + 0.1f);
-    getMaterial("main")->setColor(color);
+    setSize(selAabb.getSize() / 2.0f + 0.2f);
 }
