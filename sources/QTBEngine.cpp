@@ -263,8 +263,6 @@ void QTBEngine::applyTranslationEvents()
 
             foreach(QNodeInteractor* qnode, m_selection)
             {
-                pushHistoryStat(new ModificationState(qnode));
-
                 tbe::scene::Node* selnode = qnode->target();
 
                 Matrix4 transform;
@@ -400,16 +398,17 @@ QNodeInteractor* QTBEngine::cloneNode(QNodeInteractor* node)
 
 void QTBEngine::cloneSelected()
 {
-    if(!m_selectedNode)
-        return;
-
     try
     {
         using namespace tbe::scene;
 
-        QNodeInteractor* clone = cloneNode(m_selectedNode);
+        foreach(QNodeInteractor* qnode, m_selection)
+        {
+            emit deselection(qnode);
 
-        emit selection(clone);
+            QNodeInteractor* clone = cloneNode(qnode);
+            emit selection(clone);
+        }
     }
     catch(std::exception& e)
     {
@@ -421,14 +420,11 @@ void QTBEngine::deleteSelected()
 {
     using namespace tbe::scene;
 
-    if(!m_selectedNode)
-        return;
-
-    QNodeInteractor* todel = m_selectedNode;
-
-    emit deselection(todel);
-
-    deleteNode(todel);
+    foreach(QNodeInteractor* qnode, m_selection)
+    {
+        emit deselection(qnode);
+        deleteNode(qnode);
+    }
 }
 
 void QTBEngine::pushHistoryStat(HistoryState* hs)
@@ -464,18 +460,14 @@ void QTBEngine::popHistoryStat()
 
 void QTBEngine::baseOnFloor()
 {
-    if(!m_selectedNode)
-        return;
-
-    baseOnFloor(m_selectedNode);
+    foreach(QNodeInteractor* qnode, m_selection)
+    baseOnFloor(qnode);
 }
 
 void QTBEngine::centerOnFloor()
 {
-    if(!m_selectedNode)
-        return;
-
-    centerOnFloor(m_selectedNode);
+    foreach(QNodeInteractor* qnode, m_selection)
+    centerOnFloor(qnode);
 }
 
 void QTBEngine::baseOnFloor(QNodeInteractor* node)
@@ -732,26 +724,30 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         if(ev->buttons() & Qt::RightButton && m_selectedNode)
         {
-            Matrix4& mat = m_selectedNode->target()->getMatrix();
 
-            tbe::Vector3f position, scale;
-            tbe::Quaternion rotation;
+            foreach(QNodeInteractor* qnode, m_selection)
+            {
+                Matrix4& mat = qnode->target()->getMatrix();
 
-            mat.decompose(position, rotation, scale);
+                tbe::Vector3f position, scale;
+                tbe::Quaternion rotation;
 
-            if(m_movementAxe.x > 0)
-                rotation *= tbe::Quaternion(-mousePosRel.x * m_sensivitySet.selection, Vector3f(0, 1, 0));
+                mat.decompose(position, rotation, scale);
 
-            if(m_movementAxe.y > 0)
-                rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection, Vector3f(1, 0, 0));
+                if(m_movementAxe.x > 0)
+                    rotation *= tbe::Quaternion(-mousePosRel.x * m_sensivitySet.selection * 0.1, Vector3f(0, 1, 0));
 
-            if(m_movementAxe.z > 0)
-                rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection, Vector3f(0, 0, 1));
+                if(m_movementAxe.y > 0)
+                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(1, 0, 0));
 
-            mat.identity();
-            mat.transform(position, rotation, scale);
+                if(m_movementAxe.z > 0)
+                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(0, 0, 1));
 
-            m_selectedNode->updateGui();
+                mat.identity();
+                mat.transform(position, rotation, scale);
+
+                qnode->updateGui();
+            }
         }
     }
 
@@ -759,34 +755,38 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         if(ev->buttons() & Qt::RightButton && m_selectedNode)
         {
-            Matrix4& mat = m_selectedNode->target()->getMatrix();
 
-            tbe::Vector3f position, scale;
-            tbe::Quaternion rotation;
-
-            mat.decompose(position, rotation, scale);
-
-            if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
+            foreach(QNodeInteractor* qnode, m_selection)
             {
-                scale += mousePosRel.y * m_sensivitySet.selection * scale;
+                Matrix4& mat = qnode->target()->getMatrix();
+
+                tbe::Vector3f position, scale;
+                tbe::Quaternion rotation;
+
+                mat.decompose(position, rotation, scale);
+
+                if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
+                {
+                    scale += mousePosRel.y * m_sensivitySet.selection * scale;
+                }
+                else
+                {
+                    if(m_movementAxe.x > 0)
+                        scale.x += mousePosRel.x * m_sensivitySet.selection * 0.1;
+
+                    if(m_movementAxe.y > 0)
+                        scale.y += mousePosRel.y * m_sensivitySet.selection * 0.1;
+
+                    if(m_movementAxe.z > 0)
+                        scale.z += -mousePosRel.y * m_sensivitySet.selection * 0.1;
+                }
+
+
+                mat.identity();
+                mat.transform(position, rotation, scale);
+
+                qnode->updateGui();
             }
-            else
-            {
-                if(m_movementAxe.x > 0)
-                    scale.x += mousePosRel.x * m_sensivitySet.selection;
-
-                if(m_movementAxe.y > 0)
-                    scale.y += mousePosRel.y * m_sensivitySet.selection;
-
-                if(m_movementAxe.z > 0)
-                    scale.z += -mousePosRel.y * m_sensivitySet.selection;
-            }
-
-
-            mat.identity();
-            mat.transform(position, rotation, scale);
-
-            m_selectedNode->updateGui();
         }
     }
 
@@ -895,10 +895,35 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
 
+    if(ev->modifiers() == Qt::AltModifier)
+    {
+        if(ev->key() == Qt::Key_X)
+        {
+            m_movementAxe(1, 0, 0);
+            m_mainwin->statusBar()->showMessage("Movement sur l'axe X");
+        }
+        if(ev->key() == Qt::Key_Y)
+        {
+            m_movementAxe(0, 1, 0);
+            m_mainwin->statusBar()->showMessage("Movement sur l'axe Y");
+        }
+        if(ev->key() == Qt::Key_Z)
+        {
+            m_movementAxe(0, 0, 1);
+            m_mainwin->statusBar()->showMessage("Movement sur l'axe Z");
+        }
+        if(ev->key() == Qt::Key_A)
+        {
+            m_movementAxe = 1;
+            m_mainwin->statusBar()->showMessage("Movement sur tout les axes X, Y, Z");
+        }
+    }
+
     if(ev->key() == Qt::Key_Shift)
     {
-        if(m_selectedNode)
-            pushHistoryStat(new ModificationState(m_selectedNode));
+
+        foreach(QNodeInteractor* qnode, m_selection)
+        pushHistoryStat(new ModificationState(qnode));
 
         setCursor(Qt::BlankCursor);
 
@@ -912,40 +937,25 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_U && m_selectedNode)
     {
-        tbe::Vector3f position, scale;
-        tbe::Quaternion rotation;
 
-        m_selectedNode->target()->getMatrix().decompose(position, rotation, scale);
+        foreach(QNodeInteractor* qnode, m_selection)
+        {
+            tbe::Vector3f position, scale;
+            tbe::Quaternion rotation;
 
-        if(m_currentTool->type == ROTATE_TOOL)
-            rotation.identity();
+            qnode->target()->getMatrix().decompose(position, rotation, scale);
 
-        else if(m_currentTool->type == SCALE_TOOL)
-            scale = 1;
+            if(m_currentTool->type == ROTATE_TOOL)
+                rotation.identity();
 
-        m_selectedNode->target()->getMatrix().identity();
-        m_selectedNode->target()->getMatrix().transform(position, rotation, scale);
-    }
+            else if(m_currentTool->type == SCALE_TOOL)
+                scale = 1;
 
-    if(ev->key() == Qt::Key_X)
-    {
-        m_movementAxe(1, 0, 0);
-        m_mainwin->statusBar()->showMessage("Movement sur l'axe X");
-    }
-    if(ev->key() == Qt::Key_Y)
-    {
-        m_movementAxe(0, 1, 0);
-        m_mainwin->statusBar()->showMessage("Movement sur l'axe Y");
-    }
-    if(ev->key() == Qt::Key_Z)
-    {
-        m_movementAxe(0, 0, 1);
-        m_mainwin->statusBar()->showMessage("Movement sur l'axe Z");
-    }
-    if(ev->key() == Qt::Key_A)
-    {
-        m_movementAxe = 1;
-        m_mainwin->statusBar()->showMessage("Movement sur tout les axes X, Y, Z");
+            qnode->target()->getMatrix().identity();
+            qnode->target()->getMatrix().transform(position, rotation, scale);
+
+            qnode->updateGui();
+        }
     }
 
     if(ev->key() == Qt::Key_Q && m_lastSelectedNode)
@@ -965,13 +975,13 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_PageUp)
     {
-        m_sensivitySet.selection += 0.05;
+        m_sensivitySet.selection += 0.01;
         m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
     }
 
     if(ev->key() == Qt::Key_PageDown)
     {
-        m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.05, 0.01);
+        m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
         m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
     }
 
@@ -1059,49 +1069,52 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         {
             float factor = ev->modifiers() & Qt::ControlModifier ? 0.01 : 1;
 
-            if(ev->key() == Qt::Key_Up)
+            foreach(QNodeInteractor* qnode, m_selection)
             {
-                Vector3f pos = selnode->getPos();
+                if(ev->key() == Qt::Key_Up)
+                {
+                    Vector3f pos = selnode->getPos();
 
-                if(ev->modifiers() & Qt::ALT)
-                    pos += m_camera->getUp().X(0).Z(0).normalize() * factor;
-                else
-                    pos += m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
+                    if(ev->modifiers() & Qt::ALT)
+                        pos += m_camera->getUp().X(0).Z(0).normalize() * factor;
+                    else
+                        pos += m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
 
-                selnode->setPos(pos);
-                m_selectedNode->updateGui();
-            }
+                    selnode->setPos(pos);
+                    qnode->updateGui();
+                }
 
-            else if(ev->key() == Qt::Key_Down)
-            {
-                Vector3f pos = selnode->getPos();
+                else if(ev->key() == Qt::Key_Down)
+                {
+                    Vector3f pos = selnode->getPos();
 
-                if(ev->modifiers() & Qt::ALT)
-                    pos -= m_camera->getUp().X(0).Z(0).normalize() * factor;
-                else
-                    pos -= m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
+                    if(ev->modifiers() & Qt::ALT)
+                        pos -= m_camera->getUp().X(0).Z(0).normalize() * factor;
+                    else
+                        pos -= m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
 
-                selnode->setPos(pos);
+                    selnode->setPos(pos);
 
-                m_selectedNode->updateGui();
-            }
+                    qnode->updateGui();
+                }
 
-            else if(ev->key() == Qt::Key_Left)
-            {
-                Vector3f pos = selnode->getPos();
-                pos -= m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
-                selnode->setPos(pos);
+                else if(ev->key() == Qt::Key_Left)
+                {
+                    Vector3f pos = selnode->getPos();
+                    pos -= m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
+                    selnode->setPos(pos);
 
-                m_selectedNode->updateGui();
-            }
+                    qnode->updateGui();
+                }
 
-            else if(ev->key() == Qt::Key_Right)
-            {
-                Vector3f pos = selnode->getPos();
-                pos += m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
-                selnode->setPos(pos);
+                else if(ev->key() == Qt::Key_Right)
+                {
+                    Vector3f pos = selnode->getPos();
+                    pos += m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
+                    selnode->setPos(pos);
 
-                m_selectedNode->updateGui();
+                    qnode->updateGui();
+                }
             }
         }
 
@@ -1319,15 +1332,8 @@ void QTBEngine::loadScene(const QString& filename)
 
     AABB sceneAabb = m_meshScene->getSceneAabb();
 
-    m_sensivitySet.selection = sceneAabb.getLength() * 0.001;
-
-    if(m_sensivitySet.selection > 1)
-        m_sensivitySet.selection *= 0.25;
-
-    m_sensivitySet.camera = sceneAabb.getLength() * 0.001;
-
-    if(m_sensivitySet.camera > 1)
-        m_sensivitySet.camera *= 0.5;
+    m_sensivitySet.selection = math::round(sceneAabb.getLength() / 2 * 0.001f, 0.01f);
+    m_sensivitySet.camera = math::round(sceneAabb.getLength() * 0.001f, 0.01f);
 
     m_camera->setDistance(sceneAabb.getLength() / 8.0f);
     m_camera->setRotate(Vector2f(45, -45));
@@ -1491,19 +1497,21 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     if(m_selection.empty())
     {
         m_selectedNode = qnode;
+
+        m_selbox->Node::setEnable(true);
+
+        m_selection.push_back(qnode);
     }
-    else
+
+    else if(!m_selection.contains(qnode))
     {
         m_selboxArray[qnode] = new SelBox(m_meshScene);
-
         m_rootNode->addChild(m_selboxArray[qnode]);
+
+        m_selection.push_back(qnode);
     }
 
     qnode->bindWithGui();
-
-    m_selection.push_back(qnode);
-
-    m_selbox->Node::setEnable(true);
 
     if(m_gridset.enable)
         toggleGridDisplay(true);
