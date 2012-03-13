@@ -474,17 +474,7 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
 {
     tbe::scene::Node* selnode = node->target();
 
-    pushHistoryStat(new ModificationState(node));
-
-    m_penarea->Node::setEnable(false);
-    m_selbox->Node::setEnable(false);
-    m_grid->setEnable(false);
-
-    m_meshScene->setInFloor(selnode);
-
-    m_selbox->Node::setEnable(true);
-    m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
-    m_grid->setEnable(m_gridset.enable);
+    centerOnFloor(node);
 
     Vector3f adjust = selnode->getPos();
     adjust.y += -selnode->getAabb().min.y;
@@ -495,19 +485,28 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
 
 void QTBEngine::centerOnFloor(QNodeInteractor* node)
 {
+    using namespace std;
+    using namespace tbe::scene;
+
     tbe::scene::Node* selnode = node->target();
 
     pushHistoryStat(new ModificationState(node));
 
+    m_grid->setEnable(false);
     m_selbox->Node::setEnable(false);
     m_penarea->Node::setEnable(false);
-    m_grid->setEnable(false);
+
+    for_each(m_selboxArray.begin(), m_selboxArray.end(),
+             bind2nd(mem_fun(&Node::setEnable), false));
 
     m_meshScene->setInFloor(selnode);
 
+    m_grid->setEnable(m_gridset.enable);
     m_selbox->Node::setEnable(true);
     m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
-    m_grid->setEnable(m_gridset.enable);
+
+    for_each(m_selboxArray.begin(), m_selboxArray.end(),
+             bind2nd(mem_fun(&Node::setEnable), true));
 
     node->updateGui();
 }
@@ -553,11 +552,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 1;
 
-        if(m_meshScene->getSceneAabb().isInner(m_curCursor3D))
-        {
-            setCursor(Qt::BlankCursor);
-            m_cursorRelativeMove = QCursor::pos();
-        }
+        setCursor(Qt::BlankCursor);
+        m_cursorRelativeMove = QCursor::pos();
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -653,7 +649,7 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 
         setCursor(m_currentTool->cursor);
 
-        if(!m_moveCamera)
+        if(!m_moveCamera && m_meshScene->getSceneAabb().isInner(m_curCursor3D))
             m_centerTarget = m_curCursor3D;
     }
 
@@ -1063,14 +1059,14 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(m_selectedNode)
     {
-        tbe::scene::Node* selnode = m_selectedNode->target();
-
         if(ev->modifiers() & Qt::ShiftModifier)
         {
             float factor = ev->modifiers() & Qt::ControlModifier ? 0.01 : 1;
 
             foreach(QNodeInteractor* qnode, m_selection)
             {
+                tbe::scene::Node* selnode = qnode->target();
+
                 if(ev->key() == Qt::Key_Up)
                 {
                     Vector3f pos = selnode->getPos();
@@ -1118,12 +1114,13 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             }
         }
 
-        if(ev->key() == Qt::Key_P && !selnode->getParent()->isRoot())
+        if(ev->key() == Qt::Key_P && !m_selectedNode->target()->getParent()->isRoot())
         {
             using namespace tbe::scene;
 
-            Node* parent = selnode->getParent();
+            Node* parent = m_selectedNode->target()->getParent();
 
+            emit deselectionAll();
             emit selection(m_nodeInterface[parent]);
         }
 
@@ -1766,7 +1763,7 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     using namespace scene;
 
     setName("selection");
-    getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
+    getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::BACKFACE_CULL);
     getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
     getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
 }
