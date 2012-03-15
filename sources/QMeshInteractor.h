@@ -63,7 +63,6 @@ public slots:
     void setAlpha(bool stat);
 
     void saveMaterialFile();
-    void delMaterialFile();
 
     void pastMaterials();
     void copyMaterials();

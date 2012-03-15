@@ -46,13 +46,6 @@ void QMeshInteractor::saveMaterialFile()
     m_mainwin->nodesGui.mesh.matedit->hide();
 }
 
-void QMeshInteractor::delMaterialFile()
-{
-    m_mainwin->tbeWidget()->sceneParser()->deleteMaterialFile(m_target);
-
-    updateGui();
-}
-
 void QMeshInteractor::materialSelected(const QModelIndex& index)
 {
     if(!m_target)
