@@ -76,7 +76,7 @@ public slots:
 
     void about();
 
-    void notifyChanges(bool stat = true);
+    void notifyChange(bool stat = true);
 
     void clearNodeList();
 

@@ -231,7 +231,9 @@ void QTBEngine::applyTranslationEvents()
 
     else if(m_currentTool->type == SELECTION_TOOL)
     {
-        if(m_selectedNode && m_eventManager->keyState[EventManager::KEY_LSHIFT])
+        if(m_selectedNode
+           && m_eventManager->keyState[EventManager::KEY_LSHIFT]
+           && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
             Vector3f position;
 
@@ -274,6 +276,8 @@ void QTBEngine::applyTranslationEvents()
             }
 
             m_selectedNode->updateGui();
+
+            emit notifyChange();
         }
     }
 
@@ -444,6 +448,8 @@ void QTBEngine::pushHistoryStat(HistoryState* hs)
     m_history.push(hs);
 
     m_mainwin->ui()->actionUndo->setEnabled(true);
+
+    emit notifyChange();
 }
 
 void QTBEngine::popHistoryStat()
@@ -462,6 +468,8 @@ void QTBEngine::popHistoryStat()
 
     if(m_history.empty())
         m_mainwin->ui()->actionUndo->setEnabled(false);
+
+    emit notifyChange();
 }
 
 void QTBEngine::baseOnFloor()
@@ -743,6 +751,8 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 mat.transform(position, rotation, scale);
 
                 qnode->updateGui();
+
+                emit notifyChange();
             }
         }
     }
@@ -782,6 +792,8 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 mat.transform(position, rotation, scale);
 
                 qnode->updateGui();
+
+                emit notifyChange();
             }
         }
     }
@@ -801,6 +813,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                         if(node->target()->getAbsoluteMatrix().getPos() - m_penarea->getPos() < areaSize)
                         {
                             deleteNode(node);
+                            emit notifyChange();
                         }
                     }
                 }
@@ -808,6 +821,8 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 {
                     if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->getElemGap())
                     {
+                        emit notifyChange();
+
                         m_penarea->drawPos = m_penarea->getPos();
 
                         AABB area(m_penarea->getAreaSize());
@@ -1150,6 +1165,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
         if(!m_selection.empty() && m_gridset.enable)
         {
+            emit notifyChange();
 
             foreach(QNodeInteractor* qnode, m_selection)
             {
@@ -1164,6 +1180,8 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
         if(m_selectedNode && m_magnetMove)
         {
+            emit notifyChange();
+
             Node* current = m_selectedNode->target();
             Node* colset = NULL;
 
@@ -1249,6 +1267,8 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
         foreach(QNodeInteractor* qnode, m_selection)
         {
+            emit notifyChange();
+
             Vector3f current_position = qnode->target()->getPos();
 
             current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);

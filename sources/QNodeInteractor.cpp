@@ -26,7 +26,7 @@ void QNodeInteractor::setName(const QString& s)
     {
         m_target->setName(s.toStdString());
 
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
     }
 }
 
@@ -38,7 +38,7 @@ void QNodeInteractor::setPos(const tbe::Vector3f& v)
 
         m_mainwin->tbeWidget()->placeCamera();
 
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
 
         updateGui();
     }
@@ -59,7 +59,7 @@ void QNodeInteractor::setRotation(const tbe::Vector3f& v)
         newmat.identity();
         newmat.transform(position, Quaternion(v * M_PI / 180), scale);
 
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
 
         updateGui();
     }
@@ -78,7 +78,7 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
         newmat.identity();
         newmat.transform(position, rotation, v);
 
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
 
         updateGui();
     }
@@ -92,7 +92,7 @@ void QNodeInteractor::setMatrix(const tbe::Matrix4& m)
 
         m_mainwin->tbeWidget()->placeCamera();
 
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
 
         updateGui();
     }
@@ -178,7 +178,7 @@ void QNodeInteractor::addNodeField()
 
     m_mainwin->nodesGui.additionalModel->appendRow(newfield);
 
-    m_mainwin->notifyChanges(true);
+    m_mainwin->notifyChange(true);
 }
 
 void QNodeInteractor::delNodeField()
@@ -196,7 +196,7 @@ void QNodeInteractor::delNodeField()
 
         m_mainwin->nodesGui.additionalModel->removeRow(i.row());
 
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
     }
 }
 
@@ -215,7 +215,7 @@ void QNodeInteractor::clearNodeField()
     {
         m_target->clearUserData();
         m_mainwin->nodesGui.additionalModel->removeRows(0, m_mainwin->nodesGui.additionalModel->rowCount());
-        m_mainwin->notifyChanges(true);
+        m_mainwin->notifyChange(true);
     }
 }
 
@@ -237,7 +237,7 @@ void QNodeInteractor::changeNodeField(QStandardItem* item)
         m_target->setUserData(key->text().toStdString(), item->text().toStdString());
     }
 
-    m_mainwin->notifyChanges(true);
+    m_mainwin->notifyChange(true);
 }
 
 void QNodeInteractor::unsetup()

@@ -12,7 +12,7 @@
 
 MainWindow::MainWindow()
 {
-    notifyChanges(false);
+    notifyChange(false);
 
     m_uinterface = new Ui_mainWindow;
     m_rootNode = NULL;
@@ -53,7 +53,7 @@ void MainWindow::reg(QNodeInteractor* node, QItemsList& items)
 
     nodeItemBinder[node] = items[0];
 
-    notifyChanges(true);
+    notifyChange(true);
 
     m_tbeWidget->registerInterface(node);
 }
@@ -90,7 +90,7 @@ void MainWindow::unreg(QNodeInteractor* node)
         else
             nodesGui.nodesListModel->removeRow(sindex.row());
 
-        notifyChanges(true);
+        notifyChange(true);
     }
 
     m_tbeWidget->unregisterInterface(node);
@@ -404,6 +404,7 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(selection(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(m_tbeWidget, SIGNAL(deselection(QNodeInteractor*)), this, SLOT(deselect(QNodeInteractor*)));
     connect(m_tbeWidget, SIGNAL(deselectionAll()), this, SLOT(deselectAll()));
+    connect(m_tbeWidget, SIGNAL(notifyChange()), this, SLOT(notifyChange()));
 
     connect(nodesGui.nodesListView, SIGNAL(select(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(deselect(QNodeInteractor*)), this, SLOT(deselect(QNodeInteractor*)));
@@ -537,7 +538,7 @@ void MainWindow::newScene()
 
     deselectAll();
 
-    notifyChanges(false);
+    notifyChange(false);
 
     if(!m_rootNode)
     {
@@ -633,7 +634,7 @@ void MainWindow::openScene(const QString& filename)
 
         m_filename = filename;
 
-        notifyChanges(false);
+        notifyChange(false);
 
         initSceneConnections();
     }
@@ -641,7 +642,7 @@ void MainWindow::openScene(const QString& filename)
     {
         QMessageBox::critical(this, "Erreur de chargement", e.what());
 
-        notifyChanges(false);
+        notifyChange(false);
         newScene();
     }
 }
@@ -668,7 +669,7 @@ void MainWindow::saveSceneDialog()
 
         m_filename = filename;
 
-        notifyChanges(false);
+        notifyChange(false);
     }
 }
 
@@ -700,7 +701,7 @@ void MainWindow::saveScene(const QString& filename)
 
     m_tbeWidget->saveScene(filename);
 
-    notifyChanges(false);
+    notifyChange(false);
 
     statusBar()->showMessage("Scene enregistrer...", 2000);
 }
@@ -744,7 +745,7 @@ void MainWindow::setCurrentTool(int type)
     }
 }
 
-void MainWindow::notifyChanges(bool stat)
+void MainWindow::notifyChange(bool stat)
 {
     m_somethingChange = stat;
 
@@ -803,7 +804,7 @@ void MainWindow::guiMeshNew()
                     = m_workingDir.meshTexture
                     = QFileInfo(filename).path();
 
-            notifyChanges(true);
+            notifyChange(true);
         }
         catch(std::exception& e)
         {
@@ -824,7 +825,7 @@ void MainWindow::guiLightNew()
 
         select(light);
 
-        notifyChanges(true);
+        notifyChange(true);
     }
     catch(std::exception& e)
     {
@@ -842,7 +843,7 @@ void MainWindow::guiParticlesNew()
 
         select(particles);
 
-        notifyChanges(true);
+        notifyChange(true);
     }
     catch(std::exception& e)
     {
@@ -860,7 +861,7 @@ void MainWindow::guiMarkNew()
 
         select(mark);
 
-        notifyChanges(true);
+        notifyChange(true);
     }
     catch(std::exception& e)
     {
@@ -1000,7 +1001,7 @@ void MainWindow::promoteChild()
 
     m_tbeWidget->placeCamera();
 
-    notifyChanges(true);
+    notifyChange(true);
 
     statusBar()->showMessage("Enfant promue", 2000);
 }
@@ -1032,7 +1033,7 @@ void MainWindow::assignParent()
 
     m_tbeWidget->placeCamera();
 
-    notifyChanges(true);
+    notifyChange(true);
 
     statusBar()->showMessage("Parent assigné", 2000);
 }
@@ -1061,7 +1062,7 @@ void MainWindow::guiSkyboxApply(bool enable)
         m_tbeWidget->skyboxClear();
     }
 
-    notifyChanges(true);
+    notifyChange(true);
 }
 
 void MainWindow::guiFogApply(bool enable)
@@ -1073,7 +1074,7 @@ void MainWindow::guiFogApply(bool enable)
     else
         m_tbeWidget->fogClear();
 
-    notifyChanges(true);
+    notifyChange(true);
 }
 
 void MainWindow::ambiant(const tbe::Vector3f& value)
@@ -1092,7 +1093,7 @@ void MainWindow::guiAmbiantApply(const tbe::Vector3f& value)
 {
     m_tbeWidget->setSceneAmbiant(value);
 
-    notifyChanges(true);
+    notifyChange(true);
 }
 
 void MainWindow::fog(tbe::scene::Fog* fog)
@@ -1143,7 +1144,7 @@ void MainWindow::guiAddSceneField()
 
     genGui.additionalModel->appendRow(newfield);
 
-    notifyChanges(true);
+    notifyChange(true);
 }
 
 void MainWindow::guiDelSceneField()
@@ -1153,7 +1154,7 @@ void MainWindow::guiDelSceneField()
     if(i.isValid())
         genGui.additionalModel->removeRow(i.row());
 
-    notifyChanges(true);
+    notifyChange(true);
 }
 
 void MainWindow::guiClearSceneField()
@@ -1168,7 +1169,7 @@ void MainWindow::guiClearSceneField()
     if(re == QMessageBox::Yes)
     {
         genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
-        notifyChanges(true);
+        notifyChange(true);
     }
 }
 

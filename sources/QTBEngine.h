@@ -123,6 +123,7 @@ signals:
     void selection(QNodeInteractor*);
     void deselection(QNodeInteractor*);
     void deselectionAll();
+    void notifyChange();
 
 protected:
     void initializeGL();
