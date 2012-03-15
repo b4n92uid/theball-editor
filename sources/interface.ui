@@ -451,13 +451,19 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="node_mesh_editmat">
+             <widget class="QCommandLinkButton" name="node_mesh_editmat">
               <property name="text">
                <string>Editer le Matériaux</string>
               </property>
               <property name="icon">
                <iconset resource="ressource.qrc">
                 <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="description">
+               <string>Ouvrir l'éditeur de matèrieaux associer au maillage</string>
               </property>
              </widget>
             </item>

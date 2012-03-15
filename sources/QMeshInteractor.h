@@ -62,7 +62,9 @@ public slots:
     void setBlend(bool stat);
     void setAlpha(bool stat);
 
-    void saveMaterialFile();
+    void openMaterialDialog();
+    void saveMaterialDialog();
+    void cancelMaterialDialog();
 
     void pastMaterials();
     void copyMaterials();
@@ -71,6 +73,7 @@ public slots:
 
 private:
     tbe::scene::Mesh* m_target;
+    tbe::scene::Mesh* m_undo;
 };
 
 #endif	/* QMESHINTERACTOR_H */
