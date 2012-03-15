@@ -49,13 +49,11 @@ void QMeshInteractor::openMaterialDialog()
 
 void QMeshInteractor::saveMaterialDialog()
 {
-    m_mainwin->nodesGui.mesh.matedit->hide();
+    m_undo->fetchMaterials(*m_target);
 }
 
 void QMeshInteractor::cancelMaterialDialog()
 {
-    m_mainwin->nodesGui.mesh.matedit->hide();
-
     m_target->fetchMaterials(*m_undo);
     updateGui();
 }
@@ -555,10 +553,8 @@ void QMeshInteractor::bindWithGui()
 
     connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
 
-    connect(m_mainwin->nodesGui.mesh.matedit->apply, SIGNAL(clicked()), this, SLOT(saveMaterialDialog()));
-    connect(m_mainwin->nodesGui.mesh.matedit->cancel, SIGNAL(clicked()), this, SLOT(cancelMaterialDialog()));
-
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), this, SLOT(cancelMaterialDialog()));
+    connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), this, SLOT(saveMaterialDialog()));
 
     connect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
     connect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(setLighted(bool)));

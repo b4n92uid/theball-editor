@@ -1761,6 +1761,7 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::BACKFACE_CULL);
     getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
     getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
+    getMaterial("main")->setDepthTest(false);
 }
 
 void SelBox::setAround(tbe::scene::Node* node)
