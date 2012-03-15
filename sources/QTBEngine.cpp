@@ -2,7 +2,7 @@
  * File:   QTBEngine.cpp
  * Author: b4n92uid
  *
- * Created on 4 décembre 2010, 13:30
+ * Created on 4 dÃ©cembre 2010, 13:30
  */
 
 #include "QTBEngine.h"
@@ -330,7 +330,13 @@ void QTBEngine::toggleStaticView(bool state)
 
 void QTBEngine::toggleSelBox(bool state)
 {
+    using namespace std;
+    using namespace tbe::scene;
+
     m_selbox->setVisible(state);
+
+    std::for_each(m_selboxArray.begin(), m_selboxArray.end(),
+                  bind2nd(mem_fun(&Node::setEnable), state));
 }
 
 void QTBEngine::toggleGridDisplay(bool state)
@@ -492,21 +498,17 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
 
     pushHistoryStat(new ModificationState(node));
 
-    m_grid->setEnable(false);
-    m_selbox->Node::setEnable(false);
-    m_penarea->Node::setEnable(false);
+    toggleSelBox(false);
 
-    for_each(m_selboxArray.begin(), m_selboxArray.end(),
-             bind2nd(mem_fun(&Node::setEnable), false));
+    m_grid->setEnable(false);
+    m_penarea->Node::setEnable(false);
 
     m_meshScene->setInFloor(selnode);
 
-    m_grid->setEnable(m_gridset.enable);
-    m_selbox->Node::setEnable(true);
-    m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
+    toggleSelBox(true);
 
-    for_each(m_selboxArray.begin(), m_selboxArray.end(),
-             bind2nd(mem_fun(&Node::setEnable), true));
+    m_grid->setEnable(m_gridset.enable);
+    m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
 
     node->updateGui();
 }
@@ -566,8 +568,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         if(m_currentTool->type == SELECTION_TOOL)
         {
-            m_selbox->Node::setEnable(false);
-            for_each(m_selboxArray.begin(), m_selboxArray.end(), bind2nd(mem_fun(&Node::setEnable), false));
+            toggleSelBox(false);
 
             m_grid->setEnable(false);
 
@@ -615,8 +616,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 node->target()->setEnable(initialState[node]);
             }
 
-            m_selbox->Node::setEnable(m_selectedNode);
-            for_each(m_selboxArray.begin(), m_selboxArray.end(), bind2nd(mem_fun(&Node::setEnable), true));
+            toggleSelBox(true);
 
             m_grid->setEnable(m_gridset.enable);
         }
@@ -972,13 +972,13 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     if(ev->key() == Qt::Key_PageUp)
     {
         m_sensivitySet.selection += 0.01;
-        m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
+        m_mainwin->statusBar()->showMessage(QString("SensibilitÃ© a %1").arg(m_sensivitySet.selection), 1000);
     }
 
     if(ev->key() == Qt::Key_PageDown)
     {
         m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
-        m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
+        m_mainwin->statusBar()->showMessage(QString("SensibilitÃ© a %1").arg(m_sensivitySet.selection), 1000);
     }
 
     if(ev->key() == Qt::Key_1)
@@ -1268,6 +1268,9 @@ void QTBEngine::saveScene(const QString& filename)
 {
     using namespace scene;
 
+    foreach(Node* selbox, m_selboxArray)
+    m_sceneParser->exclude(selbox);
+
     m_sceneParser->exclude(m_selbox);
     m_sceneParser->exclude(m_grid);
     m_sceneParser->exclude(m_penarea);
@@ -1353,7 +1356,7 @@ struct RootSort
 
     bool operator ()(scene::Node* node1, scene::Node * node2)
     {
-        // « node1 < node2 » Don't know but it fix it !
+        // Â« node1 < node2 Â» Don't know but it fix it !
         // crash whene node's count >= 17
 
         if(node1->deepPosition() == node2->deepPosition())
@@ -1372,11 +1375,6 @@ tbe::scene::Node* QTBEngine::rootNode()
 PenAreaInterface* QTBEngine::penArea()
 {
     return m_penarea;
-}
-
-SelBoxInterface* QTBEngine::selBox()
-{
-    return m_selbox;
 }
 
 void QTBEngine::placeNewNode(tbe::scene::Node* thenew)

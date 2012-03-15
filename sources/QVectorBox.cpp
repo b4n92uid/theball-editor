@@ -46,6 +46,13 @@ void QDoubleVector3Box::clear()
     m_z->clear();
 }
 
+void QDoubleVector3Box::setReadOnly(bool state)
+{
+    m_x->setReadOnly(state);
+    m_y->setReadOnly(state);
+    m_z->setReadOnly(state);
+}
+
 QDoubleVector2Box::QDoubleVector2Box(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y)
 {
     m_x = x;
@@ -81,6 +88,12 @@ void QDoubleVector2Box::clear()
     m_y->clear();
 }
 
+void QDoubleVector2Box::setReadOnly(bool state)
+{
+    m_x->setReadOnly(state);
+    m_y->setReadOnly(state);
+}
+
 QIntVector2Box::QIntVector2Box(QObject* parent, QSpinBox* x, QSpinBox* y)
 {
     m_x = x;
@@ -114,4 +127,10 @@ void QIntVector2Box::clear()
 {
     m_x->clear();
     m_y->clear();
+}
+
+void QIntVector2Box::setReadOnly(bool state)
+{
+    m_x->setReadOnly(state);
+    m_y->setReadOnly(state);
 }

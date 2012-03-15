@@ -264,12 +264,7 @@ void MainWindow::initWidgets()
     nodesGui.mesh.matedit->materialsModel = new QStandardItemModel(this);
     nodesGui.mesh.matedit->materialsView->setModel(nodesGui.mesh.matedit->materialsModel);
 
-    nodesGui.mesh.materialFilePath = m_uinterface->node_mesh_matfile;
-
-    nodesGui.mesh.includedmat = m_uinterface->node_mesh_includedmat;
     nodesGui.mesh.editmatfile = m_uinterface->node_mesh_editmat;
-    nodesGui.mesh.openmatfile = m_uinterface->node_mesh_setmatfile;
-    nodesGui.mesh.delmatfile = m_uinterface->node_mesh_delmatfile;
 
     nodesGui.mesh.billboardX = m_uinterface->node_mesh_billboard_x;
     nodesGui.mesh.billboardY = m_uinterface->node_mesh_billboard_y;
@@ -850,6 +845,17 @@ void MainWindow::select(QNodeInteractor* qnode)
 {
     m_tbeWidget->selectNode(qnode);
 
+    if(m_tbeWidget->selection().count() > 1)
+    {
+        nodesGui.name->setReadOnly(true);
+        nodesGui.position->setReadOnly(true);
+        nodesGui.rotation->setReadOnly(true);
+        nodesGui.scale->setReadOnly(true);
+        nodesGui.addField->setEnabled(true);
+        nodesGui.delField->setEnabled(true);
+        nodesGui.clearFields->setEnabled(true);
+    }
+
     m_uinterface->baseAttribTab->setEnabled(true);
     m_uinterface->attribTab->setEnabled(true);
 
@@ -894,6 +900,17 @@ void MainWindow::select(QNodeInteractor* qnode)
 void MainWindow::deselect(QNodeInteractor* qnode)
 {
     m_tbeWidget->deselectNode(qnode);
+
+    if(m_tbeWidget->selection().count() <= 1)
+    {
+        nodesGui.name->setReadOnly(false);
+        nodesGui.position->setReadOnly(false);
+        nodesGui.rotation->setReadOnly(false);
+        nodesGui.scale->setReadOnly(false);
+        nodesGui.addField->setEnabled(false);
+        nodesGui.delField->setEnabled(false);
+        nodesGui.clearFields->setEnabled(false);
+    }
 }
 
 void MainWindow::deselectAll()
@@ -909,6 +926,14 @@ void MainWindow::deselectAll()
     m_uinterface->actionDeleteNode->setEnabled(false);
 
     m_selInfo->setText("Pas de séléction");
+
+    nodesGui.name->setReadOnly(false);
+    nodesGui.position->setReadOnly(false);
+    nodesGui.rotation->setReadOnly(false);
+    nodesGui.scale->setReadOnly(false);
+    nodesGui.addField->setEnabled(false);
+    nodesGui.delField->setEnabled(false);
+    nodesGui.clearFields->setEnabled(false);
 }
 
 void MainWindow::promoteChild()

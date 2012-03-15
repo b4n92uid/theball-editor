@@ -19,7 +19,7 @@ public:
     virtual ~QMeshInteractor();
 
     QString typeName() const;
-    
+
 public slots:
     void bindWithGui();
     void unbindFromGui();
@@ -62,9 +62,6 @@ public slots:
     void setBlend(bool stat);
     void setAlpha(bool stat);
 
-    void setIncludedMaterial(bool state);
-
-    void openMaterialFile();
     void saveMaterialFile();
     void delMaterialFile();
 

@@ -50,8 +50,6 @@ public:
 
     tbe::scene::Grid* grid();
 
-    SelBoxInterface* selBox();
-
     PenAreaInterface* penArea();
 
     tbe::Vector3f cameraPos() const;

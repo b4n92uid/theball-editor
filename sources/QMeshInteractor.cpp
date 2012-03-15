@@ -2,7 +2,7 @@
  * File:   QMeshInteractor.cpp
  * Author: b4n92uid
  * 
- * Created on 29 août 2011, 07:23
+ * Created on 29 aoÃ»t 2011, 07:23
  */
 
 #include "QMeshInteractor.h"
@@ -29,66 +29,21 @@ tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
     QModelIndex index = m_mainwin->nodesGui.mesh.matedit->materialsView->currentIndex();
 
     if(index.isValid())
-        return m_mainwin->nodesGui.mesh.matedit->materialsModel
-            ->itemFromIndex(index)->data().value<Material*>();
+    {
+        std::string matname = m_mainwin->nodesGui.mesh.matedit->materialsModel
+                ->itemFromIndex(index)->data().toString().toStdString();
+
+        return m_target->getMaterial(matname);
+    }
     else
         return NULL;
 }
 
-void QMeshInteractor::setIncludedMaterial(bool state)
-{
-    m_mainwin->tbeWidget()->sceneParser()->setIncludedMaterialFile(m_target, state);
-
-    if(state)
-        delMaterialFile();
-    else
-        updateGui();
-}
-
-void QMeshInteractor::openMaterialFile()
-{
-    QString filepath = QFileDialog::getOpenFileName(m_mainwin);
-
-    if(!filepath.isEmpty())
-    {
-        m_mainwin->tbeWidget()->sceneParser()->setMaterialFile(m_target, filepath.toStdString());
-        m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
-
-        m_mainwin->nodesGui.mesh.matedit->materialInfo->setText(filepath);
-
-        updateGui();
-    }
-}
-
 void QMeshInteractor::saveMaterialFile()
 {
-    if(m_mainwin->nodesGui.mesh.includedmat->isChecked())
-    {
-        m_mainwin->nodesGui.mesh.matedit->hide();
-        return;
-    }
+    using namespace tbe::scene;
 
-    else if(m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target).empty())
-    {
-        QString filepath = QFileDialog::getSaveFileName(m_mainwin);
-
-        if(!filepath.isEmpty())
-        {
-            m_mainwin->tbeWidget()->sceneParser()->setMaterialFile(m_target, filepath.toStdString());
-            m_mainwin->tbeWidget()->sceneParser()->saveMaterialFile(m_target);
-            m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
-
-            m_mainwin->nodesGui.mesh.matedit->hide();
-        }
-    }
-
-    else
-    {
-        m_mainwin->tbeWidget()->sceneParser()->saveMaterialFile(m_target);
-        m_mainwin->tbeWidget()->sceneParser()->reloadMaterialFiles();
-
-        m_mainwin->nodesGui.mesh.matedit->hide();
-    }
+    m_mainwin->nodesGui.mesh.matedit->hide();
 }
 
 void QMeshInteractor::delMaterialFile()
@@ -385,8 +340,9 @@ void QMeshInteractor::setBlend(bool stat)
 
     else
     {
-        mat->disable(Material::BLEND_ADD | Material::BLEND_MOD
-                     | Material::BLEND_MUL | Material::COLORED);
+        mat->disable(Material::BLEND_ADD
+                     | Material::BLEND_MOD
+                     | Material::BLEND_MUL);
     }
 }
 
@@ -593,10 +549,6 @@ void QMeshInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.mesh.matedit->ok, SIGNAL(clicked()), this, SLOT(saveMaterialFile()));
 
     connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), m_mainwin->nodesGui.mesh.matedit, SLOT(show()));
-    connect(m_mainwin->nodesGui.mesh.openmatfile, SIGNAL(clicked()), this, SLOT(openMaterialFile()));
-    connect(m_mainwin->nodesGui.mesh.delmatfile, SIGNAL(clicked()), this, SLOT(delMaterialFile()));
-
-    connect(m_mainwin->nodesGui.mesh.includedmat, SIGNAL(clicked(bool)), this, SLOT(setIncludedMaterial(bool)));
 
     connect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
     connect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(setLighted(bool)));
@@ -654,10 +606,6 @@ void QMeshInteractor::unbindFromGui()
     disconnect(m_mainwin->nodesGui.mesh.matedit->ok, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.openmatfile, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.delmatfile, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.includedmat, SIGNAL(clicked(bool)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), 0, 0);
@@ -701,10 +649,6 @@ void QMeshInteractor::unbindFromGui()
     m_mainwin->nodesGui.mesh.matedit->materialsModel
             ->removeRows(0, m_mainwin->nodesGui.mesh.matedit->materialsModel->rowCount());
 
-    m_mainwin->nodesGui.mesh.includedmat->setChecked(false);
-
-    m_mainwin->nodesGui.mesh.materialFilePath->clear();
-
     m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
 }
@@ -720,12 +664,7 @@ void QMeshInteractor::updateGui()
             << m_mainwin->nodesGui.mesh.add
             << m_mainwin->nodesGui.mesh.billboardX
             << m_mainwin->nodesGui.mesh.billboardY
-            << m_mainwin->nodesGui.mesh.delmatfile
             << m_mainwin->nodesGui.mesh.editmatfile
-            << m_mainwin->nodesGui.mesh.includedmat
-            << m_mainwin->nodesGui.mesh.materialFilePath
-            << m_mainwin->nodesGui.mesh.openmatfile
-
             << m_mainwin->nodesGui.mesh.matedit->alpha
             << m_mainwin->nodesGui.mesh.matedit->alphathreshold
             << m_mainwin->nodesGui.mesh.matedit->ambiant
@@ -754,11 +693,10 @@ void QMeshInteractor::updateGui()
 
     foreach(Material* mat, matarr)
     {
-        QVariant data;
-        data.setValue<Material*>(mat);
+        QString matname = QString::fromStdString(mat->getName());
 
-        QStandardItem* item = new QStandardItem(QString::fromStdString(mat->getName()));
-        item->setData(data);
+        QStandardItem* item = new QStandardItem(matname);
+        item->setData(matname);
 
         m_mainwin->nodesGui.mesh.matedit->materialsModel->appendRow(item);
     }
@@ -768,41 +706,6 @@ void QMeshInteractor::updateGui()
 
     m_mainwin->nodesGui.mesh.matedit->materialsView->setCurrentIndex(index);
     materialSelected(index);
-
-    // Get if the mesh has included material or materia file
-
-    std::string matfile = m_mainwin->tbeWidget()->sceneParser()->getMaterialFile(m_target);
-
-    m_mainwin->nodesGui.mesh.includedmat->blockSignals(true);
-
-    if(!matfile.empty())
-    {
-        m_mainwin->nodesGui.mesh.openmatfile->setEnabled(true);
-
-        m_mainwin->nodesGui.mesh.materialFilePath->setEnabled(true);
-        m_mainwin->nodesGui.mesh.materialFilePath->setText(QString::fromStdString(matfile));
-
-        m_mainwin->nodesGui.mesh.delmatfile->setEnabled(true);
-
-        m_mainwin->nodesGui.mesh.includedmat->setChecked(false);
-    }
-    else if(m_mainwin->tbeWidget()->sceneParser()->isIncludedMaterialFile(m_target))
-    {
-        m_mainwin->nodesGui.mesh.openmatfile->setEnabled(false);
-
-        m_mainwin->nodesGui.mesh.materialFilePath->setEnabled(false);
-        m_mainwin->nodesGui.mesh.materialFilePath->clear();
-
-        m_mainwin->nodesGui.mesh.delmatfile->setEnabled(false);
-
-        m_mainwin->nodesGui.mesh.includedmat->setChecked(true);
-    }
-    else
-    {
-        m_mainwin->nodesGui.mesh.openmatfile->setEnabled(true);
-    }
-
-    m_mainwin->nodesGui.mesh.includedmat->blockSignals(false);
 
     // Update GUI by Billboard settings
     tbe::Vector2b billboard = m_target->getBillBoard();
