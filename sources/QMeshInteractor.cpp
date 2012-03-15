@@ -11,6 +11,7 @@
 QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
+    m_undo = new tbe::scene::Mesh(*target);
 }
 
 QMeshInteractor::~QMeshInteractor()
@@ -39,11 +40,24 @@ tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
         return NULL;
 }
 
-void QMeshInteractor::saveMaterialFile()
+void QMeshInteractor::openMaterialDialog()
 {
-    using namespace tbe::scene;
+    m_undo->fetchMaterials(*m_target);
 
+    m_mainwin->nodesGui.mesh.matedit->show();
+}
+
+void QMeshInteractor::saveMaterialDialog()
+{
     m_mainwin->nodesGui.mesh.matedit->hide();
+}
+
+void QMeshInteractor::cancelMaterialDialog()
+{
+    m_mainwin->nodesGui.mesh.matedit->hide();
+
+    m_target->fetchMaterials(*m_undo);
+    updateGui();
 }
 
 void QMeshInteractor::materialSelected(const QModelIndex& index)
@@ -539,9 +553,12 @@ void QMeshInteractor::bindWithGui()
 {
     QNodeInteractor::bindWithGui();
 
-    connect(m_mainwin->nodesGui.mesh.matedit->ok, SIGNAL(clicked()), this, SLOT(saveMaterialFile()));
+    connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
 
-    connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), m_mainwin->nodesGui.mesh.matedit, SLOT(show()));
+    connect(m_mainwin->nodesGui.mesh.matedit->apply, SIGNAL(clicked()), this, SLOT(saveMaterialDialog()));
+    connect(m_mainwin->nodesGui.mesh.matedit->cancel, SIGNAL(clicked()), this, SLOT(cancelMaterialDialog()));
+
+    connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), this, SLOT(cancelMaterialDialog()));
 
     connect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
     connect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(setLighted(bool)));
@@ -596,9 +613,10 @@ void QMeshInteractor::unbindFromGui()
 {
     QNodeInteractor::unbindFromGui();
 
-    disconnect(m_mainwin->nodesGui.mesh.matedit->ok, SIGNAL(clicked()), 0, 0);
-
     disconnect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), 0, 0);
+
+    disconnect(m_mainwin->nodesGui.mesh.matedit->apply, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit->cancel, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), 0, 0);
