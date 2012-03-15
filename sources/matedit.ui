@@ -707,12 +707,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>76</x>
-     <y>448</y>
+     <x>88</x>
+     <y>396</y>
     </hint>
     <hint type="destinationlabel">
-     <x>225</x>
-     <y>451</y>
+     <x>295</x>
+     <y>399</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>MaterialEdit</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>583</x>
+     <y>546</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>345</x>
+     <y>541</y>
     </hint>
    </hints>
   </connection>
@@ -720,15 +736,15 @@
    <sender>apply</sender>
    <signal>clicked()</signal>
    <receiver>MaterialEdit</receiver>
-   <slot>reject()</slot>
+   <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>542</y>
+     <x>483</x>
+     <y>543</y>
     </hint>
     <hint type="destinationlabel">
-     <x>235</x>
-     <y>539</y>
+     <x>377</x>
+     <y>546</y>
     </hint>
    </hints>
   </connection>
