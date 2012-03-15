@@ -58,8 +58,12 @@ protected:
     bool leaveSafely();
 
     void initSceneConnections();
+    
+    QString backupOf(QString filename);
 
 public slots:
+
+    void makeBackup();
 
     void newScene();
 
@@ -86,7 +90,7 @@ public slots:
 
     void assignParent();
     void promoteChild();
-    
+
     void pastMaterials();
     void pastFields();
     void pastPosition();
@@ -214,7 +218,7 @@ private:
 
         struct SkyboxGuiTab
         {
-            QBrowsEdit* textures[6];
+            QBrowsEdit * textures[6];
             QPushButton* apply;
             QGroupBox* enable;
 
@@ -252,10 +256,9 @@ private:
     QNodeInteractor* m_rootNode;
 
     QString m_filename;
+    QTimer m_backupTimer;
 
     QTBEngine* m_tbeWidget;
-
-    QTimer* m_timer;
 
     QLabel* m_selInfo;
 

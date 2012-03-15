@@ -22,6 +22,8 @@ MainWindow::~MainWindow()
 {
     delete m_uinterface;
     delete m_rootNode;
+
+    QFile::remove(backupOf(m_filename));
 }
 
 QString MainWindow::openFileName() const
@@ -32,6 +34,12 @@ QString MainWindow::openFileName() const
 Ui_mainWindow* MainWindow::ui()
 {
     return m_uinterface;
+}
+
+void MainWindow::makeBackup()
+{
+    if(!m_filename.isEmpty())
+        saveScene(backupOf(m_filename));
 }
 
 void MainWindow::reg(QNodeInteractor* node, QItemsList& items)
@@ -446,10 +454,8 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionScaleTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
 
-    // Timer
-
-    m_timer = new QTimer(this);
-    // m_timer->start(16);
+    connect(&m_backupTimer, SIGNAL(timeout()), this, SLOT(makeBackup()));
+    m_backupTimer.start(5000);
 }
 
 bool MainWindow::leaveSafely()
@@ -507,6 +513,11 @@ void MainWindow::initSceneConnections()
 
     m_uinterface->actionToggleSelBox->setChecked(true);
     m_uinterface->actionToggleStaticView->setChecked(true);
+}
+
+QString MainWindow::backupOf(QString filename)
+{
+    return filename.replace(QRegExp("\\.(.+)$"), ".bak");
 }
 
 void MainWindow::newScene()
@@ -570,7 +581,23 @@ void MainWindow::openScene(const QString& filename)
 
         nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
 
-        m_tbeWidget->loadScene(filename);
+        QString backupfile = backupOf(filename);
+
+        if(QFile::exists(backupfile))
+        {
+            QMessageBox::StandardButton response =
+                    QMessageBox::question(this, "Ficher de savegarde trouvé",
+                                          "Un fichier de savegarde a été trouvé probablement du à un plantage de l'application\n"
+                                          "vous-les vous le charger ?", QMessageBox::Yes | QMessageBox::No);
+
+            if(response == QMessageBox::Yes)
+                m_tbeWidget->loadScene(backupfile);
+            else
+                m_tbeWidget->loadScene(filename);
+        }
+
+        else
+            m_tbeWidget->loadScene(filename);
 
         m_workingDir.scene
                 = m_workingDir.mesh
