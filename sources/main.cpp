@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     using namespace std;
 
-    #ifndef _DEBUG
+    #ifdef NDEBUG
     ofstream log("tbeditor.log");
     streambuf* defaultCout = cout.rdbuf();
     cout.rdbuf(log.rdbuf());
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     delete window, window = NULL;
 
-    #ifndef _DEBUG
+    #ifdef NDEBUG
     cout.rdbuf(defaultCout);
     log.close();
     #endif
