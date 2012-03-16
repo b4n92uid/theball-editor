@@ -1555,14 +1555,12 @@
     <addaction name="actionSelectionTool"/>
     <addaction name="actionRotateTool"/>
     <addaction name="actionScaleTool"/>
-    <addaction name="actionDrawTool"/>
    </widget>
    <widget class="QMenu" name="menuMouvements">
     <property name="title">
      <string>Transformation</string>
     </property>
     <addaction name="actionToggleGrid"/>
-    <addaction name="actionToggleMagnetMove"/>
     <addaction name="separator"/>
     <addaction name="actionCenterOnFloor"/>
     <addaction name="actionBaseOnFloor"/>
@@ -1861,36 +1859,6 @@
    </property>
    <property name="shortcut">
     <string>&amp;</string>
-   </property>
-  </action>
-  <action name="actionDrawTool">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/draw.png</normaloff>:/Medias/medias/draw.png</iconset>
-   </property>
-   <property name="text">
-    <string>Outil pinceau</string>
-   </property>
-   <property name="shortcut">
-    <string>'</string>
-   </property>
-  </action>
-  <action name="actionToggleMagnetMove">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/magnet.png</normaloff>:/Medias/medias/magnet.png</iconset>
-   </property>
-   <property name="text">
-    <string>Magnitisme</string>
-   </property>
-   <property name="shortcut">
-    <string>M</string>
    </property>
   </action>
   <action name="actionRotateTool">

@@ -204,13 +204,11 @@ void MainWindow::initWidgets()
     toptoolbar->addSeparator();
     toptoolbar->addAction(m_uinterface->actionBaseOnFloor);
     toptoolbar->addAction(m_uinterface->actionCenterOnFloor);
-    toptoolbar->addAction(m_uinterface->actionToggleMagnetMove);
     toptoolbar->addAction(m_uinterface->actionToggleGrid);
     toptoolbar->addSeparator();
     toptoolbar->addAction(m_uinterface->actionSelectionTool);
     toptoolbar->addAction(m_uinterface->actionRotateTool);
     toptoolbar->addAction(m_uinterface->actionScaleTool);
-    toptoolbar->addAction(m_uinterface->actionDrawTool);
 
     QWidget* spacer = new QWidget(toptoolbar);
     spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -218,10 +216,6 @@ void MainWindow::initWidgets()
     toptoolbar->addWidget(m_selInfo);
 
     addToolBar(Qt::TopToolBarArea, toptoolbar);
-
-    m_drawToolDialog = new DrawToolDialog(this);
-    m_drawToolDialog->setWindowModality(Qt::NonModal);
-    m_drawToolDialog->setWindowFlags(Qt::Tool);
 
     // Générale ----------------------------------------------------------------
 
@@ -379,7 +373,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionToggleGrid, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleGridDisplay(bool)));
     connect(m_uinterface->actionToggleSelBox, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleSelBox(bool)));
     connect(m_uinterface->actionToggleStaticView, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleStaticView(bool)));
-    connect(m_uinterface->actionToggleMagnetMove, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleMagnetMove(bool)));
 
     connect(m_uinterface->actionUndo, SIGNAL(triggered()), m_tbeWidget, SLOT(popHistoryStat()));
 
@@ -452,14 +445,12 @@ void MainWindow::initConnections()
     toolsigmap->setMapping(m_uinterface->actionSelectionTool, SELECTION_TOOL);
     toolsigmap->setMapping(m_uinterface->actionRotateTool, ROTATE_TOOL);
     toolsigmap->setMapping(m_uinterface->actionScaleTool, SCALE_TOOL);
-    toolsigmap->setMapping(m_uinterface->actionDrawTool, DRAW_TOOL);
 
     connect(toolsigmap, SIGNAL(mapped(int)), this, SLOT(setCurrentTool(int)));
 
     connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionRotateTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionScaleTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
-    connect(m_uinterface->actionDrawTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
 
     connect(&m_backupTimer, SIGNAL(timeout()), this, SLOT(makeBackup()));
     m_backupTimer.start(5000);
@@ -504,20 +495,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::initSceneConnections()
 {
-    PenAreaInterface* penArea = m_tbeWidget->penArea();
-
-    connect(m_drawToolDialog->zoneSize, SIGNAL(valueChanged(double)), penArea, SLOT(setAreaSize(double)));
-    connect(m_drawToolDialog->gapSize, SIGNAL(valueChanged(double)), penArea, SLOT(setElemGap(double)));
-    connect(m_drawToolDialog->elemCount, SIGNAL(valueChanged(int)), penArea, SLOT(setElemCount(int)));
-    connect(m_drawToolDialog->rotationRange, SIGNAL(valueChanged(tbe::Vector2f)), penArea, SLOT(setRotationRange(tbe::Vector2f)));
-
-    connect(m_drawToolDialog, SIGNAL(rotationAxe(bool, bool, bool)), penArea, SLOT(setRotationAxe(bool, bool, bool)));
-    connect(m_drawToolDialog, SIGNAL(scaleAxe(bool, bool, bool)), penArea, SLOT(setScaleAxe(bool, bool, bool)));
-
-    connect(m_drawToolDialog->noSetOnFloor, SIGNAL(clicked()), penArea, SLOT(setNotOnFloor()));
-    connect(m_drawToolDialog->centerOnFloor, SIGNAL(clicked()), penArea, SLOT(setCenterOnFloor()));
-    connect(m_drawToolDialog->baseOnFloor, SIGNAL(clicked()), penArea, SLOT(setBaseOnFloor()));
-
     m_uinterface->actionToggleSelBox->setChecked(true);
     m_uinterface->actionToggleStaticView->setChecked(true);
 }
@@ -715,9 +692,6 @@ void MainWindow::setCurrentTool(int type)
     m_uinterface->actionSelectionTool->setChecked(false);
     m_uinterface->actionRotateTool->setChecked(false);
     m_uinterface->actionScaleTool->setChecked(false);
-    m_uinterface->actionDrawTool->setChecked(false);
-
-    m_drawToolDialog->hide();
 
     switch(type)
     {
@@ -735,14 +709,6 @@ void MainWindow::setCurrentTool(int type)
         case ROTATE_TOOL:
             m_uinterface->actionRotateTool->setChecked(true);
             m_tbeWidget->selectRotateTool();
-            m_tbeWidget->setFocus();
-            break;
-
-        case DRAW_TOOL:
-            m_uinterface->actionDrawTool->setChecked(true);
-            m_drawToolDialog->show();
-            m_drawToolDialog->move(m_tbeWidget->mapToParent(m_tbeWidget->pos()));
-            m_tbeWidget->selectDrawTool();
             m_tbeWidget->setFocus();
             break;
     }

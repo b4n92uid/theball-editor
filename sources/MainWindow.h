@@ -263,7 +263,6 @@ private:
     Ui_mainWindow* m_uinterface;
 
     PackerDialog* m_packerDialog;
-    DrawToolDialog* m_drawToolDialog;
 
     QSettings* m_config;
 
