@@ -58,7 +58,7 @@ protected:
     bool leaveSafely();
 
     void initSceneConnections();
-    
+
 public slots:
 
     void makeBackup();
@@ -161,6 +161,7 @@ private:
             QPushButton* add;
 
             QPushButton* editmatfile;
+            QGroupBox* custommat;
 
             MaterialEditDialog* matedit;
 

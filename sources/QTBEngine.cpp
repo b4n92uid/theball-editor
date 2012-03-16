@@ -966,6 +966,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
                     selnode->setPos(pos);
                     qnode->updateGui();
+
+                    emit notifyChange();
                 }
 
                 else if(ev->key() == Qt::Key_Down)
@@ -980,6 +982,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                     selnode->setPos(pos);
 
                     qnode->updateGui();
+
+                    emit notifyChange();
                 }
 
                 else if(ev->key() == Qt::Key_Left)
@@ -989,6 +993,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                     selnode->setPos(pos);
 
                     qnode->updateGui();
+
+                    emit notifyChange();
                 }
 
                 else if(ev->key() == Qt::Key_Right)
@@ -998,6 +1004,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                     selnode->setPos(pos);
 
                     qnode->updateGui();
+
+                    emit notifyChange();
                 }
             }
         }
@@ -1054,17 +1062,20 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Alt)
     {
-
-        foreach(QNodeInteractor* qnode, m_selection)
+        if(!m_selection.empty() && m_gridset.enable)
         {
             emit notifyChange();
 
-            Vector3f current_position = qnode->target()->getPos();
+            foreach(QNodeInteractor* qnode, m_selection)
+            {
 
-            current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
+                Vector3f current_position = qnode->target()->getPos();
 
-            qnode->target()->setPos(current_position);
-            qnode->updateGui();
+                current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
+
+                qnode->target()->setPos(current_position);
+                qnode->updateGui();
+            }
         }
     }
 
@@ -1185,15 +1196,16 @@ void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
 
     if(m_selectedNode)
     {
-        Node* taget = m_selectedNode->target();
-
+        Node* taget = m_selectedNode->target()->getParent();
         taget->addChild(thenew);
+        thenew->Node::setPos(m_centerTarget - m_selectedNode->target()->getParent()->getPos());
     }
     else
     {
         m_rootNode->addChild(thenew);
         thenew->Node::setPos(m_centerTarget);
     }
+
 }
 
 QMesh* QTBEngine::meshNew(const QString& filename)

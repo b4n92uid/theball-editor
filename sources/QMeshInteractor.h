@@ -26,8 +26,8 @@ public slots:
     void updateGui();
 
 public slots:
-    void materialSelected(const QModelIndex& index);
-    void textureSelected(const QModelIndex& index);
+    void onMaterialSelected(const QModelIndex& index);
+    void onTextureSelected(const QModelIndex& index);
 
     void addTexture();
     void delTexture();
@@ -68,6 +68,8 @@ public slots:
 
     void pastMaterials();
     void copyMaterials();
+    
+    void setCustomMaterial(bool state);
 
     tbe::scene::Material* getSelectedMaterial();
 
