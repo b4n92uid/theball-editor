@@ -438,10 +438,14 @@ void QTBEngine::deleteSelected()
 {
     using namespace tbe::scene;
 
-    foreach(QNodeInteractor* qnode, m_selection)
+    QList<QNodeInteractor*> current = m_selection;
+
+    emit deselectAllNode();
+
+    foreach(QNodeInteractor* qnode, current)
     {
-        emit deselection(qnode);
-        deleteNode(qnode);
+        QNodeInteractor* clone = cloneNode(qnode);
+        emit selection(clone);
     }
 }
 
