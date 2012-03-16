@@ -25,9 +25,6 @@ class MainWindow;
 class ClassFactory;
 class HistoryState;
 
-class PenAreaInterface;
-class PenArea;
-
 class SelBoxInterface;
 class SelBox;
 
@@ -50,15 +47,13 @@ public:
 
     tbe::scene::Grid* grid();
 
-    PenAreaInterface* penArea();
-
     tbe::Vector3f cameraPos() const;
     tbe::Vector3f selectionPos() const;
 
     QStringList usedRessources();
 
     void highlight(QNodeInteractor* node);
-    
+
     void registerInterface(QNodeInteractor* node);
     void unregisterInterface(QNodeInteractor* node);
 
@@ -70,7 +65,7 @@ public:
     QNodeInteractor* interface(tbe::scene::Node* node);
 
     QList<QNodeInteractor*> selection();
-    
+
 public slots:
 
     void selectNode(QNodeInteractor* qnode);
@@ -84,7 +79,6 @@ public slots:
     void placeCamera();
 
     void toggleGridDisplay(bool state);
-    void toggleMagnetMove(bool state);
     void toggleSelBox(bool state);
     void toggleStaticView(bool state);
 
@@ -117,7 +111,6 @@ public slots:
     void selectSelectionTool();
     void selectRotateTool();
     void selectScaleTool();
-    void selectDrawTool();
 
 signals:
     void selection(QNodeInteractor*);
@@ -169,7 +162,6 @@ private:
 
     bool m_grabCamera;
     bool m_moveCamera;
-    bool m_magnetMove;
     bool m_staticView;
 
     struct ToolMode
@@ -195,7 +187,6 @@ private:
 
     QList<QNodeInteractor*> m_selection;
 
-    PenArea* m_penarea;
     SelBox* m_selbox;
     QMap<QNodeInteractor*, SelBox*> m_selboxArray;
 
@@ -224,63 +215,6 @@ private:
         float camera;
 
     } m_sensivitySet;
-};
-
-class PenAreaInterface : public QObject
-{
-    Q_OBJECT
-
-public:
-    PenAreaInterface();
-
-    tbe::Vector3f drawPos;
-
-    double getAreaSize() const;
-
-    double getElemGap() const;
-    int getElemCount() const;
-
-    tbe::Vector2f getRotationRange() const;
-    tbe::Vector2f getScaleRange() const;
-
-    bool rotX, rotY, rotZ;
-    bool scaleX, scaleY, scaleZ;
-    int onFloor;
-
-public slots:
-    virtual void setAreaSize(double areaSize) = 0;
-
-    void setElemGap(double elemGap);
-    void setElemCount(int elemCount);
-
-    void setRotationRange(tbe::Vector2f rotation);
-    void setScaleRange(tbe::Vector2f scale);
-
-    void setRotationAxe(bool x, bool y, bool z);
-    void setScaleAxe(bool x, bool y, bool z);
-
-    void setNotOnFloor();
-    void setCenterOnFloor();
-    void setBaseOnFloor();
-
-protected:
-    double m_areaSize;
-    double m_elemGap;
-    int m_elemCount;
-
-    tbe::Vector2f m_rotationRange;
-    tbe::Vector2f m_scaleRange;
-};
-
-class PenArea : public PenAreaInterface, public tbe::scene::Sphere
-{
-    Q_OBJECT
-
-public:
-    PenArea(tbe::scene::MeshParallelScene* parallelScene);
-
-public slots:
-    void setAreaSize(double areaSize);
 };
 
 class SelBoxInterface : public QObject

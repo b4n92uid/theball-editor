@@ -57,14 +57,12 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
     m_lastSelectedNode = NULL;
 
     m_selbox = NULL;
-    m_penarea = NULL;
 
     m_grid = NULL;
 
     m_classFactory = new ClassFactory(m_mainwin);
 
     m_staticView = false;
-    m_magnetMove = false;
 
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -81,9 +79,6 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
 
     m_toolMode[SCALE_TOOL].type = SCALE_TOOL;
     m_toolMode[SCALE_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/resize.png"));
-
-    m_toolMode[DRAW_TOOL].type = DRAW_TOOL;
-    m_toolMode[DRAW_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/draw.png"));
 
     m_currentTool = NULL;
 
@@ -169,10 +164,6 @@ tbe::Vector3f QTBEngine::selectionPos() const
 void QTBEngine::setupSelection()
 {
     using namespace scene;
-
-    m_penarea = new PenArea(m_meshScene);
-    m_penarea->Node::setEnable(false);
-    m_rootNode->addChild(m_penarea);
 
     m_selbox = new SelBox(m_meshScene);
     m_selbox->Node::setEnable(false);
@@ -284,29 +275,6 @@ void QTBEngine::applyTranslationEvents()
         }
     }
 
-    else if(m_currentTool->type == DRAW_TOOL)
-    {
-        if(m_eventManager->keyState[EventManager::KEY_LSHIFT])
-        {
-            Vector2f mousePosRel = m_eventManager->mousePosRel;
-
-            Vector3f transform;
-
-            if(m_eventManager->keyState[EventManager::KEY_LALT])
-            {
-                transform.y -= mousePosRel.y * m_sensivitySet.selection;
-            }
-            else
-            {
-                transform = -m_camera->getLeft() * mousePosRel.x * m_sensivitySet.selection;
-                transform -= m_camera->getTarget() * mousePosRel.y * m_sensivitySet.selection;
-                transform.y = 0;
-            }
-
-            m_penarea->setPos(m_penarea->getPos() + transform);
-        }
-    }
-
     m_eventManager->notify = EventManager::EVENT_NO_EVENT;
 }
 
@@ -386,11 +354,6 @@ void QTBEngine::toggleGridDisplay(bool state)
     }
 
     m_grid->setEnable(m_gridset.enable);
-}
-
-void QTBEngine::toggleMagnetMove(bool state)
-{
-    m_magnetMove = state;
 }
 
 void QTBEngine::deleteNode(QNodeInteractor* node)
@@ -522,16 +485,12 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
     pushHistoryStat(new ModificationState(node));
 
     toggleSelBox(false);
-
     m_grid->setEnable(false);
-    m_penarea->Node::setEnable(false);
 
     m_meshScene->setInFloor(selnode);
 
     toggleSelBox(true);
-
     m_grid->setEnable(m_gridset.enable);
-    m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
 
     node->updateGui();
 
@@ -814,109 +773,6 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
             }
         }
     }
-
-    else if(m_currentTool->type == DRAW_TOOL)
-    {
-        if(ev->modifiers() & Qt::ShiftModifier)
-        {
-            if(ev->buttons() & Qt::RightButton)
-            {
-                if(ev->modifiers() & Qt::ControlModifier)
-                {
-                    float areaSize = std::max(m_penarea->getAreaSize(), 1.0);
-
-                    foreach(QNodeInteractor* node, m_nodeInterface.values())
-                    {
-                        if(node->target()->getAbsoluteMatrix().getPos() - m_penarea->getPos() < areaSize)
-                        {
-                            deleteNode(node);
-                            emit notifyChange();
-                        }
-                    }
-                }
-                else if(m_selectedNode)
-                {
-                    if(m_penarea->drawPos - m_penarea->getPos() > m_penarea->getElemGap())
-                    {
-                        emit notifyChange();
-
-                        m_penarea->drawPos = m_penarea->getPos();
-
-                        AABB area(m_penarea->getAreaSize());
-                        int count(m_penarea->getElemCount());
-
-                        Vector2f rotationRange = m_penarea->getRotationRange();
-                        Vector2f scaleRange = m_penarea->getScaleRange();
-
-                        for(int i = 0; i < count; i++)
-                        {
-                            QNodeInteractor* painting = m_selectedNode->clone();
-
-                            m_selectedNode->target()->getParent()->addChild(painting->target());
-
-                            painting->setup();
-
-                            Matrix4 matset;
-
-                            {// Scaling
-
-                                Vector3f scale = math::rand(scaleRange.x, scaleRange.y);
-
-                                if(!m_penarea->scaleX)
-                                    scale.x = 1;
-                                if(!m_penarea->scaleY)
-                                    scale.y = 1;
-                                if(!m_penarea->scaleZ)
-                                    scale.z = 1;
-
-                                matset.scale(scale);
-                            }
-
-                            {// Rotation
-
-                                Vector3f rot = AABB(rotationRange.x, rotationRange.y).randPos();
-
-                                if(!m_penarea->rotX)
-                                    rot.x = 0;
-                                if(!m_penarea->rotY)
-                                    rot.y = 0;
-                                if(!m_penarea->rotZ)
-                                    rot.z = 0;
-
-                                matset.rotate(Quaternion(rot));
-                            }
-
-                            // Position
-                            matset.setPos(m_penarea->drawPos + area.randPos());
-
-                            painting->target()->setMatrix(matset);
-
-                            if(m_penarea->onFloor == 1)
-                                centerOnFloor(painting);
-
-                            else if(m_penarea->onFloor == 2)
-                                baseOnFloor(painting);
-
-                            if(m_gridset.enable)
-                            {
-                                Vector3f current_position = painting->target()->getPos();
-
-                                current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
-
-                                painting->target()->setPos(current_position);
-                                painting->updateGui();
-                            }
-                        }
-                    }
-                }
-            }
-
-            QCursor::setPos(m_cursorRelativeMove);
-        }
-
-        else
-            m_penarea->setPos(m_curCursor3D);
-    }
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
@@ -1194,89 +1050,6 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 qnode->updateGui();
             }
         }
-
-        if(m_selectedNode && m_magnetMove)
-        {
-            emit notifyChange();
-
-            Node* current = m_selectedNode->target();
-            Node* colset = NULL;
-
-            Vector3f current_position = current->getAbsoluteMatrix().getPos();
-
-            float mindist = m_meshScene->getSceneAabb().getLength();
-
-            foreach(Node* node, m_nodeInterface.keys())
-            {
-                if(node != current)
-                {
-                    float dist = (current_position - node->getAbsoluteMatrix().getPos()).getMagnitude();
-                    dist -= node->getAabb().getLength() / 2;
-
-                    if(dist < mindist)
-                    {
-                        mindist = dist;
-                        colset = node;
-                    }
-                }
-            }
-
-            if(colset)
-            {
-                Vector3f _position, _scale;
-                Quaternion _rotation;
-
-                colset->getMatrix().decompose(_position, _rotation, _scale);
-
-                AABB colset_aabb = colset->getAabb();
-                colset_aabb.min *= _scale;
-                colset_aabb.max *= _scale;
-
-                Vector3f::Array maincorners = colset_aabb.getPoints();
-
-                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x, 0, 0));
-                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y, 0));
-                maincorners.push_back(colset_aabb.min + Vector3f(0, 0, colset_aabb.max.z));
-
-                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x, colset_aabb.max.y, 0));
-                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y, colset_aabb.max.z));
-
-                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x, colset_aabb.max.y * 2, 0));
-                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y * 2, colset_aabb.max.z));
-
-                maincorners.push_back(colset_aabb.min + Vector3f(0, colset_aabb.max.y, colset_aabb.max.z * 2));
-                maincorners.push_back(colset_aabb.min + Vector3f(colset_aabb.max.x * 2, colset_aabb.max.y, 0));
-
-                maincorners.push_back(colset_aabb.max + Vector3f(colset_aabb.min.x, 0, 0));
-                maincorners.push_back(colset_aabb.max + Vector3f(0, colset_aabb.min.y, 0));
-                maincorners.push_back(colset_aabb.max + Vector3f(0, 0, colset_aabb.min.z));
-
-                maincorners.push_back(colset_aabb.max + Vector3f(colset_aabb.min.x, colset_aabb.min.y, 0));
-                maincorners.push_back(colset_aabb.max + Vector3f(0, colset_aabb.min.y, colset_aabb.min.z));
-
-                maincorners.push_back(colset_aabb.max + Vector3f(colset_aabb.min.x, colset_aabb.min.y * 2, 0));
-                maincorners.push_back(colset_aabb.max + Vector3f(0, colset_aabb.min.y * 2, colset_aabb.min.z));
-
-                Vector3f colsetToNode = current->getAbsoluteMatrix().getPos()
-                        - colset->getAbsoluteMatrix().getPos();
-
-                foreach(Vector3f corner, maincorners)
-                {
-                    float dot = Vector3f::dot(Vector3f::normalize(colsetToNode),
-                                              Vector3f::normalize(corner));
-
-                    if(dot >= 0.9)
-                    {
-                        Vector3f finalpos = _position + corner;
-
-                        m_selectedNode->target()->setPos(finalpos);
-                        m_selectedNode->updateGui();
-
-                        break;
-                    }
-                }
-            }
-        }
     }
 
     if(ev->key() == Qt::Key_Alt)
@@ -1310,7 +1083,6 @@ void QTBEngine::saveScene(const QString& filename)
 
     m_sceneParser->exclude(m_selbox);
     m_sceneParser->exclude(m_grid);
-    m_sceneParser->exclude(m_penarea);
 
     m_sceneParser->prepareScene();
     m_sceneParser->saveScene(filename.toStdString());
@@ -1404,11 +1176,6 @@ struct RootSort
 tbe::scene::Node* QTBEngine::rootNode()
 {
     return m_rootNode;
-}
-
-PenAreaInterface* QTBEngine::penArea()
-{
-    return m_penarea;
 }
 
 void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
@@ -1647,18 +1414,6 @@ void QTBEngine::selectSelectionTool()
     m_currentTool = &m_toolMode[SELECTION_TOOL];
 
     setCursor(m_currentTool->cursor);
-
-    m_penarea->Node::setEnable(false);
-}
-
-void QTBEngine::selectDrawTool()
-{
-    m_currentTool = &m_toolMode[DRAW_TOOL];
-
-    setCursor(m_currentTool->cursor);
-
-    m_penarea->Node::setEnable(true);
-    m_penarea->Node::setPos(m_curCursor3D);
 }
 
 void QTBEngine::selectScaleTool()
@@ -1666,8 +1421,6 @@ void QTBEngine::selectScaleTool()
     m_currentTool = &m_toolMode[SCALE_TOOL];
 
     setCursor(m_currentTool->cursor);
-
-    m_penarea->Node::setEnable(false);
 }
 
 void QTBEngine::selectRotateTool()
@@ -1675,114 +1428,6 @@ void QTBEngine::selectRotateTool()
     m_currentTool = &m_toolMode[ROTATE_TOOL];
 
     setCursor(m_currentTool->cursor);
-
-    m_penarea->Node::setEnable(false);
-}
-
-PenAreaInterface::PenAreaInterface()
-{
-    m_areaSize = 0;
-    m_elemGap = 1;
-    m_elemCount = 1;
-}
-
-void PenAreaInterface::setScaleRange(tbe::Vector2f scale)
-{
-    this->m_scaleRange = scale;
-}
-
-tbe::Vector2f PenAreaInterface::getScaleRange() const
-{
-    return m_scaleRange;
-}
-
-void PenAreaInterface::setRotationRange(tbe::Vector2f rotation)
-{
-    this->m_rotationRange = rotation;
-}
-
-tbe::Vector2f PenAreaInterface::getRotationRange() const
-{
-    return m_rotationRange;
-}
-
-void PenAreaInterface::setElemCount(int elemCount)
-{
-    this->m_elemCount = elemCount;
-}
-
-int PenAreaInterface::getElemCount() const
-{
-    return m_elemCount;
-}
-
-void PenAreaInterface::setElemGap(double elemGap)
-{
-    this->m_elemGap = elemGap;
-}
-
-double PenAreaInterface::getElemGap() const
-{
-    return m_elemGap;
-}
-
-void PenAreaInterface::setAreaSize(double areaSize)
-{
-    this->m_areaSize = areaSize;
-}
-
-double PenAreaInterface::getAreaSize() const
-{
-    return m_areaSize;
-}
-
-void PenAreaInterface::setRotationAxe(bool x, bool y, bool z)
-{
-    rotX = x;
-    rotY = y;
-    rotZ = z;
-}
-
-void PenAreaInterface::setScaleAxe(bool x, bool y, bool z)
-{
-    scaleX = x;
-    scaleY = y;
-    scaleZ = z;
-}
-
-void PenAreaInterface::setNotOnFloor()
-{
-    onFloor = 0;
-}
-
-void PenAreaInterface::setCenterOnFloor()
-{
-    onFloor = 1;
-}
-
-void PenAreaInterface::setBaseOnFloor()
-{
-    onFloor = 2;
-}
-
-PenArea::PenArea(tbe::scene::MeshParallelScene* parallelScene) : Sphere(parallelScene)
-{
-    setName("pencile");
-
-    setAreaSize(0);
-}
-
-void PenArea::setAreaSize(double areaSize)
-{
-    using namespace tbe;
-    using namespace scene;
-
-    this->m_areaSize = areaSize;
-
-    build(std::max(areaSize, 1.0), 40, 40);
-    getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::VERTEX_SORT_CULL_TRICK);
-    getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
-    getMaterial("main")->setColor(Vector4f(0, 1, 0, 0.25));
 }
 
 SelBoxInterface::SelBoxInterface()
