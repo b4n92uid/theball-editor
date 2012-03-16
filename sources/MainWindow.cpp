@@ -940,12 +940,15 @@ void MainWindow::promoteChild()
 
     QList<QNodeInteractor*> childs = m_tbeWidget->selection();
 
+    deselectAll();
+
     foreach(QNodeInteractor* child, childs)
     {
-        if(!child->parent())
+        if(child->target()->getParent() == m_rootNode->target())
         {
-            statusBar()->showMessage("Le noeud ne peut etre promue", 2000);
-            return;
+            statusBar()->showMessage(QString("Le noeud %1 ne peut être promue")
+                                     .arg(child->target()->getName().c_str()), 2000);
+            continue;
         }
 
         QStandardItem* ichild = child->item();
@@ -966,13 +969,15 @@ void MainWindow::promoteChild()
 
         currNode->setPos(currNode->getParent()->getAbsoluteMatrix().getPos() + currNode->getPos());
         currNode->setParent(hostNode);
+
+        select(m_tbeWidget->interface(currNode));
     }
 
     m_tbeWidget->placeCamera();
 
     notifyChange(true);
 
-    statusBar()->showMessage("Enfant promue", 2000);
+    statusBar()->showMessage("Enfants promue", 2000);
 }
 
 void MainWindow::assignParent()
@@ -981,8 +986,8 @@ void MainWindow::assignParent()
     using namespace scene;
 
     QList<QNodeInteractor*> childs = m_tbeWidget->selection();
-    QNodeInteractor* parent = childs.first();
-    childs.pop_front();
+    QNodeInteractor* parent = childs.back();
+    childs.pop_back();
 
     QStandardItem* iparent = parent->item();
     Node* nparent = parent->target();
