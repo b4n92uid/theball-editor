@@ -22,6 +22,10 @@ public:
     QNodeListView(QWidget* parent);
     virtual ~QNodeListView();
 
+    void setModel(QSortFilterProxyModel* model);
+    
+    void highlightItem(QNodeInteractor* qnode);
+    
 public slots:
     void mousePressEvent(QMouseEvent * event);
 
@@ -33,8 +37,6 @@ signals:
     void promoteChild();
 
     void removeNode();
-    void enableNode();
-    void lockNode();
     void setOnFloorNode();
     void pastMaterials();
     void pastPosition();
@@ -55,6 +57,7 @@ private:
     QMenu* m_itemedit;
     QAction* m_promote;
     QAction* m_assign;
+    QSortFilterProxyModel* m_proxy;
 };
 
 #endif	/* QNODELISTVIEW_H */
