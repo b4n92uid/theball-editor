@@ -59,7 +59,7 @@ void QMeshInteractor::cancelMaterialDialog()
     updateGui();
 }
 
-void QMeshInteractor::materialSelected(const QModelIndex& index)
+void QMeshInteractor::onMaterialSelected(const QModelIndex& index)
 {
     if(!m_target)
         return;
@@ -95,7 +95,7 @@ void QMeshInteractor::materialSelected(const QModelIndex& index)
     QModelIndex first = m_mainwin->nodesGui.mesh.matedit->textureModel->index(0, 0);
 
     m_mainwin->nodesGui.mesh.matedit->textureView->setCurrentIndex(first);
-    textureSelected(first);
+    onTextureSelected(first);
 
     // Update material gui flag
     m_mainwin->nodesGui.mesh.matedit->foged->setChecked(mat->isEnable(Material::FOGED));
@@ -167,7 +167,7 @@ void QMeshInteractor::setTextured(bool stat)
         mat->disable(Material::TEXTURED);
 }
 
-void QMeshInteractor::textureSelected(const QModelIndex& index)
+void QMeshInteractor::onTextureSelected(const QModelIndex& index)
 {
     if(!m_target)
         return;
@@ -549,11 +549,17 @@ void QMeshInteractor::copyMaterials()
     m_mainwin->nodesGui.mesh.matedit->source_mesh = this;
 }
 
+void QMeshInteractor::setCustomMaterial(bool state)
+{
+    m_target->setOutputMaterial(state);
+}
+
 void QMeshInteractor::bindWithGui()
 {
     QNodeInteractor::bindWithGui();
 
     connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
+    connect(m_mainwin->nodesGui.mesh.custommat, SIGNAL(clicked(bool)), this, SLOT(setCustomMaterial(bool)));
 
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), this, SLOT(cancelMaterialDialog()));
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), this, SLOT(saveMaterialDialog()));
@@ -598,9 +604,9 @@ void QMeshInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.mesh.matedit->copy, SIGNAL(clicked()), this, SLOT(copyMaterials()));
     connect(m_mainwin->nodesGui.mesh.matedit->past, SIGNAL(clicked()), this, SLOT(pastMaterials()));
 
-    connect(m_mainwin->nodesGui.mesh.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(textureSelected(const QModelIndex &)));
+    connect(m_mainwin->nodesGui.mesh.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTextureSelected(const QModelIndex &)));
 
-    connect(m_mainwin->nodesGui.mesh.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(materialSelected(const QModelIndex &)));
+    connect(m_mainwin->nodesGui.mesh.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onMaterialSelected(const QModelIndex &)));
 
     updateGui();
 
@@ -612,6 +618,7 @@ void QMeshInteractor::unbindFromGui()
     QNodeInteractor::unbindFromGui();
 
     disconnect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.custommat, SIGNAL(clicked(bool)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), 0, 0);
@@ -660,6 +667,8 @@ void QMeshInteractor::unbindFromGui()
 
     m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
+
+    m_mainwin->nodesGui.mesh.custommat->setChecked(false);
 }
 
 void QMeshInteractor::updateGui()
@@ -702,19 +711,35 @@ void QMeshInteractor::updateGui()
 
     foreach(Material* mat, matarr)
     {
-        QString matname = QString::fromStdString(mat->getName());
+        QStandardItem* item = new QStandardItem;
 
-        QStandardItem* item = new QStandardItem(matname);
+        QString matname = QString::fromStdString(mat->getName());
         item->setData(matname);
+
+        if(matname.isEmpty())
+        {
+            matname = QString("Matériau sans nom #%1")
+                    .arg(m_mainwin->nodesGui.mesh.matedit->materialsModel->rowCount());
+
+            item->setForeground(Qt::gray);
+
+            QFont font = item->font();
+            font.setItalic(true);
+            item->setFont(font);
+        }
+
+        item->setText(matname);
 
         m_mainwin->nodesGui.mesh.matedit->materialsModel->appendRow(item);
     }
+
+    m_mainwin->nodesGui.mesh.custommat->setChecked(m_target->isOutputMaterial());
 
     // Select the first material and update GUI
     QModelIndex index = m_mainwin->nodesGui.mesh.matedit->materialsModel->index(0, 0);
 
     m_mainwin->nodesGui.mesh.matedit->materialsView->setCurrentIndex(index);
-    materialSelected(index);
+    onMaterialSelected(index);
 
     // Update GUI by Billboard settings
     tbe::Vector2b billboard = m_target->getBillBoard();

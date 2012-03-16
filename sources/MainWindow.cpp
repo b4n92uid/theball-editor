@@ -274,6 +274,7 @@ void MainWindow::initWidgets()
     nodesGui.mesh.matedit->materialsView->setModel(nodesGui.mesh.matedit->materialsModel);
 
     nodesGui.mesh.editmatfile = m_uinterface->node_mesh_editmat;
+    nodesGui.mesh.custommat = m_uinterface->node_mesh_custommat;
 
     nodesGui.mesh.billboardX = m_uinterface->node_mesh_billboard_x;
     nodesGui.mesh.billboardY = m_uinterface->node_mesh_billboard_y;
@@ -767,6 +768,7 @@ void MainWindow::guiMeshNew()
         {
             QMesh* mesh = m_tbeWidget->meshNew(filename);
 
+            deselectAll();
             select(mesh);
 
             m_workingDir.mesh
@@ -792,6 +794,7 @@ void MainWindow::guiLightNew()
     {
         QLight* light = m_tbeWidget->lightNew();
 
+        deselectAll();
         select(light);
 
         notifyChange(true);
@@ -810,6 +813,7 @@ void MainWindow::guiParticlesNew()
     {
         QParticles* particles = m_tbeWidget->particlesNew();
 
+        deselectAll();
         select(particles);
 
         notifyChange(true);
@@ -828,6 +832,7 @@ void MainWindow::guiMarkNew()
     {
         QMapMark* mark = m_tbeWidget->markNew();
 
+        deselectAll();
         select(mark);
 
         notifyChange(true);
