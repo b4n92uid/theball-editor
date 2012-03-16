@@ -724,7 +724,6 @@ void MainWindow::setCurrentTool(int type)
         case SELECTION_TOOL:
             m_uinterface->actionSelectionTool->setChecked(true);
             m_tbeWidget->selectSelectionTool();
-            m_drawToolDialog->hide();
             break;
 
         case SCALE_TOOL:
