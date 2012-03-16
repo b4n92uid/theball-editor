@@ -31,11 +31,13 @@ public:
     virtual QString typeName() const;
 
     QItemsList itemRows();
+    QItemSelection itemSelection();
+
     QStandardItem* item();
-    
+
     bool isLocked();
     bool isEnable();
-    
+
 
 public slots:
     virtual void setup();

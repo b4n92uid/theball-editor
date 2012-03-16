@@ -145,6 +145,18 @@ QItemsList QNodeInteractor::itemRows()
     return QItemsList() << itemc0 << itemc1;
 }
 
+QItemSelection QNodeInteractor::itemSelection()
+{
+    QStandardItem* itemc0 = m_mainwin->nodeItemBinder[this];
+
+    QStandardItem* itemc1 = (itemc0->parent()
+            ? itemc0->parent()
+            : m_mainwin->nodesGui.nodesListModel->invisibleRootItem())
+            ->child(itemc0->row(), 1);
+
+    return QItemSelection(itemc0->index(), itemc1->index());
+}
+
 QStandardItem* QNodeInteractor::item()
 {
     return m_mainwin->nodeItemBinder[this];
@@ -264,17 +276,7 @@ void QNodeInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.delField, SIGNAL(clicked()), this, SLOT(delNodeField()));
     connect(m_mainwin->nodesGui.clearFields, SIGNAL(clicked()), this, SLOT(clearNodeField()));
 
-
-    QStandardItem* item = m_mainwin->nodeItemBinder[this];
-
-    m_mainwin->nodesGui.nodesListView->blockSignals(true);
-
-    QModelIndex index = m_mainwin->nodesGui.nodesListProxyModel->mapFromSource(item->index());
-
-    if(index.isValid())
-        m_mainwin->nodesGui.nodesListView->setCurrentIndex(index);
-
-    m_mainwin->nodesGui.nodesListView->blockSignals(false);
+    m_mainwin->nodesGui.nodesListView->highlightItem(this);
 
     QList<QStandardItem*> list = itemRows();
 

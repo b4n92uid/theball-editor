@@ -11,6 +11,8 @@
 
 QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
 {
+    m_proxy = NULL;
+
     m_itemedit = new QMenu(this);
 
     m_promote = m_itemedit->addAction("Promouvoir le(s) noeud(s)");
@@ -22,10 +24,10 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     QAction* remove = m_itemedit->addAction("Supprimer");
     remove->setIcon(QIcon(":/Medias/medias/cross.png"));
 
-    QAction* enable = m_itemedit->addAction("Activer/DÃ©sactiver");
+    QAction* enable = m_itemedit->addAction("Activer/Désactiver");
     enable->setIcon(QIcon(":/Medias/medias/accept.png"));
 
-    QAction* lock = m_itemedit->addAction("VÃ©rouiller/DÃ©vÃ©rouiller");
+    QAction* lock = m_itemedit->addAction("Vérouiller/Dévérouiller");
     lock->setIcon(QIcon(":/Medias/medias/selection_select.png"));
 
     QAction* onfloor = m_itemedit->addAction("Mise au sol");
@@ -42,17 +44,19 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     QAction* pastRotation = m_itemedit->addAction("Appliquer la rotation");
     pastRotation->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
 
-    QAction* pastFields = m_itemedit->addAction("Appliquer la champs");
+    QAction* pastFields = m_itemedit->addAction("Appliquer les champs");
     pastFields->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
 
-    QAction* pastMaterials = m_itemedit->addAction("Appliquer les matÃ©riaux");
+    QAction* pastMaterials = m_itemedit->addAction("Appliquer les matériaux");
     pastMaterials->setIcon(QIcon(":/Medias/medias/page_white_paste.png"));
 
     connect(m_promote, SIGNAL(triggered()), this, SIGNAL(promoteChild()));
     connect(m_assign, SIGNAL(triggered()), this, SIGNAL(assignParent()));
+
+    connect(enable, SIGNAL(triggered()), this, SLOT(onEnableNode()));
+    connect(lock, SIGNAL(triggered()), this, SLOT(onLockNode()));
+
     connect(remove, SIGNAL(triggered()), this, SIGNAL(removeNode()));
-    connect(enable, SIGNAL(triggered()), this, SIGNAL(enableNode()));
-    connect(lock, SIGNAL(triggered()), this, SIGNAL(lockNode()));
     connect(onfloor, SIGNAL(triggered()), this, SIGNAL(setOnFloorNode()));
     connect(pastPosition, SIGNAL(triggered()), this, SIGNAL(pastPosition()));
     connect(pastScale, SIGNAL(triggered()), this, SIGNAL(pastScale()));
@@ -63,6 +67,12 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
 
 QNodeListView::~QNodeListView()
 {
+}
+
+void QNodeListView::setModel(QSortFilterProxyModel* model)
+{
+    m_proxy = model;
+    QTreeView::setModel(m_proxy);
 }
 
 QItemsList QNodeListView::selection()
@@ -79,15 +89,11 @@ QItemsList QNodeListView::selection()
 
     }
 
-    clearSelection();
-
     return items;
 }
 
 void QNodeListView::mousePressEvent(QMouseEvent * event)
 {
-    QTreeView::mousePressEvent(event);
-
     if(event->button() == Qt::RightButton)
     {
         m_promote->setEnabled(selectionModel()->selectedRows().front().data(ITEM_ROLE_NODE)
@@ -100,9 +106,15 @@ void QNodeListView::mousePressEvent(QMouseEvent * event)
         event->accept();
     }
 
-    else
+    QTreeView::mousePressEvent(event);
+}
+
+void QNodeListView::highlightItem(QNodeInteractor* qnode)
+{
+    if(!selection().contains(qnode->item()))
     {
-        event->ignore();
+        QItemSelection indexes = m_proxy->mapSelectionFromSource(qnode->itemSelection());
+        selectionModel()->select(indexes, QItemSelectionModel::Select);
     }
 }
 
