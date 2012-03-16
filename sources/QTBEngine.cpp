@@ -420,10 +420,12 @@ void QTBEngine::cloneSelected()
     {
         using namespace tbe::scene;
 
-        foreach(QNodeInteractor* qnode, m_selection)
-        {
-            emit deselection(qnode);
+        QList<QNodeInteractor*> current = m_selection;
 
+        emit deselectAllNode();
+
+        foreach(QNodeInteractor* qnode, current)
+        {
             QNodeInteractor* clone = cloneNode(qnode);
             emit selection(clone);
         }
@@ -444,8 +446,7 @@ void QTBEngine::deleteSelected()
 
     foreach(QNodeInteractor* qnode, current)
     {
-        QNodeInteractor* clone = cloneNode(qnode);
-        emit selection(clone);
+        deleteNode(qnode);
     }
 }
 
@@ -861,12 +862,12 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
                                 Vector3f scale = math::rand(scaleRange.x, scaleRange.y);
 
-                                if(!m_penarea->rotX)
-                                    scale.x = 0;
-                                if(m_penarea->rotY)
-                                    scale.y = 0;
-                                if(m_penarea->rotZ)
-                                    scale.z = 0;
+                                if(!m_penarea->scaleX)
+                                    scale.x = 1;
+                                if(!m_penarea->scaleY)
+                                    scale.y = 1;
+                                if(!m_penarea->scaleZ)
+                                    scale.z = 1;
 
                                 matset.scale(scale);
                             }
