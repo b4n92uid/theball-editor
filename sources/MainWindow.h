@@ -59,8 +59,6 @@ protected:
 
     void initSceneConnections();
     
-    QString backupOf(QString filename);
-
 public slots:
 
     void makeBackup();

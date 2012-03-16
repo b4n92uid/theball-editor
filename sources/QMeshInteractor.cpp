@@ -50,6 +50,7 @@ void QMeshInteractor::openMaterialDialog()
 void QMeshInteractor::saveMaterialDialog()
 {
     m_undo->fetchMaterials(*m_target);
+    m_mainwin->notifyChange();
 }
 
 void QMeshInteractor::cancelMaterialDialog()
@@ -456,7 +457,8 @@ void QMeshInteractor::setFrameAnimation(bool state)
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
-    mat->setTextureAnimation(state ? 500 : 0);
+    int anim = m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec->value();
+    mat->setTextureAnimation(state ? anim : 0);
 }
 
 void QMeshInteractor::setFrameDuration(int value)
@@ -611,8 +613,8 @@ void QMeshInteractor::unbindFromGui()
 
     disconnect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), 0, 0);
 
-    disconnect(m_mainwin->nodesGui.mesh.matedit->apply, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->cancel, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), 0, 0);

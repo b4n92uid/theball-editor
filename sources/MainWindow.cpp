@@ -10,6 +10,8 @@
 
 #include "ui_interface.h"
 
+#define backupOf(filename) QString(filename).replace(QRegExp("\\.(.+)$"), ".bak")
+
 MainWindow::MainWindow()
 {
     notifyChange(false);
@@ -23,7 +25,8 @@ MainWindow::~MainWindow()
     delete m_uinterface;
     delete m_rootNode;
 
-    QFile::remove(backupOf(m_filename));
+    if(!m_filename.isEmpty())
+        QFile::remove(backupOf(m_filename));
 }
 
 QString MainWindow::openFileName() const
@@ -81,14 +84,18 @@ void MainWindow::unreg(QNodeInteractor* node)
 
         unreg_clearChilds(nodeItemBinder, item);
 
-        nodeItemBinder.remove(node);
-
         QModelIndex sindex = nodesGui.nodesListModel->indexFromItem(item);
+
+        nodesGui.nodesListProxyModel->blockSignals(true);
 
         if(sindex.parent().isValid())
             nodesGui.nodesListModel->removeRow(sindex.row(), sindex.parent());
         else
             nodesGui.nodesListModel->removeRow(sindex.row());
+
+        nodesGui.nodesListProxyModel->blockSignals(false);
+
+        nodeItemBinder.remove(node);
 
         notifyChange(true);
     }
@@ -515,11 +522,6 @@ void MainWindow::initSceneConnections()
     m_uinterface->actionToggleStaticView->setChecked(true);
 }
 
-QString MainWindow::backupOf(QString filename)
-{
-    return filename.replace(QRegExp("\\.(.+)$"), ".bak");
-}
-
 void MainWindow::newScene()
 {
     if(!leaveSafely())
@@ -575,6 +577,9 @@ void MainWindow::openScene(const QString& filename)
 
     try
     {
+        if(!m_filename.isEmpty() && QFile::exists(backupOf(m_filename)))
+            QFile::remove(backupOf(m_filename));
+
         m_tbeWidget->clearScene();
 
         m_filename.clear();
