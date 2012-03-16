@@ -111,7 +111,9 @@ void QNodeListView::mousePressEvent(QMouseEvent * event)
 
 void QNodeListView::highlightItem(QNodeInteractor* qnode)
 {
-    if(!selection().contains(qnode->item()))
+    QModelIndex curindex = m_proxy->mapFromSource(qnode->item()->index());
+
+    if(!selectionModel()->isSelected(curindex))
     {
         QItemSelection indexes = m_proxy->mapSelectionFromSource(qnode->itemSelection());
         selectionModel()->select(indexes, QItemSelectionModel::Select);

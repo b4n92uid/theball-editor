@@ -160,7 +160,10 @@ tbe::Vector3f QTBEngine::cameraPos() const
 
 tbe::Vector3f QTBEngine::selectionPos() const
 {
-    return m_selectedNode->target()->getAbsoluteMatrix().getPos();
+    if(m_selectedNode)
+        return m_selectedNode->target()->getAbsoluteMatrix().getPos();
+    else
+        return m_curCursor3D;
 }
 
 void QTBEngine::setupSelection()

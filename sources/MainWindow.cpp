@@ -314,7 +314,6 @@ void MainWindow::initWidgets()
 
     nodesGui.nodesListProxyModel = new NodeListProxyModel(this);
     nodesGui.nodesListProxyModel->setSourceModel(nodesGui.nodesListModel);
-    nodesGui.nodesListProxyModel->setDynamicSortFilter(true);
 
     nodesGui.nodesListView = m_uinterface->node_list;
     nodesGui.nodesListView->setModel(nodesGui.nodesListProxyModel);
