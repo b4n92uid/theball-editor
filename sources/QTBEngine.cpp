@@ -333,6 +333,9 @@ void QTBEngine::paintGL()
 void QTBEngine::toggleStaticView(bool state)
 {
     m_staticView = state;
+
+    if(!state)
+        placeCamera();
 }
 
 void QTBEngine::toggleSelBox(bool state)
@@ -367,9 +370,11 @@ void QTBEngine::toggleGridDisplay(bool state)
 
         Vector2f size = cuts;
 
+        using namespace scene;
+
         m_grid->build(size, cuts);
-        m_grid->getMaterial("main")->disable(scene::Material::FOGED);
-        m_grid->getMaterial("main")->setColor(Vector4f(0.0, 0.0, 1.0, 1));
+        m_grid->getMaterial("main")->disable(Material::FOGED | Material::LIGHTED);
+        m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 1));
 
         if(m_selectedNode)
         {
@@ -392,10 +397,10 @@ void QTBEngine::deleteNode(QNodeInteractor* node)
 {
     pushHistoryStat(new DeletionState(node));
 
+    node->unsetup();
+
     tbe::scene::Node* target = node->target();
     target->dettach();
-
-    node->unsetup();
 }
 
 QNodeInteractor* QTBEngine::cloneNode(QNodeInteractor* node)
@@ -498,6 +503,8 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
     selnode->setPos(adjust);
 
     node->updateGui();
+
+    emit notifyChange();
 }
 
 void QTBEngine::centerOnFloor(QNodeInteractor* node)
@@ -522,6 +529,8 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
     m_penarea->Node::setEnable(m_currentTool->type == DRAW_TOOL);
 
     node->updateGui();
+
+    emit notifyChange();
 }
 
 void QTBEngine::enterEvent(QEvent * event)
@@ -1411,7 +1420,7 @@ void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
     else
     {
         m_rootNode->addChild(thenew);
-        thenew->Node::setPos(m_curCursor3D);
+        thenew->Node::setPos(m_centerTarget);
     }
 }
 
