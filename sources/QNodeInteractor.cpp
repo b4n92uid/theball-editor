@@ -7,6 +7,7 @@
 
 #include "QNodeInteractor.h"
 #include "MainWindow.h"
+#include "QTBEngine.h"
 #include "ui_interface.h"
 
 QNodeInteractor::QNodeInteractor(MainWindow* mainwin, tbe::scene::Node* target) :
@@ -254,7 +255,7 @@ void QNodeInteractor::changeNodeField(QStandardItem* item)
 
 void QNodeInteractor::unsetup()
 {
-    m_mainwin->unreg(this);
+    m_mainwin->unregisterNode(this);
 }
 
 void QNodeInteractor::setup()

@@ -7,6 +7,7 @@
 
 #include "QLightInteractor.h"
 #include "MainWindow.h"
+#include "QTBEngine.h"
 
 QLightInteractor::QLightInteractor(MainWindow* mainwin, tbe::scene::Light* target)
 : QNodeInteractor(mainwin, target), m_target(target)

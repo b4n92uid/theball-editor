@@ -7,6 +7,7 @@
 
 #include "QMeshInteractor.h"
 #include "MainWindow.h"
+#include "QTBEngine.h"
 
 QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
 : QNodeInteractor(mainwin, target), m_target(target)

@@ -7,6 +7,8 @@
 
 #include "ToolsDialogs.h"
 
+#include "QMeshInteractor.h"
+
 MaterialEditDialog::MaterialEditDialog(QWidget* parent) : QDialog(parent)
 {
     setupUi(this);

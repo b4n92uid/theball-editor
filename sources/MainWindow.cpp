@@ -8,6 +8,17 @@
 #include "MainWindow.h"
 #include "HistoryState.h"
 
+#include "QMeshInteractor.h"
+#include "QLightInteractor.h"
+#include "QParticlesInteractor.h"
+#include "QMapMarkInteractor.h"
+
+#include "QMesh.h"
+#include "QLight.h"
+#include "QParticles.h"
+#include "QMapMark.h"
+#include "QTBEngine.h"
+
 #include "ui_interface.h"
 
 #define backupOf(filename) \
@@ -46,7 +57,7 @@ void MainWindow::makeBackup()
         saveScene(backupOf(m_filename));
 }
 
-void MainWindow::reg(QNodeInteractor* node, QItemsList& items)
+void MainWindow::registerNode(QNodeInteractor* node, QItemsList& items)
 {
     QNodeInteractor* parent = m_tbeWidget->interface(node->target()->getParent());
 
@@ -77,7 +88,7 @@ void unreg_clearChilds(QInterfaceItemsMap& nodeItemBinder, QStandardItem* item)
     }
 }
 
-void MainWindow::unreg(QNodeInteractor* node)
+void MainWindow::unregisterNode(QNodeInteractor* node)
 {
     if(nodeItemBinder.count(node))
     {
@@ -104,7 +115,7 @@ void MainWindow::unreg(QNodeInteractor* node)
     m_tbeWidget->unregisterInterface(node);
 }
 
-void MainWindow::openFileHistory()
+void MainWindow::openSceneFromHistory()
 {
     QAction* action = qobject_cast<QAction*>(sender());
 
@@ -135,7 +146,7 @@ void MainWindow::buildFileHistory()
         foreach(QString filepath, history)
         {
             QAction* act = filehistory->addAction("..." + filepath.section(QDir::separator(), -2),
-                                                  this, SLOT(openFileHistory()));
+                                                  this, SLOT(openSceneFromHistory()));
             act->setData(filepath);
         }
     }
@@ -352,10 +363,10 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionOpen, SIGNAL(triggered()), this, SLOT(openSceneDialog()));
     connect(m_uinterface->actionSave, SIGNAL(triggered()), this, SLOT(saveScene()));
     connect(m_uinterface->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveSceneDialog()));
-    connect(m_uinterface->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+    connect(m_uinterface->actionAbout, SIGNAL(triggered()), this, SLOT(aboutDialog()));
     connect(m_uinterface->actionToggleFullScreen, SIGNAL(triggered(bool)), this, SLOT(toggleFullWidget(bool)));
     connect(m_uinterface->actionQuit, SIGNAL(triggered()), qApp, SLOT(quit()));
-    connect(m_uinterface->actionScreenShot, SIGNAL(triggered()), this, SLOT(screenshot()));
+    connect(m_uinterface->actionScreenShot, SIGNAL(triggered()), this, SLOT(takeScreenshot()));
 
     // Edit Menu
 
@@ -364,7 +375,7 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionCloneNode, SIGNAL(triggered()), m_tbeWidget, SLOT(cloneSelected()));
     connect(m_uinterface->actionDeleteNode, SIGNAL(triggered()), m_tbeWidget, SLOT(deleteSelected()));
 
-    connect(m_uinterface->actionToggleGrid, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleGridDisplay(bool)));
+    connect(m_uinterface->actionToggleGrid, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleGrid(bool)));
     connect(m_uinterface->actionToggleSelBox, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleSelBox(bool)));
     connect(m_uinterface->actionToggleStaticView, SIGNAL(toggled(bool)), m_tbeWidget, SLOT(toggleStaticView(bool)));
 
@@ -487,10 +498,89 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
 }
 
-void MainWindow::initSceneConnections()
+void MainWindow::updateEnvGui()
 {
-    m_uinterface->actionToggleSelBox->setChecked(true);
-    m_uinterface->actionToggleStaticView->setChecked(true);
+    m_workingDir.scene
+            = m_workingDir.mesh
+            = m_workingDir.meshTexture
+            = QFileInfo(m_filename).path();
+
+    nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
+
+    // -------------------------------------------------------------------------
+
+    using namespace tbe;
+    using namespace scene;
+
+    SceneManager* sceneManager = m_tbeWidget->rootNode()->getSceneManager();
+
+    envGui.zfar->setValue(sceneManager->getZFar());
+    envGui.znear->setValue(sceneManager->getZNear());
+
+    Fog* fog = sceneManager->getFog();
+
+    if(fog->isEnable())
+    {
+        QSignalBlocker blocker;
+        blocker << envGui.fog.enable << envGui.fog.color << envGui.fog.start << envGui.fog.end;
+        blocker.block();
+
+        envGui.fog.enable->setChecked(fog->isEnable());
+        envGui.fog.color->setValue(math::vec43(fog->getColor()));
+        envGui.fog.start->setValue(fog->getStart());
+        envGui.fog.end->setValue(fog->getEnd());
+
+        blocker.unblock();
+    }
+
+    SkyBox* sky = sceneManager->getSkybox();
+
+    if(sky->isEnable())
+    {
+        QSignalBlocker blocker;
+        blocker << envGui.skybox.apply << envGui.skybox.enable;
+        blocker.block();
+
+        blocker.block();
+
+        tbe::Texture* texs = sky->getTextures();
+
+        for(unsigned i = 0; i < 6; i++)
+        {
+            envGui.skybox.textures[i]->setOpenFileName(QString::fromStdString(texs[i].getFilename()));
+            envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
+        }
+
+        envGui.skybox.enable->setChecked(sky->isEnable());
+
+        blocker.unblock();
+    }
+
+    {
+        envGui.sceneAmbiant->blockSignals(true);
+        envGui.sceneAmbiant->setValue(math::vec43(sceneManager->getAmbientLight()));
+        envGui.sceneAmbiant->blockSignals(false);
+    }
+
+    SceneParser* sceneParser = m_tbeWidget->sceneParser();
+
+    genGui.title->setText(QString::fromStdString(sceneParser->getSceneName()));
+    genGui.author->setText(QString::fromStdString(sceneParser->getAuthorName()));
+
+    genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
+
+    const SceneParser::AttribMap addfields = sceneParser->additionalFields();
+
+    for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
+    {
+        QStandardItem* key = new QStandardItem;
+        key->setText(QString::fromStdString(it->first));
+
+        QStandardItem* value = new QStandardItem;
+        value->setText(QString::fromStdString(it->second));
+
+        genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
+    }
 }
 
 void MainWindow::newScene()
@@ -510,8 +600,6 @@ void MainWindow::newScene()
 
     deselectAll();
 
-    notifyChange(false);
-
     if(!m_rootNode)
     {
         m_rootNode = new QNodeInteractor(this, m_tbeWidget->rootNode());
@@ -524,6 +612,10 @@ void MainWindow::newScene()
     }
 
     setCurrentTool(SELECTION_TOOL);
+
+    updateEnvGui();
+
+    notifyChange(false);
 }
 
 void MainWindow::openSceneDialog()
@@ -575,44 +667,18 @@ void MainWindow::openScene(const QString& filename)
         else
             m_tbeWidget->loadScene(filename);
 
-        m_workingDir.scene
-                = m_workingDir.mesh
-                = m_workingDir.meshTexture
-                = QFileInfo(filename).path();
-
-        nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
-
-        for(unsigned i = 0; i < 6; i++)
-            envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
-
         pushFileHistory(filename);
-
-        SceneParser* sceneParser = m_tbeWidget->sceneParser();
-
-        genGui.title->setText(QString::fromStdString(sceneParser->getSceneName()));
-        genGui.author->setText(QString::fromStdString(sceneParser->getAuthorName()));
-
-        genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
-
-        const SceneParser::AttribMap addfields = sceneParser->additionalFields();
-
-        for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
-        {
-            QStandardItem* key = new QStandardItem;
-            key->setText(QString::fromStdString(it->first));
-
-            QStandardItem* value = new QStandardItem;
-            value->setText(QString::fromStdString(it->second));
-
-            genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
-        }
 
         m_filename = filename;
 
-        notifyChange(false);
+        m_uinterface->actionToggleSelBox->setChecked(true);
+        m_uinterface->actionToggleStaticView->setChecked(true);
 
-        initSceneConnections();
+        updateEnvGui();
+
+        notifyChange(false);
     }
+
     catch(std::exception& e)
     {
         QMessageBox::critical(this, "Erreur de chargement", e.what());
@@ -728,7 +794,7 @@ void MainWindow::notifyChange(bool stat)
     }
 }
 
-void MainWindow::about()
+void MainWindow::aboutDialog()
 {
     QDialog* aboutdlg = new QDialog(this);
 
@@ -1015,11 +1081,14 @@ void MainWindow::guiFogApply(bool enable)
     notifyChange(true);
 }
 
-void MainWindow::ambiant(const tbe::Vector3f& value)
+void MainWindow::guiZNear(double value)
 {
-    envGui.sceneAmbiant->blockSignals(true);
-    envGui.sceneAmbiant->setValue(value);
-    envGui.sceneAmbiant->blockSignals(false);
+    m_tbeWidget->setZNear(value);
+}
+
+void MainWindow::guiZFar(double value)
+{
+    m_tbeWidget->setZFar(value);
 }
 
 QTBEngine* MainWindow::tbeWidget() const
@@ -1032,39 +1101,6 @@ void MainWindow::guiAmbiantApply(const tbe::Vector3f& value)
     m_tbeWidget->setSceneAmbiant(value);
 
     notifyChange(true);
-}
-
-void MainWindow::fog(tbe::scene::Fog* fog)
-{
-    QSignalBlocker blocker;
-    blocker << envGui.fog.enable << envGui.fog.color
-            << envGui.fog.start << envGui.fog.end;
-
-    blocker.block();
-
-    envGui.fog.enable->setChecked(fog->isEnable());
-    envGui.fog.color->setValue(tbe::math::vec43(fog->getColor()));
-    envGui.fog.start->setValue(fog->getStart());
-    envGui.fog.end->setValue(fog->getEnd());
-
-    blocker.unblock();
-}
-
-void MainWindow::skybox(tbe::scene::SkyBox* sky)
-{
-    QSignalBlocker blocker;
-    blocker << envGui.skybox.apply << envGui.skybox.enable;
-
-    blocker.block();
-
-    tbe::Texture* texs = sky->getTextures();
-
-    for(unsigned i = 0; i < 6; i++)
-        envGui.skybox.textures[i]->setOpenFileName(QString::fromStdString(texs[i].getFilename()));
-
-    envGui.skybox.enable->setChecked(sky->isEnable());
-
-    blocker.unblock();
 }
 
 void MainWindow::toggleFullWidget(bool full)
@@ -1111,13 +1147,6 @@ void MainWindow::guiClearSceneField()
     }
 }
 
-void MainWindow::clearNodeList()
-{
-    nodesGui.nodesListModel->removeRows(0, nodesGui.nodesListModel->rowCount());
-
-    nodeItemBinder.clear();
-}
-
 void MainWindow::skyboxWorkingDir(const QString& filename)
 {
     envGui.skybox.textures[0]->setWorkDir(QFileInfo(filename).path());
@@ -1128,7 +1157,7 @@ void MainWindow::skyboxWorkingDir(const QString& filename)
     envGui.skybox.textures[5]->setWorkDir(QFileInfo(filename).path());
 }
 
-void MainWindow::screenshot()
+void MainWindow::takeScreenshot()
 {
     QImage shot = m_tbeWidget->grabFrameBuffer(false);
 
@@ -1269,28 +1298,4 @@ void MainWindow::pastRotation()
     }
 
     statusBar()->showMessage("Rotation coller...", 2000);
-}
-
-void MainWindow::zNear(float value)
-{
-    envGui.znear->blockSignals(true);
-    envGui.znear->setValue(value);
-    envGui.znear->blockSignals(false);
-}
-
-void MainWindow::zFar(float value)
-{
-    envGui.zfar->blockSignals(true);
-    envGui.zfar->setValue(value);
-    envGui.zfar->blockSignals(false);
-}
-
-void MainWindow::guiZNear(double value)
-{
-    m_tbeWidget->setZNear(value);
-}
-
-void MainWindow::guiZFar(double value)
-{
-    m_tbeWidget->setZFar(value);
 }

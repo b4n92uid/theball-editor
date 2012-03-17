@@ -10,7 +10,11 @@
 #include <Tbe.h>
 
 #include "MainWindow.h"
-#include "Metatype.h"
+#include "Define.h"
+
+#include "QNodeInteractor.h"
+
+#include "QTBEngine.h"
 
 NodeListProxyModel::NodeListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 {
@@ -108,7 +112,7 @@ bool NodeListProxyModel::lessThan(const QModelIndex & left, const QModelIndex & 
         QNodeInteractor* nleft = sourceModel()->data(left, ITEM_ROLE_NODE).value<QNodeInteractor*>();
         QNodeInteractor* nright = sourceModel()->data(right, ITEM_ROLE_NODE).value<QNodeInteractor*>();
 
-        Vector3f campos = nleft->mainwin()->tbeWidget()->cameraPos();
+        Vector3f campos = nleft->mainwin()->tbeWidget()->camera()->getPos();
 
         return nleft->target()->getPos() - campos < nright->target()->getPos() - campos;
     }
@@ -121,9 +125,15 @@ bool NodeListProxyModel::lessThan(const QModelIndex & left, const QModelIndex & 
         QNodeInteractor* nleft = sourceModel()->data(left, ITEM_ROLE_NODE).value<QNodeInteractor*>();
         QNodeInteractor* nright = sourceModel()->data(right, ITEM_ROLE_NODE).value<QNodeInteractor*>();
 
-        Vector3f selpos = nleft->mainwin()->tbeWidget()->selectionPos();
+        if(!nleft->mainwin()->tbeWidget()->selection().empty())
+        {
+            Vector3f selpos = nleft->mainwin()->tbeWidget()->selection()
+                    .front()->target()->getAbsoluteMatrix().getPos();
 
-        return nleft->target()->getPos() - selpos < nright->target()->getPos() - selpos;
+            return nleft->target()->getPos() - selpos < nright->target()->getPos() - selpos;
+        }
+
+        return true;
     }
 
     else

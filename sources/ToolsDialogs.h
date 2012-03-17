@@ -17,7 +17,7 @@
 
 #include "QVectorBox.h"
 
-#include "QMeshInteractor.h"
+class QMeshInteractor;
 
 class MaterialEditDialog : public QDialog, public Ui::MaterialEdit
 {
