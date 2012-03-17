@@ -1142,6 +1142,9 @@ void MainWindow::screenshot()
 
     if(!filename.isEmpty())
     {
+        if(!filename.endsWith(".png"))
+            filename += ".png";
+
         QFile output(filename);
         output.open(QIODevice::WriteOnly);
         shot.save(&output, "PNG");
