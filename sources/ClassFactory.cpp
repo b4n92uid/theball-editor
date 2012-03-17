@@ -6,6 +6,18 @@
  */
 
 #include "ClassFactory.h"
+
+#include "QNodeInteractor.h"
+#include "QMeshInteractor.h"
+#include "QLightInteractor.h"
+#include "QParticlesInteractor.h"
+#include "QMapMarkInteractor.h"
+
+#include "QMesh.h"
+#include "QLight.h"
+#include "QParticles.h"
+#include "QMapMark.h"
+
 #include "MainWindow.h"
 
 ClassFactory::ClassFactory(MainWindow* mainwin)

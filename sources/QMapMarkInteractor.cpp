@@ -7,6 +7,7 @@
 
 #include "QMapMarkInteractor.h"
 #include "MainWindow.h"
+#include "QTBEngine.h"
 
 QMapMarkInteractor::QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark* target)
 : QNodeInteractor(mainwin, target), m_target(target)

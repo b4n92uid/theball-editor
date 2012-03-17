@@ -12,7 +12,7 @@
 #include <QtGui/QtGui>
 #include <QtOpenGL/QtOpenGL>
 
-#include "Metatype.h"
+#include "Define.h"
 
 class QMesh;
 class QLight;
@@ -33,6 +33,7 @@ class QTBEngine : public QGLWidget
     Q_OBJECT
 
 public:
+
     QTBEngine(QWidget* parent);
     ~QTBEngine();
 
@@ -42,17 +43,14 @@ public:
     void saveScene(const QString& filename);
 
     tbe::scene::SceneParser* sceneParser() const;
-
-    tbe::scene::Node* rootNode();
-
-    tbe::scene::Grid* grid();
-
-    tbe::Vector3f cameraPos() const;
-    tbe::Vector3f selectionPos() const;
+    tbe::scene::Node* rootNode() const;
+    tbe::scene::Grid* grid() const;
+    tbe::scene::Camera* camera() const;
 
     QStringList usedRessources();
 
     void highlight(QNodeInteractor* node);
+    void unhighlight(QNodeInteractor* node);
 
     void registerInterface(QNodeInteractor* node);
     void unregisterInterface(QNodeInteractor* node);
@@ -69,24 +67,24 @@ public:
 public slots:
 
     void selectNode(QNodeInteractor* qnode);
+    void deselectNode(QNodeInteractor* qnode);
 
     void deselectAllNode();
-    void deselectNode(QNodeInteractor* qnode);
 
     void pauseRendring();
     void resumeRendring();
 
     void placeCamera();
 
-    void toggleGridDisplay(bool state);
+    void toggleGrid(bool state);
     void toggleSelBox(bool state);
     void toggleStaticView(bool state);
 
-    void deleteNode(QNodeInteractor* node);
+    void cloneSelected();
     void deleteSelected();
 
     QNodeInteractor* cloneNode(QNodeInteractor* node);
-    void cloneSelected();
+    void deleteNode(QNodeInteractor* node);
 
     void baseOnFloor();
     void centerOnFloor();
@@ -113,12 +111,14 @@ public slots:
     void selectScaleTool();
 
 signals:
+
     void selection(QNodeInteractor*);
     void deselection(QNodeInteractor*);
     void deselectionAll();
     void notifyChange();
 
 protected:
+
     void initializeGL();
     void resizeGL(int w, int h);
     void paintGL();
@@ -139,10 +139,11 @@ protected:
     void applyCameraEvents();
 
     void placeNewNode(tbe::scene::Node* thenew);
-    
+
     void updateInformationGui();
 
 private:
+
     tbe::Device* m_device;
     tbe::EventManager* m_eventManager;
 

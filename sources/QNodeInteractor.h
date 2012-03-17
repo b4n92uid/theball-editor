@@ -13,7 +13,7 @@
 #include <QObject>
 #include <QtGui/QtGui>
 
-#include "Metatype.h"
+#include "Define.h"
 
 class MainWindow;
 

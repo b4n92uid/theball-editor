@@ -16,18 +16,16 @@
 #include "QNodeListView.h"
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
-#include "NodeFactory.h"
-#include "QTBEngine.h"
-#include "QNodeBinders.h"
 #include "QSignalBlocker.h"
 #include "PackerDialog.h"
 #include "ToolsDialogs.h"
 #include "NodeListProxyModel.h"
-
-#include "Metatype.h"
-
+#include "Define.h"
 
 class Ui_mainWindow;
+
+class QNodeInteractor;
+class QTBEngine;
 
 class MainWindow : public QMainWindow
 {
@@ -47,8 +45,8 @@ public:
 
     Ui_mainWindow* ui();
 
-    void reg(QNodeInteractor* node, QItemsList& items);
-    void unreg(QNodeInteractor* node);
+    void registerNode(QNodeInteractor* node, QItemsList& items);
+    void unregisterNode(QNodeInteractor* node);
 
 protected:
 
@@ -57,7 +55,7 @@ protected:
 
     bool leaveSafely();
 
-    void initSceneConnections();
+    void updateEnvGui();
 
 public slots:
 
@@ -72,19 +70,17 @@ public slots:
     void saveScene(const QString& filename);
     void saveScene();
 
-    void about();
+    void openSceneFromHistory();
+
+    void aboutDialog();
 
     void notifyChange(bool stat = true);
-
-    void clearNodeList();
 
     void closeEvent(QCloseEvent *event);
 
     void skyboxWorkingDir(const QString& filename);
 
     void toggleFullWidget(bool full = true);
-
-    void openFileHistory();
 
     void assignParent();
     void promoteChild();
@@ -95,7 +91,7 @@ public slots:
     void pastScale();
     void pastRotation();
 
-    void screenshot();
+    void takeScreenshot();
 
     void setCurrentTool(int type);
 
@@ -118,13 +114,8 @@ public slots:
     void guiZNear(double value);
     void guiZFar(double value);
 
-    void skybox(tbe::scene::SkyBox* tbesky);
-    void fog(tbe::scene::Fog* tbefog);
-    void ambiant(const tbe::Vector3f& value);
-    void zNear(float value);
-    void zFar(float value);
-
 signals:
+
     void pauseRendring();
     void resumeRendring();
 
@@ -242,7 +233,7 @@ private:
     {
         QLineEdit* title;
         QLineEdit* author;
-        
+
         QLabel* information;
 
         QTreeView* additionalView;

@@ -7,6 +7,9 @@
 
 #include "QNodeListView.h"
 
+#include "QNodeInteractor.h"
+#include "QMeshInteractor.h"
+
 #define nodeInterface() data(ITEM_ROLE_NODE).value<QNodeInteractor*>()
 
 QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)

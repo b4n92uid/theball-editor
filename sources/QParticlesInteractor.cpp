@@ -7,6 +7,7 @@
 
 #include "QParticlesInteractor.h"
 #include "MainWindow.h"
+#include "QTBEngine.h"
 
 QParticlesInteractor::QParticlesInteractor(MainWindow* mainwin, tbe::scene::ParticlesEmiter* target)
 : QNodeInteractor(mainwin, target), m_target(target)

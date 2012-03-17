@@ -6,13 +6,16 @@
  */
 
 #include "QTBEngine.h"
-#include "Tools.h"
+#include "Define.h"
 
-#include "NodeFactory.h"
 #include "MainWindow.h"
 #include "ClassFactory.h"
 
 #include "QNodeInteractor.h"
+#include "QMesh.h"
+#include "QLight.h"
+#include "QParticles.h"
+#include "QMapMark.h"
 
 #include "ui_interface.h"
 #include "HistoryState.h"
@@ -143,22 +146,24 @@ void QTBEngine::initializeGL()
     m_updateTimer->start(16);
 }
 
-tbe::scene::Grid* QTBEngine::grid()
+tbe::scene::SceneParser* QTBEngine::sceneParser() const
+{
+    return m_sceneParser;
+}
+
+tbe::scene::Node* QTBEngine::rootNode() const
+{
+    return m_rootNode;
+}
+
+tbe::scene::Grid* QTBEngine::grid() const
 {
     return m_grid;
 }
 
-tbe::Vector3f QTBEngine::cameraPos() const
+tbe::scene::Camera* QTBEngine::camera() const
 {
-    return m_camera->getPos();
-}
-
-tbe::Vector3f QTBEngine::selectionPos() const
-{
-    if(m_selectedNode)
-        return m_selectedNode->target()->getAbsoluteMatrix().getPos();
-    else
-        return m_curCursor3D;
+    return m_camera;
 }
 
 void QTBEngine::setupSelection()
@@ -314,10 +319,10 @@ void QTBEngine::toggleSelBox(bool state)
     m_selbox->setVisible(state);
 
     std::for_each(m_selboxArray.begin(), m_selboxArray.end(),
-                  bind2nd(mem_fun(&Node::setEnable), state));
+                  bind2nd(mem_fun(&Mesh::setVisible), state));
 }
 
-void QTBEngine::toggleGridDisplay(bool state)
+void QTBEngine::toggleGrid(bool state)
 {
     m_gridset.enable = state;
 
@@ -1086,7 +1091,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 qnode->updateGui();
             }
 
-            toggleGridDisplay(true);
+            toggleGrid(true);
         }
     }
 
@@ -1107,7 +1112,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 qnode->updateGui();
             }
 
-            toggleGridDisplay(true);
+            toggleGrid(true);
         }
     }
 
@@ -1165,12 +1170,6 @@ void QTBEngine::clearScene()
     m_gridset.size = 1;
 
     setupSelection();
-
-    m_mainwin->zNear(m_sceneManager->getZNear());
-    m_mainwin->zFar(m_sceneManager->getZFar());
-    m_mainwin->fog(m_fog);
-    m_mainwin->skybox(m_skybox);
-    m_mainwin->ambiant(math::vec43(m_sceneManager->getAmbientLight()));
 }
 
 void QTBEngine::loadScene(const QString& filename)
@@ -1194,14 +1193,6 @@ void QTBEngine::loadScene(const QString& filename)
     m_centerTarget = 1;
 
     m_selbox->setEnable(false);
-
-    m_mainwin->zNear(m_sceneManager->getZNear());
-    m_mainwin->zFar(m_sceneManager->getZFar());
-    m_mainwin->fog(m_fog);
-    m_mainwin->skybox(m_skybox);
-    m_mainwin->ambiant(math::vec43(m_sceneManager->getAmbientLight()));
-
-    m_sceneManager->updateViewParameter();
 }
 
 struct RootSort
@@ -1217,11 +1208,6 @@ struct RootSort
     }
 
 };
-
-tbe::scene::Node* QTBEngine::rootNode()
-{
-    return m_rootNode;
-}
 
 void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
 {
@@ -1324,11 +1310,6 @@ void QTBEngine::fogClear()
     m_fog->clear();
 }
 
-tbe::scene::SceneParser* QTBEngine::sceneParser() const
-{
-    return m_sceneParser;
-}
-
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 {
     m_sceneManager->setAmbientLight(math::vec34(value));
@@ -1356,7 +1337,7 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     qnode->bindWithGui();
 
     if(m_gridset.enable)
-        toggleGridDisplay(true);
+        toggleGrid(true);
 
     updateInformationGui();
 }
@@ -1367,8 +1348,7 @@ void QTBEngine::deselectNode(QNodeInteractor* qnode)
 
     m_selection.removeAll(qnode);
 
-    delete m_selboxArray[qnode];
-    m_selboxArray.remove(qnode);
+    unhighlight(qnode);
 
     if(m_selectedNode == qnode)
     {
@@ -1386,9 +1366,7 @@ void QTBEngine::deselectAllNode()
     m_selection.clear();
 
     foreach(SelBox* box, m_selboxArray.values())
-    {
-        delete box;
-    }
+            delete box;
 
     m_selboxArray.clear();
 
@@ -1476,6 +1454,17 @@ void QTBEngine::highlight(QNodeInteractor* node)
         m_selboxArray[node]->setAround(node->target());
     else
         m_selbox->setAround(node->target());
+}
+
+void QTBEngine::unhighlight(QNodeInteractor* node)
+{
+    if(m_selboxArray.contains(node))
+    {
+        delete m_selboxArray[node];
+        m_selboxArray.remove(node);
+    }
+    else
+        m_selbox->setEnable(false);
 }
 
 void QTBEngine::unregisterInterface(QNodeInteractor* node)

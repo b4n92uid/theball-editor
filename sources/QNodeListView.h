@@ -10,9 +10,10 @@
 
 #include <QtGui/QtGui>
 
-#include "Metatype.h"
-#include "QNodeInteractor.h"
-#include "QMeshInteractor.h"
+#include "Define.h"
+
+class QNodeInteractor;
+class QMeshInteractor;
 
 class QNodeListView : public QTreeView
 {
@@ -23,9 +24,9 @@ public:
     virtual ~QNodeListView();
 
     void setModel(QSortFilterProxyModel* model);
-    
+
     void highlightItem(QNodeInteractor* qnode);
-    
+
 public slots:
     void mousePressEvent(QMouseEvent * event);
 
