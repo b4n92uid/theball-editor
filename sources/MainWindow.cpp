@@ -10,7 +10,8 @@
 
 #include "ui_interface.h"
 
-#define backupOf(filename) QString(filename).replace(QRegExp("\\.(.+)$"), ".bak")
+#define backupOf(filename) \
+        QString(filename).replace(QRegExp("\\.(.+)$"), ".bak")
 
 MainWindow::MainWindow()
 {
@@ -180,10 +181,6 @@ void MainWindow::initWidgets()
 
     m_uinterface->node_list_sort->setMenu(m_uinterface->menuTrier);
 
-    m_selInfo = new QLabel(this);
-    m_selInfo->setText("Pas de séléction");
-    m_selInfo->setContentsMargins(0, 0, 16, 0);
-
     QToolBar* toptoolbar = new QToolBar;
     toptoolbar->setFloatable(false);
     toptoolbar->setMovable(false);
@@ -210,11 +207,6 @@ void MainWindow::initWidgets()
     toptoolbar->addAction(m_uinterface->actionRotateTool);
     toptoolbar->addAction(m_uinterface->actionScaleTool);
 
-    QWidget* spacer = new QWidget(toptoolbar);
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    toptoolbar->addWidget(spacer);
-    toptoolbar->addWidget(m_selInfo);
-
     addToolBar(Qt::TopToolBarArea, toptoolbar);
 
     // Générale ----------------------------------------------------------------
@@ -233,6 +225,7 @@ void MainWindow::initWidgets()
     genGui.addField = m_uinterface->gen_addfield;
     genGui.delField = m_uinterface->gen_delfield;
     genGui.clearFields = m_uinterface->gen_clearfields;
+    genGui.information = m_uinterface->gen_information;
 
     // Node --------------------------------------------------------------------
 
@@ -865,38 +858,6 @@ void MainWindow::select(QNodeInteractor* qnode)
     m_uinterface->actionDeleteNode->setEnabled(true);
 
     nodesGui.mesh.matedit->hide();
-
-    // -------------------------------------------------------------------------
-
-    QString info;
-    QTextStream stream(&info);
-
-    QString br = " | ";
-
-    // Node Name
-    if(!qnode->target()->getName().empty())
-        stream << "<b>" << QString::fromStdString(qnode->target()->getName()) << "</b>" << br;
-    else
-        stream << "<b>[Aucun Nom]</b>" << br;
-
-    // Type name
-    stream << "<b>" << qnode->typeName() << "</b>" << br;
-
-    // Parent Node Name (if any)
-    if(qnode->target()->getParent() && !qnode->target()->getParent()->isRoot())
-        stream << "<i>" << QString::fromStdString(qnode->target()->getParent()->getName()) << "</i>" << br;
-    else
-        stream << "<i>[Pas de parent]</i>" << br;
-
-    // Child count
-    unsigned childcount = qnode->target()->getChildCount();
-
-    if(childcount > 0)
-        stream << "<i>" << childcount << " enfant(s)" << "</i>";
-    else
-        stream << "<i>[Pas d'enfants]</i>";
-
-    m_selInfo->setText(info);
 }
 
 void MainWindow::deselect(QNodeInteractor* qnode)
@@ -926,8 +887,6 @@ void MainWindow::deselectAll()
 
     m_uinterface->actionCloneNode->setEnabled(false);
     m_uinterface->actionDeleteNode->setEnabled(false);
-
-    m_selInfo->setText("Pas de séléction");
 
     nodesGui.name->setReadOnly(false);
     nodesGui.position->setReadOnly(false);

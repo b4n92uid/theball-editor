@@ -242,6 +242,8 @@ private:
     {
         QLineEdit* title;
         QLineEdit* author;
+        
+        QLabel* information;
 
         QTreeView* additionalView;
         QStandardItemModel* additionalModel;
@@ -258,8 +260,6 @@ private:
     QTimer m_backupTimer;
 
     QTBEngine* m_tbeWidget;
-
-    QLabel* m_selInfo;
 
     Ui_mainWindow* m_uinterface;
 

@@ -37,13 +37,13 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="generalTab">
        <attribute name="title">
         <string>Générale</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,8">
+       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,0,8">
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
@@ -67,6 +67,22 @@
             <widget class="QLabel" name="label_33">
              <property name="text">
               <string>Auteur</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_4">
+          <property name="title">
+           <string>Informations</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QLabel" name="gen_information">
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
