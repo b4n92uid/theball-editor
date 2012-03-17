@@ -665,6 +665,8 @@ void QTBEngine::wheelEvent(QWheelEvent* ev)
 
 void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 {
+    updateInformationGui();
+
     // Engine input injection --------------------------------------------------
 
     m_curCursorPos = qptovec(ev->pos());
@@ -859,14 +861,30 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_PageUp)
     {
-        m_sensivitySet.selection += 0.01;
-        m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
+        if(m_gridset.enable)
+        {
+            m_gridset.size += 0.5;
+            m_mainwin->statusBar()->showMessage(QString("Taille de la grille à  %1").arg(m_sensivitySet.selection), 1000);
+        }
+        else
+        {
+            m_sensivitySet.selection += 0.01;
+            m_mainwin->statusBar()->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
+        }
     }
 
     if(ev->key() == Qt::Key_PageDown)
     {
-        m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
-        m_mainwin->statusBar()->showMessage(QString("Sensibilité a %1").arg(m_sensivitySet.selection), 1000);
+        if(m_gridset.enable)
+        {
+            m_gridset.size = std::max(m_gridset.size - 0.5, Vector3f(0.5));
+            m_mainwin->statusBar()->showMessage(QString("Taille de la grille à  %1").arg(m_sensivitySet.selection), 1000);
+        }
+        else
+        {
+            m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
+            m_mainwin->statusBar()->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
+        }
     }
 
     if(ev->key() == Qt::Key_1)
@@ -1168,6 +1186,8 @@ void QTBEngine::loadScene(const QString& filename)
     m_mainwin->fog(m_fog);
     m_mainwin->skybox(m_skybox);
     m_mainwin->ambiant(math::vec43(m_sceneManager->getAmbientLight()));
+    
+    m_sceneManager->updateViewParameter();
 }
 
 struct RootSort
@@ -1323,6 +1343,8 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
 
     if(m_gridset.enable)
         toggleGridDisplay(true);
+
+    updateInformationGui();
 }
 
 void QTBEngine::deselectNode(QNodeInteractor* qnode)
@@ -1339,6 +1361,8 @@ void QTBEngine::deselectNode(QNodeInteractor* qnode)
         m_selectedNode = NULL;
         m_selbox->Node::setEnable(false);
     }
+
+    updateInformationGui();
 }
 
 void QTBEngine::deselectAllNode()
@@ -1357,6 +1381,60 @@ void QTBEngine::deselectAllNode()
     m_selectedNode = NULL;
 
     m_selbox->Node::setEnable(false);
+
+    updateInformationGui();
+}
+
+void QTBEngine::updateInformationGui()
+{
+    QString info;
+    QTextStream stream(&info);
+
+    QString br = "<br />";
+
+    stream << "<p>";
+
+    stream << "Curseur 3D : " << QString::fromStdString(m_curCursor3D.toStr()) << br
+            << "Maillage éliminé du rendue : " << m_meshScene->getFrustumCullingCount() << br
+            << "Nombre totale de maillage : " << m_meshScene->count();
+
+    stream << "</p>";
+
+    stream.flush();
+
+    if(m_selectedNode)
+    {
+        stream << "<p>";
+
+        stream << m_selection.count() << " noeud(s) sélectionner" << br << br;
+
+        stream << "Nom: ";
+        if(!m_selectedNode->target()->getName().empty())
+            stream << "<b>" << QString::fromStdString(m_selectedNode->target()->getName()) << "</b>" << br;
+        else
+            stream << "<b>[Aucun Nom]</b>" << br;
+
+        stream << "Type: ";
+        stream << "<b>" << m_selectedNode->typeName() << "</b>" << br;
+
+        stream << "Parent: ";
+        if(m_selectedNode->target()->getParent() && !m_selectedNode->target()->getParent()->isRoot())
+            stream << QString::fromStdString(m_selectedNode->target()->getParent()->getName()) << br;
+        else
+            stream << "[Pas de parent]" << br;
+
+        stream << "Enfants: ";
+        unsigned childcount = m_selectedNode->target()->getChildCount();
+
+        if(childcount > 0)
+            stream << childcount << " enfant(s)";
+        else
+            stream << "[Pas d'enfants]";
+
+        stream << "</p>";
+    }
+
+    m_mainwin->ui()->gen_information->setText(info);
 }
 
 QStringList QTBEngine::usedRessources()

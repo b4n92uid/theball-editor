@@ -139,6 +139,8 @@ protected:
     void applyCameraEvents();
 
     void placeNewNode(tbe::scene::Node* thenew);
+    
+    void updateInformationGui();
 
 private:
     tbe::Device* m_device;
