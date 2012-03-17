@@ -342,12 +342,12 @@ void QTBEngine::toggleGridDisplay(bool state)
 
         m_grid->build(size, cuts);
         m_grid->getMaterial("main")->disable(Material::FOGED | Material::LIGHTED);
-        m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 1));
+        m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 0.75));
 
         if(m_selectedNode)
         {
             Vector3f pos = m_selectedNode->target()->getAbsoluteMatrix().getPos();
-            pos = math::round(pos).Y(pos.y);
+            pos = math::round(pos).Y(pos.y - m_selectedNode->target()->getAabb().max.y);
 
             m_grid->setPos(pos);
         }
@@ -864,12 +864,17 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         if(m_gridset.enable)
         {
             m_gridset.size += 0.5;
-            m_mainwin->statusBar()->showMessage(QString("Taille de la grille à  %1").arg(m_sensivitySet.selection), 1000);
+
+            m_mainwin->statusBar()
+                    ->showMessage(QString("Taille de la grille à  %1")
+                                  .arg(QString::fromStdString(m_gridset.size.toStr())), 1000);
         }
         else
         {
             m_sensivitySet.selection += 0.01;
-            m_mainwin->statusBar()->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
+
+            m_mainwin->statusBar()
+                    ->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
@@ -878,12 +883,17 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
         if(m_gridset.enable)
         {
             m_gridset.size = std::max(m_gridset.size - 0.5, Vector3f(0.5));
-            m_mainwin->statusBar()->showMessage(QString("Taille de la grille à  %1").arg(m_sensivitySet.selection), 1000);
+
+            m_mainwin->statusBar()
+                    ->showMessage(QString("Taille de la grille à  %1")
+                                  .arg(QString::fromStdString(m_gridset.size.toStr())), 1000);
         }
         else
         {
             m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
-            m_mainwin->statusBar()->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
+
+            m_mainwin->statusBar()
+                    ->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
@@ -1075,6 +1085,8 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 qnode->target()->setPos(current_position);
                 qnode->updateGui();
             }
+
+            toggleGridDisplay(true);
         }
     }
 
@@ -1094,6 +1106,8 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 qnode->target()->setPos(current_position);
                 qnode->updateGui();
             }
+
+            toggleGridDisplay(true);
         }
     }
 
@@ -1186,7 +1200,7 @@ void QTBEngine::loadScene(const QString& filename)
     m_mainwin->fog(m_fog);
     m_mainwin->skybox(m_skybox);
     m_mainwin->ambiant(math::vec43(m_sceneManager->getAmbientLight()));
-    
+
     m_sceneManager->updateViewParameter();
 }
 
