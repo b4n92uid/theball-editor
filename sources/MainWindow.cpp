@@ -51,12 +51,6 @@ Ui_mainWindow* MainWindow::ui()
     return m_uinterface;
 }
 
-void MainWindow::makeBackup()
-{
-    if(!m_filename.isEmpty())
-        saveScene(backupOf(m_filename));
-}
-
 void MainWindow::registerNode(QNodeInteractor* node, QItemsList& items)
 {
     QNodeInteractor* parent = m_tbeWidget->interface(node->target()->getParent());
@@ -722,7 +716,7 @@ void MainWindow::saveScene()
         saveScene(m_filename);
 }
 
-void MainWindow::saveScene(const QString& filename)
+void MainWindow::outputScene(const QString& filename)
 {
     tbe::scene::SceneParser* sceneParser = m_tbeWidget->sceneParser();
 
@@ -741,10 +735,24 @@ void MainWindow::saveScene(const QString& filename)
     }
 
     m_tbeWidget->saveScene(filename);
+}
+
+void MainWindow::saveScene(const QString& filename)
+{
+    outputScene(filename);
 
     notifyChange(false);
 
     statusBar()->showMessage("Scene enregistrer...", 2000);
+}
+
+void MainWindow::saveBackup()
+{
+    if(!m_filename.isEmpty())
+    {
+        outputScene(backupOf(m_filename));
+        statusBar()->showMessage("Backup enregistrer...", 2000);
+    }
 }
 
 void MainWindow::setCurrentTool(int type)
