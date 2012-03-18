@@ -1144,8 +1144,8 @@ void QTBEngine::clearScene()
     m_history.clear();
 
     m_rootNode->clearAllChild();
-
     m_sceneManager->clearParallelScenes(false);
+    m_sceneParser->clear();
 
     m_fog->clear();
     m_skybox->clear();
@@ -1372,7 +1372,8 @@ void QTBEngine::deselectAllNode()
 
     m_selectedNode = NULL;
 
-    m_selbox->Node::setEnable(false);
+    if(m_selbox)
+        m_selbox->Node::setEnable(false);
 
     updateInformationGui();
 }
@@ -1388,7 +1389,7 @@ void QTBEngine::updateInformationGui()
 
     stream << "Curseur 3D : " << QString::fromStdString(m_curCursor3D.toStr()) << br
             << "Maillage éliminé du rendue : " << m_meshScene->getFrustumCullingCount() << br
-            << "Nombre totale de maillage : " << m_meshScene->count();
+            << "Nombre totale de maillage : " << m_meshScene->getRenderedMeshCount() + m_meshScene->getFrustumCullingCount();
 
     stream << "</p>";
 
