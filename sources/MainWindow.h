@@ -56,10 +56,10 @@ protected:
     bool leaveSafely();
 
     void updateEnvGui();
+    
+    void outputScene(const QString& filename);
 
 public slots:
-
-    void makeBackup();
 
     void newScene();
 
@@ -69,6 +69,8 @@ public slots:
     void saveSceneDialog();
     void saveScene(const QString& filename);
     void saveScene();
+    
+    void saveBackup();
 
     void openSceneFromHistory();
 
