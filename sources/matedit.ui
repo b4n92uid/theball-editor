@@ -70,7 +70,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="down">
+         <widget class="QPushButton" name="texture_down">
           <property name="text">
            <string/>
           </property>
@@ -81,7 +81,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="up">
+         <widget class="QPushButton" name="texture_up">
           <property name="text">
            <string/>
           </property>
@@ -92,7 +92,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="add">
+         <widget class="QPushButton" name="texture_add">
           <property name="text">
            <string/>
           </property>
@@ -103,7 +103,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="del">
+         <widget class="QPushButton" name="texture_del">
           <property name="text">
            <string/>
           </property>

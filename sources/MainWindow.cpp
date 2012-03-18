@@ -451,7 +451,7 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionRotateTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionScaleTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
 
-    connect(&m_backupTimer, SIGNAL(timeout()), this, SLOT(makeBackup()));
+    connect(&m_backupTimer, SIGNAL(timeout()), this, SLOT(saveBackup()));
     m_backupTimer.start(5000);
 }
 
@@ -582,6 +582,8 @@ void MainWindow::newScene()
     if(!leaveSafely())
         return;
 
+    deselectAll();
+
     m_tbeWidget->clearScene();
 
     m_filename.clear();
@@ -591,8 +593,6 @@ void MainWindow::newScene()
     genGui.title->clear();
     genGui.author->clear();
     genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
-
-    deselectAll();
 
     if(!m_rootNode)
     {

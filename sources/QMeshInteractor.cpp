@@ -583,10 +583,10 @@ void QMeshInteractor::bindWithGui()
 
     connect(m_mainwin->nodesGui.mesh.matedit->alphathreshold, SIGNAL(valueChanged(double)), this, SLOT(setAlphaThreshold(double)));
 
-    connect(m_mainwin->nodesGui.mesh.matedit->add, SIGNAL(clicked()), this, SLOT(addTexture()));
-    connect(m_mainwin->nodesGui.mesh.matedit->del, SIGNAL(clicked()), this, SLOT(delTexture()));
-    connect(m_mainwin->nodesGui.mesh.matedit->up, SIGNAL(clicked()), this, SLOT(textureUp()));
-    connect(m_mainwin->nodesGui.mesh.matedit->down, SIGNAL(clicked()), this, SLOT(textureDown()));
+    connect(m_mainwin->nodesGui.mesh.matedit->texture_add, SIGNAL(clicked()), this, SLOT(addTexture()));
+    connect(m_mainwin->nodesGui.mesh.matedit->texture_del, SIGNAL(clicked()), this, SLOT(delTexture()));
+    connect(m_mainwin->nodesGui.mesh.matedit->texture_up, SIGNAL(clicked()), this, SLOT(textureUp()));
+    connect(m_mainwin->nodesGui.mesh.matedit->texture_down, SIGNAL(clicked()), this, SLOT(textureDown()));
 
     connect(m_mainwin->nodesGui.mesh.matedit->blend_additive, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
     connect(m_mainwin->nodesGui.mesh.matedit->blend_modulate, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
@@ -637,10 +637,10 @@ void QMeshInteractor::unbindFromGui()
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->alphathreshold, SIGNAL(valueChanged(double)), 0, 0);
 
-    disconnect(m_mainwin->nodesGui.mesh.matedit->add, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->del, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->up, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->down, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_add, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_del, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_up, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_down, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->blend_additive, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.matedit->blend_modulate, SIGNAL(clicked()), 0, 0);
