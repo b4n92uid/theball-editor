@@ -64,7 +64,7 @@ void PackerDialog::fillList()
     QTBEngine* tbewidget = m_parent->tbeWidget();
     SceneParser* parser = tbewidget->sceneParser();
 
-    parser->prepareScene();
+    parser->prepare();
 
     SceneParser::MapDescriptor& descriptor = parser->getMapDescriptor();
 

@@ -584,7 +584,31 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 {
                     QNodeInteractor* qnode = m_nodeInterface[nearest];
 
-                    if(ev->modifiers() & Qt::ControlModifier)
+                    QFlags<Qt::KeyboardModifiers> mods(ev->modifiers());
+
+                    if(mods.testFlag(Qt::AltModifier) && mods.testFlag(Qt::ControlModifier))
+                    {
+                        if(m_selectedNode)
+                        {
+                            AABB area;
+                            area.count(m_selectedNode->target());
+                            area.count(qnode->target());
+
+                            area += -0.1;
+
+                            emit selection(qnode);
+
+                            foreach(Node* node, m_nodeInterface.keys())
+                            {
+                                if(area.isInner(node) && !m_selection.contains(m_nodeInterface[node]))
+                                    emit selection(m_nodeInterface[node]);
+                            }
+                        }
+                        else
+                            emit selection(qnode);
+                    }
+
+                    else if(mods.testFlag(Qt::ControlModifier))
                     {
                         if(m_selection.contains(qnode))
                             emit deselection(qnode);
@@ -1132,8 +1156,8 @@ void QTBEngine::saveScene(const QString& filename)
     m_sceneParser->exclude(m_selbox);
     m_sceneParser->exclude(m_grid);
 
-    m_sceneParser->prepareScene();
-    m_sceneParser->saveScene(filename.toStdString());
+    m_sceneParser->prepare();
+    m_sceneParser->save(filename.toStdString());
 }
 
 void QTBEngine::clearScene()
@@ -1178,8 +1202,8 @@ void QTBEngine::loadScene(const QString& filename)
 
     clearScene();
 
-    m_sceneParser->loadScene(filename.toStdString());
-    m_sceneParser->buildScene();
+    m_sceneParser->load(filename.toStdString());
+    m_sceneParser->build();
 
     AABB sceneAabb = m_meshScene->getSceneAabb();
 
