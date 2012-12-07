@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QNodeInteractor.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 29 août 2011, 07:22
  */
 
@@ -277,7 +277,9 @@ void QNodeInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.delField, SIGNAL(clicked()), this, SLOT(delNodeField()));
     connect(m_mainwin->nodesGui.clearFields, SIGNAL(clicked()), this, SLOT(clearNodeField()));
 
+    m_mainwin->nodesGui.nodesListView->blockSignals(true);
     m_mainwin->nodesGui.nodesListView->highlightItem(this);
+    m_mainwin->nodesGui.nodesListView->blockSignals(false);
 
     QList<QStandardItem*> list = itemRows();
 

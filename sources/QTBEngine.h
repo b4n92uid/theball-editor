@@ -62,7 +62,7 @@ public:
 
     QNodeInteractor* interface(tbe::scene::Node* node);
 
-    QList<QNodeInteractor*> selection();
+    const QList<QNodeInteractor*>& selection();
 
 public slots:
 

@@ -207,7 +207,7 @@ void QTBEngine::resumeRendring()
 
 void QTBEngine::resizeGL(int w, int h)
 {
-    m_device->setViewportSize(Vector2i(w, h));
+    m_device->setViewport(Vector2i(w, h));
 }
 
 void QTBEngine::applyTranslationEvents()
@@ -1451,7 +1451,7 @@ void QTBEngine::updateInformationGui()
         stream << "</p>";
     }
 
-    m_mainwin->ui()->gen_information->setText(info);
+    m_mainwin->ui()->gen_information->setText(info.toUtf8());
 }
 
 QStringList QTBEngine::usedRessources()
@@ -1510,7 +1510,7 @@ QNodeInteractor* QTBEngine::interface(tbe::scene::Node* node)
         return NULL;
 }
 
-QList<QNodeInteractor*> QTBEngine::selection()
+const QList<QNodeInteractor*>& QTBEngine::selection()
 {
     return m_selection;
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   QVectorBox.h
  * Author: b4n92uid
  *
@@ -26,8 +26,9 @@ public slots:
     void clear();
 
     void componentValueChanged(double d);
-    
+
     void setReadOnly(bool state);
+    void setEnabled(bool state);
 
 signals:
     void valueChanged(const tbe::Vector3f& vec);
@@ -53,7 +54,7 @@ public slots:
     void clear();
 
     void componentValueChanged(double d);
-    
+
     void setReadOnly(bool state);
 
 signals:
@@ -79,7 +80,7 @@ public slots:
     void clear();
 
     void componentValueChanged(int d);
-    
+
     void setReadOnly(bool state);
 
 signals:
