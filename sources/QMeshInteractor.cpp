@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QMeshInteractor.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 29 aoÃ»t 2011, 07:23
  */
 
@@ -562,6 +562,9 @@ void QMeshInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
     connect(m_mainwin->nodesGui.mesh.custommat, SIGNAL(clicked(bool)), this, SLOT(setCustomMaterial(bool)));
 
+    connect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
+    connect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
+
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), this, SLOT(cancelMaterialDialog()));
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), this, SLOT(saveMaterialDialog()));
 
@@ -577,9 +580,6 @@ void QMeshInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.mesh.matedit->ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setAmbiant(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.mesh.matedit->diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setDiffuse(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.mesh.matedit->specular, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setSpecular(const tbe::Vector3f&)));
-
-    connect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
-    connect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
 
     connect(m_mainwin->nodesGui.mesh.matedit->alphathreshold, SIGNAL(valueChanged(double)), this, SLOT(setAlphaThreshold(double)));
 

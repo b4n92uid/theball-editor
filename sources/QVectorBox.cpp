@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   QVectorBox.cpp
  * Author: b4n92uid
- * 
+ *
  * Created on 4 décembre 2010, 00:14
  */
 
@@ -51,6 +51,13 @@ void QDoubleVector3Box::setReadOnly(bool state)
     m_x->setReadOnly(state);
     m_y->setReadOnly(state);
     m_z->setReadOnly(state);
+}
+
+void QDoubleVector3Box::setEnabled(bool state)
+{
+    m_x->setEnabled(state);
+    m_y->setEnabled(state);
+    m_z->setEnabled(state);
 }
 
 QDoubleVector2Box::QDoubleVector2Box(QObject* parent, QDoubleSpinBox* x, QDoubleSpinBox* y)

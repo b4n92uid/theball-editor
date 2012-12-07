@@ -914,12 +914,12 @@ void MainWindow::select(QNodeInteractor* qnode)
 {
     m_tbeWidget->selectNode(qnode);
 
-    if(m_tbeWidget->selection().count() > 1)
+    if(m_tbeWidget->selection().length() > 0)
     {
-        nodesGui.name->setReadOnly(true);
-        nodesGui.position->setReadOnly(true);
-        nodesGui.rotation->setReadOnly(true);
-        nodesGui.scale->setReadOnly(true);
+        nodesGui.name->setEnabled(true);
+        nodesGui.position->setEnabled(true);
+        nodesGui.rotation->setEnabled(true);
+        nodesGui.scale->setEnabled(true);
         nodesGui.addField->setEnabled(true);
         nodesGui.delField->setEnabled(true);
         nodesGui.clearFields->setEnabled(true);
@@ -938,12 +938,12 @@ void MainWindow::deselect(QNodeInteractor* qnode)
 {
     m_tbeWidget->deselectNode(qnode);
 
-    if(m_tbeWidget->selection().count() <= 1)
+    if(m_tbeWidget->selection().empty() == 0)
     {
-        nodesGui.name->setReadOnly(false);
-        nodesGui.position->setReadOnly(false);
-        nodesGui.rotation->setReadOnly(false);
-        nodesGui.scale->setReadOnly(false);
+        nodesGui.name->setEnabled(false);
+        nodesGui.position->setEnabled(false);
+        nodesGui.rotation->setEnabled(false);
+        nodesGui.scale->setEnabled(false);
         nodesGui.addField->setEnabled(false);
         nodesGui.delField->setEnabled(false);
         nodesGui.clearFields->setEnabled(false);
@@ -962,10 +962,10 @@ void MainWindow::deselectAll()
     m_uinterface->actionCloneNode->setEnabled(false);
     m_uinterface->actionDeleteNode->setEnabled(false);
 
-    nodesGui.name->setReadOnly(false);
-    nodesGui.position->setReadOnly(false);
-    nodesGui.rotation->setReadOnly(false);
-    nodesGui.scale->setReadOnly(false);
+    nodesGui.name->setEnabled(false);
+    nodesGui.position->setEnabled(false);
+    nodesGui.rotation->setEnabled(false);
+    nodesGui.scale->setEnabled(false);
     nodesGui.addField->setEnabled(false);
     nodesGui.delField->setEnabled(false);
     nodesGui.clearFields->setEnabled(false);

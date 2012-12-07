@@ -1951,15 +1951,15 @@
   <tabstop>node_rot_x</tabstop>
   <tabstop>node_rot_y</tabstop>
   <tabstop>node_rot_z</tabstop>
-  <tabstop>node_particles_boxsize_x</tabstop>
-  <tabstop>node_particles_boxsize_y</tabstop>
-  <tabstop>node_particles_boxsize_z</tabstop>
-  <tabstop>node_particles_freemove</tabstop>
-  <tabstop>node_particles_lifeinit</tabstop>
-  <tabstop>node_particles_lifedown</tabstop>
+  <tabstop>node_enable</tabstop>
+  <tabstop>node_lock</tabstop>
+  <tabstop>node_mesh_billboard_y</tabstop>
+  <tabstop>node_mesh_billboard_x</tabstop>
+  <tabstop>node_mesh_custommat</tabstop>
+  <tabstop>node_mesh_editmat</tabstop>
   <tabstop>node_particles_number</tabstop>
-  <tabstop>node_particles_build</tabstop>
-  <tabstop>node_particles_texture</tabstop>
+  <tabstop>node_mesh_add</tabstop>
+  <tabstop>attribTab</tabstop>
   <tabstop>node_particles_texture_browse</tabstop>
   <tabstop>node_particles_continousmode</tabstop>
   <tabstop>node_particles_gravity_x</tabstop>
@@ -1969,7 +1969,7 @@
   <tabstop>node_addfield</tabstop>
   <tabstop>node_delfield</tabstop>
   <tabstop>node_clearfields</tabstop>
-  <tabstop>node_mesh_add</tabstop>
+  <tabstop>node_particles_build</tabstop>
   <tabstop>node_particles_gravity_z</tabstop>
   <tabstop>node_light_specular_y</tabstop>
   <tabstop>node_light_diffuse_x</tabstop>
@@ -1983,6 +1983,47 @@
   <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_ambiant_y</tabstop>
   <tabstop>node_particles_add</tabstop>
+  <tabstop>node_list</tabstop>
+  <tabstop>node_display_meshs</tabstop>
+  <tabstop>node_display_particules</tabstop>
+  <tabstop>node_display_lights</tabstop>
+  <tabstop>node_display_marks</tabstop>
+  <tabstop>node_list_sort</tabstop>
+  <tabstop>node_particles_boxsize_x</tabstop>
+  <tabstop>node_particles_boxsize_y</tabstop>
+  <tabstop>node_particles_texture</tabstop>
+  <tabstop>node_particles_boxsize_z</tabstop>
+  <tabstop>node_particles_freemove</tabstop>
+  <tabstop>node_particles_lifeinit</tabstop>
+  <tabstop>node_particles_lifedown</tabstop>
+  <tabstop>node_particles_bulletsize_x</tabstop>
+  <tabstop>node_particles_bulletsize_y</tabstop>
+  <tabstop>node_particles_pointsprite</tabstop>
+  <tabstop>env_ambient_x</tabstop>
+  <tabstop>env_ambient_y</tabstop>
+  <tabstop>env_ambient_z</tabstop>
+  <tabstop>env_znear</tabstop>
+  <tabstop>env_zfar</tabstop>
+  <tabstop>fog_enable</tabstop>
+  <tabstop>fog_x</tabstop>
+  <tabstop>fog_y</tabstop>
+  <tabstop>fog_z</tabstop>
+  <tabstop>fog_start</tabstop>
+  <tabstop>fog_end</tabstop>
+  <tabstop>skybox_enable</tabstop>
+  <tabstop>skybox_back</tabstop>
+  <tabstop>skybox_back_browse</tabstop>
+  <tabstop>skybox_top</tabstop>
+  <tabstop>skybox_top_browse</tabstop>
+  <tabstop>skybox_bottom</tabstop>
+  <tabstop>skybox_bottom_browse</tabstop>
+  <tabstop>skybox_left</tabstop>
+  <tabstop>skybox_left_browse</tabstop>
+  <tabstop>skybox_right</tabstop>
+  <tabstop>skybox_right_browse</tabstop>
+  <tabstop>skybox_apply</tabstop>
+  <tabstop>skybox_front</tabstop>
+  <tabstop>skybox_front_browse</tabstop>
  </tabstops>
  <resources>
   <include location="ressource.qrc"/>
