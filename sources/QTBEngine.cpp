@@ -266,10 +266,7 @@ void QTBEngine::applyTranslationEvents()
             {
                 tbe::scene::Node* selnode = qnode->target();
 
-                Matrix4 transform;
-                transform.translate(position);
-
-                selnode->mulMatrix(transform);
+                selnode->setPos(selnode->getPos() + position);
 
                 highlight(qnode);
             }
@@ -1569,6 +1566,6 @@ void SelBox::setAround(tbe::scene::Node* node)
     AABB selAabb = node->getAabb();
 
     setMatrix(node->getAbsoluteMatrix());
-    setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
+    //setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
     setSize(selAabb.getSize() / 2.0f + 0.2f);
 }
