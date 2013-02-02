@@ -46,8 +46,14 @@ void swapcontainer(TC& c, T1& v1, T2& v2)
     c = (TC)v1 == c ? (TC)v2 : (TC)v1;
 }
 
-QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
+QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(parent)
 {
+    QGLFormat qglf(QGL::SampleBuffers);
+    qglf.setDepthBufferSize(32);
+    qglf.setDoubleBuffer(true);
+
+    setFormat(qglf);
+
     m_mainwin = dynamic_cast<MainWindow*>(parent->parentWidget());
 
     m_device = NULL;
