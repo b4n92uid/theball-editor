@@ -18,7 +18,7 @@ public:
     ClassFactory(MainWindow* mainwin);
 
     tbe::scene::Mesh* newMesh(tbe::scene::MeshParallelScene* scene);
-    tbe::scene::Light* newLight(tbe::scene::LightParallelScene* scene);
+    tbe::scene::Light* newLight(tbe::scene::MeshParallelScene* scene);
     tbe::scene::ParticlesEmiter* newParticles(tbe::scene::ParticlesParallelScene* scene);
     tbe::scene::MapMark* newMapMark(tbe::scene::MapMarkParallelScene* scene);
 

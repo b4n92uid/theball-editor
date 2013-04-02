@@ -28,33 +28,27 @@ inline void translate(int& c)
 {
     switch(c)
     {
-        case Qt::Key_Shift:
-            c = EventManager::KEY_LSHIFT;
-            break;
-        case Qt::Key_Alt:
-            c = EventManager::KEY_LALT;
-            break;
-        case Qt::Key_Control:
-            c = EventManager::KEY_LCTRL;
-            break;
+    case Qt::Key_Shift:
+        c = EventManager::KEY_LSHIFT;
+        break;
+    case Qt::Key_Alt:
+        c = EventManager::KEY_LALT;
+        break;
+    case Qt::Key_Control:
+        c = EventManager::KEY_LCTRL;
+        break;
     }
 }
 
 template< typename TC, typename T1, typename T2>
 void swapcontainer(TC& c, T1& v1, T2& v2)
 {
-    c = (TC)v1 == c ? (TC)v2 : (TC)v1;
+    c = (TC) v1 == c ? (TC) v2 : (TC) v1;
 }
 
-QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(parent)
+QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
-    QGLFormat qglf(QGL::SampleBuffers);
-    qglf.setDepthBufferSize(32);
-    qglf.setDoubleBuffer(true);
-
-    setFormat(qglf);
-
-    m_mainwin = dynamic_cast<MainWindow*>(parent->parentWidget());
+    m_mainwin = dynamic_cast<MainWindow*> (parent->parentWidget());
 
     m_device = NULL;
     m_sceneManager = NULL;
@@ -115,9 +109,6 @@ void QTBEngine::initializeGL()
     m_sceneManager = m_device->getSceneManager();
     m_eventManager = m_device->getEventManager();
 
-    m_lightScene = new LightParallelScene;
-    m_sceneManager->addParallelScene(m_lightScene);
-
     m_meshScene = new MeshParallelScene;
     m_meshScene->setEnableFrustumTest(true);
     m_meshScene->setTransparencySort(true);
@@ -131,7 +122,6 @@ void QTBEngine::initializeGL()
 
     m_sceneParser = new scene::SceneParser(m_sceneManager);
     m_sceneParser->setClassFactory(m_classFactory);
-    m_sceneParser->setLightScene(m_lightScene);
     m_sceneParser->setMeshScene(m_meshScene);
     m_sceneParser->setParticlesScene(m_particlesScene);
     m_sceneParser->setMarkScene(m_markScene);
@@ -516,7 +506,7 @@ struct Nearest
 
     bool operator()(scene::Mesh* mesh1, scene::Mesh * mesh2)
     {
-        return(mesh1->getAbsoluteMatrix().getPos() - center <
+        return (mesh1->getAbsoluteMatrix().getPos() - center <
                 mesh2->getAbsoluteMatrix().getPos() - center);
     }
 };
@@ -1408,53 +1398,52 @@ void QTBEngine::deselectAllNode()
 void QTBEngine::updateInformationGui()
 {
     QString info;
-    QTextStream stream(&info);
 
-    QString br = "<br />";
+    info =
+            "<p>"
+            "Curseur 3D : %1<br />"
+            "Maillage &eacute;limin&eacute; du rendue : %2<br />"
+            "Maillage afficher au rendue: %3<br />"
+            "Maillage Totale: %4"
+            "</p>"
+            ;
 
-    stream << "<p>";
-
-    stream << "Curseur 3D : " << QString::fromStdString(m_curCursor3D.toStr()) << br
-            << "Maillage éliminé du rendue : " << m_meshScene->getFrustumCullingCount() << br
-            << "Nombre totale de maillage : " << m_meshScene->getRenderedMeshCount() + m_meshScene->getFrustumCullingCount();
-
-    stream << "</p>";
-
-    stream.flush();
+    info = info.arg(QString::fromStdString(m_curCursor3D.toStr()));
+    info = info.arg(m_meshScene->getFrustumCullingCount());
+    info = info.arg(m_meshScene->getRenderedMeshCount());
+    info = info.arg(m_meshScene->getRenderedMeshCount() + m_meshScene->getFrustumCullingCount());
 
     if(m_selectedNode)
     {
-        stream << "<p>";
+        info += "<p>%1 noeud(s) s&eacute;lectionner</p>";
 
-        stream << m_selection.count() << " noeud(s) sélectionner" << br << br;
+        info += "<p>Nom: %2<br/>Type: %3</p>";
 
-        stream << "Nom: ";
+        info = info.arg(m_selection.count());
+
         if(!m_selectedNode->target()->getName().empty())
-            stream << "<b>" << QString::fromStdString(m_selectedNode->target()->getName()) << "</b>" << br;
+            info = info.arg(QString::fromStdString(m_selectedNode->target()->getName()));
         else
-            stream << "<b>[Aucun Nom]</b>" << br;
+            info = info.arg("<i>[Aucun Nom]</i>");
 
-        stream << "Type: ";
-        stream << "<b>" << m_selectedNode->typeName() << "</b>" << br;
+        info = info.arg(m_selectedNode->typeName());
 
-        stream << "Parent: ";
+        info += "<p>Parent: %1<br />Enfants: %2</p>";
+
         if(m_selectedNode->target()->getParent() && !m_selectedNode->target()->getParent()->isRoot())
-            stream << QString::fromStdString(m_selectedNode->target()->getParent()->getName()) << br;
+            info = info.arg(QString::fromStdString(m_selectedNode->target()->getParent()->getName()));
         else
-            stream << "[Pas de parent]" << br;
+            info = info.arg("[Pas de parent]");
 
-        stream << "Enfants: ";
         unsigned childcount = m_selectedNode->target()->getChildCount();
 
         if(childcount > 0)
-            stream << childcount << " enfant(s)";
+            info = info.arg(childcount);
         else
-            stream << "[Pas d'enfants]";
-
-        stream << "</p>";
+            info = info.arg("[Pas d'enfants]");
     }
 
-    m_mainwin->ui()->gen_information->setText(info.toUtf8());
+    m_mainwin->ui()->gen_information->setText(info);
 }
 
 QStringList QTBEngine::usedRessources()
@@ -1561,8 +1550,7 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     using namespace scene;
 
     setName("selection");
-    getMaterial("main")->enable(Material::COLORED | Material::BLEND_MOD | Material::BACKFACE_CULL);
-    getMaterial("main")->disable(Material::LIGHTED | Material::FOGED);
+    getMaterial("main")->setRenderFlags(Material::COLORED | Material::BLEND_ADD);
     getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
     getMaterial("main")->setDepthTest(false);
 }

@@ -169,6 +169,15 @@ void MainWindow::initWidgets()
 {
     m_uinterface->setupUi(this);
 
+    {
+        QFile ss("style.css");
+
+        if(ss.open(QIODevice::ReadOnly))
+            setStyleSheet(ss.readAll());
+
+        ss.close();
+    }
+
     m_tbeWidget = m_uinterface->glwidget;
 
     nodesGui.attribTab = m_uinterface->attribTab;
@@ -189,6 +198,7 @@ void MainWindow::initWidgets()
     QToolBar* toptoolbar = new QToolBar;
     toptoolbar->setFloatable(false);
     toptoolbar->setMovable(false);
+    toptoolbar->setIconSize(QSize(16, 16));
     toptoolbar->addAction(m_uinterface->actionNewScene);
     toptoolbar->addAction(m_uinterface->actionOpen);
     toptoolbar->addAction(m_uinterface->actionSave);
@@ -261,8 +271,6 @@ void MainWindow::initWidgets()
 
     // -------- Mesh
 
-    nodesGui.mesh.add = m_uinterface->node_mesh_add;
-
     nodesGui.mesh.matedit = new MaterialEditDialog(this);
 
     nodesGui.mesh.matedit->textureModel = new QStandardItemModel(this);
@@ -290,7 +298,6 @@ void MainWindow::initWidgets()
     nodesGui.particles.continiousmode = m_uinterface->node_particles_continousmode;
     nodesGui.particles.pointsprite = m_uinterface->node_particles_pointsprite;
     nodesGui.particles.build = m_uinterface->node_particles_build;
-    nodesGui.particles.add = m_uinterface->node_particles_add;
 
     // -------- Lights
 
@@ -301,8 +308,6 @@ void MainWindow::initWidgets()
     nodesGui.light.specular = new QDoubleVector3Box(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
 
     nodesGui.light.radius = m_uinterface->node_light_radius;
-
-    nodesGui.light.add = m_uinterface->node_light_add;
 
     // Nodes liste -------------------------------------------------------------
 
@@ -343,6 +348,10 @@ void MainWindow::initWidgets()
 
     envGui.znear = m_uinterface->env_znear;
     envGui.zfar = m_uinterface->env_zfar;
+
+    envGui.shader.enable = m_uinterface->env_shader;
+    envGui.shader.fragment = new QBrowsEdit(this, m_uinterface->env_frag_shader, m_uinterface->env_frag_shader_browse);
+    envGui.shader.vertex = new QBrowsEdit(this, m_uinterface->env_vert_shader, m_uinterface->env_vert_shader_browse);
 }
 
 void MainWindow::initConnections()
@@ -394,10 +403,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionSortByType, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortByType()));
     connect(m_uinterface->actionSortFromCamera, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromCamera()));
     connect(m_uinterface->actionSortFromSelection, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortFromSelection()));
-
-    connect(nodesGui.mesh.add, SIGNAL(clicked()), this, SLOT(guiMeshNew()));
-    connect(nodesGui.particles.add, SIGNAL(clicked()), this, SLOT(guiParticlesNew()));
-    connect(nodesGui.light.add, SIGNAL(clicked()), this, SLOT(guiLightNew()));
 
     connect(m_tbeWidget, SIGNAL(selection(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(m_tbeWidget, SIGNAL(deselection(QNodeInteractor*)), this, SLOT(deselect(QNodeInteractor*)));
@@ -575,6 +580,12 @@ void MainWindow::updateEnvGui()
 
         genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
     }
+
+    Shader rshade = sceneParser->getMeshScene()->getRenderingShader();
+
+    envGui.shader.enable->setChecked(rshade);
+    envGui.shader.vertex->setOpenFileName(rshade.getVertFilename().c_str());
+    envGui.shader.fragment->setOpenFileName(rshade.getFragFilename().c_str());
 }
 
 void MainWindow::newScene()
@@ -763,22 +774,22 @@ void MainWindow::setCurrentTool(int type)
 
     switch(type)
     {
-        case SELECTION_TOOL:
-            m_uinterface->actionSelectionTool->setChecked(true);
-            m_tbeWidget->selectSelectionTool();
-            break;
+    case SELECTION_TOOL:
+        m_uinterface->actionSelectionTool->setChecked(true);
+        m_tbeWidget->selectSelectionTool();
+        break;
 
-        case SCALE_TOOL:
-            m_uinterface->actionScaleTool->setChecked(true);
-            m_tbeWidget->selectScaleTool();
-            m_tbeWidget->setFocus();
-            break;
+    case SCALE_TOOL:
+        m_uinterface->actionScaleTool->setChecked(true);
+        m_tbeWidget->selectScaleTool();
+        m_tbeWidget->setFocus();
+        break;
 
-        case ROTATE_TOOL:
-            m_uinterface->actionRotateTool->setChecked(true);
-            m_tbeWidget->selectRotateTool();
-            m_tbeWidget->setFocus();
-            break;
+    case ROTATE_TOOL:
+        m_uinterface->actionRotateTool->setChecked(true);
+        m_tbeWidget->selectRotateTool();
+        m_tbeWidget->setFocus();
+        break;
     }
 }
 
@@ -1197,7 +1208,7 @@ void MainWindow::pastMaterials()
     if(!selectedNode || selectedNode->typeName() != "Mesh")
         return;
 
-    tbe::scene::Mesh* sourceMesh = dynamic_cast<tbe::scene::Mesh*>(selectedNode->target());
+    tbe::scene::Mesh* sourceMesh = dynamic_cast<tbe::scene::Mesh*> (selectedNode->target());
 
     foreach(QNodeInteractor* child, childs)
     {
@@ -1205,7 +1216,7 @@ void MainWindow::pastMaterials()
 
         if(child->typeName() == "Mesh")
         {
-            tbe::scene::Mesh* mesh = dynamic_cast<tbe::scene::Mesh*>(child->target());
+            tbe::scene::Mesh* mesh = dynamic_cast<tbe::scene::Mesh*> (child->target());
             mesh->fetchMaterials(*sourceMesh);
         }
     }

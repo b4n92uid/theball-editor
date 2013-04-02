@@ -408,7 +408,7 @@ void QMeshInteractor::setOpacity(double value)
 
     Material* mat = getSelectedMaterial();
 
-    mat->setOpacity((float)value);
+    mat->setOpacity((float) value);
 }
 
 void QMeshInteractor::setAmbiant(tbe::Vector3f color)
@@ -494,7 +494,7 @@ void QMeshInteractor::setAlphaThreshold(double value)
 
     Material* mat = getSelectedMaterial();
 
-    mat->setAlphaThershold((float)value);
+    mat->setAlphaThershold((float) value);
 }
 
 void QMeshInteractor::setCullTrick(bool stat)
@@ -680,7 +680,6 @@ void QMeshInteractor::updateGui()
 
     QSignalBlocker blocker;
     blocker
-            << m_mainwin->nodesGui.mesh.add
             << m_mainwin->nodesGui.mesh.billboardX
             << m_mainwin->nodesGui.mesh.billboardY
             << m_mainwin->nodesGui.mesh.editmatfile
@@ -735,6 +734,7 @@ void QMeshInteractor::updateGui()
     }
 
     m_mainwin->nodesGui.mesh.custommat->setChecked(m_target->isOutputMaterial());
+    m_mainwin->nodesGui.mesh.editmatfile->setEnabled(m_target->isOutputMaterial());
 
     // Select the first material and update GUI
     QModelIndex index = m_mainwin->nodesGui.mesh.matedit->materialsModel->index(0, 0);

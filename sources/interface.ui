@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>859</width>
+    <height>714</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,19 +23,22 @@
    <iconset resource="ressource.qrc">
     <normaloff>:/Medias/medias/icon.ico</normaloff>:/Medias/medias/icon.ico</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="8,2">
+   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="9,1">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
+    </property>
+    <property name="rightMargin">
+     <number>4</number>
+    </property>
     <item>
      <widget class="QTBEngine" name="glwidget" native="true"/>
     </item>
     <item>
      <widget class="QTabWidget" name="propertyTab">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -43,7 +46,7 @@
        <attribute name="title">
         <string>Générale</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_7" stretch="1,0,8">
+       <layout class="QVBoxLayout" name="verticalLayout_7">
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
@@ -96,7 +99,14 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QTreeView" name="gen_additional"/>
+            <widget class="QTreeView" name="gen_additional">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_28">
@@ -138,70 +148,18 @@
           </layout>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Liste</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_14">
         <item>
-         <widget class="QNodeListView" name="node_list"/>
-        </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="node_display_meshs">
-            <property name="text">
-             <string>Afficher les Mailliages</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QCheckBox" name="node_display_particules">
-            <property name="text">
-             <string>Afficher les Particules</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="node_display_lights">
-            <property name="text">
-             <string>Afficher les Lumieres</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="node_display_marks">
-            <property name="text">
-             <string>Afficher les Marqeurs</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPushButton" name="node_list_sort">
-          <property name="text">
-           <string>Trier</string>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
           </property>
-          <property name="icon">
-           <iconset resource="ressource.qrc">
-            <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
           </property>
-         </widget>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -209,10 +167,72 @@
        <attribute name="title">
         <string>Noeuds</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,8">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QNodeListView" name="node_list"/>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="1">
+             <widget class="QCheckBox" name="node_display_particules">
+              <property name="text">
+               <string>Afficher les Particules</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="node_display_meshs">
+              <property name="text">
+               <string>Afficher les Mailliages</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="node_display_lights">
+              <property name="text">
+               <string>Afficher les Lumieres</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="node_display_marks">
+              <property name="text">
+               <string>Afficher les Marqeurs</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QPushButton" name="node_list_sort">
+            <property name="text">
+             <string>Trier</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ressource.qrc">
+              <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item>
          <widget class="QGroupBox" name="baseAttribTab">
           <property name="title">
@@ -426,6 +446,12 @@
           <property name="enabled">
            <bool>true</bool>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>286</height>
+           </size>
+          </property>
           <property name="tabPosition">
            <enum>QTabWidget::East</enum>
           </property>
@@ -438,11 +464,47 @@
           <property name="usesScrollButtons">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="tab_4">
+          <widget class="QWidget" name="mesh">
            <attribute name="title">
             <string>Mesh</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QCommandLinkButton" name="node_mesh_editmat">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Editer le Matériau</string>
+              </property>
+              <property name="icon">
+               <iconset resource="ressource.qrc">
+                <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <property name="description">
+               <string>Ouvrir l'éditeur de matèrieaux associer au maillage</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_8">
+              <property name="title">
+               <string>Paramètres</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QCheckBox" name="node_mesh_custommat">
+                 <property name="text">
+                  <string>Matériau  personaliser pour ce maillage</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item>
              <widget class="QGroupBox" name="groupBox">
               <property name="title">
@@ -467,252 +529,6 @@
              </widget>
             </item>
             <item>
-             <widget class="QGroupBox" name="node_mesh_custommat">
-              <property name="title">
-               <string>Matériau  personaliser pour ce maillage</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QCommandLinkButton" name="node_mesh_editmat">
-                 <property name="text">
-                  <string>Editer le Matériau</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="ressource.qrc">
-                   <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
-                 </property>
-                 <property name="description">
-                  <string>Ouvrir l'éditeur de matèrieaux associer au maillage</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_6">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_18">
-              <item>
-               <widget class="QPushButton" name="node_mesh_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tab_2">
-           <attribute name="title">
-            <string>Lumier</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
-            <item>
-             <widget class="QWidget" name="widget_4" native="true">
-              <layout class="QFormLayout" name="formLayout_4">
-               <property name="fieldGrowthPolicy">
-                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-               </property>
-               <property name="margin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_7">
-                 <property name="text">
-                  <string>Type</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="node_light_type">
-                 <item>
-                  <property name="text">
-                   <string>Ponctuelle</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Dirictionelle</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_8">
-                 <property name="text">
-                  <string>Ambient</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_19">
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_ambiant_x">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_ambiant_y">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_ambiant_z">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>Diffuse</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_20">
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_diffuse_x">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_diffuse_y">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_diffuse_z">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                   <property name="value">
-                    <double>1.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Spéculaire</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <layout class="QHBoxLayout" name="horizontalLayout_21">
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_specular_x">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_specular_y">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="node_light_specular_z">
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
-                   </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_11">
-                 <property name="text">
-                  <string>Rayon</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="node_light_radius">
-                 <property name="maximum">
-                  <double>64.000000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>1.000000000000000</double>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -725,24 +541,9 @@
               </property>
              </spacer>
             </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_26">
-              <item>
-               <widget class="QPushButton" name="node_light_add">
-                <property name="text">
-                 <string>Ajouter</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_6">
+          <widget class="QWidget" name="particles">
            <attribute name="title">
             <string>Particles</string>
            </attribute>
@@ -994,24 +795,186 @@
               </layout>
              </widget>
             </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_25">
+           </layout>
+          </widget>
+          <widget class="QWidget" name="light">
+           <attribute name="title">
+            <string>Lumier</string>
+           </attribute>
+           <layout class="QFormLayout" name="formLayout_2">
+            <item row="0" column="1">
+             <widget class="QComboBox" name="node_light_type">
               <item>
-               <widget class="QPushButton" name="node_particles_add">
-                <property name="text">
-                 <string>Ajouter</string>
+               <property name="text">
+                <string>Ponctuelle</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Dirictionelle</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Type</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Ambient</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Diffuse</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>Spéculaire</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Rayon</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_ambiant_x">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
                 </property>
-                <property name="icon">
-                 <iconset resource="ressource.qrc">
-                  <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_ambiant_y">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_ambiant_z">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
+            <item row="2" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_20">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_diffuse_x">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_diffuse_y">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_diffuse_z">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="3" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_21">
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_specular_x">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_specular_y">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="node_light_specular_z">
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="4" column="1">
+             <widget class="QDoubleSpinBox" name="node_light_radius">
+              <property name="maximum">
+               <double>64.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_8">
+          <widget class="QWidget" name="fields">
            <attribute name="title">
             <string>[Champs]</string>
            </attribute>
@@ -1064,7 +1027,7 @@
       </widget>
       <widget class="QWidget" name="envTab">
        <attribute name="title">
-        <string>Envirenment</string>
+        <string>Environment</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_15">
         <item>
@@ -1115,6 +1078,83 @@
                </property>
                <property name="singleStep">
                 <double>0.100000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="env_shader">
+          <property name="title">
+           <string>Shader</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_24" stretch="6,1">
+             <item>
+              <widget class="QLineEdit" name="env_vert_shader">
+               <property name="placeholderText">
+                <string>Vertex Shader</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="env_vert_shader_browse">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="ressource.qrc">
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
+               </property>
+               <property name="flat">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_25" stretch="6,1">
+             <item>
+              <widget class="QLineEdit" name="env_frag_shader">
+               <property name="placeholderText">
+                <string>Fragment Shader</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="env_frag_shader_browse">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="ressource.qrc">
+                 <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
+               </property>
+               <property name="flat">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -1486,6 +1526,9 @@
                 <iconset resource="ressource.qrc">
                  <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
                </property>
+               <property name="flat">
+                <bool>false</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -1517,7 +1560,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>859</width>
      <height>21</height>
     </rect>
    </property>
@@ -1604,8 +1647,8 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/folder_page_white.png</normaloff>:/Medias/medias/folder_page_white.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/open.png</normaloff>:/Medias/medias/open.png</iconset>
    </property>
    <property name="text">
     <string>Charger une scene...</string>
@@ -1656,8 +1699,8 @@
   </action>
   <action name="actionNewScene">
    <property name="icon">
-    <iconset resource="ressource.qrc">
-     <normaloff>:/Medias/medias/page_white_star.png</normaloff>:/Medias/medias/page_white_star.png</iconset>
+    <iconset>
+     <normaloff>:/Medias/medias/new.png</normaloff>:/Medias/medias/new.png</iconset>
    </property>
    <property name="text">
     <string>Nouvelle scene</string>
@@ -1934,7 +1977,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>propertyTab</tabstop>
   <tabstop>gen_title</tabstop>
   <tabstop>gen_author</tabstop>
   <tabstop>gen_additional</tabstop>
@@ -1955,10 +1997,7 @@
   <tabstop>node_lock</tabstop>
   <tabstop>node_mesh_billboard_y</tabstop>
   <tabstop>node_mesh_billboard_x</tabstop>
-  <tabstop>node_mesh_custommat</tabstop>
-  <tabstop>node_mesh_editmat</tabstop>
   <tabstop>node_particles_number</tabstop>
-  <tabstop>node_mesh_add</tabstop>
   <tabstop>attribTab</tabstop>
   <tabstop>node_particles_texture_browse</tabstop>
   <tabstop>node_particles_continousmode</tabstop>
@@ -1976,19 +2015,14 @@
   <tabstop>node_light_diffuse_y</tabstop>
   <tabstop>node_light_diffuse_z</tabstop>
   <tabstop>node_light_specular_x</tabstop>
-  <tabstop>node_light_add</tabstop>
-  <tabstop>node_light_type</tabstop>
   <tabstop>node_light_specular_z</tabstop>
   <tabstop>node_light_radius</tabstop>
   <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_ambiant_y</tabstop>
-  <tabstop>node_particles_add</tabstop>
-  <tabstop>node_list</tabstop>
   <tabstop>node_display_meshs</tabstop>
   <tabstop>node_display_particules</tabstop>
   <tabstop>node_display_lights</tabstop>
   <tabstop>node_display_marks</tabstop>
-  <tabstop>node_list_sort</tabstop>
   <tabstop>node_particles_boxsize_x</tabstop>
   <tabstop>node_particles_boxsize_y</tabstop>
   <tabstop>node_particles_texture</tabstop>
@@ -2027,6 +2061,24 @@
  </tabstops>
  <resources>
   <include location="ressource.qrc"/>
+  <include location="style.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>node_mesh_custommat</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>node_mesh_editmat</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>575</x>
+     <y>343</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>584</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

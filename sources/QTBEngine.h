@@ -154,7 +154,6 @@ private:
     tbe::scene::OrbitalCamera* m_camera;
 
     tbe::scene::MeshParallelScene* m_meshScene;
-    tbe::scene::LightParallelScene* m_lightScene;
     tbe::scene::ParticlesParallelScene* m_particlesScene;
     tbe::scene::WaterParallelScene* m_waterScene;
     tbe::scene::MapMarkParallelScene* m_markScene;
