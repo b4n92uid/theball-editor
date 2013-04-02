@@ -56,7 +56,7 @@ protected:
     bool leaveSafely();
 
     void updateEnvGui();
-    
+
     void outputScene(const QString& filename);
 
 public slots:
@@ -69,7 +69,7 @@ public slots:
     void saveSceneDialog();
     void saveScene(const QString& filename);
     void saveScene();
-    
+
     void saveBackup();
 
     void openSceneFromHistory();
@@ -145,16 +145,12 @@ private:
             QDoubleVector3Box* specular;
             QDoubleSpinBox* radius;
 
-            QPushButton* add;
-
         } light;
 
         struct MeshGuiTab
         {
-            QPushButton* add;
-
             QPushButton* editmatfile;
-            QGroupBox* custommat;
+            QCheckBox* custommat;
 
             MaterialEditDialog* matedit;
 
@@ -177,8 +173,6 @@ private:
             QCheckBox* pointsprite;
 
             QPushButton* build;
-
-            QPushButton* add;
 
             QMap<QObject*, QString> sourcMap;
 
@@ -207,6 +201,14 @@ private:
 
     struct EnvGuiTab
     {
+
+        struct
+        {
+            QGroupBox* enable;
+            QBrowsEdit* vertex;
+            QBrowsEdit* fragment;
+
+        } shader;
 
         struct SkyboxGuiTab
         {

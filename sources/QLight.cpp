@@ -12,7 +12,7 @@
 using namespace tbe::scene;
 
 QLight::QLight(MainWindow* mainwin) :
-Light(mainwin->tbeWidget()->sceneParser()->getLightScene()),
+Light(mainwin->tbeWidget()->sceneParser()->getMeshScene()),
 QLightInteractor(mainwin, this)
 {
 }

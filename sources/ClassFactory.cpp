@@ -32,7 +32,7 @@ tbe::scene::Mesh* ClassFactory::newMesh(tbe::scene::MeshParallelScene* scene)
     return mesh;
 }
 
-tbe::scene::Light* ClassFactory::newLight(tbe::scene::LightParallelScene* scene)
+tbe::scene::Light* ClassFactory::newLight(tbe::scene::MeshParallelScene* scene)
 {
     QLight* light = new QLight(m_mainwin);
 

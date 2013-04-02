@@ -13,7 +13,6 @@
 #include <Tbe.h>
 
 #include "ui_matedit.h"
-#include "ui_drawdialog.h"
 
 #include "QVectorBox.h"
 
@@ -38,25 +37,6 @@ public:
 
     QStandardItemModel* materialsModel;
     QStandardItemModel* textureModel;
-};
-
-class DrawToolDialog : public QDialog, public Ui::DrawToolDialog
-{
-    Q_OBJECT
-
-public:
-    DrawToolDialog(QWidget* parent);
-
-    QDoubleVector2Box* rotationRange;
-    QDoubleVector2Box* scaleRange;
-
-public slots:
-    void rotationAxeChanged();
-    void scaleAxeChanged();
-
-signals:
-    void rotationAxe(bool, bool, bool);
-    void scaleAxe(bool, bool, bool);
 };
 
 #endif	/* TOOLSDIALOGS_H */
