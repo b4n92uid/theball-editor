@@ -38,27 +38,28 @@ PackerDialog::PackerDialog(MainWindow* parent) : QDialog(parent)
     connect(browseBaseDirectory, SIGNAL(clicked()), this, SLOT(changeBaseDir()));
 }
 
-PackerDialog::~PackerDialog()
-{
-}
+PackerDialog::~PackerDialog() { }
 
-void PackerDialog::recursivFilesFind(const SceneParser::Relation& rel)
+void PackerDialog::recursivFilesFind(const tbe::scene::rtree& rel)
 {
-    for(SceneParser::AttribMap::const_iterator it = rel.attr.begin(); it != rel.attr.end(); it++)
+
+    BOOST_FOREACH(tbe::scene::rtree::value_type v, rel)
     {
-        QString value = QString::fromStdString(it->second);
+        QString value = QString::fromStdString(v.second.get_value<std::string>());
         QFileInfo finfo = m_baseDir.filePath(value);
 
         if(finfo.isReadable())
             addRelativeFile(value);
     }
 
-    for(unsigned i = 0; i < rel.child.size(); i++)
-        recursivFilesFind(rel.child[i]);
+    BOOST_FOREACH(tbe::scene::rtree::value_type v, rel.get_child("node"))
+    recursivFilesFind(v.second);
 }
 
 void PackerDialog::fillList()
 {
+    using namespace std;
+
     m_fileListModel->removeRows(0, m_fileListModel->rowCount());
 
     QTBEngine* tbewidget = m_parent->tbeWidget();
@@ -66,20 +67,20 @@ void PackerDialog::fillList()
 
     parser->prepare();
 
-    SceneParser::MapDescriptor& descriptor = parser->getMapDescriptor();
+    const tbe::scene::rtree& descriptor = parser->scheme();
 
-    addRelativeFile(QString::fromStdString(descriptor.skybox.front));
-    addRelativeFile(QString::fromStdString(descriptor.skybox.back));
-    addRelativeFile(QString::fromStdString(descriptor.skybox.top));
-    addRelativeFile(QString::fromStdString(descriptor.skybox.bottom));
-    addRelativeFile(QString::fromStdString(descriptor.skybox.left));
-    addRelativeFile(QString::fromStdString(descriptor.skybox.right));
+    addRelativeFile(QString::fromStdString(descriptor.get<string>("scene.skybox.front")));
+    addRelativeFile(QString::fromStdString(descriptor.get<string>("scene.skybox.back")));
+    addRelativeFile(QString::fromStdString(descriptor.get<string>("scene.skybox.top")));
+    addRelativeFile(QString::fromStdString(descriptor.get<string>("scene.skybox.bottom")));
+    addRelativeFile(QString::fromStdString(descriptor.get<string>("scene.skybox.left")));
+    addRelativeFile(QString::fromStdString(descriptor.get<string>("scene.skybox.right")));
 
     foreach(QString path, m_parent->tbeWidget()->usedRessources())
     addAbsoluteFile(path);
 
-    for(unsigned i = 0; i < descriptor.nodes.size(); i++)
-        recursivFilesFind(descriptor.nodes[i]);
+    BOOST_FOREACH(tbe::scene::rtree::value_type v, descriptor.get_child("scene.content"))
+    recursivFilesFind(v.second);
 
     m_fileListModel->sort(0);
 }

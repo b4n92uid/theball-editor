@@ -100,11 +100,11 @@ public slots:
     void setZNear(float value);
     void setZFar(float value);
 
-    void skyboxApply(const QStringList& texs);
-    void skyboxClear();
+    void setSkybox(const QStringList& texs);
+    void setSkybox(bool enable);
 
-    void fogApply(tbe::Vector4f color, float start, float end);
-    void fogClear();
+    void setFog(tbe::Vector4f color, float start, float end);
+    void setFog(bool enable);
 
     void selectSelectionTool();
     void selectRotateTool();
