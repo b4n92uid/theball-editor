@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>668</width>
-    <height>630</height>
+    <height>671</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <bool>false</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="6" column="0">
+   <item row="5" column="0">
     <widget class="QGroupBox" name="cliping">
      <property name="title">
       <string>Clipping</string>
@@ -117,7 +117,7 @@
      </layout>
     </widget>
    </item>
-   <item row="6" column="1">
+   <item row="5" column="1">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Coloration</string>
@@ -196,7 +196,7 @@
      </layout>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <widget class="QGroupBox" name="blending">
      <property name="title">
       <string>Blending</string>
@@ -236,7 +236,7 @@
      </layout>
     </widget>
    </item>
-   <item row="7" column="1">
+   <item row="6" column="1">
     <widget class="QGroupBox" name="alpha">
      <property name="title">
       <string>Alpha</string>
@@ -278,7 +278,7 @@
      </layout>
     </widget>
    </item>
-   <item row="8" column="0">
+   <item row="7" column="0">
     <widget class="QGroupBox" name="others">
      <property name="title">
       <string>Autres</string>
@@ -308,7 +308,7 @@
      </layout>
     </widget>
    </item>
-   <item row="8" column="1">
+   <item row="7" column="1">
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
       <string>Information</string>
@@ -324,7 +324,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QGroupBox" name="groupBox_4">
      <property name="title">
       <string>Lumiere</string>
@@ -486,94 +486,6 @@
      </layout>
     </widget>
    </item>
-   <item row="9" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout_10">
-     <item>
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="apply">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="text">
-        <string>Appliquer</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="cancel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
-       <property name="text">
-        <string>Annuler</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="9" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
-     <item>
-      <widget class="QPushButton" name="copy">
-       <property name="text">
-        <string>Copier</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ressource.qrc">
-         <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="past">
-       <property name="text">
-        <string>Coller</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ressource.qrc">
-         <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
    <item row="0" column="0" rowspan="2">
     <widget class="QGroupBox" name="textured">
      <property name="title">
@@ -678,7 +590,7 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1" rowspan="5">
+   <item row="0" column="1" rowspan="4">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Liste des materiaux</string>
@@ -697,32 +609,93 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox_5">
-     <property name="title">
-      <string>Shader</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_11">
-        <item>
-         <widget class="QLineEdit" name="lineEdit"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="texture_add_2">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="ressource.qrc">
-            <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
+   <item row="8" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_10">
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="apply">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>Appliquer</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>Annuler</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="8" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item>
+      <widget class="QPushButton" name="copy">
+       <property name="text">
+        <string>Copier</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ressource.qrc">
+         <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="past">
+       <property name="text">
+        <string>Coller</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

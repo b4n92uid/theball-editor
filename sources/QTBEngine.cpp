@@ -28,15 +28,15 @@ inline void translate(int& c)
 {
     switch(c)
     {
-    case Qt::Key_Shift:
-        c = EventManager::KEY_LSHIFT;
-        break;
-    case Qt::Key_Alt:
-        c = EventManager::KEY_LALT;
-        break;
-    case Qt::Key_Control:
-        c = EventManager::KEY_LCTRL;
-        break;
+        case Qt::Key_Shift:
+            c = EventManager::KEY_LSHIFT;
+            break;
+        case Qt::Key_Alt:
+            c = EventManager::KEY_LALT;
+            break;
+        case Qt::Key_Control:
+            c = EventManager::KEY_LCTRL;
+            break;
     }
 }
 
@@ -173,6 +173,8 @@ void QTBEngine::setupSelection()
     m_grid = new Grid(m_meshScene, 8, 8);
     m_grid->setName("grid");
     m_grid->setEnable(false);
+    m_grid->getMaterial("main")->setRenderFlags(Material::PIPELINE);
+    m_grid->setSerialized(false);
 
     m_rootNode->addChild(m_grid);
 }
@@ -482,12 +484,12 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
 
     pushHistoryStat(new ModificationState(node));
 
-    toggleSelBox(false);
+    m_selbox->Node::setEnable(false);
     m_grid->setEnable(false);
 
     m_meshScene->setInFloor(selnode);
 
-    toggleSelBox(true);
+    m_selbox->Node::setEnable(true);
     m_grid->setEnable(m_gridset.enable);
 
     node->updateGui();
@@ -550,8 +552,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
         if(m_currentTool->type == SELECTION_TOOL)
         {
-            toggleSelBox(false);
-
+            m_selbox->Node::setEnable(false);
             m_grid->setEnable(false);
 
             QMap < QNodeInteractor*, bool> initialState;
@@ -622,8 +623,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 node->target()->setEnable(initialState[node]);
             }
 
-            toggleSelBox(true);
-
+            m_selbox->Node::setEnable(true);
             m_grid->setEnable(m_gridset.enable);
         }
 
@@ -1143,12 +1143,6 @@ void QTBEngine::saveScene(const QString& filename)
 {
     using namespace scene;
 
-    foreach(Node* selbox, m_selboxArray)
-    m_sceneParser->exclude(selbox);
-
-    m_sceneParser->exclude(m_selbox);
-    m_sceneParser->exclude(m_grid);
-
     m_sceneParser->prepare();
     m_sceneParser->save(filename.toStdString());
 }
@@ -1252,8 +1246,8 @@ QMesh* QTBEngine::meshNew(const QString& filename)
 
     QMesh* mesh = new QMesh(m_mainwin, OBJMesh(m_meshScene, filename.toStdString()));
 
-    mesh->addToConstructionMap("filename", filename.toStdString());
-    mesh->addToConstructionMap("class", "OBJMesh");
+    mesh->addSerializeValue("class.path", filename.toStdString());
+    mesh->addSerializeValue("class.format", "obj");
 
     placeNewNode(mesh);
 
@@ -1295,7 +1289,7 @@ QMapMark* QTBEngine::markNew()
     return mark;
 }
 
-void QTBEngine::skyboxApply(const QStringList& texs)
+void QTBEngine::setSkybox(const QStringList& texs)
 {
     Texture skytex[6];
 
@@ -1304,27 +1298,23 @@ void QTBEngine::skyboxApply(const QStringList& texs)
             skytex[i] = texs[i].toStdString();
 
     m_skybox->setTextures(skytex);
-
-    m_skybox->setEnable(true);
 }
 
-void QTBEngine::skyboxClear()
+void QTBEngine::setSkybox(bool enable)
 {
-    m_skybox->clear();
+    m_skybox->setEnable(enable);
 }
 
-void QTBEngine::fogApply(tbe::Vector4f color, float start, float end)
+void QTBEngine::setFog(tbe::Vector4f color, float start, float end)
 {
     m_fog->setColor(color);
     m_fog->setStart(start);
     m_fog->setEnd(end);
-
-    m_fog->setEnable(true);
 }
 
-void QTBEngine::fogClear()
+void QTBEngine::setFog(bool enable)
 {
-    m_fog->clear();
+    m_fog->setEnable(enable);
 }
 
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
@@ -1346,6 +1336,7 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
     else if(!m_selection.contains(qnode))
     {
         m_selboxArray[qnode] = new SelBox(m_meshScene);
+
         m_rootNode->addChild(m_selboxArray[qnode]);
 
         m_selection.push_back(qnode);
@@ -1540,9 +1531,7 @@ void QTBEngine::selectRotateTool()
     setCursor(m_currentTool->cursor);
 }
 
-SelBoxInterface::SelBoxInterface()
-{
-}
+SelBoxInterface::SelBoxInterface() { }
 
 SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene, 1)
 {
@@ -1550,9 +1539,10 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     using namespace scene;
 
     setName("selection");
-    getMaterial("main")->setRenderFlags(Material::COLORED | Material::BLEND_ADD);
+    getMaterial("main")->setRenderFlags(Material::COLORED | Material::BLEND_ADD | Material::PIPELINE);
     getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
     getMaterial("main")->setDepthTest(false);
+    setSerialized(false);
 }
 
 void SelBox::setAround(tbe::scene::Node* node)

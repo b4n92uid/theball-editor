@@ -80,8 +80,6 @@ public slots:
 
     void closeEvent(QCloseEvent *event);
 
-    void skyboxWorkingDir(const QString& filename);
-
     void toggleFullWidget(bool full = true);
 
     void assignParent();
@@ -110,8 +108,14 @@ public slots:
     void deselect(QNodeInteractor* qnode);
     void deselectAll();
 
-    void guiSkyboxApply(bool enable = true);
-    void guiFogApply(bool enable = true);
+    void guiSkyboxEnable(bool enable);
+    void guiSkyboxBrowse();
+    void guiSkyboxChange();
+    void guiSkyboxShift();
+
+    void guiFogEnable(bool enable);
+    void guiFogChange();
+
     void guiAmbiantApply(const tbe::Vector3f& value);
     void guiZNear(double value);
     void guiZFar(double value);
@@ -201,20 +205,14 @@ private:
 
     struct EnvGuiTab
     {
-
-        struct
-        {
-            QGroupBox* enable;
-            QBrowsEdit* vertex;
-            QBrowsEdit* fragment;
-
-        } shader;
-
         struct SkyboxGuiTab
         {
-            QBrowsEdit * textures[6];
+            QTreeWidget* list;
             QPushButton* apply;
+            QPushButton* browse;
             QGroupBox* enable;
+            QPushButton* up;
+            QPushButton* down;
 
         } skybox;
 

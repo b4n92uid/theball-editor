@@ -333,13 +333,10 @@ void MainWindow::initWidgets()
 
     envGui.skybox.apply = m_uinterface->skybox_apply;
     envGui.skybox.enable = m_uinterface->skybox_enable;
-
-    envGui.skybox.textures[0] = new QBrowsEdit(this, m_uinterface->skybox_front, m_uinterface->skybox_front_browse);
-    envGui.skybox.textures[1] = new QBrowsEdit(this, m_uinterface->skybox_back, m_uinterface->skybox_back_browse);
-    envGui.skybox.textures[2] = new QBrowsEdit(this, m_uinterface->skybox_top, m_uinterface->skybox_top_browse);
-    envGui.skybox.textures[3] = new QBrowsEdit(this, m_uinterface->skybox_bottom, m_uinterface->skybox_bottom_browse);
-    envGui.skybox.textures[4] = new QBrowsEdit(this, m_uinterface->skybox_left, m_uinterface->skybox_left_browse);
-    envGui.skybox.textures[5] = new QBrowsEdit(this, m_uinterface->skybox_right, m_uinterface->skybox_right_browse);
+    envGui.skybox.browse = m_uinterface->skybox_browse;
+    envGui.skybox.list = m_uinterface->skybox_list;
+    envGui.skybox.up = m_uinterface->skybox_up;
+    envGui.skybox.down = m_uinterface->skybox_down;
 
     envGui.fog.color = new QDoubleVector3Box(this, m_uinterface->fog_x, m_uinterface->fog_y, m_uinterface->fog_z);
     envGui.fog.start = m_uinterface->fog_start;
@@ -348,10 +345,6 @@ void MainWindow::initWidgets()
 
     envGui.znear = m_uinterface->env_znear;
     envGui.zfar = m_uinterface->env_zfar;
-
-    envGui.shader.enable = m_uinterface->env_shader;
-    envGui.shader.fragment = new QBrowsEdit(this, m_uinterface->env_frag_shader, m_uinterface->env_frag_shader_browse);
-    envGui.shader.vertex = new QBrowsEdit(this, m_uinterface->env_vert_shader, m_uinterface->env_vert_shader_browse);
 }
 
 void MainWindow::initConnections()
@@ -422,26 +415,21 @@ void MainWindow::initConnections()
     connect(nodesGui.nodesListView, SIGNAL(removeNode()), m_tbeWidget, SLOT(deleteSelected()));
     connect(nodesGui.nodesListView, SIGNAL(setOnFloorNode()), m_tbeWidget, SLOT(baseOnFloor()));
 
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbiantApply(const tbe::Vector3f&)));
+
     connect(envGui.znear, SIGNAL(valueChanged(double)), this, SLOT(guiZNear(double)));
     connect(envGui.zfar, SIGNAL(valueChanged(double)), this, SLOT(guiZFar(double)));
 
-    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
-    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogApply(bool)));
-    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogApply()));
-    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
-    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(guiFogApply()));
+    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogEnable(bool)));
+    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogChange()));
+    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogChange()));
+    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(guiFogChange()));
 
-    connect(envGui.skybox.textures[0], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
-    connect(envGui.skybox.textures[1], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
-    connect(envGui.skybox.textures[2], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
-    connect(envGui.skybox.textures[3], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
-    connect(envGui.skybox.textures[4], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
-    connect(envGui.skybox.textures[5], SIGNAL(textChanged(const QString&)), this, SLOT(skyboxWorkingDir(const QString&)));
-
-    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxApply(bool)));
-    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxApply()));
-
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbiantApply(const tbe::Vector3f&)));
+    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxEnable(bool)));
+    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxChange()));
+    connect(envGui.skybox.browse, SIGNAL(clicked()), this, SLOT(guiSkyboxBrowse()));
+    connect(envGui.skybox.up, SIGNAL(clicked()), this, SLOT(guiSkyboxShift()));
+    connect(envGui.skybox.down, SIGNAL(clicked()), this, SLOT(guiSkyboxShift()));
 
     // Tools Menu
 
@@ -544,10 +532,19 @@ void MainWindow::updateEnvGui()
 
         tbe::Texture* texs = sky->getTextures();
 
-        for(unsigned i = 0; i < 6; i++)
+        envGui.skybox.list->clear();
+
+        QMap<QString, QString> skymap;
+        skymap["Devant"] = QString::fromStdString(texs[0].getFilename());
+        skymap["Derrier"] = QString::fromStdString(texs[1].getFilename());
+        skymap["Haut"] = QString::fromStdString(texs[2].getFilename());
+        skymap["Bas"] = QString::fromStdString(texs[3].getFilename());
+        skymap["Gauche"] = QString::fromStdString(texs[4].getFilename());
+        skymap["Droite"] = QString::fromStdString(texs[5].getFilename());
+
+        foreach(QString k, skymap.keys())
         {
-            envGui.skybox.textures[i]->setOpenFileName(QString::fromStdString(texs[i].getFilename()));
-            envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
+            envGui.skybox.list->addTopLevelItem(new QTreeWidgetItem(QStringList() << k << skymap.value(k)));
         }
 
         envGui.skybox.enable->setChecked(sky->isEnable());
@@ -568,24 +565,18 @@ void MainWindow::updateEnvGui()
 
     genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
 
-    const SceneParser::AttribMap addfields = sceneParser->additionalFields();
+    tbe::scene::rtree& attributes = sceneParser->attributes();
 
-    for(SceneParser::AttribMap::const_iterator it = addfields.begin(); it != addfields.end(); it++)
+    BOOST_FOREACH(tbe::scene::rtree::value_type& it, attributes)
     {
         QStandardItem* key = new QStandardItem;
-        key->setText(QString::fromStdString(it->first));
+        key->setText(QString::fromStdString(it.first));
 
         QStandardItem* value = new QStandardItem;
-        value->setText(QString::fromStdString(it->second));
+        value->setText(QString::fromStdString(it.second.data()));
 
         genGui.additionalModel->appendRow(QList<QStandardItem*> () << key << value);
     }
-
-    Shader rshade = sceneParser->getMeshScene()->getRenderingShader();
-
-    envGui.shader.enable->setChecked(rshade);
-    envGui.shader.vertex->setOpenFileName(rshade.getVertFilename().c_str());
-    envGui.shader.fragment->setOpenFileName(rshade.getFragFilename().c_str());
 }
 
 void MainWindow::newScene()
@@ -708,9 +699,6 @@ void MainWindow::saveSceneDialog()
 
         nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
 
-        for(unsigned i = 0; i < 6; i++)
-            envGui.skybox.textures[i]->setWorkDir(m_workingDir.scene);
-
         pushFileHistory(filename);
 
         m_filename = filename;
@@ -734,7 +722,7 @@ void MainWindow::outputScene(const QString& filename)
     sceneParser->setSceneName(genGui.title->text().toStdString());
     sceneParser->setAuthorName(genGui.author->text().toStdString());
 
-    sceneParser->clearAdditional();
+    sceneParser->attributes().clear();
 
     int count = genGui.additionalModel->rowCount();
     for(int i = 0; i < count; i++)
@@ -742,7 +730,7 @@ void MainWindow::outputScene(const QString& filename)
         std::string key = genGui.additionalModel->item(i, 0)->text().toStdString();
         std::string value = genGui.additionalModel->item(i, 1)->text().toStdString();
 
-        sceneParser->setAdditionalString(key, value);
+        sceneParser->attributes().put(key, value);
     }
 
     m_tbeWidget->saveScene(filename);
@@ -774,22 +762,22 @@ void MainWindow::setCurrentTool(int type)
 
     switch(type)
     {
-    case SELECTION_TOOL:
-        m_uinterface->actionSelectionTool->setChecked(true);
-        m_tbeWidget->selectSelectionTool();
-        break;
+        case SELECTION_TOOL:
+            m_uinterface->actionSelectionTool->setChecked(true);
+            m_tbeWidget->selectSelectionTool();
+            break;
 
-    case SCALE_TOOL:
-        m_uinterface->actionScaleTool->setChecked(true);
-        m_tbeWidget->selectScaleTool();
-        m_tbeWidget->setFocus();
-        break;
+        case SCALE_TOOL:
+            m_uinterface->actionScaleTool->setChecked(true);
+            m_tbeWidget->selectScaleTool();
+            m_tbeWidget->setFocus();
+            break;
 
-    case ROTATE_TOOL:
-        m_uinterface->actionRotateTool->setChecked(true);
-        m_tbeWidget->selectRotateTool();
-        m_tbeWidget->setFocus();
-        break;
+        case ROTATE_TOOL:
+            m_uinterface->actionRotateTool->setChecked(true);
+            m_tbeWidget->selectRotateTool();
+            m_tbeWidget->setFocus();
+            break;
     }
 }
 
@@ -1061,41 +1049,113 @@ void MainWindow::assignParent()
     statusBar()->showMessage("Parent assigné", 2000);
 }
 
-void MainWindow::guiSkyboxApply(bool enable)
+void MainWindow::guiSkyboxEnable(bool enable)
 {
-    if(enable)
+    m_tbeWidget->setSkybox(enable);
+
+    notifyChange(true);
+}
+
+void MainWindow::guiSkyboxBrowse()
+{
+    QStringList files = QFileDialog::getOpenFileNames(this);
+
+    if(files.size() != 6)
     {
-        QStringList texs;
-
-        for(unsigned i = 0; i < 6; i++)
-            texs << envGui.skybox.textures[i]->getOpenFileName();
-
-        try
-        {
-            m_tbeWidget->skyboxApply(texs);
-        }
-        catch(std::exception& e)
-        {
-            QMessageBox::critical(this, "Erreur: Skybox", e.what());
-        }
+        QMessageBox::warning(this, "Skybox", "Vous devez ajouter 6 fichiers !");
+        return;
     }
 
-    else
+    envGui.skybox.list->clear();
+
+    QTreeWidgetItem* item;
+
+    item = new QTreeWidgetItem(QStringList() << "Devant" << QFileInfo(files[0]).baseName());
+    item->setData(1, Qt::UserRole, files[0]);
+    envGui.skybox.list->addTopLevelItem(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Dèrriere" << QFileInfo(files[1]).baseName());
+    item->setData(1, Qt::UserRole, files[1]);
+    envGui.skybox.list->addTopLevelItem(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Haut" << QFileInfo(files[2]).baseName());
+    item->setData(1, Qt::UserRole, files[2]);
+    envGui.skybox.list->addTopLevelItem(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Bas" << QFileInfo(files[3]).baseName());
+    item->setData(1, Qt::UserRole, files[3]);
+    envGui.skybox.list->addTopLevelItem(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Gauche" << QFileInfo(files[4]).baseName());
+    item->setData(1, Qt::UserRole, files[4]);
+    envGui.skybox.list->addTopLevelItem(item);
+
+    item = new QTreeWidgetItem(QStringList() << "Droite" << QFileInfo(files[5]).baseName());
+    item->setData(1, Qt::UserRole, files[5]);
+    envGui.skybox.list->addTopLevelItem(item);
+}
+
+void MainWindow::guiSkyboxShift()
+{
+    if(envGui.skybox.list->selectedItems().empty())
+        return;
+
+    QTreeWidgetItem *itemSrc, *itemDst;
+
+    itemSrc = envGui.skybox.list->selectedItems().front();
+
+    if(sender() == envGui.skybox.up)
+        itemDst = envGui.skybox.list->itemAbove(itemSrc);
+
+    else if(sender() == envGui.skybox.down)
+        itemDst = envGui.skybox.list->itemBelow(itemSrc);
+
+    QString src = itemSrc->data(1, Qt::UserRole).toString();
+    QString dst = itemDst->data(1, Qt::UserRole).toString();
+
+    itemSrc->setData(1, Qt::UserRole, dst);
+    itemSrc->setText(1, QFileInfo(dst).baseName());
+
+    itemDst->setData(1, Qt::UserRole, src);
+    itemDst->setText(1, QFileInfo(src).baseName());
+
+    envGui.skybox.list->setCurrentItem(itemDst);
+}
+
+void MainWindow::guiSkyboxChange()
+{
+    if(envGui.skybox.list->topLevelItemCount() != 6)
+        return;
+
+    QStringList texs;
+
+    for(unsigned i = 0; i < 6; i++)
+        texs << envGui.skybox.list->topLevelItem(i)->data(1, Qt::UserRole).toString();
+
+    try
     {
-        m_tbeWidget->skyboxClear();
+        m_tbeWidget->setSkybox(true);
+        m_tbeWidget->setSkybox(texs);
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::critical(this, "Erreur: Skybox", e.what());
     }
 
     notifyChange(true);
 }
 
-void MainWindow::guiFogApply(bool enable)
+void MainWindow::guiFogEnable(bool enable)
 {
-    if(enable)
-        m_tbeWidget->fogApply(tbe::math::vec34(envGui.fog.color->value()),
-                              envGui.fog.start->value(),
-                              envGui.fog.end->value());
-    else
-        m_tbeWidget->fogClear();
+    m_tbeWidget->setFog(enable);
+
+
+    notifyChange(true);
+}
+
+void MainWindow::guiFogChange()
+{
+    m_tbeWidget->setFog(tbe::math::vec34(envGui.fog.color->value()), envGui.fog.start->value(), envGui.fog.end->value());
 
     notifyChange(true);
 }
@@ -1164,16 +1224,6 @@ void MainWindow::guiClearSceneField()
         genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
         notifyChange(true);
     }
-}
-
-void MainWindow::skyboxWorkingDir(const QString& filename)
-{
-    envGui.skybox.textures[0]->setWorkDir(QFileInfo(filename).path());
-    envGui.skybox.textures[1]->setWorkDir(QFileInfo(filename).path());
-    envGui.skybox.textures[2]->setWorkDir(QFileInfo(filename).path());
-    envGui.skybox.textures[3]->setWorkDir(QFileInfo(filename).path());
-    envGui.skybox.textures[4]->setWorkDir(QFileInfo(filename).path());
-    envGui.skybox.textures[5]->setWorkDir(QFileInfo(filename).path());
 }
 
 void MainWindow::takeScreenshot()
