@@ -2,7 +2,7 @@
  * File:   QTBEngine.cpp
  * Author: b4n92uid
  *
- * Created on 4 décembre 2010, 13:30
+ * Created on 4 dÃ©cembre 2010, 13:30
  */
 
 #include "QTBEngine.h"
@@ -341,7 +341,7 @@ void QTBEngine::toggleGrid(bool state)
         using namespace scene;
 
         m_grid->build(size, cuts);
-        m_grid->getMaterial("main")->disable(Material::FOGED | Material::LIGHTED);
+        m_grid->getMaterial("main")->setRenderFlags(Material::PIPELINE);
         m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 0.75));
 
         if(m_selectedNode)
@@ -888,7 +888,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_gridset.size += 0.5;
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("Taille de la grille à  %1")
+                    ->showMessage(QString("Taille de la grille: %1")
                                   .arg(QString::fromStdString(m_gridset.size.toStr())), 1000);
         }
         else
@@ -896,7 +896,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_sensivitySet.selection += 0.01;
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
+                    ->showMessage(QString("Sensibilité: %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
@@ -907,7 +907,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_gridset.size = std::max(m_gridset.size - 0.5, Vector3f(0.5));
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("Taille de la grille à  %1")
+                    ->showMessage(QString("Taille de la grille: %1")
                                   .arg(QString::fromStdString(m_gridset.size.toStr())), 1000);
         }
         else
@@ -915,7 +915,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("Sensibilité à  %1").arg(m_sensivitySet.selection), 1000);
+                    ->showMessage(QString("Sensibilité: %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
@@ -1540,9 +1540,10 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
 
     setName("selection");
     getMaterial("main")->setRenderFlags(Material::COLORED | Material::BLEND_ADD | Material::PIPELINE);
-    getMaterial("main")->setColor(Vector4f(0, 0, 1, 0.25));
+    getMaterial("main")->setColor(Vector4f(0, 0, 0.25, 1));
     getMaterial("main")->setDepthTest(false);
     setSerialized(false);
+    setPriorityRender(-1);
 }
 
 void SelBox::setAround(tbe::scene::Node* node)
@@ -1550,6 +1551,5 @@ void SelBox::setAround(tbe::scene::Node* node)
     AABB selAabb = node->getAabb();
 
     setMatrix(node->getAbsoluteMatrix());
-    //setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
     setSize(selAabb.getSize() / 2.0f + 0.2f);
 }
