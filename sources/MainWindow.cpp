@@ -748,10 +748,7 @@ void MainWindow::saveScene(const QString& filename)
 void MainWindow::saveBackup()
 {
     if(!m_filename.isEmpty())
-    {
         outputScene(backupOf(m_filename));
-        statusBar()->showMessage("Backup enregistrer...", 2000);
-    }
 }
 
 void MainWindow::setCurrentTool(int type)
