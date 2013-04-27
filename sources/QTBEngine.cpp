@@ -1317,6 +1317,24 @@ void QTBEngine::setFog(bool enable)
     m_fog->setEnable(enable);
 }
 
+void QTBEngine::setShadowEnable(bool enable)
+{
+    m_sceneManager->getShadowMap()->setEnabled(enable);
+}
+
+void QTBEngine::setShadowSize(int size)
+{
+    if(!math::isPow2(size))
+        return;
+
+    m_sceneManager->getShadowMap()->setFrameSize(size);
+}
+
+void QTBEngine::setShadowBlur(int pass)
+{
+    m_sceneManager->getShadowMap()->setBlurPass(pass);
+}
+
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 {
     m_sceneManager->setAmbientLight(math::vec34(value));

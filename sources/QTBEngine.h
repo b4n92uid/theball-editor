@@ -106,6 +106,10 @@ public slots:
     void setFog(tbe::Vector4f color, float start, float end);
     void setFog(bool enable);
 
+    void setShadowEnable(bool enable);
+    void setShadowSize(int size);
+    void setShadowBlur(int pass);
+
     void selectSelectionTool();
     void selectRotateTool();
     void selectScaleTool();

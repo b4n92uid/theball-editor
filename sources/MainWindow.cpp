@@ -343,6 +343,10 @@ void MainWindow::initWidgets()
     envGui.fog.end = m_uinterface->fog_end;
     envGui.fog.enable = m_uinterface->fog_enable;
 
+    envGui.shadow.enable = m_uinterface->env_shadow_enable;
+    envGui.shadow.size = m_uinterface->env_shadow_size;
+    envGui.shadow.blur = m_uinterface->env_shadow_blur;
+
     envGui.znear = m_uinterface->env_znear;
     envGui.zfar = m_uinterface->env_zfar;
 }
@@ -431,6 +435,10 @@ void MainWindow::initConnections()
     connect(envGui.skybox.up, SIGNAL(clicked()), this, SLOT(guiSkyboxShift()));
     connect(envGui.skybox.down, SIGNAL(clicked()), this, SLOT(guiSkyboxShift()));
 
+    connect(envGui.shadow.enable, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setShadowEnable(bool)));
+    connect(envGui.shadow.size, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowSize(int)));
+    connect(envGui.shadow.blur, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowBlur(int)));
+
     // Tools Menu
 
     QSignalMapper* toolsigmap = new QSignalMapper(this);
@@ -503,6 +511,21 @@ void MainWindow::updateEnvGui()
 
     envGui.zfar->setValue(sceneManager->getZFar());
     envGui.znear->setValue(sceneManager->getZNear());
+
+    ShadowMap* smap = sceneManager->getShadowMap();
+
+    if(smap->isEnabled())
+    {
+        QSignalBlocker blocker;
+        blocker << envGui.shadow.enable << envGui.shadow.size << envGui.shadow.blur;
+        blocker.block();
+
+        envGui.shadow.enable->setChecked(smap->isEnabled());
+        envGui.shadow.size->setValue(smap->getFrameSize().x);
+        envGui.shadow.blur->setValue(smap->getBlurPass());
+
+        blocker.unblock();
+    }
 
     Fog* fog = sceneManager->getFog();
 
