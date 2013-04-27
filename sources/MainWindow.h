@@ -205,6 +205,7 @@ private:
 
     struct EnvGuiTab
     {
+
         struct SkyboxGuiTab
         {
             QTreeWidget* list;
@@ -224,6 +225,14 @@ private:
             QGroupBox* enable;
 
         } fog;
+
+        struct ShadowGuiTab
+        {
+            QSpinBox* size;
+            QSpinBox* blur;
+            QGroupBox* enable;
+
+        } shadow;
 
         QDoubleSpinBox* znear, *zfar;
 

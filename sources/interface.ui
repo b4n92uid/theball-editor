@@ -454,6 +454,20 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QCheckBox" name="node_mesh_castshadow">
+                 <property name="text">
+                  <string>Cast Shadow</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="node_mesh_receiveshadow">
+                 <property name="text">
+                  <string>Receive Shadow</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -644,6 +658,13 @@
               </property>
               <property name="value">
                <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QCheckBox" name="node_light_castshadow">
+              <property name="text">
+               <string>Cast Shadow</string>
               </property>
              </widget>
             </item>
@@ -1073,6 +1094,54 @@
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="env_shadow_enable">
+          <property name="title">
+           <string>Shadow</string>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <layout class="QFormLayout" name="formLayout_4">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_40">
+             <property name="text">
+              <string>Taille</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_41">
+             <property name="text">
+              <string>Blur Pass</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="env_shadow_size">
+             <property name="maximum">
+              <number>999999</number>
+             </property>
+             <property name="singleStep">
+              <number>8</number>
+             </property>
+             <property name="value">
+              <number>512</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="env_shadow_blur"/>
            </item>
           </layout>
          </widget>
