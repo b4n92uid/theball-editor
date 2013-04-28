@@ -175,6 +175,8 @@ void QTBEngine::setupSelection()
     m_grid->setEnable(false);
     m_grid->getMaterial("main")->setRenderFlags(Material::PIPELINE);
     m_grid->setSerialized(false);
+    m_grid->setCastShadow(false);
+    m_grid->setReceiveShadow(false);
 
     m_rootNode->addChild(m_grid);
 }
@@ -1561,6 +1563,8 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     getMaterial("main")->setColor(Vector4f(0, 0, 0.25, 1));
     getMaterial("main")->setDepthTest(false);
     setSerialized(false);
+    setCastShadow(false);
+    setReceiveShadow(false);
     setPriorityRender(-1);
 }
 
