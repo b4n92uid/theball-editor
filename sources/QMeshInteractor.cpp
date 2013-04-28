@@ -15,9 +15,7 @@ QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
     m_undo = new tbe::scene::Mesh(*target);
 }
 
-QMeshInteractor::~QMeshInteractor()
-{
-}
+QMeshInteractor::~QMeshInteractor() { }
 
 QString QMeshInteractor::typeName() const
 {
@@ -110,21 +108,21 @@ void QMeshInteractor::onMaterialSelected(const QModelIndex& index)
     m_mainwin->nodesGui.mesh.matedit->specular->setValue(tbe::math::vec43(mat->getSpecular()));
 
     // Update material blending state
-    bool blending = mat->isEnable(Material::BLEND_MOD)
-            || mat->isEnable(Material::BLEND_ADD)
-            || mat->isEnable(Material::BLEND_MUL);
+    bool blending = mat->isEnable(Material::MODULATE)
+            || mat->isEnable(Material::ADDITIVE)
+            || mat->isEnable(Material::MULTIPLY);
 
     m_mainwin->nodesGui.mesh.matedit->blending->setChecked(blending);
 
     if(blending)
     {
-        if(mat->isEnable(Material::BLEND_MOD))
+        if(mat->isEnable(Material::MODULATE))
             m_mainwin->nodesGui.mesh.matedit->blend_modulate->setChecked(true);
 
-        else if(mat->isEnable(Material::BLEND_ADD))
+        else if(mat->isEnable(Material::ADDITIVE))
             m_mainwin->nodesGui.mesh.matedit->blend_additive->setChecked(true);
 
-        else if(mat->isEnable(Material::BLEND_MUL))
+        else if(mat->isEnable(Material::MULTIPLY))
             m_mainwin->nodesGui.mesh.matedit->blend_mul->setChecked(true);
     }
 
@@ -347,9 +345,9 @@ void QMeshInteractor::setBlend(bool stat)
 
     else
     {
-        mat->disable(Material::BLEND_ADD
-                     | Material::BLEND_MOD
-                     | Material::BLEND_MUL);
+        mat->disable(Material::ADDITIVE
+                     | Material::MODULATE
+                     | Material::MULTIPLY);
     }
 }
 
@@ -363,16 +361,16 @@ void QMeshInteractor::materialSetBlendMode()
 
     Material* mat = getSelectedMaterial();
 
-    mat->disable(Material::BLEND_MOD | Material::BLEND_ADD | Material::BLEND_MUL);
+    mat->disable(Material::MODULATE | Material::ADDITIVE | Material::MULTIPLY);
 
     if(m_mainwin->nodesGui.mesh.matedit->blend_modulate->isChecked())
-        mat->enable(Material::BLEND_MOD);
+        mat->enable(Material::MODULATE);
 
     else if(m_mainwin->nodesGui.mesh.matedit->blend_additive->isChecked())
-        mat->enable(Material::BLEND_ADD);
+        mat->enable(Material::ADDITIVE);
 
     else if(m_mainwin->nodesGui.mesh.matedit->blend_mul->isChecked())
-        mat->enable(Material::BLEND_MUL);
+        mat->enable(Material::MULTIPLY);
 }
 
 void QMeshInteractor::setBillBoard()

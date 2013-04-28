@@ -1559,7 +1559,7 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
     using namespace scene;
 
     setName("selection");
-    getMaterial("main")->setRenderFlags(Material::COLORED | Material::BLEND_ADD | Material::PIPELINE);
+    getMaterial("main")->setRenderFlags(Material::COLORED | Material::ADDITIVE | Material::PIPELINE);
     getMaterial("main")->setColor(Vector4f(0, 0, 0.25, 1));
     getMaterial("main")->setDepthTest(false);
     setSerialized(false);
