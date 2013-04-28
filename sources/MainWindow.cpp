@@ -1250,8 +1250,16 @@ void MainWindow::takeScreenshot()
 {
     QImage shot = m_tbeWidget->grabFrameBuffer(false);
 
+    QString name = "map";
+
+    if(!genGui.title->text().isEmpty())
+        name = genGui.title->text();
+
+    else if(!m_filename.isEmpty())
+        name = QFileInfo(m_filename).baseName();
+
     QString title = QString("%1-%2.png")
-            .arg(QString::fromStdString(tbe::tools::unixName(genGui.title->text().toStdString())))
+            .arg(QString::fromStdString(tbe::tools::unixName(name.toStdString())))
             .arg(QDate::currentDate().toString("yyyyMMdd"));
 
     QString defname = QDir(m_workingDir.scene).filePath(title);
