@@ -2,7 +2,7 @@
  * File:   QTBEngine.cpp
  * Author: b4n92uid
  *
- * Created on 4 dÃ©cembre 2010, 13:30
+ * Created on 4 décembre 2010, 13:30
  */
 
 #include "QTBEngine.h"
@@ -12,10 +12,10 @@
 #include "ClassFactory.h"
 
 #include "QNodeInteractor.h"
-#include "QMesh.h"
-#include "QLight.h"
-#include "QParticles.h"
-#include "QMapMark.h"
+#include "QMeshInteractor.h"
+#include "QLightInteractor.h"
+#include "QParticlesInteractor.h"
+#include "QMapMarkInteractor.h"
 
 #include "ui_interface.h"
 #include "HistoryState.h"
@@ -23,6 +23,7 @@
 #include <QDebug>
 
 using namespace tbe;
+using namespace scene;
 
 inline void translate(int& c)
 {
@@ -271,7 +272,7 @@ void QTBEngine::applyTranslationEvents()
                 highlight(qnode);
             }
 
-            m_selectedNode->updateGui();
+            m_selectedNode->QNodeInteractor::updateGui();
 
             emit notifyChange();
         }
@@ -472,7 +473,7 @@ void QTBEngine::baseOnFloor(QNodeInteractor* node)
     adjust.y += -selnode->getAabb().min.y;
     selnode->setPos(adjust);
 
-    node->updateGui();
+    node->QNodeInteractor::updateGui();
 
     emit notifyChange();
 }
@@ -494,7 +495,7 @@ void QTBEngine::centerOnFloor(QNodeInteractor* node)
     m_selbox->Node::setEnable(true);
     m_grid->setEnable(m_gridset.enable);
 
-    node->updateGui();
+    node->QNodeInteractor::updateGui();
 
     emit notifyChange();
 }
@@ -752,7 +753,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 mat.identity();
                 mat.transform(position, rotation, scale);
 
-                qnode->updateGui();
+                qnode->QNodeInteractor::updateGui();
 
                 emit notifyChange();
             }
@@ -793,7 +794,7 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
                 mat.identity();
                 mat.transform(position, rotation, scale);
 
-                qnode->updateGui();
+                qnode->QNodeInteractor::updateGui();
 
                 emit notifyChange();
             }
@@ -864,7 +865,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             qnode->target()->getMatrix().identity();
             qnode->target()->getMatrix().transform(position, rotation, scale);
 
-            qnode->updateGui();
+            qnode->QNodeInteractor::updateGui();
         }
     }
 
@@ -1017,7 +1018,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                         pos += m_camera->getTarget().Y(0).normalize().pinpoint() * factor;
 
                     selnode->setPos(pos);
-                    qnode->updateGui();
+                    qnode->QNodeInteractor::updateGui();
 
                     emit notifyChange();
                 }
@@ -1033,7 +1034,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
                     selnode->setPos(pos);
 
-                    qnode->updateGui();
+                    qnode->QNodeInteractor::updateGui();
 
                     emit notifyChange();
                 }
@@ -1044,7 +1045,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                     pos -= m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
                     selnode->setPos(pos);
 
-                    qnode->updateGui();
+                    qnode->QNodeInteractor::updateGui();
 
                     emit notifyChange();
                 }
@@ -1055,7 +1056,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
                     pos += m_camera->getLeft().Y(0).normalize().pinpoint() * factor;
                     selnode->setPos(pos);
 
-                    qnode->updateGui();
+                    qnode->QNodeInteractor::updateGui();
 
                     emit notifyChange();
                 }
@@ -1107,7 +1108,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
 
                 qnode->target()->setPos(current_position);
-                qnode->updateGui();
+                qnode->QNodeInteractor::updateGui();
             }
 
             toggleGrid(true);
@@ -1128,7 +1129,7 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
                 current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
 
                 qnode->target()->setPos(current_position);
-                qnode->updateGui();
+                qnode->QNodeInteractor::updateGui();
             }
 
             toggleGrid(true);
@@ -1222,7 +1223,7 @@ struct RootSort
 
 };
 
-void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
+void QTBEngine::setupNewNode(tbe::scene::Node* thenew)
 {
     using namespace tbe;
     using namespace scene;
@@ -1241,54 +1242,60 @@ void QTBEngine::placeNewNode(tbe::scene::Node* thenew)
 
 }
 
-QMesh* QTBEngine::meshNew(const QString& filename)
+QMeshInteractor* QTBEngine::newMesh(const QString& filename)
 {
     using namespace tbe;
     using namespace scene;
 
-    QMesh* mesh = new QMesh(m_mainwin, OBJMesh(m_meshScene, filename.toStdString()));
+    Mesh* mesh = m_classFactory->newMesh(m_meshScene);
+
+    Mesh* shared = Mesh::isSharedBuffer(filename.toStdString());
+
+    if(shared)
+    {
+        mesh->fetchVertexes(*shared);
+    }
+    else
+    {
+        OBJMesh loader(m_meshScene, filename.toStdString());
+        mesh->fetchVertexes(loader);
+    }
+
+    Mesh::registerBuffer(mesh, filename.toStdString());
 
     mesh->addSerializeValue("class.path", filename.toStdString());
     mesh->addSerializeValue("class.format", "obj");
 
-    placeNewNode(mesh);
+    setupNewNode(mesh);
 
-    mesh->setup();
-
-    return mesh;
+    return m_classFactory->setupMeshGui(mesh);
 }
 
-QLight* QTBEngine::lightNew()
+QLightInteractor* QTBEngine::newLight()
 {
-    QLight* light = new QLight(m_mainwin);
+    Light* light = new Light(m_meshScene);
 
-    placeNewNode(light);
+    setupNewNode(light);
 
-    light->setup();
-
-    return light;
+    return m_classFactory->setupLightGui(light);
 }
 
-QParticles* QTBEngine::particlesNew()
+QParticlesInteractor* QTBEngine::newParticles()
 {
-    QParticles* particles = new QParticles(m_mainwin);
+    ParticlesEmiter* particles = new ParticlesEmiter(m_particlesScene);
 
-    placeNewNode(particles);
+    setupNewNode(particles);
 
-    particles->setup();
-
-    return particles;
+    return m_classFactory->setupParticlesGui(particles);
 }
 
-QMapMark* QTBEngine::markNew()
+QMapMarkInteractor* QTBEngine::newMark()
 {
-    QMapMark* mark = new QMapMark(m_mainwin);
+    MapMark* mark = new MapMark(m_markScene);
 
-    placeNewNode(mark);
+    setupNewNode(mark);
 
-    mark->setup();
-
-    return mark;
+    return m_classFactory->setupMapMarkGui(mark);
 }
 
 void QTBEngine::setSkybox(const QStringList& texs)
@@ -1495,17 +1502,17 @@ void QTBEngine::unhighlight(QNodeInteractor* node)
         m_selbox->setEnable(false);
 }
 
-void QTBEngine::unregisterInterface(QNodeInteractor* node)
+void QTBEngine::unregisterInteractor(QNodeInteractor* node)
 {
     m_nodeInterface.remove(node->target());
 }
 
-void QTBEngine::registerInterface(QNodeInteractor* node)
+void QTBEngine::registerInteractor(QNodeInteractor* node)
 {
     m_nodeInterface[node->target()] = node;
 }
 
-QNodeInteractor* QTBEngine::interface(tbe::scene::Node* node)
+QNodeInteractor* QTBEngine::getInteractor(tbe::scene::Node* node)
 {
     if(m_nodeInterface.contains(node))
         return m_nodeInterface[node];
@@ -1573,5 +1580,6 @@ void SelBox::setAround(tbe::scene::Node* node)
     AABB selAabb = node->getAabb();
 
     setMatrix(node->getAbsoluteMatrix());
+    setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
     setSize(selAabb.getSize() / 2.0f + 0.2f);
 }

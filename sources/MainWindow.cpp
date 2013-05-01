@@ -13,10 +13,6 @@
 #include "QParticlesInteractor.h"
 #include "QMapMarkInteractor.h"
 
-#include "QMesh.h"
-#include "QLight.h"
-#include "QParticles.h"
-#include "QMapMark.h"
 #include "QTBEngine.h"
 
 #include "ui_interface.h"
@@ -51,9 +47,9 @@ Ui_mainWindow* MainWindow::ui()
     return m_uinterface;
 }
 
-void MainWindow::registerNode(QNodeInteractor* node, QItemsList& items)
+void MainWindow::registerInteractor(QNodeInteractor* node, QItemsList& items)
 {
-    QNodeInteractor* parent = m_tbeWidget->interface(node->target()->getParent());
+    QNodeInteractor* parent = node->getParent();
 
     if(nodeItemBinder.count(parent))
         nodeItemBinder[parent]->appendRow(items);
@@ -64,10 +60,10 @@ void MainWindow::registerNode(QNodeInteractor* node, QItemsList& items)
 
     notifyChange(true);
 
-    m_tbeWidget->registerInterface(node);
+    m_tbeWidget->registerInteractor(node);
 }
 
-void unreg_clearChilds(QInterfaceItemsMap& nodeItemBinder, QStandardItem* item)
+void unregisterNodeRecursive(QInterfaceItemsMap& nodeItemBinder, QStandardItem* item)
 {
     int count = item->rowCount();
 
@@ -75,20 +71,20 @@ void unreg_clearChilds(QInterfaceItemsMap& nodeItemBinder, QStandardItem* item)
     {
         QStandardItem* subitem = item->child(i);
 
-        unreg_clearChilds(nodeItemBinder, subitem);
+        unregisterNodeRecursive(nodeItemBinder, subitem);
 
         QNodeInteractor* interface = subitem->data(ITEM_ROLE_NODE).value<QNodeInteractor*>();
         nodeItemBinder.remove(interface);
     }
 }
 
-void MainWindow::unregisterNode(QNodeInteractor* node)
+void MainWindow::unregisterInteractor(QNodeInteractor* node)
 {
     if(nodeItemBinder.count(node))
     {
         QStandardItem* item = nodeItemBinder[node];
 
-        unreg_clearChilds(nodeItemBinder, item);
+        unregisterNodeRecursive(nodeItemBinder, item);
 
         QModelIndex sindex = nodesGui.nodesListModel->indexFromItem(item);
 
@@ -106,7 +102,7 @@ void MainWindow::unregisterNode(QNodeInteractor* node)
         notifyChange(true);
     }
 
-    m_tbeWidget->unregisterInterface(node);
+    m_tbeWidget->unregisterInteractor(node);
 }
 
 void MainWindow::openSceneFromHistory()
@@ -276,9 +272,6 @@ void MainWindow::initWidgets()
     nodesGui.mesh.matedit->textureModel = new QStandardItemModel(this);
     nodesGui.mesh.matedit->textureView->setModel(nodesGui.mesh.matedit->textureModel);
 
-    nodesGui.mesh.matedit->materialsModel = new QStandardItemModel(this);
-    nodesGui.mesh.matedit->materialsView->setModel(nodesGui.mesh.matedit->materialsModel);
-
     nodesGui.mesh.editmatfile = m_uinterface->node_mesh_editmat;
     nodesGui.mesh.custommat = m_uinterface->node_mesh_custommat;
 
@@ -423,7 +416,7 @@ void MainWindow::initConnections()
     connect(nodesGui.nodesListView, SIGNAL(removeNode()), m_tbeWidget, SLOT(deleteSelected()));
     connect(nodesGui.nodesListView, SIGNAL(setOnFloorNode()), m_tbeWidget, SLOT(baseOnFloor()));
 
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbiantApply(const tbe::Vector3f&)));
+    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbient(const tbe::Vector3f&)));
 
     connect(envGui.znear, SIGNAL(valueChanged(double)), this, SLOT(guiZNear(double)));
     connect(envGui.zfar, SIGNAL(valueChanged(double)), this, SLOT(guiZFar(double)));
@@ -466,7 +459,7 @@ bool MainWindow::leaveSafely()
     {
         QMessageBox::StandardButton answer =
                 QMessageBox::warning(this, "Enregistrer ?",
-                                     "La scene a été modifier\nVous-les vous enregistrer avant de quitter ?",
+                                     "La scene à été modifier\nVous-les vous enregistrer avant de quitter ?",
                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
         if(answer == QMessageBox::Yes)
@@ -497,7 +490,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
 }
 
-void MainWindow::updateEnvGui()
+void MainWindow::updateGui()
 {
     m_workingDir.scene
             = m_workingDir.mesh
@@ -563,7 +556,7 @@ void MainWindow::updateEnvGui()
 
         QMap<QString, QString> skymap;
         skymap["Devant"] = QString::fromStdString(texs[0].getFilename());
-        skymap["Derrier"] = QString::fromStdString(texs[1].getFilename());
+        skymap["Dèrrier"] = QString::fromStdString(texs[1].getFilename());
         skymap["Haut"] = QString::fromStdString(texs[2].getFilename());
         skymap["Bas"] = QString::fromStdString(texs[3].getFilename());
         skymap["Gauche"] = QString::fromStdString(texs[4].getFilename());
@@ -571,7 +564,12 @@ void MainWindow::updateEnvGui()
 
         foreach(QString k, skymap.keys())
         {
-            envGui.skybox.list->addTopLevelItem(new QTreeWidgetItem(QStringList() << k << skymap.value(k)));
+            QString path = skymap.value(k);
+
+            QTreeWidgetItem* item = new QTreeWidgetItem(QStringList() << k << QFileInfo(path).baseName());
+            item->setData(1, Qt::UserRole, path);
+
+            envGui.skybox.list->addTopLevelItem(item);
         }
 
         envGui.skybox.enable->setChecked(sky->isEnable());
@@ -636,7 +634,7 @@ void MainWindow::newScene()
 
     setCurrentTool(SELECTION_TOOL);
 
-    updateEnvGui();
+    updateGui();
 
     notifyChange(false);
 }
@@ -678,7 +676,7 @@ void MainWindow::openScene(const QString& filename)
         {
             QMessageBox::StandardButton response =
                     QMessageBox::question(this, "Ficher de savegarde trouvé",
-                                          "Un fichier de savegarde a été trouvé probablement du à un plantage de l'application\n"
+                                          "Un fichier de savegarde a été trouvé probablement du Ã  un plantage de l'application\n"
                                           "vous-les vous le charger ?", QMessageBox::Yes | QMessageBox::No);
 
             if(response == QMessageBox::Yes)
@@ -697,7 +695,7 @@ void MainWindow::openScene(const QString& filename)
         m_uinterface->actionToggleSelBox->setChecked(true);
         m_uinterface->actionToggleStaticView->setChecked(true);
 
-        updateEnvGui();
+        updateGui();
 
         notifyChange(false);
     }
@@ -856,7 +854,7 @@ void MainWindow::guiMeshNew()
     {
         try
         {
-            QMesh* mesh = m_tbeWidget->meshNew(filename);
+            QMeshInteractor* mesh = m_tbeWidget->newMesh(filename);
 
             deselectAll();
             select(mesh);
@@ -882,7 +880,7 @@ void MainWindow::guiLightNew()
 
     try
     {
-        QLight* light = m_tbeWidget->lightNew();
+        QLightInteractor* light = m_tbeWidget->newLight();
 
         deselectAll();
         select(light);
@@ -901,7 +899,7 @@ void MainWindow::guiParticlesNew()
 
     try
     {
-        QParticles* particles = m_tbeWidget->particlesNew();
+        QParticlesInteractor* particles = m_tbeWidget->newParticles();
 
         deselectAll();
         select(particles);
@@ -920,7 +918,7 @@ void MainWindow::guiMarkNew()
 
     try
     {
-        QMapMark* mark = m_tbeWidget->markNew();
+        QMapMarkInteractor* mark = m_tbeWidget->newMark();
 
         deselectAll();
         select(mark);
@@ -1007,7 +1005,7 @@ void MainWindow::promoteChild()
     {
         if(child->target()->getParent() == m_rootNode->target())
         {
-            statusBar()->showMessage(QString("Le noeud %1 ne peut être promue")
+            statusBar()->showMessage(QString("Le noeud %1 ne peut Ãªtre promue")
                                      .arg(child->target()->getName().c_str()), 2000);
             continue;
         }
@@ -1031,7 +1029,7 @@ void MainWindow::promoteChild()
         currNode->setPos(currNode->getParent()->getAbsoluteMatrix().getPos() + currNode->getPos());
         currNode->setParent(hostNode);
 
-        select(m_tbeWidget->interface(currNode));
+        select(m_tbeWidget->getInteractor(currNode));
     }
 
     m_tbeWidget->placeCamera();
@@ -1158,8 +1156,8 @@ void MainWindow::guiSkyboxChange()
 
     try
     {
-        m_tbeWidget->setSkybox(true);
         m_tbeWidget->setSkybox(texs);
+        m_tbeWidget->setSkybox(true);
     }
     catch(std::exception& e)
     {
@@ -1199,7 +1197,7 @@ QTBEngine* MainWindow::tbeWidget() const
     return m_tbeWidget;
 }
 
-void MainWindow::guiAmbiantApply(const tbe::Vector3f& value)
+void MainWindow::guiAmbient(const tbe::Vector3f& value)
 {
     m_tbeWidget->setSceneAmbiant(value);
 

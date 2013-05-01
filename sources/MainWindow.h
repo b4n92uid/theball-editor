@@ -45,8 +45,8 @@ public:
 
     Ui_mainWindow* ui();
 
-    void registerNode(QNodeInteractor* node, QItemsList& items);
-    void unregisterNode(QNodeInteractor* node);
+    void registerInteractor(QNodeInteractor* node, QItemsList& items);
+    void unregisterInteractor(QNodeInteractor* node);
 
 protected:
 
@@ -55,7 +55,7 @@ protected:
 
     bool leaveSafely();
 
-    void updateEnvGui();
+    void updateGui();
 
     void outputScene(const QString& filename);
 
@@ -116,7 +116,7 @@ public slots:
     void guiFogEnable(bool enable);
     void guiFogChange();
 
-    void guiAmbiantApply(const tbe::Vector3f& value);
+    void guiAmbient(const tbe::Vector3f& value);
     void guiZNear(double value);
     void guiZFar(double value);
 
@@ -130,11 +130,6 @@ signals:
     friend class QMeshInteractor;
     friend class QParticlesInteractor;
     friend class QMapMarkInteractor;
-
-    friend class QLight;
-    friend class QMesh;
-    friend class QParticles;
-    friend class QMapMark;
 
 private:
 

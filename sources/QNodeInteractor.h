@@ -37,7 +37,8 @@ public:
 
     bool isLocked();
     bool isEnable();
-
+    
+    QNodeInteractor* getParent();
 
 public slots:
     virtual void setup();

@@ -21,6 +21,11 @@ QNodeInteractor::~QNodeInteractor()
     unsetup();
 }
 
+QNodeInteractor* QNodeInteractor::getParent()
+{
+    return m_mainwin->tbeWidget()->getInteractor(m_target->getParent());
+}
+
 void QNodeInteractor::setName(const QString& s)
 {
     if(m_target)
@@ -243,12 +248,10 @@ void QNodeInteractor::changeNodeField(QStandardItem* item)
 
 void QNodeInteractor::unsetup()
 {
-    m_mainwin->unregisterNode(this);
+    m_mainwin->unregisterInteractor(this);
 }
 
-void QNodeInteractor::setup()
-{
-}
+void QNodeInteractor::setup() { }
 
 void QNodeInteractor::bindWithGui()
 {
