@@ -10,14 +10,9 @@
 #include "QTBEngine.h"
 
 QLightInteractor::QLightInteractor(MainWindow* mainwin, tbe::scene::Light* target)
-: QNodeInteractor(mainwin, target), m_target(target)
-{
+: QNodeInteractor(mainwin, target), m_target(target) { }
 
-}
-
-QLightInteractor::~QLightInteractor()
-{
-}
+QLightInteractor::~QLightInteractor() { }
 
 QString QLightInteractor::typeName() const
 {
@@ -46,7 +41,12 @@ void QLightInteractor::setSpecular(const tbe::Vector3f& value)
 
 void QLightInteractor::setRadius(double value)
 {
-    m_target->setRadius((float)value);
+    m_target->setRadius((float) value);
+}
+
+void QLightInteractor::setCastShadow(bool enable)
+{
+    m_target->setCastShadow(enable);
 }
 
 void QLightInteractor::bindWithGui()
@@ -58,6 +58,7 @@ void QLightInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.light.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setDiffuse(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.light.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setSpecular(const tbe::Vector3f&)));
     connect(m_mainwin->nodesGui.light.radius, SIGNAL(valueChanged(double)), this, SLOT(setRadius(double)));
+    connect(m_mainwin->nodesGui.light.castshadow, SIGNAL(clicked(bool)), this, SLOT(setCastShadow(bool)));
 
     updateGui();
 
@@ -73,6 +74,7 @@ void QLightInteractor::unbindFromGui()
     disconnect(m_mainwin->nodesGui.light.diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
     disconnect(m_mainwin->nodesGui.light.specular, SIGNAL(valueChanged(const tbe::Vector3f&)), 0, 0);
     disconnect(m_mainwin->nodesGui.light.radius, SIGNAL(valueChanged(double)), 0, 0);
+    disconnect(m_mainwin->nodesGui.light.castshadow, SIGNAL(clicked(bool)), 0, 0);
 }
 
 void QLightInteractor::updateGui()
@@ -82,14 +84,15 @@ void QLightInteractor::updateGui()
     QSignalBlocker blocker;
     blocker << m_mainwin->nodesGui.light.type << m_mainwin->nodesGui.light.ambiant
             << m_mainwin->nodesGui.light.diffuse << m_mainwin->nodesGui.light.specular
-            << m_mainwin->nodesGui.light.radius;
+            << m_mainwin->nodesGui.light.radius << m_mainwin->nodesGui.light.castshadow;
 
     blocker.block();
 
-    m_mainwin->nodesGui.light.type->setCurrentIndex((int)m_target->getType());
+    m_mainwin->nodesGui.light.type->setCurrentIndex((int) m_target->getType());
     m_mainwin->nodesGui.light.ambiant->setValue(tbe::math::vec43(m_target->getAmbient()));
     m_mainwin->nodesGui.light.diffuse->setValue(tbe::math::vec43(m_target->getDiffuse()));
     m_mainwin->nodesGui.light.specular->setValue(tbe::math::vec43(m_target->getSpecular()));
+    m_mainwin->nodesGui.light.castshadow->setChecked(m_target->isCastShadow());
     m_mainwin->nodesGui.light.radius->setValue(m_target->getRadius());
 
     blocker.unblock();

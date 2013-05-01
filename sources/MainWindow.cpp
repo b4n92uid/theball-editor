@@ -285,6 +285,9 @@ void MainWindow::initWidgets()
     nodesGui.mesh.billboardX = m_uinterface->node_mesh_billboard_x;
     nodesGui.mesh.billboardY = m_uinterface->node_mesh_billboard_y;
 
+    nodesGui.mesh.castshadow = m_uinterface->node_mesh_castshadow;
+    nodesGui.mesh.receiveshadow = m_uinterface->node_mesh_receiveshadow;
+
     // -------- Particles
 
     nodesGui.particles.gravity = new QDoubleVector3Box(this, m_uinterface->node_particles_gravity_x, m_uinterface->node_particles_gravity_y, m_uinterface->node_particles_gravity_z);
@@ -306,6 +309,7 @@ void MainWindow::initWidgets()
     nodesGui.light.ambiant = new QDoubleVector3Box(this, m_uinterface->node_light_ambiant_x, m_uinterface->node_light_ambiant_y, m_uinterface->node_light_ambiant_z);
     nodesGui.light.diffuse = new QDoubleVector3Box(this, m_uinterface->node_light_diffuse_x, m_uinterface->node_light_diffuse_y, m_uinterface->node_light_diffuse_z);
     nodesGui.light.specular = new QDoubleVector3Box(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
+    nodesGui.light.castshadow = m_uinterface->node_light_castshadow;
 
     nodesGui.light.radius = m_uinterface->node_light_radius;
 

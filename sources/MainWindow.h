@@ -147,6 +147,7 @@ private:
             QDoubleVector3Box* ambiant;
             QDoubleVector3Box* diffuse;
             QDoubleVector3Box* specular;
+            QCheckBox* castshadow;
             QDoubleSpinBox* radius;
 
         } light;
@@ -160,6 +161,8 @@ private:
 
             QCheckBox* billboardX;
             QCheckBox* billboardY;
+            QCheckBox* castshadow;
+            QCheckBox* receiveshadow;
 
         } mesh;
 
