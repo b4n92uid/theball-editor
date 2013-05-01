@@ -31,6 +31,7 @@ public slots:
     void setDiffuse(const tbe::Vector3f& value);
     void setSpecular(const tbe::Vector3f& value);
     void setRadius(double value);
+    void setCastShadow(bool enable);
 
 private:
     tbe::scene::Light* m_target;

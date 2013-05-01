@@ -382,6 +382,12 @@ void QMeshInteractor::setBillBoard()
     m_target->setBillBoard(apply);
 }
 
+void QMeshInteractor::setShadow()
+{
+    m_target->setCastShadow(m_mainwin->nodesGui.mesh.castshadow->isChecked());
+    m_target->setReceiveShadow(m_mainwin->nodesGui.mesh.receiveshadow->isChecked());
+}
+
 void QMeshInteractor::setColor(const tbe::Vector3f& value)
 {
     if(!m_target)
@@ -563,6 +569,9 @@ void QMeshInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
     connect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
 
+    connect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
+    connect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
+
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), this, SLOT(cancelMaterialDialog()));
     connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), this, SLOT(saveMaterialDialog()));
 
@@ -633,6 +642,9 @@ void QMeshInteractor::unbindFromGui()
     disconnect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), 0, 0);
 
+    disconnect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), 0, 0);
+
     disconnect(m_mainwin->nodesGui.mesh.matedit->alphathreshold, SIGNAL(valueChanged(double)), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->texture_add, SIGNAL(clicked()), 0, 0);
@@ -666,6 +678,8 @@ void QMeshInteractor::unbindFromGui()
 
     m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
+    m_mainwin->nodesGui.mesh.castshadow->setChecked(false);
+    m_mainwin->nodesGui.mesh.receiveshadow->setChecked(false);
 
     m_mainwin->nodesGui.mesh.custommat->setChecked(false);
 }
@@ -680,6 +694,8 @@ void QMeshInteractor::updateGui()
     blocker
             << m_mainwin->nodesGui.mesh.billboardX
             << m_mainwin->nodesGui.mesh.billboardY
+            << m_mainwin->nodesGui.mesh.castshadow
+            << m_mainwin->nodesGui.mesh.receiveshadow
             << m_mainwin->nodesGui.mesh.editmatfile
             << m_mainwin->nodesGui.mesh.matedit->alpha
             << m_mainwin->nodesGui.mesh.matedit->alphathreshold
@@ -744,6 +760,9 @@ void QMeshInteractor::updateGui()
     tbe::Vector2b billboard = m_target->getBillBoard();
     m_mainwin->nodesGui.mesh.billboardX->setChecked(billboard.x);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(billboard.y);
+
+    m_mainwin->nodesGui.mesh.castshadow->setChecked(m_target->isCastShadow());
+    m_mainwin->nodesGui.mesh.receiveshadow->setChecked(m_target->isReceiveShadow());
 
     blocker.unblock();
 

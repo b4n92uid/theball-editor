@@ -38,6 +38,7 @@ public slots:
     void materialSetBlendMode();
 
     void setBillBoard();
+    void setShadow();
 
     void setAlphaThreshold(double value);
 
