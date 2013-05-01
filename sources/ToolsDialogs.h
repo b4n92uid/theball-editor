@@ -35,7 +35,6 @@ public:
 
     QMeshInteractor* source_mesh;
 
-    QStandardItemModel* materialsModel;
     QStandardItemModel* textureModel;
 };
 

@@ -13,11 +13,10 @@
 #include <QtOpenGL/QtOpenGL>
 
 #include "Define.h"
-
-class QMesh;
-class QLight;
-class QParticles;
-class QMapMark;
+#include "QMeshInteractor.h"
+#include "QLightInteractor.h"
+#include "QParticlesInteractor.h"
+#include "QMapMarkInteractor.h"
 
 class QNodeInteractor;
 class MainWindow;
@@ -52,15 +51,14 @@ public:
     void highlight(QNodeInteractor* node);
     void unhighlight(QNodeInteractor* node);
 
-    void registerInterface(QNodeInteractor* node);
-    void unregisterInterface(QNodeInteractor* node);
+    QMeshInteractor* newMesh(const QString& filename);
+    QLightInteractor* newLight();
+    QParticlesInteractor* newParticles();
+    QMapMarkInteractor* newMark();
 
-    QMesh* meshNew(const QString& filename);
-    QLight* lightNew();
-    QParticles* particlesNew();
-    QMapMark* markNew();
-
-    QNodeInteractor* interface(tbe::scene::Node* node);
+    void registerInteractor(QNodeInteractor* node);
+    void unregisterInteractor(QNodeInteractor* node);
+    QNodeInteractor* getInteractor(tbe::scene::Node* node);
 
     const QList<QNodeInteractor*>& selection();
 
@@ -142,7 +140,7 @@ protected:
     void applyTranslationEvents();
     void applyCameraEvents();
 
-    void placeNewNode(tbe::scene::Node* thenew);
+    void setupNewNode(tbe::scene::Node* thenew);
 
     void updateInformationGui();
 

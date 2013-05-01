@@ -50,12 +50,12 @@
         <item>
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
-           <string>Champs principales</string>
+           <string>Information sur la scene</string>
           </property>
           <layout class="QFormLayout" name="formLayout_8">
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="gen_title"/>
-           </item>
+           <property name="fieldGrowthPolicy">
+            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+           </property>
            <item row="0" column="0">
             <widget class="QLabel" name="label_31">
              <property name="text">
@@ -63,8 +63,8 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="gen_author"/>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="gen_title"/>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_33">
@@ -73,17 +73,36 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="gen_author"/>
+           </item>
           </layout>
          </widget>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_4">
           <property name="title">
-           <string>Informations</string>
+           <string>Informations sur la séléction</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
             <widget class="QLabel" name="gen_information">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_5">
+          <property name="title">
+           <string>Informations sur la platforme</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <item>
+            <widget class="QLabel" name="gen_information_2">
              <property name="text">
               <string/>
              </property>
@@ -100,11 +119,11 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QTreeView" name="gen_additional">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>130</height>
+              </size>
              </property>
             </widget>
            </item>
@@ -1293,6 +1312,49 @@
               <double>0.100000000000000</double>
              </property>
             </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="env_shader_enable">
+          <property name="title">
+           <string>Shader Program</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>[Aucun Program chargé]</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="9,1">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="env_shader_path"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="env_shader_browse">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="ressource.qrc">
+                 <normaloff>:/Medias/medias/open.png</normaloff>:/Medias/medias/open.png</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

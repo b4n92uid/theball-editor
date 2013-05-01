@@ -26,17 +26,15 @@ tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
 {
     using namespace tbe::scene;
 
-    QModelIndex index = m_mainwin->nodesGui.mesh.matedit->materialsView->currentIndex();
+    int index = m_mainwin->nodesGui.mesh.matedit->materials_select->currentIndex();
 
-    if(index.isValid())
-    {
-        std::string matname = m_mainwin->nodesGui.mesh.matedit->materialsModel
-                ->itemFromIndex(index)->data().toString().toStdString();
+    if(index == -1)
+        index = 0;
 
-        return m_target->getMaterial(matname);
-    }
-    else
-        return NULL;
+    std::string matname = m_mainwin->nodesGui.mesh.matedit->materials_select
+            ->itemData(index).toString().toStdString();
+
+    return m_target->getMaterial(matname);
 }
 
 void QMeshInteractor::openMaterialDialog()
@@ -58,7 +56,7 @@ void QMeshInteractor::cancelMaterialDialog()
     updateGui();
 }
 
-void QMeshInteractor::onMaterialSelected(const QModelIndex& index)
+void QMeshInteractor::onMaterialSelected()
 {
     if(!m_target)
         return;
@@ -614,7 +612,7 @@ void QMeshInteractor::bindWithGui()
 
     connect(m_mainwin->nodesGui.mesh.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTextureSelected(const QModelIndex &)));
 
-    connect(m_mainwin->nodesGui.mesh.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onMaterialSelected(const QModelIndex &)));
+    connect(m_mainwin->nodesGui.mesh.matedit->materials_select, SIGNAL(highlighted(int)), this, SLOT(onMaterialSelected()));
 
     updateGui();
 
@@ -671,10 +669,9 @@ void QMeshInteractor::unbindFromGui()
 
     disconnect(m_mainwin->nodesGui.mesh.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
 
-    disconnect(m_mainwin->nodesGui.mesh.matedit->materialsView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.matedit->materials_select, SIGNAL(highlighted(int)), 0, 0);
 
-    m_mainwin->nodesGui.mesh.matedit->materialsModel
-            ->removeRows(0, m_mainwin->nodesGui.mesh.matedit->materialsModel->rowCount());
+    m_mainwin->nodesGui.mesh.matedit->materials_select->clear();
 
     m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
@@ -717,52 +714,43 @@ void QMeshInteractor::updateGui()
 
     blocker.block();
 
-    // Reload materials list
-    m_mainwin->nodesGui.mesh.matedit->materialsModel->
-            removeRows(0, m_mainwin->nodesGui.mesh.matedit->materialsModel->rowCount());
+    // Update main GUI ---------------------------------------------------------
 
-    Material::Array matarr = m_target->getAllMaterial();
-
-    foreach(Material* mat, matarr)
-    {
-        QStandardItem* item = new QStandardItem;
-
-        QString matname = QString::fromStdString(mat->getName());
-        item->setData(matname);
-
-        if(matname.isEmpty())
-        {
-            matname = QString("Matériau sans nom #%1")
-                    .arg(m_mainwin->nodesGui.mesh.matedit->materialsModel->rowCount());
-
-            item->setForeground(Qt::gray);
-
-            QFont font = item->font();
-            font.setItalic(true);
-            item->setFont(font);
-        }
-
-        item->setText(matname);
-
-        m_mainwin->nodesGui.mesh.matedit->materialsModel->appendRow(item);
-    }
-
-    m_mainwin->nodesGui.mesh.custommat->setChecked(m_target->isOutputMaterial());
-    m_mainwin->nodesGui.mesh.editmatfile->setEnabled(m_target->isOutputMaterial());
-
-    // Select the first material and update GUI
-    QModelIndex index = m_mainwin->nodesGui.mesh.matedit->materialsModel->index(0, 0);
-
-    m_mainwin->nodesGui.mesh.matedit->materialsView->setCurrentIndex(index);
-    onMaterialSelected(index);
-
-    // Update GUI by Billboard settings
     tbe::Vector2b billboard = m_target->getBillBoard();
     m_mainwin->nodesGui.mesh.billboardX->setChecked(billboard.x);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(billboard.y);
 
     m_mainwin->nodesGui.mesh.castshadow->setChecked(m_target->isCastShadow());
     m_mainwin->nodesGui.mesh.receiveshadow->setChecked(m_target->isReceiveShadow());
+
+    // Update materials GUI ----------------------------------------------------
+
+    m_mainwin->nodesGui.mesh.matedit->materials_select->clear();
+
+    Material::Array matarr = m_target->getAllMaterial();
+
+    foreach(Material* mat, matarr)
+    {
+        QString matName = QString::fromStdString(mat->getName());
+        QString matID = QString::fromStdString(mat->getName());
+
+        if(matName.isEmpty())
+        {
+            matName = QString("[Matériau sans nom #%1]")
+                    .arg(m_mainwin->nodesGui.mesh.matedit->materials_select->count());
+        }
+
+        m_mainwin->nodesGui.mesh.matedit->materials_select->addItem(matName, matID);
+    }
+
+    m_mainwin->nodesGui.mesh.custommat->setChecked(m_target->isOutputMaterial());
+    m_mainwin->nodesGui.mesh.editmatfile->setEnabled(m_target->isOutputMaterial());
+
+    // Select the first material and update GUI 
+    m_mainwin->nodesGui.mesh.matedit->materials_select->setCurrentIndex(0);
+    onMaterialSelected();
+
+    // -------------------------------------------------------------------------
 
     blocker.unblock();
 
