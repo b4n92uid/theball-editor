@@ -107,6 +107,7 @@ public slots:
     void setShadowEnable(bool enable);
     void setShadowSize(int size);
     void setShadowBlur(int pass);
+    void setShadowIntensity(double value);
 
     void selectSelectionTool();
     void selectRotateTool();

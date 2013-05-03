@@ -18,7 +18,7 @@
 #include "QVectorBox.h"
 #include "QSignalBlocker.h"
 #include "PackerDialog.h"
-#include "ToolsDialogs.h"
+#include "MaterialDialog.h"
 #include "NodeListProxyModel.h"
 #include "Define.h"
 
@@ -130,6 +130,7 @@ signals:
     friend class QMeshInteractor;
     friend class QParticlesInteractor;
     friend class QMapMarkInteractor;
+    friend class MaterialDialog;
 
 private:
 
@@ -149,10 +150,11 @@ private:
 
         struct MeshGuiTab
         {
-            QPushButton* editmatfile;
-            QCheckBox* custommat;
-
-            MaterialEditDialog* matedit;
+            QPushButton* editMaterial;
+            QPushButton* reloadMaterial;
+            QPushButton* attachMaterial;
+            QPushButton* releaseMaterial;
+            QLineEdit* matinfo;
 
             QCheckBox* billboardX;
             QCheckBox* billboardY;
@@ -228,6 +230,7 @@ private:
         {
             QSpinBox* size;
             QSpinBox* blur;
+            QDoubleSpinBox* intentsity;
             QGroupBox* enable;
 
         } shadow;
