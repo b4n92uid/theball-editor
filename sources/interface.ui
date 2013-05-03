@@ -427,23 +427,102 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QCommandLinkButton" name="node_mesh_editmat">
-              <property name="enabled">
-               <bool>false</bool>
+             <widget class="QGroupBox" name="groupBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="text">
-               <string>Editer le Matériau</string>
+              <property name="title">
+               <string>Matériau</string>
               </property>
-              <property name="icon">
-               <iconset resource="ressource.qrc">
-                <normaloff>:/Medias/medias/pencil.png</normaloff>:/Medias/medias/pencil.png</iconset>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="description">
-               <string>Ouvrir l'éditeur de matèrieaux associer au maillage</string>
-              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <item>
+                <widget class="QLineEdit" name="node_mesh_matinfo">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="placeholderText">
+                  <string>[Aucun Matériau chargé pour ce mailliage]</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QGridLayout" name="gridLayout">
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="node_mesh_addmat">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Attacher</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QPushButton" name="node_mesh_editmat">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Editer</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QPushButton" name="node_mesh_relmat">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Déttacher</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="node_mesh_reloadmat">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Rafraichir</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </item>
             <item>
@@ -452,13 +531,6 @@
                <string>Paramètres</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QCheckBox" name="node_mesh_custommat">
-                 <property name="text">
-                  <string>Matériau  personaliser pour ce maillage</string>
-                 </property>
-                </widget>
-               </item>
                <item>
                 <widget class="QCheckBox" name="node_mesh_billboard_y">
                  <property name="text">
@@ -1139,7 +1211,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_41">
              <property name="text">
               <string>Blur Pass</string>
@@ -1159,8 +1231,25 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
+           <item row="2" column="1">
             <widget class="QSpinBox" name="env_shadow_blur"/>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="env_shadow_intensity">
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_42">
+             <property name="text">
+              <string>Intensité</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -1950,22 +2039,5 @@
   <include location="ressource.qrc"/>
   <include location="style.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>node_mesh_custommat</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>node_mesh_editmat</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>575</x>
-     <y>343</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>584</x>
-     <y>260</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

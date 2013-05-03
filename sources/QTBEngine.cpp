@@ -1157,6 +1157,11 @@ void QTBEngine::clearScene()
 
     m_history.clear();
 
+    foreach(tbe::scene::Node* n, m_nodeInterface.keys())
+            delete m_nodeInterface.value(n);
+
+    m_nodeInterface.clear();
+
     m_rootNode->clearAllChild();
     m_sceneManager->clearParallelScenes(false);
     m_sceneParser->clear();
@@ -1263,8 +1268,8 @@ QMeshInteractor* QTBEngine::newMesh(const QString& filename)
 
     Mesh::registerBuffer(mesh, filename.toStdString());
 
-    mesh->addSerializeValue("class.path", filename.toStdString());
-    mesh->addSerializeValue("class.format", "obj");
+    mesh->serializing().put("class.path", filename.toStdString());
+    mesh->serializing().put("class.format", "obj");
 
     setupNewNode(mesh);
 
@@ -1342,6 +1347,11 @@ void QTBEngine::setShadowSize(int size)
 void QTBEngine::setShadowBlur(int pass)
 {
     m_sceneManager->getShadowMap()->setBlurPass(pass);
+}
+
+void QTBEngine::setShadowIntensity(double value)
+{
+    m_sceneManager->getShadowMap()->setIntensity((float) value);
 }
 
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)

@@ -32,8 +32,10 @@ tbe::scene::Mesh* ClassFactory::newMesh(tbe::scene::MeshParallelScene* scene)
 
 QMeshInteractor* ClassFactory::setupMeshGui(tbe::scene::Mesh* mesh)
 {
+    QMeshInteractor* meshIneractor = new QMeshInteractor(m_mainwin, mesh);
+
     QVariant interface;
-    interface.setValue((QNodeInteractor*)this);
+    interface.setValue((QNodeInteractor*) meshIneractor);
 
     QStandardItem* itemType = new QStandardItem("Mesh");
     itemType->setIcon(QIcon(":/Medias/medias/mesh.png"));
@@ -48,8 +50,6 @@ QMeshInteractor* ClassFactory::setupMeshGui(tbe::scene::Mesh* mesh)
 
     QItemsList items;
     items << itemType << itemName;
-
-    QMeshInteractor* meshIneractor = new QMeshInteractor(m_mainwin, mesh);
 
     m_mainwin->registerInteractor(meshIneractor, items);
 
@@ -77,8 +77,10 @@ QLightInteractor* ClassFactory::setupLightGui(tbe::scene::Light* light)
 {
     using namespace tbe::scene;
 
+    QLightInteractor* li = new QLightInteractor(m_mainwin, light);
+
     QVariant interface;
-    interface.setValue((QNodeInteractor*)this);
+    interface.setValue((QNodeInteractor*) li);
 
     QStandardItem* itemType = new QStandardItem("Light");
     itemType->setIcon(QIcon(":/Medias/medias/light.png"));
@@ -94,7 +96,6 @@ QLightInteractor* ClassFactory::setupLightGui(tbe::scene::Light* light)
     QItemsList items;
     items << itemType << itemName;
 
-    QLightInteractor* li = new QLightInteractor(m_mainwin, light);
     m_mainwin->registerInteractor(li, items);
 
     return li;
@@ -116,8 +117,10 @@ QParticlesInteractor* ClassFactory::setupParticlesGui(tbe::scene::ParticlesEmite
 {
     using namespace tbe::scene;
 
+    QParticlesInteractor* pi = new QParticlesInteractor(m_mainwin, particles);
+
     QVariant interface;
-    interface.setValue((QNodeInteractor*)this);
+    interface.setValue((QNodeInteractor*) pi);
 
     QStandardItem* itemType = new QStandardItem("Particles");
     itemType->setIcon(QIcon(":/Medias/medias/particles.png"));
@@ -133,7 +136,6 @@ QParticlesInteractor* ClassFactory::setupParticlesGui(tbe::scene::ParticlesEmite
     QItemsList items;
     items << itemType << itemName;
 
-    QParticlesInteractor* pi = new QParticlesInteractor(m_mainwin, particles);
     m_mainwin->registerInteractor(pi, items);
 
     return pi;
@@ -155,8 +157,10 @@ QMapMarkInteractor* ClassFactory::setupMapMarkGui(tbe::scene::MapMark* mark)
 {
     using namespace tbe::scene;
 
+    QMapMarkInteractor* mi = new QMapMarkInteractor(m_mainwin, mark);
+
     QVariant interface;
-    interface.setValue((QNodeInteractor*)this);
+    interface.setValue((QNodeInteractor*) mi);
 
     QStandardItem* itemType = new QStandardItem("Mark");
     itemType->setIcon(QIcon(":/Medias/medias/mark.png"));
@@ -172,7 +176,6 @@ QMapMarkInteractor* ClassFactory::setupMapMarkGui(tbe::scene::MapMark* mark)
     QItemsList items;
     items << itemType << itemName;
 
-    QMapMarkInteractor* mi = new QMapMarkInteractor(m_mainwin, mark);
     m_mainwin->registerInteractor(mi, items);
 
     return mi;

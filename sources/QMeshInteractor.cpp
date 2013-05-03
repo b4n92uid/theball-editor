@@ -2,17 +2,21 @@
  * File:   QMeshInteractor.cpp
  * Author: b4n92uid
  *
- * Created on 29 aoÃ»t 2011, 07:23
+ * Created on 29 aoÃƒÂ»t 2011, 07:23
  */
 
 #include "QMeshInteractor.h"
 #include "MainWindow.h"
 #include "QTBEngine.h"
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/optional.hpp>
+
 QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
-    m_undo = new tbe::scene::Mesh(*target);
+
+    m_materialDialog = NULL;
 }
 
 QMeshInteractor::~QMeshInteractor() { }
@@ -22,353 +26,12 @@ QString QMeshInteractor::typeName() const
     return "Mesh";
 }
 
-tbe::scene::Material* QMeshInteractor::getSelectedMaterial()
-{
-    using namespace tbe::scene;
-
-    int index = m_mainwin->nodesGui.mesh.matedit->materials_select->currentIndex();
-
-    if(index == -1)
-        index = 0;
-
-    std::string matname = m_mainwin->nodesGui.mesh.matedit->materials_select
-            ->itemData(index).toString().toStdString();
-
-    return m_target->getMaterial(matname);
-}
-
 void QMeshInteractor::openMaterialDialog()
 {
-    m_undo->fetchMaterials(*m_target);
+    using namespace std;
 
-    m_mainwin->nodesGui.mesh.matedit->show();
-}
-
-void QMeshInteractor::saveMaterialDialog()
-{
-    m_undo->fetchMaterials(*m_target);
-    m_mainwin->notifyChange();
-}
-
-void QMeshInteractor::cancelMaterialDialog()
-{
-    m_target->fetchMaterials(*m_undo);
-    updateGui();
-}
-
-void QMeshInteractor::onMaterialSelected()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe;
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    // Reload textures list
-    m_mainwin->nodesGui.mesh.matedit->textured->setChecked(mat->isEnable(Material::TEXTURED));
-
-    m_mainwin->nodesGui.mesh.matedit->textureModel->
-            removeRows(0, m_mainwin->nodesGui.mesh.matedit->textureModel->rowCount());
-
-    unsigned count = mat->getTexturesCount();
-    for(unsigned i = 0; i < count; i++)
-    {
-        Texture tex = mat->getTexture(i);
-
-        QString path = QString::fromStdString(tex.getFilename());
-
-        QVariant data;
-        data.setValue(tex);
-
-        QStandardItem* item = new QStandardItem(QFileInfo(path).baseName());
-        item->setData(data);
-
-        m_mainwin->nodesGui.mesh.matedit->textureModel->appendRow(item);
-    }
-
-    // Select the first texture unit and update GUI
-    QModelIndex first = m_mainwin->nodesGui.mesh.matedit->textureModel->index(0, 0);
-
-    m_mainwin->nodesGui.mesh.matedit->textureView->setCurrentIndex(first);
-    onTextureSelected(first);
-
-    // Update material gui flag
-    m_mainwin->nodesGui.mesh.matedit->foged->setChecked(mat->isEnable(Material::FOGED));
-    m_mainwin->nodesGui.mesh.matedit->lighted->setChecked(mat->isEnable(Material::LIGHTED));
-    m_mainwin->nodesGui.mesh.matedit->culltrick->setChecked(mat->isEnable(Material::VERTEX_SORT_CULL_TRICK));
-
-    // Update material colors and lighting value
-    m_mainwin->nodesGui.mesh.matedit->rgb->setValue(tbe::math::vec43(mat->getColor()));
-    m_mainwin->nodesGui.mesh.matedit->ambiant->setValue(tbe::math::vec43(mat->getAmbient()));
-    m_mainwin->nodesGui.mesh.matedit->diffuse->setValue(tbe::math::vec43(mat->getDiffuse()));
-    m_mainwin->nodesGui.mesh.matedit->specular->setValue(tbe::math::vec43(mat->getSpecular()));
-
-    // Update material blending state
-    bool blending = mat->isEnable(Material::MODULATE)
-            || mat->isEnable(Material::ADDITIVE)
-            || mat->isEnable(Material::MULTIPLY);
-
-    m_mainwin->nodesGui.mesh.matedit->blending->setChecked(blending);
-
-    if(blending)
-    {
-        if(mat->isEnable(Material::MODULATE))
-            m_mainwin->nodesGui.mesh.matedit->blend_modulate->setChecked(true);
-
-        else if(mat->isEnable(Material::ADDITIVE))
-            m_mainwin->nodesGui.mesh.matedit->blend_additive->setChecked(true);
-
-        else if(mat->isEnable(Material::MULTIPLY))
-            m_mainwin->nodesGui.mesh.matedit->blend_mul->setChecked(true);
-    }
-
-    else
-        m_mainwin->nodesGui.mesh.matedit->blend_modulate->setChecked(true);
-
-
-    // Alpha
-    bool alpha = mat->isEnable(Material::ALPHA);
-    m_mainwin->nodesGui.mesh.matedit->alpha->setChecked(alpha);
-    m_mainwin->nodesGui.mesh.matedit->alphathreshold->setValue(mat->getAlphaThershold());
-}
-
-void QMeshInteractor::setFoged(bool stat)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    if(stat)
-        mat->enable(Material::FOGED);
-    else
-        mat->disable(Material::FOGED);
-}
-
-void QMeshInteractor::setTextured(bool stat)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    if(stat)
-        mat->enable(Material::TEXTURED);
-    else
-        mat->disable(Material::TEXTURED);
-}
-
-void QMeshInteractor::onTextureSelected(const QModelIndex& index)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    // Texture's blending
-    if(mat->getTextureBlend(index.row()) == Material::MODULATE)
-        m_mainwin->nodesGui.mesh.matedit->texture_modulate->setChecked(true);
-
-    else if(mat->getTextureBlend(index.row()) == Material::ADDITIVE)
-        m_mainwin->nodesGui.mesh.matedit->texture_additive->setChecked(true);
-
-    else if(mat->getTextureBlend(index.row()) == Material::REPLACE)
-        m_mainwin->nodesGui.mesh.matedit->texture_replace->setChecked(true);
-
-    // Clipping & animation
-    m_mainwin->nodesGui.mesh.matedit->cliping->setChecked(mat->isTextureClipped(index.row()));
-    m_mainwin->nodesGui.mesh.matedit->clipping_animation->setChecked(mat->getTextureAnimation(index.row()) > 0);
-    m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec->setValue(mat->getTextureAnimation(index.row()));
-    m_mainwin->nodesGui.mesh.matedit->clipping_framesize->setValue(mat->getTextureFrameSize(index.row()));
-    m_mainwin->nodesGui.mesh.matedit->clipping_part->setValue(mat->getTexturePart(index.row()));
-}
-
-void QMeshInteractor::addTexture()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe;
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin, QString(),
-                                                      m_mainwin->m_workingDir.meshTexture);
-
-    int offset = mat->getTexturesCount();
-
-    for(int i = 0; i < paths.size(); i++)
-    {
-        try
-        {
-            Texture tex(paths[i].toStdString(), true);
-
-            QVariant data;
-            data.setValue(tex);
-
-            QStandardItem* item = new QStandardItem(QFileInfo(paths[i]).baseName());
-            item->setData(data);
-
-            m_mainwin->nodesGui.mesh.matedit->textureModel->appendRow(item);
-            mat->setTexture(tex, offset + i);
-        }
-        catch(std::exception& e)
-        {
-            QMessageBox::critical(m_mainwin, "Erreur de chargement", e.what());
-        }
-    }
-}
-
-void QMeshInteractor::delTexture()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    QModelIndex index = m_mainwin->nodesGui.mesh.matedit->textureView->currentIndex();
-    mat->dropTexture(index.row());
-
-    m_mainwin->nodesGui.mesh.matedit->textureModel->removeRow(index.row());
-}
-
-void QMeshInteractor::textureUp()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe;
-    using namespace scene;
-
-    int srcindex = m_mainwin->nodesGui.mesh.matedit->textureView->currentIndex().row();
-
-    if(srcindex > 0)
-    {
-        int dstindex = srcindex - 1;
-
-        Material* mat = getSelectedMaterial();
-
-        Texture src = mat->getTexture(srcindex);
-        Texture dst = mat->getTexture(dstindex);
-
-        mat->setTexture(src, dstindex);
-        mat->setTexture(dst, srcindex);
-
-        QList<QStandardItem*> items = m_mainwin->nodesGui.mesh.matedit->textureModel->takeRow(srcindex);
-        m_mainwin->nodesGui.mesh.matedit->textureModel->insertRow(dstindex, items);
-
-        m_mainwin->nodesGui.mesh.matedit->textureView
-                ->setCurrentIndex(m_mainwin->nodesGui.mesh.matedit->textureModel->index(dstindex, 0));
-    }
-}
-
-void QMeshInteractor::textureDown()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe;
-    using namespace scene;
-
-    int srcindex = m_mainwin->nodesGui.mesh.matedit->textureView->currentIndex().row();
-
-    if(srcindex < m_mainwin->nodesGui.mesh.matedit->textureModel->rowCount() - 1)
-    {
-        int dstindex = srcindex + 1;
-
-        Material* mat = getSelectedMaterial();
-
-        Texture src = mat->getTexture(srcindex);
-        Texture dst = mat->getTexture(dstindex);
-
-        mat->setTexture(src, dstindex);
-        mat->setTexture(dst, srcindex);
-
-        QList<QStandardItem*> items = m_mainwin->nodesGui.mesh.matedit->textureModel->takeRow(srcindex);
-        m_mainwin->nodesGui.mesh.matedit->textureModel->insertRow(dstindex, items);
-
-        m_mainwin->nodesGui.mesh.matedit->textureView
-                ->setCurrentIndex(m_mainwin->nodesGui.mesh.matedit->textureModel->index(dstindex, 0));
-    }
-}
-
-void QMeshInteractor::textureSetBlendMode()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe;
-    using namespace scene;
-
-    QModelIndex index = m_mainwin->nodesGui.mesh.matedit->textureView->currentIndex();
-
-    Material* mat = getSelectedMaterial();
-
-    if(m_mainwin->nodesGui.mesh.matedit->texture_modulate->isChecked())
-        mat->setTextureBlend(Material::MODULATE, index.row());
-
-    else if(m_mainwin->nodesGui.mesh.matedit->texture_additive->isChecked())
-        mat->setTextureBlend(Material::ADDITIVE, index.row());
-
-    else if(m_mainwin->nodesGui.mesh.matedit->texture_replace->isChecked())
-        mat->setTextureBlend(Material::REPLACE, index.row());
-}
-
-void QMeshInteractor::setBlend(bool stat)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    if(stat)
-    {
-        mat->enable(Material::COLORED);
-
-        materialSetBlendMode();
-    }
-
-    else
-    {
-        mat->disable(Material::ADDITIVE
-                     | Material::MODULATE
-                     | Material::MULTIPLY);
-    }
-}
-
-void QMeshInteractor::materialSetBlendMode()
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe;
-    using namespace scene;
-
-    Material* mat = getSelectedMaterial();
-
-    mat->disable(Material::MODULATE | Material::ADDITIVE | Material::MULTIPLY);
-
-    if(m_mainwin->nodesGui.mesh.matedit->blend_modulate->isChecked())
-        mat->enable(Material::MODULATE);
-
-    else if(m_mainwin->nodesGui.mesh.matedit->blend_additive->isChecked())
-        mat->enable(Material::ADDITIVE);
-
-    else if(m_mainwin->nodesGui.mesh.matedit->blend_mul->isChecked())
-        mat->enable(Material::MULTIPLY);
+    m_materialDialog->bind();
+    m_materialDialog->show();
 }
 
 void QMeshInteractor::setBillBoard()
@@ -386,183 +49,52 @@ void QMeshInteractor::setShadow()
     m_target->setReceiveShadow(m_mainwin->nodesGui.mesh.receiveshadow->isChecked());
 }
 
-void QMeshInteractor::setColor(const tbe::Vector3f& value)
+void QMeshInteractor::reloadMaterial()
 {
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    tbe::Vector4f color = tbe::math::vec34(value);
-    color.w = m_mainwin->nodesGui.mesh.matedit->color_a->value();
-
-    mat->setColor(color);
+    try
+    {
+        m_target->attachMaterialFile(m_target->getMaterialFile());
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::critical(m_mainwin, "Erreur rafrichisement", e.what());
+    }
 }
 
-void QMeshInteractor::setOpacity(double value)
+void QMeshInteractor::attachMaterial()
 {
-    if(!m_target)
-        return;
+    QString filename = QFileDialog::getOpenFileName(m_mainwin);
 
-    using namespace tbe::scene;
+    if(!filename.isEmpty())
+    {
+        m_target->attachMaterialFile(filename.toStdString());
 
-    Material* mat = getSelectedMaterial();
-
-    mat->setOpacity((float) value);
+        m_mainwin->nodesGui.mesh.editMaterial->setEnabled(true);
+        m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(true);
+    }
 }
 
-void QMeshInteractor::setAmbiant(tbe::Vector3f color)
+void QMeshInteractor::releaseMaterial()
 {
-    getSelectedMaterial()->setAmbient(tbe::math::vec34(color));
-}
+    m_target->releaseMaterialFile();
+    m_mainwin->nodesGui.mesh.editMaterial->setEnabled(false);
+    m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
 
-void QMeshInteractor::setDiffuse(tbe::Vector3f color)
-{
-    getSelectedMaterial()->setDiffuse(tbe::math::vec34(color));
-}
+    m_mainwin->nodesGui.mesh.matinfo->setText("<span style=\" font-style:italic; color:#6a6a6a;\">"
+                                              "[Aucun Matériau chargé pour ce mailliage]</span>");
 
-void QMeshInteractor::setSpecular(tbe::Vector3f color)
-{
-    getSelectedMaterial()->setSpecular(tbe::math::vec34(color));
-}
-
-void QMeshInteractor::setTextureClipping(bool state)
-{
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    mat->setTextureClipped(state);
-}
-
-void QMeshInteractor::setTextureFrameSize(const tbe::Vector2i& size)
-{
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    mat->setTextureFrameSize(size);
-}
-
-void QMeshInteractor::setTexturePart(const tbe::Vector2i& value)
-{
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    mat->setTexturePart(value);
-}
-
-void QMeshInteractor::setFrameAnimation(bool state)
-{
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-    int anim = m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec->value();
-    mat->setTextureAnimation(state ? anim : 0);
-}
-
-void QMeshInteractor::setFrameDuration(int value)
-{
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-    mat->setTextureAnimation(value);
-}
-
-void QMeshInteractor::setAlpha(bool stat)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    if(stat)
-        mat->enable(Material::ALPHA);
-    else
-        mat->disable(Material::ALPHA);
-}
-
-void QMeshInteractor::setAlphaThreshold(double value)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    mat->setAlphaThershold((float) value);
-}
-
-void QMeshInteractor::setCullTrick(bool stat)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    if(stat)
-        mat->enable(Material::VERTEX_SORT_CULL_TRICK);
-    else
-        mat->disable(Material::VERTEX_SORT_CULL_TRICK);
-}
-
-void QMeshInteractor::setLighted(bool stat)
-{
-    if(!m_target)
-        return;
-
-    using namespace tbe::scene;
-
-    Material* mat = getSelectedMaterial();
-
-    if(stat)
-        mat->enable(Material::LIGHTED);
-    else
-        mat->disable(Material::LIGHTED);
-}
-
-void QMeshInteractor::pastMaterials()
-{
-    using namespace tbe::scene;
-
-    if(!m_mainwin->nodesGui.mesh.matedit->source_mesh)
-        return;
-
-    Mesh* src = m_mainwin->nodesGui.mesh.matedit->source_mesh->m_target;
-
-    tbe::Matrix4 mat = m_target->getMatrix();
-
-    *m_target = *src;
-
-    m_target->setMatrix(mat);
-
-    updateGui();
-}
-
-void QMeshInteractor::copyMaterials()
-{
-    m_mainwin->nodesGui.mesh.matedit->source_mesh = this;
-}
-
-void QMeshInteractor::setCustomMaterial(bool state)
-{
-    m_target->setOutputMaterial(state);
+    m_materialDialog->deleteLater();
+    m_materialDialog = NULL;
 }
 
 void QMeshInteractor::bindWithGui()
 {
     QNodeInteractor::bindWithGui();
 
-    connect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
-    connect(m_mainwin->nodesGui.mesh.custommat, SIGNAL(clicked(bool)), this, SLOT(setCustomMaterial(bool)));
+    connect(m_mainwin->nodesGui.mesh.editMaterial, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
+    connect(m_mainwin->nodesGui.mesh.attachMaterial, SIGNAL(clicked()), this, SLOT(attachMaterial()));
+    connect(m_mainwin->nodesGui.mesh.releaseMaterial, SIGNAL(clicked()), this, SLOT(releaseMaterial()));
+    connect(m_mainwin->nodesGui.mesh.reloadMaterial, SIGNAL(clicked()), this, SLOT(reloadMaterial()));
 
     connect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
     connect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
@@ -570,49 +102,8 @@ void QMeshInteractor::bindWithGui()
     connect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
     connect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
 
-    connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), this, SLOT(cancelMaterialDialog()));
-    connect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), this, SLOT(saveMaterialDialog()));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), this, SLOT(setLighted(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->foged, SIGNAL(clicked(bool)), this, SLOT(setFoged(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->alpha, SIGNAL(clicked(bool)), this, SLOT(setAlpha(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->blending, SIGNAL(clicked(bool)), this, SLOT(setBlend(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->culltrick, SIGNAL(clicked(bool)), this, SLOT(setCullTrick(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->rgb, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setColor(const tbe::Vector3f&)));
-    connect(m_mainwin->nodesGui.mesh.matedit->color_a, SIGNAL(valueChanged(double)), this, SLOT(setOpacity(double)));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->ambiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setAmbiant(const tbe::Vector3f&)));
-    connect(m_mainwin->nodesGui.mesh.matedit->diffuse, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setDiffuse(const tbe::Vector3f&)));
-    connect(m_mainwin->nodesGui.mesh.matedit->specular, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setSpecular(const tbe::Vector3f&)));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->alphathreshold, SIGNAL(valueChanged(double)), this, SLOT(setAlphaThreshold(double)));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_add, SIGNAL(clicked()), this, SLOT(addTexture()));
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_del, SIGNAL(clicked()), this, SLOT(delTexture()));
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_up, SIGNAL(clicked()), this, SLOT(textureUp()));
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_down, SIGNAL(clicked()), this, SLOT(textureDown()));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->blend_additive, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
-    connect(m_mainwin->nodesGui.mesh.matedit->blend_modulate, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
-    connect(m_mainwin->nodesGui.mesh.matedit->blend_mul, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_additive, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_modulate, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
-    connect(m_mainwin->nodesGui.mesh.matedit->texture_replace, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->cliping, SIGNAL(clicked(bool)), this, SLOT(setTextureClipping(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->clipping_animation, SIGNAL(clicked(bool)), this, SLOT(setFrameAnimation(bool)));
-    connect(m_mainwin->nodesGui.mesh.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTextureFrameSize(const tbe::Vector2i&)));
-    connect(m_mainwin->nodesGui.mesh.matedit->clipping_part, SIGNAL(valueChanged(const tbe::Vector2i&)), this, SLOT(setTexturePart(const tbe::Vector2i&)));
-    connect(m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), this, SLOT(setFrameDuration(int)));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->copy, SIGNAL(clicked()), this, SLOT(copyMaterials()));
-    connect(m_mainwin->nodesGui.mesh.matedit->past, SIGNAL(clicked()), this, SLOT(pastMaterials()));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(onTextureSelected(const QModelIndex &)));
-
-    connect(m_mainwin->nodesGui.mesh.matedit->materials_select, SIGNAL(highlighted(int)), this, SLOT(onMaterialSelected()));
+    if(m_materialDialog)
+        m_materialDialog->bind();
 
     updateGui();
 
@@ -623,19 +114,10 @@ void QMeshInteractor::unbindFromGui()
 {
     QNodeInteractor::unbindFromGui();
 
-    disconnect(m_mainwin->nodesGui.mesh.editmatfile, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.custommat, SIGNAL(clicked(bool)), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(rejected()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit, SIGNAL(accepted()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->textured, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->lighted, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->foged, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->alpha, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->blending, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->culltrick, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->color_a, SIGNAL(valueChanged(double)), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.editMaterial, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.attachMaterial, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.releaseMaterial, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.reloadMaterial, SIGNAL(clicked()), 0, 0);
 
     disconnect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), 0, 0);
@@ -643,47 +125,20 @@ void QMeshInteractor::unbindFromGui()
     disconnect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), 0, 0);
 
-    disconnect(m_mainwin->nodesGui.mesh.matedit->alphathreshold, SIGNAL(valueChanged(double)), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_add, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_del, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_up, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_down, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->blend_additive, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->blend_modulate, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->blend_mul, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_additive, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_modulate, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->texture_replace, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->cliping, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->clipping_animation, SIGNAL(clicked(bool)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->clipping_framesize, SIGNAL(valueChanged(const tbe::Vector2i&)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->clipping_part, SIGNAL(valueChanged(const tbe::Vector2i&)), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec, SIGNAL(valueChanged(int)), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->copy, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.matedit->past, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->textureView, SIGNAL(clicked(const QModelIndex &)), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.matedit->materials_select, SIGNAL(highlighted(int)), 0, 0);
-
-    m_mainwin->nodesGui.mesh.matedit->materials_select->clear();
+    if(m_materialDialog)
+        m_materialDialog->unbind();
 
     m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
     m_mainwin->nodesGui.mesh.castshadow->setChecked(false);
     m_mainwin->nodesGui.mesh.receiveshadow->setChecked(false);
-
-    m_mainwin->nodesGui.mesh.custommat->setChecked(false);
 }
 
 void QMeshInteractor::updateGui()
 {
+    using namespace std;
     using namespace tbe::scene;
+    using namespace boost;
 
     QNodeInteractor::updateGui();
 
@@ -693,28 +148,10 @@ void QMeshInteractor::updateGui()
             << m_mainwin->nodesGui.mesh.billboardY
             << m_mainwin->nodesGui.mesh.castshadow
             << m_mainwin->nodesGui.mesh.receiveshadow
-            << m_mainwin->nodesGui.mesh.editmatfile
-            << m_mainwin->nodesGui.mesh.matedit->alpha
-            << m_mainwin->nodesGui.mesh.matedit->alphathreshold
-            << m_mainwin->nodesGui.mesh.matedit->ambiant
-            << m_mainwin->nodesGui.mesh.matedit->blend_additive
-            << m_mainwin->nodesGui.mesh.matedit->blend_modulate
-            << m_mainwin->nodesGui.mesh.matedit->blend_mul
-            << m_mainwin->nodesGui.mesh.matedit->blending
-            << m_mainwin->nodesGui.mesh.matedit->cliping
-            << m_mainwin->nodesGui.mesh.matedit->clipping_animation
-            << m_mainwin->nodesGui.mesh.matedit->clipping_animation_msec
-            << m_mainwin->nodesGui.mesh.matedit->clipping_framesize
-            << m_mainwin->nodesGui.mesh.matedit->clipping_part
-            << m_mainwin->nodesGui.mesh.matedit->culltrick
-            << m_mainwin->nodesGui.mesh.matedit->diffuse
-            << m_mainwin->nodesGui.mesh.matedit->foged
-            << m_mainwin->nodesGui.mesh.matedit->rgb
-            << m_mainwin->nodesGui.mesh.matedit->specular;
+            << m_mainwin->nodesGui.mesh.editMaterial
+            ;
 
     blocker.block();
-
-    // Update main GUI ---------------------------------------------------------
 
     tbe::Vector2b billboard = m_target->getBillBoard();
     m_mainwin->nodesGui.mesh.billboardX->setChecked(billboard.x);
@@ -723,34 +160,27 @@ void QMeshInteractor::updateGui()
     m_mainwin->nodesGui.mesh.castshadow->setChecked(m_target->isCastShadow());
     m_mainwin->nodesGui.mesh.receiveshadow->setChecked(m_target->isReceiveShadow());
 
-    // Update materials GUI ----------------------------------------------------
+    string matFile = m_target->getMaterialFile();
 
-    m_mainwin->nodesGui.mesh.matedit->materials_select->clear();
-
-    Material::Array matarr = m_target->getAllMaterial();
-
-    foreach(Material* mat, matarr)
+    if(!matFile.empty())
     {
-        QString matName = QString::fromStdString(mat->getName());
-        QString matID = QString::fromStdString(mat->getName());
+        if(!m_materialDialog)
+            m_materialDialog = new MaterialDialog(m_mainwin, m_target, matFile.c_str());
 
-        if(matName.isEmpty())
-        {
-            matName = QString("[Matériau sans nom #%1]")
-                    .arg(m_mainwin->nodesGui.mesh.matedit->materials_select->count());
-        }
+        m_materialDialog->update();
 
-        m_mainwin->nodesGui.mesh.matedit->materials_select->addItem(matName, matID);
+        m_mainwin->nodesGui.mesh.editMaterial->setEnabled(true);
+        m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(true);
+        m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(true);
+
+        m_mainwin->nodesGui.mesh.matinfo->setText(matFile.c_str());
     }
-
-    m_mainwin->nodesGui.mesh.custommat->setChecked(m_target->isOutputMaterial());
-    m_mainwin->nodesGui.mesh.editmatfile->setEnabled(m_target->isOutputMaterial());
-
-    // Select the first material and update GUI 
-    m_mainwin->nodesGui.mesh.matedit->materials_select->setCurrentIndex(0);
-    onMaterialSelected();
-
-    // -------------------------------------------------------------------------
+    else
+    {
+        m_mainwin->nodesGui.mesh.editMaterial->setEnabled(false);
+        m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
+        m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(false);
+    }
 
     blocker.unblock();
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
+    <width>800</width>
     <height>320</height>
    </rect>
   </property>
@@ -22,7 +22,7 @@
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout" columnstretch="1,1,1">
    <item row="11" column="2">
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
@@ -69,45 +69,6 @@
         <string>Annuler</string>
        </property>
       </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="11" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
-     <item>
-      <widget class="QPushButton" name="copy">
-       <property name="text">
-        <string>Copier</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ressource.qrc">
-         <normaloff>:/Medias/medias/page_copy.png</normaloff>:/Medias/medias/page_copy.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="past">
-       <property name="text">
-        <string>Coller</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>:/Medias/medias/page_white_paste.png</normaloff>:/Medias/medias/page_white_paste.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>
@@ -310,43 +271,6 @@
        </widget>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QGroupBox" name="others">
-     <property name="title">
-      <string>Autres</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="lighted">
-        <property name="text">
-         <string>Eclairer</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="foged">
-        <property name="text">
-         <string>Foged</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="culltrick">
-        <property name="text">
-         <string>Sort Cull Trick</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="QComboBox" name="materials_select">
-     <property name="minimumContentsLength">
-      <number>3</number>
-     </property>
     </widget>
    </item>
    <item row="4" column="1">
@@ -658,17 +582,17 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QSpinBox" name="spinBox">
-        <property name="value">
-         <number>16</number>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_9">
         <property name="text">
          <string>Brillance</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="shininess">
+        <property name="value">
+         <double>16.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -681,26 +605,40 @@
       <string>Shader Program</string>
      </property>
      <property name="checkable">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="checked">
       <bool>false</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>[Aucun Program chargé]</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="9,1">
+       <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="9,0,1">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <item>
-         <widget class="QLineEdit" name="shader_path"/>
+         <widget class="QLineEdit" name="shader_path">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Fichier Shader...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="shader_release">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="ressource.qrc">
+            <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="shader_browse">
@@ -714,6 +652,43 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QComboBox" name="materials_select">
+     <property name="minimumContentsLength">
+      <number>3</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2" rowspan="2">
+    <widget class="QGroupBox" name="others">
+     <property name="title">
+      <string>Autres</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="lighted">
+        <property name="text">
+         <string>Eclairer</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="foged">
+        <property name="text">
+         <string>Foged</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="culltrick">
+        <property name="text">
+         <string>Sort Cull Trick</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

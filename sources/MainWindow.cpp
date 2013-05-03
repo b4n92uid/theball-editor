@@ -267,13 +267,11 @@ void MainWindow::initWidgets()
 
     // -------- Mesh
 
-    nodesGui.mesh.matedit = new MaterialEditDialog(this);
-
-    nodesGui.mesh.matedit->textureModel = new QStandardItemModel(this);
-    nodesGui.mesh.matedit->textureView->setModel(nodesGui.mesh.matedit->textureModel);
-
-    nodesGui.mesh.editmatfile = m_uinterface->node_mesh_editmat;
-    nodesGui.mesh.custommat = m_uinterface->node_mesh_custommat;
+    nodesGui.mesh.editMaterial = m_uinterface->node_mesh_editmat;
+    nodesGui.mesh.reloadMaterial = m_uinterface->node_mesh_reloadmat;
+    nodesGui.mesh.attachMaterial = m_uinterface->node_mesh_addmat;
+    nodesGui.mesh.releaseMaterial = m_uinterface->node_mesh_relmat;
+    nodesGui.mesh.matinfo = m_uinterface->node_mesh_matinfo;
 
     nodesGui.mesh.billboardX = m_uinterface->node_mesh_billboard_x;
     nodesGui.mesh.billboardY = m_uinterface->node_mesh_billboard_y;
@@ -343,6 +341,7 @@ void MainWindow::initWidgets()
     envGui.shadow.enable = m_uinterface->env_shadow_enable;
     envGui.shadow.size = m_uinterface->env_shadow_size;
     envGui.shadow.blur = m_uinterface->env_shadow_blur;
+    envGui.shadow.intentsity = m_uinterface->env_shadow_intensity;
 
     envGui.znear = m_uinterface->env_znear;
     envGui.zfar = m_uinterface->env_zfar;
@@ -435,6 +434,7 @@ void MainWindow::initConnections()
     connect(envGui.shadow.enable, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setShadowEnable(bool)));
     connect(envGui.shadow.size, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowSize(int)));
     connect(envGui.shadow.blur, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowBlur(int)));
+    connect(envGui.shadow.intentsity, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(setShadowIntensity(double)));
 
     // Tools Menu
 
@@ -520,6 +520,7 @@ void MainWindow::updateGui()
         envGui.shadow.enable->setChecked(smap->isEnabled());
         envGui.shadow.size->setValue(smap->getFrameSize().x);
         envGui.shadow.blur->setValue(smap->getBlurPass());
+        envGui.shadow.intentsity->setValue(smap->getIntensity());
 
         blocker.unblock();
     }
@@ -555,12 +556,12 @@ void MainWindow::updateGui()
         envGui.skybox.list->clear();
 
         QMap<QString, QString> skymap;
-        skymap["Devant"] = QString::fromStdString(texs[0].getFilename());
-        skymap["Dèrrier"] = QString::fromStdString(texs[1].getFilename());
-        skymap["Haut"] = QString::fromStdString(texs[2].getFilename());
-        skymap["Bas"] = QString::fromStdString(texs[3].getFilename());
-        skymap["Gauche"] = QString::fromStdString(texs[4].getFilename());
-        skymap["Droite"] = QString::fromStdString(texs[5].getFilename());
+        skymap["1:Devant"] = QString::fromStdString(texs[0].getFilename());
+        skymap["2:Dèrrier"] = QString::fromStdString(texs[1].getFilename());
+        skymap["3:Haut"] = QString::fromStdString(texs[2].getFilename());
+        skymap["4:Bas"] = QString::fromStdString(texs[3].getFilename());
+        skymap["5:Gauche"] = QString::fromStdString(texs[4].getFilename());
+        skymap["6:Droite"] = QString::fromStdString(texs[5].getFilename());
 
         foreach(QString k, skymap.keys())
         {
@@ -590,9 +591,9 @@ void MainWindow::updateGui()
 
     genGui.additionalModel->removeRows(0, genGui.additionalModel->rowCount());
 
-    tbe::scene::rtree& attributes = sceneParser->attributes();
+    tbe::rtree& attributes = sceneParser->attributes();
 
-    BOOST_FOREACH(tbe::scene::rtree::value_type& it, attributes)
+    BOOST_FOREACH(tbe::rtree::value_type& it, attributes)
     {
         QStandardItem* key = new QStandardItem;
         key->setText(QString::fromStdString(it.first));
@@ -676,7 +677,7 @@ void MainWindow::openScene(const QString& filename)
         {
             QMessageBox::StandardButton response =
                     QMessageBox::question(this, "Ficher de savegarde trouvé",
-                                          "Un fichier de savegarde a été trouvé probablement du Ã  un plantage de l'application\n"
+                                          "Un fichier de savegarde a été trouvé probablement du à un plantage de l'application\n"
                                           "vous-les vous le charger ?", QMessageBox::Yes | QMessageBox::No);
 
             if(response == QMessageBox::Yes)
@@ -951,8 +952,6 @@ void MainWindow::select(QNodeInteractor* qnode)
 
     m_uinterface->actionCloneNode->setEnabled(true);
     m_uinterface->actionDeleteNode->setEnabled(true);
-
-    nodesGui.mesh.matedit->hide();
 }
 
 void MainWindow::deselect(QNodeInteractor* qnode)
@@ -1092,27 +1091,27 @@ void MainWindow::guiSkyboxBrowse()
 
     QTreeWidgetItem* item;
 
-    item = new QTreeWidgetItem(QStringList() << "Devant" << QFileInfo(files[0]).baseName());
+    item = new QTreeWidgetItem(QStringList() << "1:Devant" << QFileInfo(files[0]).baseName());
     item->setData(1, Qt::UserRole, files[0]);
     envGui.skybox.list->addTopLevelItem(item);
 
-    item = new QTreeWidgetItem(QStringList() << "Dèrriere" << QFileInfo(files[1]).baseName());
+    item = new QTreeWidgetItem(QStringList() << "2:Dèrriere" << QFileInfo(files[1]).baseName());
     item->setData(1, Qt::UserRole, files[1]);
     envGui.skybox.list->addTopLevelItem(item);
 
-    item = new QTreeWidgetItem(QStringList() << "Haut" << QFileInfo(files[2]).baseName());
+    item = new QTreeWidgetItem(QStringList() << "3:Haut" << QFileInfo(files[2]).baseName());
     item->setData(1, Qt::UserRole, files[2]);
     envGui.skybox.list->addTopLevelItem(item);
 
-    item = new QTreeWidgetItem(QStringList() << "Bas" << QFileInfo(files[3]).baseName());
+    item = new QTreeWidgetItem(QStringList() << "4:Bas" << QFileInfo(files[3]).baseName());
     item->setData(1, Qt::UserRole, files[3]);
     envGui.skybox.list->addTopLevelItem(item);
 
-    item = new QTreeWidgetItem(QStringList() << "Gauche" << QFileInfo(files[4]).baseName());
+    item = new QTreeWidgetItem(QStringList() << "5:Gauche" << QFileInfo(files[4]).baseName());
     item->setData(1, Qt::UserRole, files[4]);
     envGui.skybox.list->addTopLevelItem(item);
 
-    item = new QTreeWidgetItem(QStringList() << "Droite" << QFileInfo(files[5]).baseName());
+    item = new QTreeWidgetItem(QStringList() << "6:Droite" << QFileInfo(files[5]).baseName());
     item->setData(1, Qt::UserRole, files[5]);
     envGui.skybox.list->addTopLevelItem(item);
 }

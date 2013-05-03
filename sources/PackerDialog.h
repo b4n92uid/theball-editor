@@ -41,7 +41,7 @@ public slots:
     void exportPack();
 
 protected:
-    void recursivFilesFind(const tbe::scene::rtree& rel);
+    void recursivFilesFind(const tbe::rtree& rel);
 
 private:
     MainWindow* m_parent;
