@@ -68,9 +68,7 @@ QNodeListView::QNodeListView(QWidget* parent) : QTreeView(parent)
     connect(pastMaterials, SIGNAL(triggered()), this, SIGNAL(pastMaterials()));
 }
 
-QNodeListView::~QNodeListView()
-{
-}
+QNodeListView::~QNodeListView() { }
 
 void QNodeListView::setModel(QSortFilterProxyModel* model)
 {
@@ -129,12 +127,14 @@ void QNodeListView::selectionChanged(const QItemSelection& selected, const QItem
 
     foreach(QModelIndex index, deselected.indexes())
     {
-        emit deselect(index.data(ITEM_ROLE_NODE).value<QNodeInteractor*>());
+        if(index.column() == 0)
+            emit deselect(index.data(ITEM_ROLE_NODE).value<QNodeInteractor*>());
     }
 
     foreach(QModelIndex index, selected.indexes())
     {
-        emit select(index.data(ITEM_ROLE_NODE).value<QNodeInteractor*>());
+        if(index.column() == 0)
+            emit select(index.data(ITEM_ROLE_NODE).value<QNodeInteractor*>());
     }
 }
 

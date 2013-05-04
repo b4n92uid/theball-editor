@@ -37,17 +37,18 @@ public:
 
     bool isLocked();
     bool isEnable();
-    
+
     QNodeInteractor* getParent();
 
 public slots:
-    virtual void setup();
-    virtual void unsetup();
     virtual void bindWithGui();
     virtual void unbindFromGui();
     virtual void updateGui();
 
-    virtual QNodeInteractor* clone();
+    virtual QNodeInteractor* clone() = 0;
+
+    virtual void setup() = 0;
+    virtual void unsetup();
 
 public slots:
     void addNodeField();
@@ -70,5 +71,19 @@ protected:
     bool m_locked;
 };
 
+class QRootInteractor : public QNodeInteractor
+{
+public:
+
+    QRootInteractor(MainWindow* mainwin, tbe::scene::Node* target)
+    : QNodeInteractor(mainwin, target) { }
+
+    QNodeInteractor* clone()
+    {
+        return new QRootInteractor(m_mainwin, m_target->clone());
+    }
+
+    void setup() { }
+};
 #endif	/* QNODEINTERACTOR_H */
 

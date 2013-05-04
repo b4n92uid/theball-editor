@@ -17,6 +17,10 @@ class QParticlesInteractor : public QNodeInteractor
 public:
     QParticlesInteractor(MainWindow* mainwin, tbe::scene::ParticlesEmiter* target);
     virtual ~QParticlesInteractor();
+    
+    void setup();
+
+    virtual QParticlesInteractor* clone();
 
     virtual QString typeName() const;
 

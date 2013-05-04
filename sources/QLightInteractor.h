@@ -18,6 +18,10 @@ public:
     QLightInteractor(MainWindow* mainwin, tbe::scene::Light* target);
     virtual ~QLightInteractor();
 
+    void setup();
+
+    virtual QLightInteractor* clone();
+
     virtual QString typeName() const;
 
 public slots:

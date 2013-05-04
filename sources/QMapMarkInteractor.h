@@ -18,6 +18,10 @@ public:
     QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark* target);
     virtual ~QMapMarkInteractor();
 
+    void setup();
+
+    virtual QMapMarkInteractor* clone();
+
     virtual QString typeName() const;
 
 public slots:

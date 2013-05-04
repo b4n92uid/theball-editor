@@ -2,7 +2,7 @@
  * File:   QMeshInteractor.cpp
  * Author: b4n92uid
  *
- * Created on 29 aoÃƒÂ»t 2011, 07:23
+ * Created on 29 aoÃƒÆ’Ã‚Â»t 2011, 07:23
  */
 
 #include "QMeshInteractor.h"
@@ -15,23 +15,42 @@
 QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
 : QNodeInteractor(mainwin, target), m_target(target)
 {
-
     m_materialDialog = NULL;
 }
 
 QMeshInteractor::~QMeshInteractor() { }
 
+void QMeshInteractor::setup()
+{
+    QVariant interface;
+    interface.setValue((QNodeInteractor*) this);
+
+    QStandardItem* itemType = new QStandardItem("Mesh");
+    itemType->setIcon(QIcon(":/Medias/medias/mesh.png"));
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(m_target->getName()), ITEM_ROLE_NAME);
+    itemType->setData("Mesh", ITEM_ROLE_TYPE);
+
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(m_target->getName()));
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(m_target->getName()), ITEM_ROLE_NAME);
+    itemName->setData("Mesh", ITEM_ROLE_TYPE);
+
+    QItemsList items;
+    items << itemType << itemName;
+
+    m_mainwin->registerInteractor(this, items);
+}
+
+QMeshInteractor* QMeshInteractor::clone()
+{
+    QMeshInteractor* inter = new QMeshInteractor(m_mainwin, m_target->clone());
+    return inter;
+}
+
 QString QMeshInteractor::typeName() const
 {
     return "Mesh";
-}
-
-void QMeshInteractor::openMaterialDialog()
-{
-    using namespace std;
-
-    m_materialDialog->bind();
-    m_materialDialog->show();
 }
 
 void QMeshInteractor::setBillBoard()
@@ -61,6 +80,35 @@ void QMeshInteractor::reloadMaterial()
     }
 }
 
+void QMeshInteractor::openMaterialDialog()
+{
+    using namespace std;
+
+    if(!m_materialDialog)
+    {
+        QString filename = QFileDialog::getSaveFileName(m_mainwin);
+
+        if(!filename.isEmpty())
+        {
+            QFile(filename).open(QFile::WriteOnly);
+
+            m_target->attachMaterialFile(filename.toStdString());
+
+            m_materialDialog = new MaterialDialog(m_mainwin, m_target, filename);
+            m_materialDialog->bind();
+            updateGui();
+            m_materialDialog->show();
+        }
+        else
+            return;
+    }
+    else
+    {
+        m_materialDialog->bind();
+        m_materialDialog->show();
+    }
+}
+
 void QMeshInteractor::attachMaterial()
 {
     QString filename = QFileDialog::getOpenFileName(m_mainwin);
@@ -69,19 +117,24 @@ void QMeshInteractor::attachMaterial()
     {
         m_target->attachMaterialFile(filename.toStdString());
 
-        m_mainwin->nodesGui.mesh.editMaterial->setEnabled(true);
         m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(true);
+        m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(true);
+
+        m_materialDialog = new MaterialDialog(m_mainwin, m_target, filename);
+        m_materialDialog->bind();
+        updateGui();
+        m_materialDialog->show();
     }
 }
 
 void QMeshInteractor::releaseMaterial()
 {
     m_target->releaseMaterialFile();
-    m_mainwin->nodesGui.mesh.editMaterial->setEnabled(false);
     m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
+    m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(false);
 
     m_mainwin->nodesGui.mesh.matinfo->setText("<span style=\" font-style:italic; color:#6a6a6a;\">"
-                                              "[Aucun Matériau chargé pour ce mailliage]</span>");
+                                              "[Aucun MatÃ©riau chargÃ© pour ce mailliage]</span>");
 
     m_materialDialog->deleteLater();
     m_materialDialog = NULL;
@@ -169,7 +222,6 @@ void QMeshInteractor::updateGui()
 
         m_materialDialog->update();
 
-        m_mainwin->nodesGui.mesh.editMaterial->setEnabled(true);
         m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(true);
         m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(true);
 
@@ -177,9 +229,10 @@ void QMeshInteractor::updateGui()
     }
     else
     {
-        m_mainwin->nodesGui.mesh.editMaterial->setEnabled(false);
         m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
         m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(false);
+
+        m_mainwin->nodesGui.mesh.matinfo->clear();
     }
 
     blocker.unblock();

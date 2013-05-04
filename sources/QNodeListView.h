@@ -47,6 +47,7 @@ signals:
 
     void select(QNodeInteractor*);
     void deselect(QNodeInteractor*);
+    void deselectAll();
 
 protected:
     void selectionChanged(const QItemSelection&, const QItemSelection&);

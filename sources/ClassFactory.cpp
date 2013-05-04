@@ -34,24 +34,7 @@ QMeshInteractor* ClassFactory::setupMeshGui(tbe::scene::Mesh* mesh)
 {
     QMeshInteractor* meshIneractor = new QMeshInteractor(m_mainwin, mesh);
 
-    QVariant interface;
-    interface.setValue((QNodeInteractor*) meshIneractor);
-
-    QStandardItem* itemType = new QStandardItem("Mesh");
-    itemType->setIcon(QIcon(":/Medias/medias/mesh.png"));
-    itemType->setData(interface, ITEM_ROLE_NODE);
-    itemType->setData(QString::fromStdString(mesh->getName()), ITEM_ROLE_NAME);
-    itemType->setData("Mesh", ITEM_ROLE_TYPE);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(mesh->getName()));
-    itemName->setData(interface, ITEM_ROLE_NODE);
-    itemName->setData(QString::fromStdString(mesh->getName()), ITEM_ROLE_NAME);
-    itemName->setData("Mesh", ITEM_ROLE_TYPE);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    m_mainwin->registerInteractor(meshIneractor, items);
+    meshIneractor->setup();
 
     return meshIneractor;
 }
@@ -79,24 +62,7 @@ QLightInteractor* ClassFactory::setupLightGui(tbe::scene::Light* light)
 
     QLightInteractor* li = new QLightInteractor(m_mainwin, light);
 
-    QVariant interface;
-    interface.setValue((QNodeInteractor*) li);
-
-    QStandardItem* itemType = new QStandardItem("Light");
-    itemType->setIcon(QIcon(":/Medias/medias/light.png"));
-    itemType->setData(interface, ITEM_ROLE_NODE);
-    itemType->setData(QString::fromStdString(light->getName()), ITEM_ROLE_NAME);
-    itemType->setData("Light", ITEM_ROLE_TYPE);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(light->getName()));
-    itemName->setData(interface, ITEM_ROLE_NODE);
-    itemName->setData(QString::fromStdString(light->getName()), ITEM_ROLE_NAME);
-    itemName->setData("Light", ITEM_ROLE_TYPE);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    m_mainwin->registerInteractor(li, items);
+    li->setup();
 
     return li;
 }
@@ -119,24 +85,7 @@ QParticlesInteractor* ClassFactory::setupParticlesGui(tbe::scene::ParticlesEmite
 
     QParticlesInteractor* pi = new QParticlesInteractor(m_mainwin, particles);
 
-    QVariant interface;
-    interface.setValue((QNodeInteractor*) pi);
-
-    QStandardItem* itemType = new QStandardItem("Particles");
-    itemType->setIcon(QIcon(":/Medias/medias/particles.png"));
-    itemType->setData(interface, ITEM_ROLE_NODE);
-    itemType->setData(QString::fromStdString(particles->getName()), ITEM_ROLE_NAME);
-    itemType->setData("Particles", ITEM_ROLE_TYPE);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(particles->getName()));
-    itemName->setData(interface, ITEM_ROLE_NODE);
-    itemName->setData(QString::fromStdString(particles->getName()), ITEM_ROLE_NAME);
-    itemName->setData("Particles", ITEM_ROLE_TYPE);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    m_mainwin->registerInteractor(pi, items);
+    pi->setup();
 
     return pi;
 }
@@ -159,24 +108,7 @@ QMapMarkInteractor* ClassFactory::setupMapMarkGui(tbe::scene::MapMark* mark)
 
     QMapMarkInteractor* mi = new QMapMarkInteractor(m_mainwin, mark);
 
-    QVariant interface;
-    interface.setValue((QNodeInteractor*) mi);
-
-    QStandardItem* itemType = new QStandardItem("Mark");
-    itemType->setIcon(QIcon(":/Medias/medias/mark.png"));
-    itemType->setData(interface, ITEM_ROLE_NODE);
-    itemType->setData(QString::fromStdString(mark->getName()), ITEM_ROLE_NAME);
-    itemType->setData("Mark", ITEM_ROLE_TYPE);
-
-    QStandardItem* itemName = new QStandardItem(QString::fromStdString(mark->getName()));
-    itemName->setData(interface, ITEM_ROLE_NODE);
-    itemName->setData(QString::fromStdString(mark->getName()), ITEM_ROLE_NAME);
-    itemName->setData("Mark", ITEM_ROLE_TYPE);
-
-    QItemsList items;
-    items << itemType << itemName;
-
-    m_mainwin->registerInteractor(mi, items);
+    mi->setup();
 
     return mi;
 }

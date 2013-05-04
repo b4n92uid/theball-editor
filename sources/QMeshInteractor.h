@@ -19,6 +19,10 @@ public:
     QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target);
     virtual ~QMeshInteractor();
 
+    void setup();
+    
+    QMeshInteractor* clone();
+
     QString typeName() const;
 
 public slots:

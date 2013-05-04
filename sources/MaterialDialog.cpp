@@ -142,7 +142,10 @@ void MaterialDialog::onMaterialSelected()
         shader_release->setEnabled(true);
     }
     else
+    {
+        shader_path->clear();
         shader_release->setEnabled(false);
+    }
 }
 
 void MaterialDialog::setFoged(bool stat)
@@ -717,19 +720,13 @@ void MaterialDialog::onApply()
 
     m_undo->fetchMaterials(*m_target);
 
-    string filepath = m_target->getMaterialFile();
-
-    if(!filepath.empty())
+    if(!m_filepath.isEmpty())
     {
         // filepath = tools::relativizePath(filepath, m_mainwin->openFileName().toStdString());
 
-        rtree materialTree = m_target->serializeMaterial(filepath);
+        rtree materialTree = m_target->serializeMaterial(m_filepath.toStdString());
 
-        boost::property_tree::write_info(filepath, materialTree);
-    }
-    else
-    {
-        // Save file with user dialog
+        boost::property_tree::write_info(m_filepath.toStdString(), materialTree);
     }
 }
 

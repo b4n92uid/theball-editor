@@ -260,7 +260,6 @@ private:
     QNodeInteractor* m_rootNode;
 
     QString m_filename;
-    QTimer m_backupTimer;
 
     QTBEngine* m_tbeWidget;
 
