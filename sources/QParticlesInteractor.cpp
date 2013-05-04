@@ -10,13 +10,37 @@
 #include "QTBEngine.h"
 
 QParticlesInteractor::QParticlesInteractor(MainWindow* mainwin, tbe::scene::ParticlesEmiter* target)
-: QNodeInteractor(mainwin, target), m_target(target)
+: QNodeInteractor(mainwin, target), m_target(target) { }
+
+QParticlesInteractor::~QParticlesInteractor() { }
+
+void QParticlesInteractor::setup()
 {
+    QVariant interface;
+    interface.setValue((QNodeInteractor*) this);
+
+    QStandardItem* itemType = new QStandardItem("Particles");
+    itemType->setIcon(QIcon(":/Medias/medias/particles.png"));
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(m_target->getName()), ITEM_ROLE_NAME);
+    itemType->setData("Particles", ITEM_ROLE_TYPE);
+
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(m_target->getName()));
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(m_target->getName()), ITEM_ROLE_NAME);
+    itemName->setData("Particles", ITEM_ROLE_TYPE);
+
+    QItemsList items;
+    items << itemType << itemName;
+
+    m_mainwin->registerInteractor(this, items);
 
 }
 
-QParticlesInteractor::~QParticlesInteractor()
+QParticlesInteractor* QParticlesInteractor::clone()
 {
+    QParticlesInteractor* inter = new QParticlesInteractor(m_mainwin, m_target->clone());
+    return inter;
 }
 
 QString QParticlesInteractor::typeName() const

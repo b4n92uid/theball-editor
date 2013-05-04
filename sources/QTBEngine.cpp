@@ -376,7 +376,7 @@ QNodeInteractor* QTBEngine::cloneNode(QNodeInteractor* node)
     node->target()->getParent()->addChild(clone->target());
 
     clone->setup();
-
+    
     return clone;
 }
 
@@ -583,6 +583,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 
                     QFlags<Qt::KeyboardModifiers> mods(ev->modifiers());
 
+                    // Rectangle selection
                     if(mods.testFlag(Qt::AltModifier) && mods.testFlag(Qt::ControlModifier))
                     {
                         if(m_selectedNode)
@@ -605,6 +606,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                             emit selection(qnode);
                     }
 
+                        // One by One selection
                     else if(mods.testFlag(Qt::ControlModifier))
                     {
                         if(m_selection.contains(qnode))
@@ -613,6 +615,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                             emit selection(qnode);
                     }
 
+                        // unique selection
                     else
                     {
                         emit deselectionAll();
@@ -1146,8 +1149,9 @@ void QTBEngine::saveScene(const QString& filename)
 {
     using namespace scene;
 
+    m_sceneParser->setFilename(filename.toStdString());
     m_sceneParser->prepare();
-    m_sceneParser->save(filename.toStdString());
+    m_sceneParser->save();
 }
 
 void QTBEngine::clearScene()
@@ -1258,12 +1262,13 @@ QMeshInteractor* QTBEngine::newMesh(const QString& filename)
 
     if(shared)
     {
-        mesh->fetchVertexes(*shared);
+        mesh->shareVertexes(*shared);
     }
     else
     {
         OBJMesh loader(m_meshScene, filename.toStdString());
         mesh->fetchVertexes(loader);
+        mesh->setName(QFileInfo(filename).baseName().toStdString());
     }
 
     Mesh::registerBuffer(mesh, filename.toStdString());

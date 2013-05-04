@@ -31,6 +31,7 @@ void QNodeInteractor::setName(const QString& s)
     if(m_target)
     {
         m_target->setName(s.toStdString());
+        itemRows()[1]->setText(s);
 
         m_mainwin->notifyChange(true);
     }
@@ -251,8 +252,6 @@ void QNodeInteractor::unsetup()
     m_mainwin->unregisterInteractor(this);
 }
 
-void QNodeInteractor::setup() { }
-
 void QNodeInteractor::bindWithGui()
 {
     connect(m_mainwin->nodesGui.name, SIGNAL(textChanged(const QString&)), this, SLOT(setName(const QString&)));
@@ -377,9 +376,4 @@ void QNodeInteractor::updateGui()
     }
 
     m_mainwin->tbeWidget()->placeCamera();
-}
-
-QNodeInteractor* QNodeInteractor::clone()
-{
-    return NULL;
 }

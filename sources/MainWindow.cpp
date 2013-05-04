@@ -404,6 +404,7 @@ void MainWindow::initConnections()
 
     connect(nodesGui.nodesListView, SIGNAL(select(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(deselect(QNodeInteractor*)), this, SLOT(deselect(QNodeInteractor*)));
+    connect(nodesGui.nodesListView, SIGNAL(deselectAll()), this, SLOT(deselectAll()));
 
     connect(nodesGui.nodesListView, SIGNAL(assignParent()), this, SLOT(assignParent()));
     connect(nodesGui.nodesListView, SIGNAL(promoteChild()), this, SLOT(promoteChild()));
@@ -448,9 +449,6 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionSelectionTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionRotateTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
     connect(m_uinterface->actionScaleTool, SIGNAL(triggered()), toolsigmap, SLOT(map()));
-
-    connect(&m_backupTimer, SIGNAL(timeout()), this, SLOT(saveBackup()));
-    m_backupTimer.start(5000);
 }
 
 bool MainWindow::leaveSafely()
@@ -624,7 +622,7 @@ void MainWindow::newScene()
 
     if(!m_rootNode)
     {
-        m_rootNode = new QNodeInteractor(this, m_tbeWidget->rootNode());
+        m_rootNode = new QRootInteractor(this, m_tbeWidget->rootNode());
 
         QVariant rootData;
         rootData.setValue(m_rootNode);
@@ -683,7 +681,10 @@ void MainWindow::openScene(const QString& filename)
             if(response == QMessageBox::Yes)
                 m_tbeWidget->loadScene(backupfile);
             else
+            {
+                QFile::remove(backupfile);
                 m_tbeWidget->loadScene(filename);
+            }
         }
 
         else
@@ -808,6 +809,9 @@ void MainWindow::notifyChange(bool stat)
 {
     m_somethingChange = stat;
 
+    if(m_somethingChange)
+        saveBackup();
+
     if(!m_filename.isEmpty())
     {
         if(m_somethingChange)
@@ -849,7 +853,7 @@ void MainWindow::guiMeshNew()
     m_tbeWidget->pauseRendring();
 
     QString filename = QFileDialog::getOpenFileName(parentWidget(), QString(),
-                                                    m_workingDir.mesh, "Wavefrot Obj (*.obj);;Tout les fichier (*.*)");
+                                                    m_workingDir.mesh, "Wavefrot Obj (*.obj);;Tout les fichiers (*.*)");
 
     if(!filename.isNull())
     {

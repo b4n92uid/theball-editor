@@ -14,6 +14,34 @@ QLightInteractor::QLightInteractor(MainWindow* mainwin, tbe::scene::Light* targe
 
 QLightInteractor::~QLightInteractor() { }
 
+void QLightInteractor::setup()
+{
+    QVariant interface;
+    interface.setValue((QNodeInteractor*) this);
+
+    QStandardItem* itemType = new QStandardItem("Light");
+    itemType->setIcon(QIcon(":/Medias/medias/light.png"));
+    itemType->setData(interface, ITEM_ROLE_NODE);
+    itemType->setData(QString::fromStdString(m_target->getName()), ITEM_ROLE_NAME);
+    itemType->setData("Light", ITEM_ROLE_TYPE);
+
+    QStandardItem* itemName = new QStandardItem(QString::fromStdString(m_target->getName()));
+    itemName->setData(interface, ITEM_ROLE_NODE);
+    itemName->setData(QString::fromStdString(m_target->getName()), ITEM_ROLE_NAME);
+    itemName->setData("Light", ITEM_ROLE_TYPE);
+
+    QItemsList items;
+    items << itemType << itemName;
+
+    m_mainwin->registerInteractor(this, items);
+}
+
+QLightInteractor* QLightInteractor::clone()
+{
+    QLightInteractor* inter = new QLightInteractor(m_mainwin, m_target->clone());
+    return inter;
+}
+
 QString QLightInteractor::typeName() const
 {
     return "Light";
