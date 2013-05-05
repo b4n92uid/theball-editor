@@ -61,6 +61,9 @@
              <property name="text">
               <string>Ttire</string>
              </property>
+             <property name="buddy">
+              <cstring>gen_title</cstring>
+             </property>
             </widget>
            </item>
            <item row="0" column="1">
@@ -70,6 +73,9 @@
             <widget class="QLabel" name="label_33">
              <property name="text">
               <string>Auteur</string>
+             </property>
+             <property name="buddy">
+              <cstring>gen_author</cstring>
              </property>
             </widget>
            </item>
@@ -87,22 +93,6 @@
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
             <widget class="QLabel" name="gen_information">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_5">
-          <property name="title">
-           <string>Informations sur la platforme</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <item>
-            <widget class="QLabel" name="gen_information_2">
              <property name="text">
               <string/>
              </property>
@@ -416,7 +406,7 @@
            <enum>QTabWidget::Triangular</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <property name="usesScrollButtons">
            <bool>false</bool>
@@ -1406,49 +1396,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="env_shader_enable">
-          <property name="title">
-           <string>Shader Program</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
-           <item>
-            <widget class="QLabel" name="label_13">
-             <property name="text">
-              <string>[Aucun Program chargé]</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="9,1">
-             <property name="sizeConstraint">
-              <enum>QLayout::SetDefaultConstraint</enum>
-             </property>
-             <item>
-              <widget class="QLineEdit" name="env_shader_path"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="env_shader_browse">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset resource="ressource.qrc">
-                 <normaloff>:/Medias/medias/open.png</normaloff>:/Medias/medias/open.png</iconset>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
          <widget class="QGroupBox" name="skybox_enable">
           <property name="enabled">
            <bool>true</bool>
@@ -1969,6 +1916,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>propertyTab</tabstop>
   <tabstop>gen_title</tabstop>
   <tabstop>gen_author</tabstop>
   <tabstop>gen_additional</tabstop>
@@ -1987,43 +1935,58 @@
   <tabstop>node_rot_z</tabstop>
   <tabstop>node_enable</tabstop>
   <tabstop>node_lock</tabstop>
-  <tabstop>node_particles_number</tabstop>
   <tabstop>attribTab</tabstop>
-  <tabstop>node_particles_texture_browse</tabstop>
-  <tabstop>node_particles_continousmode</tabstop>
-  <tabstop>node_particles_gravity_x</tabstop>
-  <tabstop>node_particles_gravity_y</tabstop>
+  <tabstop>node_mesh_castshadow</tabstop>
+  <tabstop>node_mesh_receiveshadow</tabstop>
+  <tabstop>node_mesh_billboard_y</tabstop>
+  <tabstop>node_mesh_addmat</tabstop>
+  <tabstop>node_light_type</tabstop>
   <tabstop>node_light_ambiant_x</tabstop>
-  <tabstop>node_additional</tabstop>
-  <tabstop>node_addfield</tabstop>
-  <tabstop>node_delfield</tabstop>
-  <tabstop>node_clearfields</tabstop>
-  <tabstop>node_particles_build</tabstop>
-  <tabstop>node_particles_gravity_z</tabstop>
-  <tabstop>node_light_specular_y</tabstop>
+  <tabstop>node_light_ambiant_y</tabstop>
+  <tabstop>node_light_ambiant_z</tabstop>
   <tabstop>node_light_diffuse_x</tabstop>
   <tabstop>node_light_diffuse_y</tabstop>
   <tabstop>node_light_diffuse_z</tabstop>
   <tabstop>node_light_specular_x</tabstop>
+  <tabstop>node_light_specular_y</tabstop>
   <tabstop>node_light_specular_z</tabstop>
   <tabstop>node_light_radius</tabstop>
-  <tabstop>node_light_ambiant_z</tabstop>
-  <tabstop>node_light_ambiant_y</tabstop>
-  <tabstop>node_display_meshs</tabstop>
-  <tabstop>node_display_particules</tabstop>
+  <tabstop>node_light_castshadow</tabstop>
+  <tabstop>node_particles_gravity_x</tabstop>
+  <tabstop>node_particles_gravity_y</tabstop>
+  <tabstop>node_particles_gravity_z</tabstop>
   <tabstop>node_particles_boxsize_x</tabstop>
   <tabstop>node_particles_boxsize_y</tabstop>
-  <tabstop>node_particles_texture</tabstop>
   <tabstop>node_particles_boxsize_z</tabstop>
+  <tabstop>node_particles_bulletsize_x</tabstop>
+  <tabstop>node_particles_bulletsize_y</tabstop>
   <tabstop>node_particles_freemove</tabstop>
   <tabstop>node_particles_lifeinit</tabstop>
   <tabstop>node_particles_lifedown</tabstop>
-  <tabstop>node_particles_bulletsize_x</tabstop>
-  <tabstop>node_particles_bulletsize_y</tabstop>
+  <tabstop>node_particles_number</tabstop>
+  <tabstop>node_particles_build</tabstop>
+  <tabstop>node_particles_texture</tabstop>
+  <tabstop>node_particles_texture_browse</tabstop>
+  <tabstop>node_particles_continousmode</tabstop>
   <tabstop>node_particles_pointsprite</tabstop>
+  <tabstop>node_mesh_billboard_x</tabstop>
+  <tabstop>node_additional</tabstop>
+  <tabstop>node_addfield</tabstop>
+  <tabstop>node_delfield</tabstop>
+  <tabstop>node_clearfields</tabstop>
+  <tabstop>node_list</tabstop>
+  <tabstop>node_display_meshs</tabstop>
+  <tabstop>node_display_particules</tabstop>
+  <tabstop>node_display_lights</tabstop>
+  <tabstop>node_display_marks</tabstop>
+  <tabstop>node_list_sort</tabstop>
   <tabstop>env_ambient_x</tabstop>
   <tabstop>env_ambient_y</tabstop>
   <tabstop>env_ambient_z</tabstop>
+  <tabstop>env_shadow_enable</tabstop>
+  <tabstop>env_shadow_size</tabstop>
+  <tabstop>env_shadow_intensity</tabstop>
+  <tabstop>env_shadow_blur</tabstop>
   <tabstop>env_znear</tabstop>
   <tabstop>env_zfar</tabstop>
   <tabstop>fog_enable</tabstop>
@@ -2033,7 +1996,15 @@
   <tabstop>fog_start</tabstop>
   <tabstop>fog_end</tabstop>
   <tabstop>skybox_enable</tabstop>
+  <tabstop>skybox_list</tabstop>
+  <tabstop>skybox_down</tabstop>
+  <tabstop>skybox_up</tabstop>
   <tabstop>skybox_browse</tabstop>
+  <tabstop>skybox_apply</tabstop>
+  <tabstop>node_mesh_editmat</tabstop>
+  <tabstop>node_mesh_relmat</tabstop>
+  <tabstop>node_mesh_reloadmat</tabstop>
+  <tabstop>node_mesh_matinfo</tabstop>
  </tabstops>
  <resources>
   <include location="ressource.qrc"/>

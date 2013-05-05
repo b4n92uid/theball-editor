@@ -215,8 +215,7 @@ void MaterialDialog::addTexture()
 
     Material* mat = getSelectedMaterial();
 
-    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin, QString(),
-                                                      m_mainwin->m_workingDir.meshTexture);
+    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin, QString(), m_filepath);
 
     int offset = mat->getTexturesCount();
 
@@ -681,7 +680,7 @@ void MaterialDialog::update()
 
 void MaterialDialog::openShaderFileName()
 {
-    QString filename = QFileDialog::getOpenFileName(m_mainwin);
+    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_filepath);
 
     if(!filename.isEmpty())
     {

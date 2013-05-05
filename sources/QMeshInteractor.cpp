@@ -86,7 +86,7 @@ void QMeshInteractor::openMaterialDialog()
 
     if(!m_materialDialog)
     {
-        QString filename = QFileDialog::getSaveFileName(m_mainwin);
+        QString filename = QFileDialog::getSaveFileName(m_mainwin, "", m_mainwin->openFileName());
 
         if(!filename.isEmpty())
         {
@@ -111,7 +111,7 @@ void QMeshInteractor::openMaterialDialog()
 
 void QMeshInteractor::attachMaterial()
 {
-    QString filename = QFileDialog::getOpenFileName(m_mainwin);
+    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_mainwin->openFileName());
 
     if(!filename.isEmpty())
     {
@@ -123,7 +123,6 @@ void QMeshInteractor::attachMaterial()
         m_materialDialog = new MaterialDialog(m_mainwin, m_target, filename);
         m_materialDialog->bind();
         updateGui();
-        m_materialDialog->show();
     }
 }
 

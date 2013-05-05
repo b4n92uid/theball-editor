@@ -272,14 +272,6 @@ private:
     bool m_somethingChange;
 
     QInterfaceItemsMap nodeItemBinder;
-
-    struct
-    {
-        QString scene;
-        QString mesh;
-        QString meshTexture;
-
-    } m_workingDir;
 };
 
 #endif	/* MAINWINDOW_H */

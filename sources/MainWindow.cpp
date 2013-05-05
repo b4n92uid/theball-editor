@@ -490,12 +490,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::updateGui()
 {
-    m_workingDir.scene
-            = m_workingDir.mesh
-            = m_workingDir.meshTexture
-            = QFileInfo(m_filename).path();
-
-    nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
+    nodesGui.particles.texture->setWorkDir(m_filename);
 
     // -------------------------------------------------------------------------
 
@@ -642,8 +637,7 @@ void MainWindow::openSceneDialog()
 {
     m_tbeWidget->pauseRendring();
 
-    QString filename = QFileDialog::getOpenFileName(this, "Editer une scene",
-                                                    m_workingDir.scene);
+    QString filename = QFileDialog::getOpenFileName(this, "Editer une scene");
 
     if(!filename.isNull())
         openScene(filename);
@@ -713,24 +707,17 @@ void MainWindow::openScene(const QString& filename)
 
 void MainWindow::saveSceneDialog()
 {
-    QString filename = QFileDialog::getSaveFileName(this);
+    QString filename = QFileDialog::getSaveFileName(this, "", m_filename);
 
     if(!filename.isNull())
     {
         saveScene(filename);
-
-        m_workingDir.scene
-                = m_workingDir.mesh
-                = m_workingDir.meshTexture
-                = QFileInfo(filename).path();
-
-        nodesGui.particles.texture->setWorkDir(m_workingDir.scene);
-
         pushFileHistory(filename);
+        notifyChange(false);
 
         m_filename = filename;
 
-        notifyChange(false);
+        nodesGui.particles.texture->setWorkDir(m_filename);
     }
 }
 
@@ -852,8 +839,7 @@ void MainWindow::guiMeshNew()
 {
     m_tbeWidget->pauseRendring();
 
-    QString filename = QFileDialog::getOpenFileName(parentWidget(), QString(),
-                                                    m_workingDir.mesh, "Wavefrot Obj (*.obj);;Tout les fichiers (*.*)");
+    QString filename = QFileDialog::getOpenFileName(parentWidget(), QString(), m_filename, "Wavefrot Obj (*.obj);;Tout les fichiers (*.*)");
 
     if(!filename.isNull())
     {
@@ -863,10 +849,6 @@ void MainWindow::guiMeshNew()
 
             deselectAll();
             select(mesh);
-
-            m_workingDir.mesh
-                    = m_workingDir.meshTexture
-                    = QFileInfo(filename).path();
 
             notifyChange(true);
         }
@@ -1267,7 +1249,7 @@ void MainWindow::takeScreenshot()
             .arg(QString::fromStdString(tbe::tools::unixName(name.toStdString())))
             .arg(QDate::currentDate().toString("yyyyMMdd"));
 
-    QString defname = QDir(m_workingDir.scene).filePath(title);
+    QString defname = QFileInfo(m_filename).dir().filePath(title);
 
     QString filename = QFileDialog::getSaveFileName(this, "Enregistrer la capture d'écran", defname);
 
