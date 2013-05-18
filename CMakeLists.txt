@@ -27,13 +27,13 @@ file(GLOB_RECURSE HEADERS sources/*.h)
 file(GLOB_RECURSE FORMS sources/*.ui)
 file(GLOB_RECURSE QRESS sources/*.qrc)
 
-# GÃ©nÃ©ration des fichier moc
+# Génération des fichier moc
 QT4_WRAP_CPP(MOC ${HEADERS})
 
-# GÃ©nÃ©ration des fichier ui
+# Génération des fichier ui
 QT4_WRAP_UI(FORMS_HEADERS ${FORMS})
 
-# GÃ©nÃ©ration des fichier qrc
+# Génération des fichier qrc
 QT4_ADD_RESOURCES(RESS ${QRESS})
 
 ADD_EXECUTABLE(tbeditor ${SOURCES} ${MOC} ${FORMS_HEADERS} ${RESS})
