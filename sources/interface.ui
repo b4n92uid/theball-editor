@@ -406,7 +406,7 @@
            <enum>QTabWidget::Triangular</enum>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>0</number>
           </property>
           <property name="usesScrollButtons">
            <bool>false</bool>
@@ -442,8 +442,8 @@
                 </widget>
                </item>
                <item>
-                <layout class="QGridLayout" name="gridLayout">
-                 <item row="0" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
                   <widget class="QPushButton" name="node_mesh_addmat">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -452,11 +452,15 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>Attacher</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/add.png</normaloff>:/Medias/medias/add.png</iconset>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1">
+                 <item>
                   <widget class="QPushButton" name="node_mesh_editmat">
                    <property name="enabled">
                     <bool>true</bool>
@@ -468,30 +472,18 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>Editer</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/draw.png</normaloff>:/Medias/medias/draw.png</iconset>
                    </property>
                    <property name="checkable">
                     <bool>false</bool>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
-                  <widget class="QPushButton" name="node_mesh_relmat">
-                   <property name="enabled">
-                    <bool>false</bool>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string>Déttacher</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
+                 <item>
                   <widget class="QPushButton" name="node_mesh_reloadmat">
                    <property name="enabled">
                     <bool>false</bool>
@@ -503,10 +495,34 @@
                     </sizepolicy>
                    </property>
                    <property name="text">
-                    <string>Rafraichir</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/rotate.png</normaloff>:/Medias/medias/rotate.png</iconset>
                    </property>
                    <property name="checkable">
                     <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="node_mesh_relmat">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="ressource.qrc">
+                     <normaloff>:/Medias/medias/eraser.png</normaloff>:/Medias/medias/eraser.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -520,32 +536,46 @@
               <property name="title">
                <string>Paramètres</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <widget class="QCheckBox" name="node_mesh_billboard_y">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="4" column="0">
+                <widget class="QCheckBox" name="node_mesh_receiveshadow">
                  <property name="text">
-                  <string>Billboard Vertical</string>
+                  <string>Recevoir l'ombre</string>
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="3" column="0">
+                <widget class="QCheckBox" name="node_mesh_castshadow">
+                 <property name="text">
+                  <string>Projeter l'ombre</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="node_mesh_cnormal">
+                 <property name="text">
+                  <string>Calculer les Normals</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QCheckBox" name="node_mesh_ctangent">
+                 <property name="text">
+                  <string>Calculer les Tangent</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
                 <widget class="QCheckBox" name="node_mesh_billboard_x">
                  <property name="text">
                   <string>Billboard Horizental</string>
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QCheckBox" name="node_mesh_castshadow">
+               <item row="2" column="1">
+                <widget class="QCheckBox" name="node_mesh_billboard_y">
                  <property name="text">
-                  <string>Cast Shadow</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="node_mesh_receiveshadow">
-                 <property name="text">
-                  <string>Receive Shadow</string>
+                  <string>Billboard Vertical</string>
                  </property>
                 </widget>
                </item>
@@ -1238,6 +1268,13 @@
             <widget class="QLabel" name="label_42">
              <property name="text">
               <string>Intensité</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QCheckBox" name="env_shadow_shader">
+             <property name="text">
+              <string>Géré par les Shaders</string>
              </property>
             </widget>
            </item>
@@ -1938,7 +1975,6 @@
   <tabstop>attribTab</tabstop>
   <tabstop>node_mesh_castshadow</tabstop>
   <tabstop>node_mesh_receiveshadow</tabstop>
-  <tabstop>node_mesh_billboard_y</tabstop>
   <tabstop>node_mesh_addmat</tabstop>
   <tabstop>node_light_type</tabstop>
   <tabstop>node_light_ambiant_x</tabstop>
@@ -1969,7 +2005,6 @@
   <tabstop>node_particles_texture_browse</tabstop>
   <tabstop>node_particles_continousmode</tabstop>
   <tabstop>node_particles_pointsprite</tabstop>
-  <tabstop>node_mesh_billboard_x</tabstop>
   <tabstop>node_additional</tabstop>
   <tabstop>node_addfield</tabstop>
   <tabstop>node_delfield</tabstop>
@@ -2001,8 +2036,6 @@
   <tabstop>skybox_up</tabstop>
   <tabstop>skybox_browse</tabstop>
   <tabstop>skybox_apply</tabstop>
-  <tabstop>node_mesh_editmat</tabstop>
-  <tabstop>node_mesh_relmat</tabstop>
   <tabstop>node_mesh_reloadmat</tabstop>
   <tabstop>node_mesh_matinfo</tabstop>
  </tabstops>

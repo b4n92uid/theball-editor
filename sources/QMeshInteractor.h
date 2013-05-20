@@ -32,6 +32,8 @@ public slots:
 
     void setBillBoard();
     void setShadow();
+    void setComputeNormal();
+    void setComputeTangent();
 
     void openMaterialDialog();
     void attachMaterial();

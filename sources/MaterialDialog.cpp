@@ -40,6 +40,11 @@ MaterialDialog::MaterialDialog(MainWindow* parent, tbe::scene::Mesh* target, QSt
     m_filepath = filepath;
 }
 
+MaterialDialog::~MaterialDialog()
+{
+    delete m_undo;
+}
+
 tbe::scene::Material* MaterialDialog::getSelectedMaterial()
 {
     using namespace tbe::scene;
@@ -186,6 +191,22 @@ void MaterialDialog::onTextureSelected(const QModelIndex& index)
     using namespace tbe::scene;
 
     Material* mat = getSelectedMaterial();
+
+    Texture tex = mat->getTexture(index.row());
+
+    switch(tex.getOrigin())
+    {
+        case 0: texture_origin0->setChecked(true);
+            break;
+
+        case 1: texture_origin1->setChecked(true);
+            break;
+
+        case 2: texture_origin2->setChecked(true);
+            break;
+    }
+
+    texture_mipmap->setChecked(tex.isGenMipMap());
 
     // Texture's blending
     if(mat->getTextureBlend(index.row()) == Material::MODULATE)
@@ -338,6 +359,51 @@ void MaterialDialog::textureSetBlendMode()
         mat->setTextureBlend(Material::REPLACE, index.row());
 }
 
+void MaterialDialog::textureSetOrigin()
+{
+    if(!m_target)
+        return;
+
+    using namespace tbe;
+    using namespace scene;
+
+    QModelIndex index = textureView->currentIndex();
+
+    Material* mat = getSelectedMaterial();
+
+    Texture tex = mat->getTexture(index.row());
+
+    int origin = 0;
+
+    if(texture_origin1->isChecked())
+        origin = 1;
+    else if(texture_origin2->isChecked())
+        origin = 2;
+
+    tex.load(tex.getFilename(), tex.isGenMipMap(), origin, true);
+
+    mat->setTexture(tex, index.row());
+}
+
+void MaterialDialog::textureSetMipmap()
+{
+    if(!m_target)
+        return;
+
+    using namespace tbe;
+    using namespace scene;
+
+    QModelIndex index = textureView->currentIndex();
+
+    Material* mat = getSelectedMaterial();
+
+    Texture tex = mat->getTexture(index.row());
+
+    tex.load(tex.getFilename(), texture_mipmap->isChecked(), tex.getOrigin(), true);
+
+    mat->setTexture(tex, index.row());
+}
+
 void MaterialDialog::setBlend(bool stat)
 {
     if(!m_target)
@@ -351,7 +417,7 @@ void MaterialDialog::setBlend(bool stat)
     {
         mat->enable(Material::COLORED);
 
-        materialSetBlendMode();
+        setBlendMode();
     }
 
     else
@@ -362,7 +428,7 @@ void MaterialDialog::setBlend(bool stat)
     }
 }
 
-void MaterialDialog::materialSetBlendMode()
+void MaterialDialog::setBlendMode()
 {
     if(!m_target)
         return;
@@ -558,13 +624,17 @@ void MaterialDialog::bind()
     connect(texture_up, SIGNAL(clicked()), this, SLOT(textureUp()));
     connect(texture_down, SIGNAL(clicked()), this, SLOT(textureDown()));
 
-    connect(blend_additive, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
-    connect(blend_modulate, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
-    connect(blend_mul, SIGNAL(clicked()), this, SLOT(materialSetBlendMode()));
+    connect(blend_additive, SIGNAL(clicked()), this, SLOT(setBlendMode()));
+    connect(blend_modulate, SIGNAL(clicked()), this, SLOT(setBlendMode()));
+    connect(blend_mul, SIGNAL(clicked()), this, SLOT(setBlendMode()));
 
     connect(texture_additive, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
     connect(texture_modulate, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
     connect(texture_replace, SIGNAL(clicked()), this, SLOT(textureSetBlendMode()));
+    connect(texture_origin0, SIGNAL(clicked()), this, SLOT(textureSetOrigin()));
+    connect(texture_origin1, SIGNAL(clicked()), this, SLOT(textureSetOrigin()));
+    connect(texture_origin2, SIGNAL(clicked()), this, SLOT(textureSetOrigin()));
+    connect(texture_mipmap, SIGNAL(clicked()), this, SLOT(textureSetMipmap()));
 
     connect(cliping, SIGNAL(clicked(bool)), this, SLOT(setTextureClipping(bool)));
     connect(clipping_animation, SIGNAL(clicked(bool)), this, SLOT(setFrameAnimation(bool)));
@@ -613,6 +683,10 @@ void MaterialDialog::unbind()
     disconnect(texture_additive, SIGNAL(clicked()), 0, 0);
     disconnect(texture_modulate, SIGNAL(clicked()), 0, 0);
     disconnect(texture_replace, SIGNAL(clicked()), 0, 0);
+    disconnect(texture_origin0, SIGNAL(clicked()), 0, 0);
+    disconnect(texture_origin1, SIGNAL(clicked()), 0, 0);
+    disconnect(texture_origin2, SIGNAL(clicked()), 0, 0);
+    disconnect(texture_mipmap, SIGNAL(clicked()), 0, 0);
 
     disconnect(cliping, SIGNAL(clicked(bool)), 0, 0);
     disconnect(clipping_animation, SIGNAL(clicked(bool)), 0, 0);
@@ -721,8 +795,6 @@ void MaterialDialog::onApply()
 
     if(!m_filepath.isEmpty())
     {
-        // filepath = tools::relativizePath(filepath, m_mainwin->openFileName().toStdString());
-
         rtree materialTree = m_target->serializeMaterial(m_filepath.toStdString());
 
         boost::property_tree::write_info(m_filepath.toStdString(), materialTree);
