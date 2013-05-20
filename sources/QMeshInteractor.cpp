@@ -2,7 +2,7 @@
  * File:   QMeshInteractor.cpp
  * Author: b4n92uid
  *
- * Created on 29 aoÃƒÆ’Ã‚Â»t 2011, 07:23
+ * Created on 29 août 2011, 07:23
  */
 
 #include "QMeshInteractor.h"
@@ -18,7 +18,11 @@ QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
     m_materialDialog = NULL;
 }
 
-QMeshInteractor::~QMeshInteractor() { }
+QMeshInteractor::~QMeshInteractor()
+{
+    if(m_materialDialog)
+        delete m_materialDialog;
+}
 
 void QMeshInteractor::setup()
 {
@@ -68,6 +72,16 @@ void QMeshInteractor::setShadow()
     m_target->setReceiveShadow(m_mainwin->nodesGui.mesh.receiveshadow->isChecked());
 }
 
+void QMeshInteractor::setComputeNormal()
+{
+    m_target->computeNormal();
+}
+
+void QMeshInteractor::setComputeTangent()
+{
+    m_target->computeTangent();
+}
+
 void QMeshInteractor::reloadMaterial()
 {
     try
@@ -98,6 +112,8 @@ void QMeshInteractor::openMaterialDialog()
             m_materialDialog->bind();
             updateGui();
             m_materialDialog->show();
+
+            m_mainwin->notifyChange();
         }
         else
             return;
@@ -111,7 +127,8 @@ void QMeshInteractor::openMaterialDialog()
 
 void QMeshInteractor::attachMaterial()
 {
-    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_mainwin->openFileName());
+    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_mainwin->openFileName(),
+                                                    "Material (*.material);;Tout les fichiers (*.*)");
 
     if(!filename.isEmpty())
     {
@@ -123,6 +140,8 @@ void QMeshInteractor::attachMaterial()
         m_materialDialog = new MaterialDialog(m_mainwin, m_target, filename);
         m_materialDialog->bind();
         updateGui();
+
+        m_mainwin->notifyChange();
     }
 }
 
@@ -132,11 +151,12 @@ void QMeshInteractor::releaseMaterial()
     m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
     m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(false);
 
-    m_mainwin->nodesGui.mesh.matinfo->setText("<span style=\" font-style:italic; color:#6a6a6a;\">"
-                                              "[Aucun MatÃ©riau chargÃ© pour ce mailliage]</span>");
+    m_mainwin->nodesGui.mesh.matinfo->clear();
 
     m_materialDialog->deleteLater();
     m_materialDialog = NULL;
+
+    m_mainwin->notifyChange();
 }
 
 void QMeshInteractor::bindWithGui()
@@ -153,6 +173,8 @@ void QMeshInteractor::bindWithGui()
 
     connect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
     connect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
+    connect(m_mainwin->nodesGui.mesh.computeNormal, SIGNAL(clicked()), this, SLOT(setComputeNormal()));
+    connect(m_mainwin->nodesGui.mesh.computeTangent, SIGNAL(clicked()), this, SLOT(setComputeTangent()));
 
     if(m_materialDialog)
         m_materialDialog->bind();
@@ -176,14 +198,21 @@ void QMeshInteractor::unbindFromGui()
 
     disconnect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), 0, 0);
     disconnect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.computeNormal, SIGNAL(clicked()), 0, 0);
+    disconnect(m_mainwin->nodesGui.mesh.computeTangent, SIGNAL(clicked()), 0, 0);
 
     if(m_materialDialog)
+    {
         m_materialDialog->unbind();
+        m_materialDialog->reject();
+    }
 
     m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
     m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
     m_mainwin->nodesGui.mesh.castshadow->setChecked(false);
     m_mainwin->nodesGui.mesh.receiveshadow->setChecked(false);
+    m_mainwin->nodesGui.mesh.computeNormal->setChecked(false);
+    m_mainwin->nodesGui.mesh.computeTangent->setChecked(false);
 }
 
 void QMeshInteractor::updateGui()
@@ -211,6 +240,8 @@ void QMeshInteractor::updateGui()
 
     m_mainwin->nodesGui.mesh.castshadow->setChecked(m_target->isCastShadow());
     m_mainwin->nodesGui.mesh.receiveshadow->setChecked(m_target->isReceiveShadow());
+    m_mainwin->nodesGui.mesh.computeNormal->setChecked(m_target->isComputeNormals());
+    m_mainwin->nodesGui.mesh.computeTangent->setChecked(m_target->isComputeTangent());
 
     string matFile = m_target->getMaterialFile();
 

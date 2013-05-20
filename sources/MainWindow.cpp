@@ -58,8 +58,6 @@ void MainWindow::registerInteractor(QNodeInteractor* node, QItemsList& items)
 
     nodeItemBinder[node] = items[0];
 
-    notifyChange(true);
-
     m_tbeWidget->registerInteractor(node);
 }
 
@@ -98,8 +96,6 @@ void MainWindow::unregisterInteractor(QNodeInteractor* node)
         nodesGui.nodesListProxyModel->blockSignals(false);
 
         nodeItemBinder.remove(node);
-
-        notifyChange(true);
     }
 
     m_tbeWidget->unregisterInteractor(node);
@@ -278,6 +274,8 @@ void MainWindow::initWidgets()
 
     nodesGui.mesh.castshadow = m_uinterface->node_mesh_castshadow;
     nodesGui.mesh.receiveshadow = m_uinterface->node_mesh_receiveshadow;
+    nodesGui.mesh.computeNormal = m_uinterface->node_mesh_cnormal;
+    nodesGui.mesh.computeTangent = m_uinterface->node_mesh_ctangent;
 
     // -------- Particles
 
@@ -342,6 +340,7 @@ void MainWindow::initWidgets()
     envGui.shadow.size = m_uinterface->env_shadow_size;
     envGui.shadow.blur = m_uinterface->env_shadow_blur;
     envGui.shadow.intentsity = m_uinterface->env_shadow_intensity;
+    envGui.shadow.shader = m_uinterface->env_shadow_shader;
 
     envGui.znear = m_uinterface->env_znear;
     envGui.zfar = m_uinterface->env_zfar;
@@ -436,6 +435,7 @@ void MainWindow::initConnections()
     connect(envGui.shadow.size, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowSize(int)));
     connect(envGui.shadow.blur, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowBlur(int)));
     connect(envGui.shadow.intentsity, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(setShadowIntensity(double)));
+    connect(envGui.shadow.shader, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setShadowShader(bool)));
 
     // Tools Menu
 
@@ -514,6 +514,7 @@ void MainWindow::updateGui()
         envGui.shadow.size->setValue(smap->getFrameSize().x);
         envGui.shadow.blur->setValue(smap->getBlurPass());
         envGui.shadow.intentsity->setValue(smap->getIntensity());
+        envGui.shadow.shader->setChecked(smap->isShaderHandled());
 
         blocker.unblock();
     }
@@ -602,6 +603,9 @@ void MainWindow::newScene()
 {
     if(!leaveSafely())
         return;
+
+    if(!m_filename.isEmpty() && QFile::exists(backupOf(m_filename)))
+        QFile::remove(backupOf(m_filename));
 
     deselectAll();
 

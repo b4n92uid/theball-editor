@@ -25,6 +25,7 @@ class MaterialDialog : public QDialog, protected Ui::MaterialEdit
 
 public:
     MaterialDialog(MainWindow* parent, tbe::scene::Mesh* target, QString filepath);
+    ~MaterialDialog();
 
     void bind();
     void unbind();
@@ -44,9 +45,8 @@ public slots:
     void textureDown();
 
     void textureSetBlendMode();
-    void materialSetBlendMode();
-
-    void setAlphaThreshold(double value);
+    void textureSetOrigin();
+    void textureSetMipmap();
 
     void setColor(const tbe::Vector3f& value);
     void setOpacity(double value);
@@ -68,14 +68,17 @@ public slots:
     void setFrameDuration(int value);
 
     void setBlend(bool stat);
+    void setBlendMode();
+
     void setAlpha(bool stat);
-    
+    void setAlphaThreshold(double value);
+
     void openShaderFileName();
     void releaseShaderFileName();
 
 protected:
     tbe::scene::Material* getSelectedMaterial();
-    
+
 protected:
     QDoubleVector3Box* ambiant;
     QDoubleVector3Box* diffuse;

@@ -175,6 +175,7 @@ void QTBEngine::setupSelection()
     m_grid->setName("grid");
     m_grid->setEnable(false);
     m_grid->getMaterial("main")->setRenderFlags(Material::PIPELINE);
+    m_grid->getMaterial("main")->setLineWidth(1);
     m_grid->setSerialized(false);
     m_grid->setCastShadow(false);
     m_grid->setReceiveShadow(false);
@@ -193,7 +194,8 @@ void QTBEngine::placeCamera()
     if(m_toolMode->type != SELECTION_TOOL)
         return;
 
-    m_centerTarget = m_selectedNode->target()->getAbsoluteMatrix().getPos();
+    m_centerTarget = m_selectedNode->target()->getAbsoluteMatrix()
+            * m_selectedNode->target()->getAabb().getCenter();
 }
 
 void QTBEngine::pauseRendring()
@@ -376,7 +378,7 @@ QNodeInteractor* QTBEngine::cloneNode(QNodeInteractor* node)
     node->target()->getParent()->addChild(clone->target());
 
     clone->setup();
-    
+
     return clone;
 }
 
@@ -558,6 +560,7 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
             m_selbox->Node::setEnable(false);
             m_grid->setEnable(false);
 
+            // Disable locked node
             QMap < QNodeInteractor*, bool> initialState;
 
             foreach(QNodeInteractor* node, m_nodeInterface.values())
@@ -569,6 +572,13 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 }
             }
 
+            if(m_selectedNode)
+            {
+                initialState[m_selectedNode] = true;
+                m_selectedNode->target()->setEnable(false);
+            }
+
+            // Ray cast
             Vector3f campos = m_camera->getPos();
             Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
 
@@ -581,41 +591,16 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                 {
                     QNodeInteractor* qnode = m_nodeInterface[nearest];
 
+                    // Selection
                     QFlags<Qt::KeyboardModifiers> mods(ev->modifiers());
 
-                    // Rectangle selection
-                    if(mods.testFlag(Qt::AltModifier) && mods.testFlag(Qt::ControlModifier))
-                    {
-                        if(m_selectedNode)
-                        {
-                            AABB area;
-                            area.count(m_selectedNode->target());
-                            area.count(qnode->target());
-
-                            area += -0.1;
-
-                            emit selection(qnode);
-
-                            foreach(Node* node, m_nodeInterface.keys())
-                            {
-                                if(area.isInner(node) && !m_selection.contains(m_nodeInterface[node]))
-                                    emit selection(m_nodeInterface[node]);
-                            }
-                        }
-                        else
-                            emit selection(qnode);
-                    }
-
-                        // One by One selection
-                    else if(mods.testFlag(Qt::ControlModifier))
+                    if(mods.testFlag(Qt::ControlModifier))
                     {
                         if(m_selection.contains(qnode))
                             emit deselection(qnode);
                         else
                             emit selection(qnode);
                     }
-
-                        // unique selection
                     else
                     {
                         emit deselectionAll();
@@ -623,6 +608,8 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
                     }
                 }
             }
+
+            // Restor state
 
             foreach(QNodeInteractor* node, initialState.keys())
             {
@@ -1359,6 +1346,11 @@ void QTBEngine::setShadowIntensity(double value)
     m_sceneManager->getShadowMap()->setIntensity((float) value);
 }
 
+void QTBEngine::setShadowShader(bool enable)
+{
+    m_sceneManager->getShadowMap()->setShaderHandled(enable);
+}
+
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 {
     m_sceneManager->setAmbientLight(math::vec34(value));
@@ -1582,6 +1574,9 @@ SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene
 
     setName("selection");
     getMaterial("main")->setRenderFlags(Material::COLORED | Material::ADDITIVE | Material::PIPELINE);
+    getMaterial("main")->setLineWidth(4);
+    getMaterial("main")->setFaceType(Material::LINES);
+    getMaterial("main")->setDrawPass(6);
     getMaterial("main")->setColor(Vector4f(0, 0, 0.25, 1));
     getMaterial("main")->setDepthTest(false);
     setSerialized(false);
@@ -1596,5 +1591,9 @@ void SelBox::setAround(tbe::scene::Node* node)
 
     setMatrix(node->getAbsoluteMatrix());
     setPos(node->getAbsoluteMatrix() * selAabb.getCenter());
-    setSize(selAabb.getSize() / 2.0f + 0.2f);
+
+    if(selAabb.getSize() > 0)
+        setSize(selAabb.getSize() / 2.0f);
+    else
+        setSize(1.0f);
 }

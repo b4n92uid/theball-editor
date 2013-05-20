@@ -160,6 +160,8 @@ private:
             QCheckBox* billboardY;
             QCheckBox* castshadow;
             QCheckBox* receiveshadow;
+            QCheckBox* computeNormal;
+            QCheckBox* computeTangent;
 
         } mesh;
 
@@ -231,6 +233,7 @@ private:
             QSpinBox* size;
             QSpinBox* blur;
             QDoubleSpinBox* intentsity;
+            QCheckBox* shader;
             QGroupBox* enable;
 
         } shadow;
