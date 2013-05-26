@@ -28,6 +28,7 @@ public slots:
     void bindWithGui();
     void unbindFromGui();
     void updateGui();
+    void triggerDialog();
 
 public slots:
     void setType(int type);
@@ -36,6 +37,15 @@ public slots:
     void setSpecular(const tbe::Vector3f& value);
     void setRadius(double value);
     void setCastShadow(bool enable);
+    void setShadowSize(int size);
+    void setShadowBlur(int pass);
+    void setShadowIntensity(double value);
+    void setShadowShader(bool enable);
+    void setCastRays(bool enable);
+    void setRaysOffset(const tbe::Vector3f& value);
+    void setRaysFrameSize(int size);
+    void setRaysLightSize(int size);
+    void setRaysNoiseLayer(QString path);
 
 private:
     tbe::scene::Light* m_target;

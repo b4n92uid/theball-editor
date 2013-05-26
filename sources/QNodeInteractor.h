@@ -45,6 +45,8 @@ public slots:
     virtual void unbindFromGui();
     virtual void updateGui();
 
+    virtual void triggerDialog() = 0;
+
     virtual QNodeInteractor* clone() = 0;
 
     virtual void setup() = 0;
@@ -84,6 +86,8 @@ public:
     }
 
     void setup() { }
+
+    void triggerDialog() { }
 };
 #endif	/* QNODEINTERACTOR_H */
 

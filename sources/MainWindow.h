@@ -13,6 +13,10 @@
 
 #include "ui_about.h"
 
+#include "MeshDialog.h"
+#include "LightDialog.h"
+#include "ParticlesDialog.h"
+#include "EnvironmentDialog.h"
 #include "QNodeListView.h"
 #include "QBrowsEdit.h"
 #include "QVectorBox.h"
@@ -55,7 +59,7 @@ protected:
 
     bool leaveSafely();
 
-    void updateGui();
+    void updateInterface();
 
     void outputScene(const QString& filename);
 
@@ -92,6 +96,8 @@ public slots:
     void pastRotation();
 
     void takeScreenshot();
+    
+    void openEnvironmentDialog();
 
     void setCurrentTool(int type);
 
@@ -108,17 +114,10 @@ public slots:
     void deselect(QNodeInteractor* qnode);
     void deselectAll();
 
-    void guiSkyboxEnable(bool enable);
-    void guiSkyboxBrowse();
-    void guiSkyboxChange();
-    void guiSkyboxShift();
-
-    void guiFogEnable(bool enable);
-    void guiFogChange();
-
-    void guiAmbient(const tbe::Vector3f& value);
-    void guiZNear(double value);
-    void guiZFar(double value);
+    EnvironmentDialog* getEnvironmentDialog() const;
+    ParticlesDialog* getParticlesDialog() const;
+    LightDialog* getLightDialog() const;
+    MeshDialog* getMeshDialog() const;
 
 signals:
 
@@ -126,64 +125,16 @@ signals:
     void resumeRendring();
 
     friend class QNodeInteractor;
-    friend class QLightInteractor;
-    friend class QMeshInteractor;
-    friend class QParticlesInteractor;
-    friend class QMapMarkInteractor;
-    friend class MaterialDialog;
 
 private:
 
+    MeshDialog* m_meshDialog;
+    LightDialog* m_lightDialog;
+    ParticlesDialog* m_particlesDialog;
+    EnvironmentDialog* m_environmentDialog;
+
     struct NodesGuiTab
     {
-
-        struct LightGuiTab
-        {
-            QComboBox* type;
-            QDoubleVector3Box* ambiant;
-            QDoubleVector3Box* diffuse;
-            QDoubleVector3Box* specular;
-            QCheckBox* castshadow;
-            QDoubleSpinBox* radius;
-
-        } light;
-
-        struct MeshGuiTab
-        {
-            QPushButton* editMaterial;
-            QPushButton* reloadMaterial;
-            QPushButton* attachMaterial;
-            QPushButton* releaseMaterial;
-            QLineEdit* matinfo;
-
-            QCheckBox* billboardX;
-            QCheckBox* billboardY;
-            QCheckBox* castshadow;
-            QCheckBox* receiveshadow;
-            QCheckBox* computeNormal;
-            QCheckBox* computeTangent;
-
-        } mesh;
-
-        struct ParticlesGuiTab
-        {
-            QDoubleVector3Box* gravity;
-            QDoubleVector3Box* boxsize;
-            QDoubleVector2Box* bulletsize;
-            QDoubleSpinBox* freemove;
-            QDoubleSpinBox* lifeinit;
-            QDoubleSpinBox* lifedown;
-            QSpinBox* number;
-            QBrowsEdit* texture;
-            QCheckBox* continiousmode;
-            QCheckBox* pointsprite;
-
-            QPushButton* build;
-
-            QMap<QObject*, QString> sourcMap;
-
-        } particles;
-
         QLineEdit* name;
         QDoubleVector3Box* position;
         QDoubleVector3Box* rotation;
@@ -191,8 +142,6 @@ private:
 
         QCheckBox* enable;
         QCheckBox* lock;
-
-        QTabWidget* attribTab;
 
         QTreeView* additionalView;
         QStandardItemModel* additionalModel;
@@ -204,45 +153,6 @@ private:
         QCheckBox* displayMesh, *displayLights, *displayParticles, *displayMarks;
 
     } nodesGui;
-
-    struct EnvGuiTab
-    {
-
-        struct SkyboxGuiTab
-        {
-            QTreeWidget* list;
-            QPushButton* apply;
-            QPushButton* browse;
-            QGroupBox* enable;
-            QPushButton* up;
-            QPushButton* down;
-
-        } skybox;
-
-        struct FogGuiTab
-        {
-            QDoubleVector3Box* color;
-            QDoubleSpinBox* start;
-            QDoubleSpinBox* end;
-            QGroupBox* enable;
-
-        } fog;
-
-        struct ShadowGuiTab
-        {
-            QSpinBox* size;
-            QSpinBox* blur;
-            QDoubleSpinBox* intentsity;
-            QCheckBox* shader;
-            QGroupBox* enable;
-
-        } shadow;
-
-        QDoubleSpinBox* znear, *zfar;
-
-        QDoubleVector3Box* sceneAmbiant;
-
-    } envGui;
 
     struct GeneralGuiTab
     {

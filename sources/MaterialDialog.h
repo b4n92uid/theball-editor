@@ -24,13 +24,13 @@ class MaterialDialog : public QDialog, protected Ui::MaterialEdit
     Q_OBJECT
 
 public:
-    MaterialDialog(MainWindow* parent, tbe::scene::Mesh* target, QString filepath);
+    MaterialDialog(MainWindow* parent);
     ~MaterialDialog();
 
     void bind();
     void unbind();
 
-    void update();
+    void update(tbe::scene::Mesh* target, QString filepath);
 
 public slots:
     void onApply();
@@ -92,7 +92,6 @@ protected:
 
     QString m_filepath;
 
-    tbe::scene::Mesh* m_undo;
     tbe::scene::Mesh* m_target;
     MainWindow* m_mainwin;
 };

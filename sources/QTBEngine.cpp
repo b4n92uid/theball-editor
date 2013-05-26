@@ -218,6 +218,8 @@ void QTBEngine::applyTranslationEvents()
     if(m_eventManager->notify != EventManager::EVENT_MOUSE_MOVE)
         return;
 
+    Vector2f mousePosRel = m_eventManager->mousePosRel;
+
     if(m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
         if(m_eventManager->keyState[EventManager::KEY_LALT])
@@ -231,6 +233,74 @@ void QTBEngine::applyTranslationEvents()
         }
     }
 
+    else if(m_currentTool->type == SCALE_TOOL)
+    {
+        if(m_selectedNode
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
+           && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
+        {
+
+            foreach(QNodeInteractor* qnode, m_selection)
+            {
+                tbe::Vector3f scale = qnode->target()->getScale();
+
+                if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
+                {
+                    scale += mousePosRel.y * m_sensivitySet.selection * scale;
+                }
+                else
+                {
+                    if(m_movementAxe.x > 0)
+                        scale.x += mousePosRel.x * m_sensivitySet.selection * 0.1;
+
+                    if(m_movementAxe.y > 0)
+                        scale.y += mousePosRel.y * m_sensivitySet.selection * 0.1;
+
+                    if(m_movementAxe.z > 0)
+                        scale.z += -mousePosRel.y * m_sensivitySet.selection * 0.1;
+                }
+
+
+                qnode->target()->setScale(scale);
+
+                qnode->QNodeInteractor::updateGui();
+
+                highlight(qnode);
+
+                emit notifyChange();
+            }
+        }
+    }
+    else if(m_currentTool->type == ROTATE_TOOL)
+    {
+        if(m_selectedNode
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
+           && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
+        {
+
+            foreach(QNodeInteractor* qnode, m_selection)
+            {
+                tbe::Quaternion rotation = qnode->target()->getRotation();
+
+                if(m_movementAxe.x > 0)
+                    rotation *= tbe::Quaternion(-mousePosRel.x * m_sensivitySet.selection * 0.1, Vector3f(0, 1, 0));
+
+                if(m_movementAxe.y > 0)
+                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(1, 0, 0));
+
+                if(m_movementAxe.z > 0)
+                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(0, 0, 1));
+
+                qnode->target()->setRotation(rotation);
+
+                qnode->QNodeInteractor::updateGui();
+
+                highlight(qnode);
+
+                emit notifyChange();
+            }
+        }
+    }
     else if(m_currentTool->type == SELECTION_TOOL)
     {
         if(m_selectedNode
@@ -238,8 +308,6 @@ void QTBEngine::applyTranslationEvents()
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
             Vector3f position;
-
-            Vector2f mousePosRel = m_eventManager->mousePosRel;
 
             Vector3f target = m_camera->getTarget();
             target.y = 0;
@@ -716,37 +784,12 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
             QCursor::setPos(m_cursorRelativeMove);
         }
     }
-
+    /*
     else if(m_currentTool->type == ROTATE_TOOL)
     {
         if(ev->buttons() & Qt::RightButton && m_selectedNode)
         {
-
-            foreach(QNodeInteractor* qnode, m_selection)
-            {
-                Matrix4& mat = qnode->target()->getMatrix();
-
-                tbe::Vector3f position, scale;
-                tbe::Quaternion rotation;
-
-                mat.decompose(position, rotation, scale);
-
-                if(m_movementAxe.x > 0)
-                    rotation *= tbe::Quaternion(-mousePosRel.x * m_sensivitySet.selection * 0.1, Vector3f(0, 1, 0));
-
-                if(m_movementAxe.y > 0)
-                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(1, 0, 0));
-
-                if(m_movementAxe.z > 0)
-                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(0, 0, 1));
-
-                mat.identity();
-                mat.transform(position, rotation, scale);
-
-                qnode->QNodeInteractor::updateGui();
-
-                emit notifyChange();
-            }
+            QCursor::setPos(m_cursorRelativeMove);
         }
     }
 
@@ -754,42 +797,10 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
     {
         if(ev->buttons() & Qt::RightButton && m_selectedNode)
         {
-
-            foreach(QNodeInteractor* qnode, m_selection)
-            {
-                Matrix4& mat = qnode->target()->getMatrix();
-
-                tbe::Vector3f position, scale;
-                tbe::Quaternion rotation;
-
-                mat.decompose(position, rotation, scale);
-
-                if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
-                {
-                    scale += mousePosRel.y * m_sensivitySet.selection * scale;
-                }
-                else
-                {
-                    if(m_movementAxe.x > 0)
-                        scale.x += mousePosRel.x * m_sensivitySet.selection * 0.1;
-
-                    if(m_movementAxe.y > 0)
-                        scale.y += mousePosRel.y * m_sensivitySet.selection * 0.1;
-
-                    if(m_movementAxe.z > 0)
-                        scale.z += -mousePosRel.y * m_sensivitySet.selection * 0.1;
-                }
-
-
-                mat.identity();
-                mat.transform(position, rotation, scale);
-
-                qnode->QNodeInteractor::updateGui();
-
-                emit notifyChange();
-            }
+            QCursor::setPos(m_cursorRelativeMove);
         }
     }
+     */
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
@@ -833,7 +844,8 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 
     if(ev->key() == Qt::Key_Space)
     {
-        m_mainwin->ui()->menuEditer->popup(QCursor::pos());
+        if(m_selectedNode)
+            m_selectedNode->triggerDialog();
     }
 
     if(ev->key() == Qt::Key_U && m_selectedNode)
@@ -1321,34 +1333,6 @@ void QTBEngine::setFog(tbe::Vector4f color, float start, float end)
 void QTBEngine::setFog(bool enable)
 {
     m_fog->setEnable(enable);
-}
-
-void QTBEngine::setShadowEnable(bool enable)
-{
-    m_sceneManager->getShadowMap()->setEnabled(enable);
-}
-
-void QTBEngine::setShadowSize(int size)
-{
-    if(!math::isPow2(size))
-        return;
-
-    m_sceneManager->getShadowMap()->setFrameSize(size);
-}
-
-void QTBEngine::setShadowBlur(int pass)
-{
-    m_sceneManager->getShadowMap()->setBlurPass(pass);
-}
-
-void QTBEngine::setShadowIntensity(double value)
-{
-    m_sceneManager->getShadowMap()->setIntensity((float) value);
-}
-
-void QTBEngine::setShadowShader(bool enable)
-{
-    m_sceneManager->getShadowMap()->setShaderHandled(enable);
 }
 
 void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)

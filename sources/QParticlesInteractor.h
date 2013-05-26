@@ -28,6 +28,7 @@ public slots:
     void bindWithGui();
     void unbindFromGui();
     void updateGui();
+    void triggerDialog();
 
 public slots:
     void setGravity(const tbe::Vector3f& v);
