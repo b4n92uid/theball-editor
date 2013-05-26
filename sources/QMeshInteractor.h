@@ -29,20 +29,21 @@ public slots:
     void bindWithGui();
     void unbindFromGui();
     void updateGui();
+    void triggerDialog();
 
-    void setBillBoard();
-    void setShadow();
+    void setBillBoardX(bool x);
+    void setBillBoardY(bool y);
+    void setReceiveShadow(bool s);
+    void setCastShadow(bool s);
     void setComputeNormal();
     void setComputeTangent();
 
-    void openMaterialDialog();
-    void attachMaterial();
+    void attachMaterial(QString filename);
     void reloadMaterial();
     void releaseMaterial();
 
 private:
     tbe::scene::Mesh* m_target;
-    MaterialDialog* m_materialDialog;
 };
 
 #endif	/* QMESHINTERACTOR_H */

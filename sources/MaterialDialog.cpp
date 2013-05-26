@@ -17,7 +17,7 @@
 using namespace tbe;
 using namespace scene;
 
-MaterialDialog::MaterialDialog(MainWindow* parent, tbe::scene::Mesh* target, QString filepath) : QDialog(parent)
+MaterialDialog::MaterialDialog(MainWindow* parent) : QDialog(parent)
 {
     m_mainwin = parent;
 
@@ -33,17 +33,9 @@ MaterialDialog::MaterialDialog(MainWindow* parent, tbe::scene::Mesh* target, QSt
 
     textureModel = new QStandardItemModel(this);
     textureView->setModel(textureModel);
-
-    m_target = target;
-    m_undo = new tbe::scene::Mesh(*target);
-
-    m_filepath = filepath;
 }
 
-MaterialDialog::~MaterialDialog()
-{
-    delete m_undo;
-}
+MaterialDialog::~MaterialDialog() { }
 
 tbe::scene::Material* MaterialDialog::getSelectedMaterial()
 {
@@ -701,8 +693,11 @@ void MaterialDialog::unbind()
     materials_select->clear();
 }
 
-void MaterialDialog::update()
+void MaterialDialog::update(tbe::scene::Mesh* target, QString filepath)
 {
+    m_target = target;
+    m_filepath = filepath;
+
     QSignalBlocker blocker;
     blocker
             << materials_select
@@ -791,8 +786,6 @@ void MaterialDialog::onApply()
     using namespace std;
     using namespace boost;
 
-    m_undo->fetchMaterials(*m_target);
-
     if(!m_filepath.isEmpty())
     {
         rtree materialTree = m_target->serializeMaterial(m_filepath.toStdString());
@@ -801,9 +794,4 @@ void MaterialDialog::onApply()
     }
 }
 
-void MaterialDialog::onClose()
-{
-    m_target->fetchMaterials(*m_undo);
-
-    update();
-}
+void MaterialDialog::onClose() { }

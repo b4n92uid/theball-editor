@@ -13,15 +13,13 @@
 #include <boost/optional.hpp>
 
 QMeshInteractor::QMeshInteractor(MainWindow* mainwin, tbe::scene::Mesh* target)
-: QNodeInteractor(mainwin, target), m_target(target)
-{
-    m_materialDialog = NULL;
-}
+: QNodeInteractor(mainwin, target), m_target(target) { }
 
-QMeshInteractor::~QMeshInteractor()
+QMeshInteractor::~QMeshInteractor() { }
+
+void QMeshInteractor::triggerDialog()
 {
-    if(m_materialDialog)
-        delete m_materialDialog;
+    m_mainwin->getMeshDialog()->show();
 }
 
 void QMeshInteractor::setup()
@@ -57,19 +55,30 @@ QString QMeshInteractor::typeName() const
     return "Mesh";
 }
 
-void QMeshInteractor::setBillBoard()
+void QMeshInteractor::setBillBoardX(bool x)
 {
-    tbe::Vector2b apply;
-    apply.x = m_mainwin->nodesGui.mesh.billboardX->isChecked();
-    apply.y = m_mainwin->nodesGui.mesh.billboardY->isChecked();
+    tbe::Vector2b apply = m_target->getBillBoard();
+    apply.x = x;
 
     m_target->setBillBoard(apply);
 }
 
-void QMeshInteractor::setShadow()
+void QMeshInteractor::setBillBoardY(bool y)
 {
-    m_target->setCastShadow(m_mainwin->nodesGui.mesh.castshadow->isChecked());
-    m_target->setReceiveShadow(m_mainwin->nodesGui.mesh.receiveshadow->isChecked());
+    tbe::Vector2b apply = m_target->getBillBoard();
+    apply.y = y;
+
+    m_target->setBillBoard(apply);
+}
+
+void QMeshInteractor::setCastShadow(bool s)
+{
+    m_target->setCastShadow(s);
+}
+
+void QMeshInteractor::setReceiveShadow(bool s)
+{
+    m_target->setReceiveShadow(s);
 }
 
 void QMeshInteractor::setComputeNormal()
@@ -82,137 +91,20 @@ void QMeshInteractor::setComputeTangent()
     m_target->computeTangent();
 }
 
-void QMeshInteractor::reloadMaterial()
-{
-    try
-    {
-        m_target->attachMaterialFile(m_target->getMaterialFile());
-    }
-    catch(std::exception& e)
-    {
-        QMessageBox::critical(m_mainwin, "Erreur rafrichisement", e.what());
-    }
-}
-
-void QMeshInteractor::openMaterialDialog()
-{
-    using namespace std;
-
-    if(!m_materialDialog)
-    {
-        QString filename = QFileDialog::getSaveFileName(m_mainwin, "", m_mainwin->openFileName());
-
-        if(!filename.isEmpty())
-        {
-            QFile(filename).open(QFile::WriteOnly);
-
-            m_target->attachMaterialFile(filename.toStdString());
-
-            m_materialDialog = new MaterialDialog(m_mainwin, m_target, filename);
-            m_materialDialog->bind();
-            updateGui();
-            m_materialDialog->show();
-
-            m_mainwin->notifyChange();
-        }
-        else
-            return;
-    }
-    else
-    {
-        m_materialDialog->bind();
-        m_materialDialog->show();
-    }
-}
-
-void QMeshInteractor::attachMaterial()
-{
-    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_mainwin->openFileName(),
-                                                    "Material (*.material);;Tout les fichiers (*.*)");
-
-    if(!filename.isEmpty())
-    {
-        m_target->attachMaterialFile(filename.toStdString());
-
-        m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(true);
-        m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(true);
-
-        m_materialDialog = new MaterialDialog(m_mainwin, m_target, filename);
-        m_materialDialog->bind();
-        updateGui();
-
-        m_mainwin->notifyChange();
-    }
-}
-
-void QMeshInteractor::releaseMaterial()
-{
-    m_target->releaseMaterialFile();
-    m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
-    m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(false);
-
-    m_mainwin->nodesGui.mesh.matinfo->clear();
-
-    m_materialDialog->deleteLater();
-    m_materialDialog = NULL;
-
-    m_mainwin->notifyChange();
-}
-
 void QMeshInteractor::bindWithGui()
 {
     QNodeInteractor::bindWithGui();
 
-    connect(m_mainwin->nodesGui.mesh.editMaterial, SIGNAL(clicked()), this, SLOT(openMaterialDialog()));
-    connect(m_mainwin->nodesGui.mesh.attachMaterial, SIGNAL(clicked()), this, SLOT(attachMaterial()));
-    connect(m_mainwin->nodesGui.mesh.releaseMaterial, SIGNAL(clicked()), this, SLOT(releaseMaterial()));
-    connect(m_mainwin->nodesGui.mesh.reloadMaterial, SIGNAL(clicked()), this, SLOT(reloadMaterial()));
-
-    connect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), this, SLOT(setBillBoard()));
-    connect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), this, SLOT(setBillBoard()));
-
-    connect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
-    connect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), this, SLOT(setShadow()));
-    connect(m_mainwin->nodesGui.mesh.computeNormal, SIGNAL(clicked()), this, SLOT(setComputeNormal()));
-    connect(m_mainwin->nodesGui.mesh.computeTangent, SIGNAL(clicked()), this, SLOT(setComputeTangent()));
-
-    if(m_materialDialog)
-        m_materialDialog->bind();
+    m_mainwin->getMeshDialog()->bind(this);
 
     updateGui();
-
-    m_mainwin->nodesGui.attribTab->setCurrentIndex(0);
 }
 
 void QMeshInteractor::unbindFromGui()
 {
     QNodeInteractor::unbindFromGui();
 
-    disconnect(m_mainwin->nodesGui.mesh.editMaterial, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.attachMaterial, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.releaseMaterial, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.reloadMaterial, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.billboardX, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.billboardY, SIGNAL(clicked()), 0, 0);
-
-    disconnect(m_mainwin->nodesGui.mesh.castshadow, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.receiveshadow, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.computeNormal, SIGNAL(clicked()), 0, 0);
-    disconnect(m_mainwin->nodesGui.mesh.computeTangent, SIGNAL(clicked()), 0, 0);
-
-    if(m_materialDialog)
-    {
-        m_materialDialog->unbind();
-        m_materialDialog->reject();
-    }
-
-    m_mainwin->nodesGui.mesh.billboardX->setChecked(false);
-    m_mainwin->nodesGui.mesh.billboardY->setChecked(false);
-    m_mainwin->nodesGui.mesh.castshadow->setChecked(false);
-    m_mainwin->nodesGui.mesh.receiveshadow->setChecked(false);
-    m_mainwin->nodesGui.mesh.computeNormal->setChecked(false);
-    m_mainwin->nodesGui.mesh.computeTangent->setChecked(false);
+    m_mainwin->getMeshDialog()->unbind();
 }
 
 void QMeshInteractor::updateGui()
@@ -222,50 +114,33 @@ void QMeshInteractor::updateGui()
     using namespace boost;
 
     QNodeInteractor::updateGui();
+    
+    m_mainwin->getMeshDialog()->update(m_target);
 
-    QSignalBlocker blocker;
-    blocker
-            << m_mainwin->nodesGui.mesh.billboardX
-            << m_mainwin->nodesGui.mesh.billboardY
-            << m_mainwin->nodesGui.mesh.castshadow
-            << m_mainwin->nodesGui.mesh.receiveshadow
-            << m_mainwin->nodesGui.mesh.editMaterial
-            ;
+    m_mainwin->tbeWidget()->highlight(this);
+}
 
-    blocker.block();
+void QMeshInteractor::attachMaterial(QString filename)
+{
+    m_target->attachMaterialFile(filename.toStdString());
+    updateGui();
+}
 
-    tbe::Vector2b billboard = m_target->getBillBoard();
-    m_mainwin->nodesGui.mesh.billboardX->setChecked(billboard.x);
-    m_mainwin->nodesGui.mesh.billboardY->setChecked(billboard.y);
-
-    m_mainwin->nodesGui.mesh.castshadow->setChecked(m_target->isCastShadow());
-    m_mainwin->nodesGui.mesh.receiveshadow->setChecked(m_target->isReceiveShadow());
-    m_mainwin->nodesGui.mesh.computeNormal->setChecked(m_target->isComputeNormals());
-    m_mainwin->nodesGui.mesh.computeTangent->setChecked(m_target->isComputeTangent());
-
-    string matFile = m_target->getMaterialFile();
-
-    if(!matFile.empty())
+void QMeshInteractor::reloadMaterial()
+{
+    try
     {
-        if(!m_materialDialog)
-            m_materialDialog = new MaterialDialog(m_mainwin, m_target, matFile.c_str());
-
-        m_materialDialog->update();
-
-        m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(true);
-        m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(true);
-
-        m_mainwin->nodesGui.mesh.matinfo->setText(matFile.c_str());
+        m_target->attachMaterialFile(m_target->getMaterialFile());
+        updateGui();
     }
-    else
+    catch(std::exception& e)
     {
-        m_mainwin->nodesGui.mesh.reloadMaterial->setEnabled(false);
-        m_mainwin->nodesGui.mesh.releaseMaterial->setEnabled(false);
-
-        m_mainwin->nodesGui.mesh.matinfo->clear();
+        QMessageBox::critical(m_mainwin, "Erreur rafrichisement", e.what());
     }
+}
 
-    blocker.unblock();
-
-    m_mainwin->m_tbeWidget->highlight(this);
+void QMeshInteractor::releaseMaterial()
+{
+    m_target->releaseMaterialFile();
+    updateGui();
 }

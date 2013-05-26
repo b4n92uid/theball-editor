@@ -14,6 +14,8 @@ QMapMarkInteractor::QMapMarkInteractor(MainWindow* mainwin, tbe::scene::MapMark*
 
 QMapMarkInteractor::~QMapMarkInteractor() { }
 
+void QMapMarkInteractor::triggerDialog() { }
+
 void QMapMarkInteractor::setup()
 {
     QVariant interface;
@@ -53,8 +55,6 @@ void QMapMarkInteractor::bindWithGui()
     QNodeInteractor::bindWithGui();
 
     updateGui();
-
-    m_mainwin->nodesGui.attribTab->setCurrentIndex(4);
 }
 
 void QMapMarkInteractor::unbindFromGui()
@@ -65,6 +65,4 @@ void QMapMarkInteractor::unbindFromGui()
 void QMapMarkInteractor::updateGui()
 {
     QNodeInteractor::updateGui();
-
-    m_mainwin->m_tbeWidget->highlight(this);
 }

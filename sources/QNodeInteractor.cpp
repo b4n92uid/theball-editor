@@ -69,8 +69,6 @@ void QNodeInteractor::setScale(const tbe::Vector3f& v)
 {
     if(m_target)
     {
-        tbe::Matrix4& newmat = m_target->getMatrix();
-
         m_target->setScale(v);
 
         m_mainwin->notifyChange(true);
@@ -344,7 +342,6 @@ void QNodeInteractor::updateGui()
     tbe::Vector3f position, scale;
     tbe::Quaternion rotation;
 
-    //    m_target->getMatrix().decompose(position, rotation, scale);
     position = m_target->getPos();
     rotation = m_target->getRotation();
     scale = m_target->getScale();

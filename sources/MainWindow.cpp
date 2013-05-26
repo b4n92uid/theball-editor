@@ -16,6 +16,7 @@
 #include "QTBEngine.h"
 
 #include "ui_interface.h"
+#include "EnvironmentDialog.h"
 
 #define backupOf(filename) \
         QString(filename).replace(QRegExp("\\.(.+)$"), ".bak")
@@ -172,49 +173,22 @@ void MainWindow::initWidgets()
 
     m_tbeWidget = m_uinterface->glwidget;
 
-    nodesGui.attribTab = m_uinterface->attribTab;
-
     m_config = new QSettings(this);
 
     m_packerDialog = new PackerDialog(this);
+
+    m_meshDialog = new MeshDialog(this);
+    m_lightDialog = new LightDialog(this);
+    m_particlesDialog = new ParticlesDialog(this);
+    
+    m_environmentDialog = new EnvironmentDialog(this);
+    m_environmentDialog->initConnection();
 
     buildFileHistory();
 
     m_uinterface->actionUndo->setEnabled(false);
 
-    m_uinterface->baseAttribTab->setEnabled(false);
-    m_uinterface->attribTab->setEnabled(false);
-
     m_uinterface->node_list_sort->setMenu(m_uinterface->menuTrier);
-
-    QToolBar* toptoolbar = new QToolBar;
-    toptoolbar->setFloatable(false);
-    toptoolbar->setMovable(false);
-    toptoolbar->setIconSize(QSize(16, 16));
-    toptoolbar->addAction(m_uinterface->actionNewScene);
-    toptoolbar->addAction(m_uinterface->actionOpen);
-    toptoolbar->addAction(m_uinterface->actionSave);
-    toptoolbar->addSeparator();
-    toptoolbar->addAction(m_uinterface->actionToggleSelBox);
-    toptoolbar->addAction(m_uinterface->actionToggleStaticView);
-    toptoolbar->addSeparator();
-    toptoolbar->addAction(m_uinterface->actionNewMesh);
-    toptoolbar->addAction(m_uinterface->actionNewLight);
-    toptoolbar->addAction(m_uinterface->actionNewParticles);
-    toptoolbar->addAction(m_uinterface->actionNewMapMark);
-    toptoolbar->addSeparator();
-    toptoolbar->addAction(m_uinterface->actionCloneNode);
-    toptoolbar->addAction(m_uinterface->actionDeleteNode);
-    toptoolbar->addSeparator();
-    toptoolbar->addAction(m_uinterface->actionBaseOnFloor);
-    toptoolbar->addAction(m_uinterface->actionCenterOnFloor);
-    toptoolbar->addAction(m_uinterface->actionToggleGrid);
-    toptoolbar->addSeparator();
-    toptoolbar->addAction(m_uinterface->actionSelectionTool);
-    toptoolbar->addAction(m_uinterface->actionRotateTool);
-    toptoolbar->addAction(m_uinterface->actionScaleTool);
-
-    addToolBar(Qt::TopToolBarArea, toptoolbar);
 
     // Générale ----------------------------------------------------------------
 
@@ -261,54 +235,10 @@ void MainWindow::initWidgets()
     nodesGui.displayParticles = m_uinterface->node_display_particules;
     nodesGui.displayMarks = m_uinterface->node_display_marks;
 
-    // -------- Mesh
-
-    nodesGui.mesh.editMaterial = m_uinterface->node_mesh_editmat;
-    nodesGui.mesh.reloadMaterial = m_uinterface->node_mesh_reloadmat;
-    nodesGui.mesh.attachMaterial = m_uinterface->node_mesh_addmat;
-    nodesGui.mesh.releaseMaterial = m_uinterface->node_mesh_relmat;
-    nodesGui.mesh.matinfo = m_uinterface->node_mesh_matinfo;
-
-    nodesGui.mesh.billboardX = m_uinterface->node_mesh_billboard_x;
-    nodesGui.mesh.billboardY = m_uinterface->node_mesh_billboard_y;
-
-    nodesGui.mesh.castshadow = m_uinterface->node_mesh_castshadow;
-    nodesGui.mesh.receiveshadow = m_uinterface->node_mesh_receiveshadow;
-    nodesGui.mesh.computeNormal = m_uinterface->node_mesh_cnormal;
-    nodesGui.mesh.computeTangent = m_uinterface->node_mesh_ctangent;
-
-    // -------- Particles
-
-    nodesGui.particles.gravity = new QDoubleVector3Box(this, m_uinterface->node_particles_gravity_x, m_uinterface->node_particles_gravity_y, m_uinterface->node_particles_gravity_z);
-    nodesGui.particles.boxsize = new QDoubleVector3Box(this, m_uinterface->node_particles_boxsize_x, m_uinterface->node_particles_boxsize_y, m_uinterface->node_particles_boxsize_z);
-    nodesGui.particles.bulletsize = new QDoubleVector2Box(this, m_uinterface->node_particles_bulletsize_x, m_uinterface->node_particles_bulletsize_y);
-    nodesGui.particles.freemove = m_uinterface->node_particles_freemove;
-    nodesGui.particles.lifeinit = m_uinterface->node_particles_lifeinit;
-    nodesGui.particles.lifedown = m_uinterface->node_particles_lifedown;
-    nodesGui.particles.number = m_uinterface->node_particles_number;
-    nodesGui.particles.texture = new QBrowsEdit(this, m_uinterface->node_particles_texture, m_uinterface->node_particles_texture_browse);
-    nodesGui.particles.continiousmode = m_uinterface->node_particles_continousmode;
-    nodesGui.particles.pointsprite = m_uinterface->node_particles_pointsprite;
-    nodesGui.particles.build = m_uinterface->node_particles_build;
-
-    // -------- Lights
-
-    nodesGui.light.type = m_uinterface->node_light_type;
-
-    nodesGui.light.ambiant = new QDoubleVector3Box(this, m_uinterface->node_light_ambiant_x, m_uinterface->node_light_ambiant_y, m_uinterface->node_light_ambiant_z);
-    nodesGui.light.diffuse = new QDoubleVector3Box(this, m_uinterface->node_light_diffuse_x, m_uinterface->node_light_diffuse_y, m_uinterface->node_light_diffuse_z);
-    nodesGui.light.specular = new QDoubleVector3Box(this, m_uinterface->node_light_specular_x, m_uinterface->node_light_specular_y, m_uinterface->node_light_specular_z);
-    nodesGui.light.castshadow = m_uinterface->node_light_castshadow;
-
-    nodesGui.light.radius = m_uinterface->node_light_radius;
-
     // Nodes liste -------------------------------------------------------------
 
-    QStringList headerLabels;
-    headerLabels << "Type" << "Nom";
-
     nodesGui.nodesListModel = new QStandardItemModel(this);
-    nodesGui.nodesListModel->setHorizontalHeaderLabels(headerLabels);
+    nodesGui.nodesListModel->setHorizontalHeaderLabels(QStringList() << "Type" << "Nom");
 
     nodesGui.nodesListProxyModel = new NodeListProxyModel(this);
     nodesGui.nodesListProxyModel->setSourceModel(nodesGui.nodesListModel);
@@ -319,39 +249,10 @@ void MainWindow::initWidgets()
     nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     nodesGui.nodesListView->header()->setResizeMode(QHeaderView::Stretch);
     nodesGui.nodesListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-    // Environment -------------------------------------------------------------
-
-    envGui.sceneAmbiant = new QDoubleVector3Box(this, m_uinterface->env_ambient_x, m_uinterface->env_ambient_y, m_uinterface->env_ambient_z);
-
-    envGui.skybox.apply = m_uinterface->skybox_apply;
-    envGui.skybox.enable = m_uinterface->skybox_enable;
-    envGui.skybox.browse = m_uinterface->skybox_browse;
-    envGui.skybox.list = m_uinterface->skybox_list;
-    envGui.skybox.up = m_uinterface->skybox_up;
-    envGui.skybox.down = m_uinterface->skybox_down;
-
-    envGui.fog.color = new QDoubleVector3Box(this, m_uinterface->fog_x, m_uinterface->fog_y, m_uinterface->fog_z);
-    envGui.fog.start = m_uinterface->fog_start;
-    envGui.fog.end = m_uinterface->fog_end;
-    envGui.fog.enable = m_uinterface->fog_enable;
-
-    envGui.shadow.enable = m_uinterface->env_shadow_enable;
-    envGui.shadow.size = m_uinterface->env_shadow_size;
-    envGui.shadow.blur = m_uinterface->env_shadow_blur;
-    envGui.shadow.intentsity = m_uinterface->env_shadow_intensity;
-    envGui.shadow.shader = m_uinterface->env_shadow_shader;
-
-    envGui.znear = m_uinterface->env_znear;
-    envGui.zfar = m_uinterface->env_zfar;
 }
 
 void MainWindow::initConnections()
 {
-    connect(genGui.addField, SIGNAL(clicked()), this, SLOT(guiAddSceneField()));
-    connect(genGui.delField, SIGNAL(clicked()), this, SLOT(guiDelSceneField()));
-    connect(genGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearSceneField()));
-
     // File Menu
 
     connect(m_uinterface->actionNewScene, SIGNAL(triggered()), this, SLOT(newScene()));
@@ -380,16 +281,12 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionNewLight, SIGNAL(triggered()), this, SLOT(guiLightNew()));
     connect(m_uinterface->actionNewParticles, SIGNAL(triggered()), this, SLOT(guiParticlesNew()));
     connect(m_uinterface->actionNewMapMark, SIGNAL(triggered()), this, SLOT(guiMarkNew()));
+    connect(m_uinterface->actionOpenEnvDialog, SIGNAL(triggered()), this, SLOT(openEnvironmentDialog()));
 
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
-
-    connect(nodesGui.displayMesh, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMesh(bool)));
-    connect(nodesGui.displayLights, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleLight(bool)));
-    connect(nodesGui.displayParticles, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleParticles(bool)));
-    connect(nodesGui.displayMarks, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMapMark(bool)));
 
     connect(m_uinterface->actionSortByName, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortByName()));
     connect(m_uinterface->actionSortByType, SIGNAL(triggered()), nodesGui.nodesListProxyModel, SLOT(sortByType()));
@@ -400,6 +297,15 @@ void MainWindow::initConnections()
     connect(m_tbeWidget, SIGNAL(deselection(QNodeInteractor*)), this, SLOT(deselect(QNodeInteractor*)));
     connect(m_tbeWidget, SIGNAL(deselectionAll()), this, SLOT(deselectAll()));
     connect(m_tbeWidget, SIGNAL(notifyChange()), this, SLOT(notifyChange()));
+
+    connect(genGui.addField, SIGNAL(clicked()), this, SLOT(guiAddSceneField()));
+    connect(genGui.delField, SIGNAL(clicked()), this, SLOT(guiDelSceneField()));
+    connect(genGui.clearFields, SIGNAL(clicked()), this, SLOT(guiClearSceneField()));
+
+    connect(nodesGui.displayMesh, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMesh(bool)));
+    connect(nodesGui.displayLights, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleLight(bool)));
+    connect(nodesGui.displayParticles, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleParticles(bool)));
+    connect(nodesGui.displayMarks, SIGNAL(clicked(bool)), nodesGui.nodesListProxyModel, SLOT(toggleMapMark(bool)));
 
     connect(nodesGui.nodesListView, SIGNAL(select(QNodeInteractor*)), this, SLOT(select(QNodeInteractor*)));
     connect(nodesGui.nodesListView, SIGNAL(deselect(QNodeInteractor*)), this, SLOT(deselect(QNodeInteractor*)));
@@ -414,28 +320,6 @@ void MainWindow::initConnections()
     connect(nodesGui.nodesListView, SIGNAL(pastMaterials()), this, SLOT(pastMaterials()));
     connect(nodesGui.nodesListView, SIGNAL(removeNode()), m_tbeWidget, SLOT(deleteSelected()));
     connect(nodesGui.nodesListView, SIGNAL(setOnFloorNode()), m_tbeWidget, SLOT(baseOnFloor()));
-
-    connect(envGui.sceneAmbiant, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiAmbient(const tbe::Vector3f&)));
-
-    connect(envGui.znear, SIGNAL(valueChanged(double)), this, SLOT(guiZNear(double)));
-    connect(envGui.zfar, SIGNAL(valueChanged(double)), this, SLOT(guiZFar(double)));
-
-    connect(envGui.fog.enable, SIGNAL(clicked(bool)), this, SLOT(guiFogEnable(bool)));
-    connect(envGui.fog.color, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(guiFogChange()));
-    connect(envGui.fog.start, SIGNAL(valueChanged(double)), this, SLOT(guiFogChange()));
-    connect(envGui.fog.end, SIGNAL(valueChanged(double)), this, SLOT(guiFogChange()));
-
-    connect(envGui.skybox.enable, SIGNAL(clicked(bool)), this, SLOT(guiSkyboxEnable(bool)));
-    connect(envGui.skybox.apply, SIGNAL(clicked()), this, SLOT(guiSkyboxChange()));
-    connect(envGui.skybox.browse, SIGNAL(clicked()), this, SLOT(guiSkyboxBrowse()));
-    connect(envGui.skybox.up, SIGNAL(clicked()), this, SLOT(guiSkyboxShift()));
-    connect(envGui.skybox.down, SIGNAL(clicked()), this, SLOT(guiSkyboxShift()));
-
-    connect(envGui.shadow.enable, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setShadowEnable(bool)));
-    connect(envGui.shadow.size, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowSize(int)));
-    connect(envGui.shadow.blur, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setShadowBlur(int)));
-    connect(envGui.shadow.intentsity, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(setShadowIntensity(double)));
-    connect(envGui.shadow.shader, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setShadowShader(bool)));
 
     // Tools Menu
 
@@ -488,95 +372,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
 }
 
-void MainWindow::updateGui()
+void MainWindow::updateInterface()
 {
-    nodesGui.particles.texture->setWorkDir(m_filename);
-
-    // -------------------------------------------------------------------------
-
     using namespace tbe;
     using namespace scene;
 
-    SceneManager* sceneManager = m_tbeWidget->rootNode()->getSceneManager();
-
-    envGui.zfar->setValue(sceneManager->getZFar());
-    envGui.znear->setValue(sceneManager->getZNear());
-
-    ShadowMap* smap = sceneManager->getShadowMap();
-
-    if(smap->isEnabled())
-    {
-        QSignalBlocker blocker;
-        blocker << envGui.shadow.enable << envGui.shadow.size << envGui.shadow.blur;
-        blocker.block();
-
-        envGui.shadow.enable->setChecked(smap->isEnabled());
-        envGui.shadow.size->setValue(smap->getFrameSize().x);
-        envGui.shadow.blur->setValue(smap->getBlurPass());
-        envGui.shadow.intentsity->setValue(smap->getIntensity());
-        envGui.shadow.shader->setChecked(smap->isShaderHandled());
-
-        blocker.unblock();
-    }
-
-    Fog* fog = sceneManager->getFog();
-
-    if(fog->isEnable())
-    {
-        QSignalBlocker blocker;
-        blocker << envGui.fog.enable << envGui.fog.color << envGui.fog.start << envGui.fog.end;
-        blocker.block();
-
-        envGui.fog.enable->setChecked(fog->isEnable());
-        envGui.fog.color->setValue(math::vec43(fog->getColor()));
-        envGui.fog.start->setValue(fog->getStart());
-        envGui.fog.end->setValue(fog->getEnd());
-
-        blocker.unblock();
-    }
-
-    SkyBox* sky = sceneManager->getSkybox();
-
-    if(sky->isEnable())
-    {
-        QSignalBlocker blocker;
-        blocker << envGui.skybox.apply << envGui.skybox.enable;
-        blocker.block();
-
-        blocker.block();
-
-        tbe::Texture* texs = sky->getTextures();
-
-        envGui.skybox.list->clear();
-
-        QMap<QString, QString> skymap;
-        skymap["1:Devant"] = QString::fromStdString(texs[0].getFilename());
-        skymap["2:Dèrrier"] = QString::fromStdString(texs[1].getFilename());
-        skymap["3:Haut"] = QString::fromStdString(texs[2].getFilename());
-        skymap["4:Bas"] = QString::fromStdString(texs[3].getFilename());
-        skymap["5:Gauche"] = QString::fromStdString(texs[4].getFilename());
-        skymap["6:Droite"] = QString::fromStdString(texs[5].getFilename());
-
-        foreach(QString k, skymap.keys())
-        {
-            QString path = skymap.value(k);
-
-            QTreeWidgetItem* item = new QTreeWidgetItem(QStringList() << k << QFileInfo(path).baseName());
-            item->setData(1, Qt::UserRole, path);
-
-            envGui.skybox.list->addTopLevelItem(item);
-        }
-
-        envGui.skybox.enable->setChecked(sky->isEnable());
-
-        blocker.unblock();
-    }
-
-    {
-        envGui.sceneAmbiant->blockSignals(true);
-        envGui.sceneAmbiant->setValue(math::vec43(sceneManager->getAmbientLight()));
-        envGui.sceneAmbiant->blockSignals(false);
-    }
+    m_environmentDialog->updateInterface();
 
     SceneParser* sceneParser = m_tbeWidget->sceneParser();
 
@@ -632,7 +433,7 @@ void MainWindow::newScene()
 
     setCurrentTool(SELECTION_TOOL);
 
-    updateGui();
+    updateInterface();
 
     notifyChange(false);
 }
@@ -695,7 +496,7 @@ void MainWindow::openScene(const QString& filename)
         m_uinterface->actionToggleSelBox->setChecked(true);
         m_uinterface->actionToggleStaticView->setChecked(true);
 
-        updateGui();
+        updateInterface();
 
         notifyChange(false);
     }
@@ -720,8 +521,6 @@ void MainWindow::saveSceneDialog()
         notifyChange(false);
 
         m_filename = filename;
-
-        nodesGui.particles.texture->setWorkDir(m_filename);
     }
 }
 
@@ -937,9 +736,6 @@ void MainWindow::select(QNodeInteractor* qnode)
         nodesGui.clearFields->setEnabled(true);
     }
 
-    m_uinterface->baseAttribTab->setEnabled(true);
-    m_uinterface->attribTab->setEnabled(true);
-
     m_uinterface->actionCloneNode->setEnabled(true);
     m_uinterface->actionDeleteNode->setEnabled(true);
 }
@@ -966,9 +762,6 @@ void MainWindow::deselectAll()
 
     m_tbeWidget->deselectAllNode();
 
-    m_uinterface->baseAttribTab->setEnabled(false);
-    m_uinterface->attribTab->setEnabled(false);
-
     m_uinterface->actionCloneNode->setEnabled(false);
     m_uinterface->actionDeleteNode->setEnabled(false);
 
@@ -979,6 +772,26 @@ void MainWindow::deselectAll()
     nodesGui.addField->setEnabled(false);
     nodesGui.delField->setEnabled(false);
     nodesGui.clearFields->setEnabled(false);
+}
+
+EnvironmentDialog* MainWindow::getEnvironmentDialog() const
+{
+    return m_environmentDialog;
+}
+
+ParticlesDialog* MainWindow::getParticlesDialog() const
+{
+    return m_particlesDialog;
+}
+
+LightDialog* MainWindow::getLightDialog() const
+{
+    return m_lightDialog;
+}
+
+MeshDialog* MainWindow::getMeshDialog() const
+{
+    return m_meshDialog;
 }
 
 void MainWindow::promoteChild()
@@ -1060,142 +873,13 @@ void MainWindow::assignParent()
     statusBar()->showMessage("Parent assigné", 2000);
 }
 
-void MainWindow::guiSkyboxEnable(bool enable)
-{
-    m_tbeWidget->setSkybox(enable);
-
-    notifyChange(true);
-}
-
-void MainWindow::guiSkyboxBrowse()
-{
-    QStringList files = QFileDialog::getOpenFileNames(this);
-
-    if(files.size() != 6)
-    {
-        QMessageBox::warning(this, "Skybox", "Vous devez ajouter 6 fichiers !");
-        return;
-    }
-
-    envGui.skybox.list->clear();
-
-    QTreeWidgetItem* item;
-
-    item = new QTreeWidgetItem(QStringList() << "1:Devant" << QFileInfo(files[0]).baseName());
-    item->setData(1, Qt::UserRole, files[0]);
-    envGui.skybox.list->addTopLevelItem(item);
-
-    item = new QTreeWidgetItem(QStringList() << "2:Dèrriere" << QFileInfo(files[1]).baseName());
-    item->setData(1, Qt::UserRole, files[1]);
-    envGui.skybox.list->addTopLevelItem(item);
-
-    item = new QTreeWidgetItem(QStringList() << "3:Haut" << QFileInfo(files[2]).baseName());
-    item->setData(1, Qt::UserRole, files[2]);
-    envGui.skybox.list->addTopLevelItem(item);
-
-    item = new QTreeWidgetItem(QStringList() << "4:Bas" << QFileInfo(files[3]).baseName());
-    item->setData(1, Qt::UserRole, files[3]);
-    envGui.skybox.list->addTopLevelItem(item);
-
-    item = new QTreeWidgetItem(QStringList() << "5:Gauche" << QFileInfo(files[4]).baseName());
-    item->setData(1, Qt::UserRole, files[4]);
-    envGui.skybox.list->addTopLevelItem(item);
-
-    item = new QTreeWidgetItem(QStringList() << "6:Droite" << QFileInfo(files[5]).baseName());
-    item->setData(1, Qt::UserRole, files[5]);
-    envGui.skybox.list->addTopLevelItem(item);
-}
-
-void MainWindow::guiSkyboxShift()
-{
-    if(envGui.skybox.list->selectedItems().empty())
-        return;
-
-    QTreeWidgetItem *itemSrc, *itemDst;
-
-    itemSrc = envGui.skybox.list->selectedItems().front();
-
-    if(sender() == envGui.skybox.up)
-        itemDst = envGui.skybox.list->itemAbove(itemSrc);
-
-    else if(sender() == envGui.skybox.down)
-        itemDst = envGui.skybox.list->itemBelow(itemSrc);
-
-    QString src = itemSrc->data(1, Qt::UserRole).toString();
-    QString dst = itemDst->data(1, Qt::UserRole).toString();
-
-    itemSrc->setData(1, Qt::UserRole, dst);
-    itemSrc->setText(1, QFileInfo(dst).baseName());
-
-    itemDst->setData(1, Qt::UserRole, src);
-    itemDst->setText(1, QFileInfo(src).baseName());
-
-    envGui.skybox.list->setCurrentItem(itemDst);
-}
-
-void MainWindow::guiSkyboxChange()
-{
-    if(envGui.skybox.list->topLevelItemCount() != 6)
-        return;
-
-    QStringList texs;
-
-    for(unsigned i = 0; i < 6; i++)
-        texs << envGui.skybox.list->topLevelItem(i)->data(1, Qt::UserRole).toString();
-
-    try
-    {
-        m_tbeWidget->setSkybox(texs);
-        m_tbeWidget->setSkybox(true);
-    }
-    catch(std::exception& e)
-    {
-        QMessageBox::critical(this, "Erreur: Skybox", e.what());
-    }
-
-    notifyChange(true);
-}
-
-void MainWindow::guiFogEnable(bool enable)
-{
-    m_tbeWidget->setFog(enable);
-
-
-    notifyChange(true);
-}
-
-void MainWindow::guiFogChange()
-{
-    m_tbeWidget->setFog(tbe::math::vec34(envGui.fog.color->value()), envGui.fog.start->value(), envGui.fog.end->value());
-
-    notifyChange(true);
-}
-
-void MainWindow::guiZNear(double value)
-{
-    m_tbeWidget->setZNear(value);
-}
-
-void MainWindow::guiZFar(double value)
-{
-    m_tbeWidget->setZFar(value);
-}
-
 QTBEngine* MainWindow::tbeWidget() const
 {
     return m_tbeWidget;
 }
 
-void MainWindow::guiAmbient(const tbe::Vector3f& value)
-{
-    m_tbeWidget->setSceneAmbiant(value);
-
-    notifyChange(true);
-}
-
-void MainWindow::toggleFullWidget(bool full)
-{
-    m_uinterface->propertyTab->setVisible(!full);
+void MainWindow::toggleFullWidget(bool full) {
+    //m_uinterface->propertyTab->setVisible(!full);
 }
 
 void MainWindow::guiAddSceneField()
@@ -1266,6 +950,11 @@ void MainWindow::takeScreenshot()
         output.open(QIODevice::WriteOnly);
         shot.save(&output, "PNG");
     }
+}
+
+void MainWindow::openEnvironmentDialog()
+{
+    m_environmentDialog->show();
 }
 
 void MainWindow::pastMaterials()

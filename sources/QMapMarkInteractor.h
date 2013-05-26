@@ -24,6 +24,8 @@ public:
 
     virtual QString typeName() const;
 
+    void triggerDialog();
+
 public slots:
     void bindWithGui();
     void unbindFromGui();
