@@ -2,7 +2,7 @@
  * File:   QTBEngine.cpp
  * Author: b4n92uid
  *
- * Created on 4 décembre 2010, 13:30
+ * Created on 4 dÃ©cembre 2010, 13:30
  */
 
 #include "QTBEngine.h"
@@ -220,23 +220,10 @@ void QTBEngine::applyTranslationEvents()
 
     Vector2f mousePosRel = m_eventManager->mousePosRel;
 
-    if(m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
-    {
-        if(m_eventManager->keyState[EventManager::KEY_LALT])
-        {
-            m_centerTarget.y += -m_eventManager->mousePosRel.y * m_sensivitySet.camera;
-        }
-        else
-        {
-            m_centerTarget += -m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * m_sensivitySet.camera;
-            m_centerTarget += -m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * m_sensivitySet.camera;
-        }
-    }
-
-    else if(m_currentTool->type == SCALE_TOOL)
+    if(m_currentTool->type == SCALE_TOOL)
     {
         if(m_selectedNode
-           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT]
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
 
@@ -274,7 +261,7 @@ void QTBEngine::applyTranslationEvents()
     else if(m_currentTool->type == ROTATE_TOOL)
     {
         if(m_selectedNode
-           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT]
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
 
@@ -304,7 +291,7 @@ void QTBEngine::applyTranslationEvents()
     else if(m_currentTool->type == SELECTION_TOOL)
     {
         if(m_selectedNode
-           && m_eventManager->keyState[EventManager::KEY_LSHIFT]
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT]
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
             Vector3f position;
@@ -354,6 +341,20 @@ void QTBEngine::applyTranslationEvents()
 void QTBEngine::applyCameraEvents()
 {
     Vector3f campos = m_camera->getCenter();
+
+    if(m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE]
+       && m_eventManager->keyState[EventManager::KEY_LCTRL])
+    {
+        if(m_eventManager->keyState[EventManager::KEY_LALT])
+        {
+            m_centerTarget.y += -m_eventManager->mousePosRel.y * m_sensivitySet.camera;
+        }
+        else
+        {
+            m_centerTarget += -m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * m_sensivitySet.camera;
+            m_centerTarget += -m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * m_sensivitySet.camera;
+        }
+    }
 
     if(m_centerTarget - campos > 0.01)
         m_camera->setCenter(campos + (m_centerTarget - campos) / 8.0f);
@@ -590,29 +591,34 @@ void QTBEngine::mousePressEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
 
-    if(ev->modifiers() & Qt::ShiftModifier)
-        return;
-
-    if(ev->button() == Qt::LeftButton)
+    if(ev->button() == Qt::LeftButton && m_selectedNode)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 1;
 
-        m_grabCamera = true;
-
-        m_lastCursorPos = qptovec(ev->pos());
-        m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
-
-        setCursor(Qt::ClosedHandCursor);
+        m_cursorRelativeMove = QCursor::pos();
     }
 
     else if(ev->button() == Qt::MiddleButton)
     {
-        m_moveCamera = false;
-
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 1;
 
-        setCursor(Qt::BlankCursor);
-        m_cursorRelativeMove = QCursor::pos();
+        if(ev->modifiers() & Qt::CTRL)
+        {
+            m_moveCamera = true;
+
+            m_cursorRelativeMove = QCursor::pos();
+
+            setCursor(Qt::BlankCursor);
+        }
+        else
+        {
+            m_grabCamera = true;
+
+            m_lastCursorPos = qptovec(ev->pos());
+            m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
+
+            setCursor(Qt::ClosedHandCursor);
+        }
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -699,13 +705,9 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_UP;
 
-    if(ev->modifiers() & Qt::ShiftModifier)
-        return;
-
     if(ev->button() == Qt::LeftButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 0;
-        m_grabCamera = false;
 
         setCursor(m_currentTool->cursor);
     }
@@ -716,8 +718,8 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 
         setCursor(m_currentTool->cursor);
 
-        if(!m_moveCamera && m_meshScene->getSceneAabb().isInner(m_curCursor3D))
-            m_centerTarget = m_curCursor3D;
+        m_grabCamera = false;
+        m_moveCamera = false;
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -765,29 +767,43 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     // Input process -----------------------------------------------------------
 
-    if(m_grabCamera)
-    {
-        m_camera->onEvent(m_eventManager);
-    }
-
     if(ev->buttons() & Qt::MidButton)
     {
-        QCursor::setPos(m_cursorRelativeMove);
-
-        m_moveCamera = true;
-    }
-
-    else if(m_currentTool->type == SELECTION_TOOL)
-    {
-        if(ev->modifiers() & Qt::ShiftModifier && m_selectedNode)
+        if(m_grabCamera)
+        {
+            m_camera->onEvent(m_eventManager);
+        }
+        else
         {
             QCursor::setPos(m_cursorRelativeMove);
         }
     }
-    /*
+
+    if(ev->buttons() & Qt::RightButton)
+    {
+    }
+
+    if(ev->buttons() & Qt::LeftButton && m_selectedNode)
+    {
+        foreach(QNodeInteractor* qnode, m_selection)
+        pushHistoryStat(new ModificationState(qnode));
+
+        setCursor(Qt::BlankCursor);
+
+        QCursor::setPos(m_cursorRelativeMove);
+    }
+
+    if(m_currentTool->type == SELECTION_TOOL)
+    {
+        if(ev->buttons() & Qt::LeftButton && m_selectedNode)
+        {
+            QCursor::setPos(m_cursorRelativeMove);
+        }
+    }
+
     else if(m_currentTool->type == ROTATE_TOOL)
     {
-        if(ev->buttons() & Qt::RightButton && m_selectedNode)
+        if(ev->buttons() & Qt::LeftButton && m_selectedNode)
         {
             QCursor::setPos(m_cursorRelativeMove);
         }
@@ -795,12 +811,11 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     else if(m_currentTool->type == SCALE_TOOL)
     {
-        if(ev->buttons() & Qt::RightButton && m_selectedNode)
+        if(ev->buttons() & Qt::LeftButton && m_selectedNode)
         {
             QCursor::setPos(m_cursorRelativeMove);
         }
     }
-     */
 }
 
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
@@ -829,17 +844,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_movementAxe = 1;
             m_mainwin->statusBar()->showMessage("Movement sur tout les axes X, Y, Z");
         }
-    }
-
-    if(ev->key() == Qt::Key_Shift)
-    {
-
-        foreach(QNodeInteractor* qnode, m_selection)
-        pushHistoryStat(new ModificationState(qnode));
-
-        setCursor(Qt::BlankCursor);
-
-        m_cursorRelativeMove = QCursor::pos();
     }
 
     if(ev->key() == Qt::Key_Space)
@@ -901,7 +905,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_sensivitySet.selection += 0.01;
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("Sensibilité: %1").arg(m_sensivitySet.selection), 1000);
+                    ->showMessage(QString("SensibilitÃ©: %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
@@ -920,7 +924,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("Sensibilité: %1").arg(m_sensivitySet.selection), 1000);
+                    ->showMessage(QString("SensibilitÃ©:Â %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
