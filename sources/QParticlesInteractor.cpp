@@ -118,9 +118,9 @@ void QParticlesInteractor::build()
     m_target->build();
 }
 
-void QParticlesInteractor::bindWithGui()
+void QParticlesInteractor::bindInterface()
 {
-    QNodeInteractor::bindWithGui();
+    QNodeInteractor::bindInterface();
 
     m_mainwin->getParticlesDialog()->bind(this);
 

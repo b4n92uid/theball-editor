@@ -37,6 +37,25 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
+       <widget class="QLabel" name="gen_information">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="node_list_sort">
         <property name="text">
          <string>Trier</string>
@@ -104,7 +123,7 @@
       <item>
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
-         <string>Information sur la scene</string>
+         <string>Scene</string>
         </property>
         <layout class="QFormLayout" name="formLayout_8">
          <property name="fieldGrowthPolicy">
@@ -136,16 +155,7 @@
          <item row="1" column="1">
           <widget class="QLineEdit" name="gen_author"/>
          </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>Champs Additionelle</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
+         <item row="2" column="0" colspan="2">
           <widget class="QTreeView" name="gen_additional">
            <property name="maximumSize">
             <size>
@@ -155,7 +165,7 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item row="3" column="0" colspan="2">
           <layout class="QHBoxLayout" name="horizontalLayout_28">
            <item>
             <widget class="QPushButton" name="gen_addfield">
@@ -198,9 +208,9 @@
       <item>
        <widget class="QGroupBox" name="groupBox_4">
         <property name="title">
-         <string>Informations sur la séléction</string>
+         <string>Séléction</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,2,0,0,0">
+        <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,2,0,0">
          <item>
           <layout class="QFormLayout" name="formLayout_2">
            <property name="fieldGrowthPolicy">
@@ -222,27 +232,6 @@
               <string>Scale</string>
              </property>
             </widget>
-           </item>
-           <item row="5" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_31">
-             <item>
-              <widget class="QCheckBox" name="node_enable">
-               <property name="text">
-                <string>Activé</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="node_lock">
-               <property name="text">
-                <string>Verouiller</string>
-               </property>
-               <property name="tristate">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label">
@@ -405,6 +394,27 @@
              </item>
             </layout>
            </item>
+           <item row="4" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_31">
+             <item>
+              <widget class="QCheckBox" name="node_enable">
+               <property name="text">
+                <string>Activé</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="node_lock">
+               <property name="text">
+                <string>Verouiller</string>
+               </property>
+               <property name="tristate">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
          </item>
          <item>
@@ -459,13 +469,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="gen_information">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
          </item>
         </layout>
        </widget>
@@ -529,6 +532,7 @@
     <addaction name="actionDeleteNode"/>
     <addaction name="separator"/>
     <addaction name="actionOpenEnvDialog"/>
+    <addaction name="actionOpenPropertyDialog"/>
    </widget>
    <widget class="QMenu" name="menuTrier">
     <property name="title">
@@ -604,6 +608,7 @@
    <addaction name="actionToggleGrid"/>
    <addaction name="separator"/>
    <addaction name="actionOpenEnvDialog"/>
+   <addaction name="actionOpenPropertyDialog"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
    <property name="windowTitle">
@@ -959,6 +964,18 @@
     <string>²</string>
    </property>
   </action>
+  <action name="actionOpenPropertyDialog">
+   <property name="icon">
+    <iconset resource="ressource.qrc">
+     <normaloff>:/Medias/medias/cog.png</normaloff>:/Medias/medias/cog.png</iconset>
+   </property>
+   <property name="text">
+    <string>Editeur de propriété</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -976,7 +993,6 @@
  <tabstops>
   <tabstop>gen_title</tabstop>
   <tabstop>gen_author</tabstop>
-  <tabstop>gen_additional</tabstop>
   <tabstop>gen_addfield</tabstop>
   <tabstop>gen_delfield</tabstop>
   <tabstop>gen_clearfields</tabstop>

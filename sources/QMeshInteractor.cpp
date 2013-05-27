@@ -91,9 +91,9 @@ void QMeshInteractor::setComputeTangent()
     m_target->computeTangent();
 }
 
-void QMeshInteractor::bindWithGui()
+void QMeshInteractor::bindInterface()
 {
-    QNodeInteractor::bindWithGui();
+    QNodeInteractor::bindInterface();
 
     m_mainwin->getMeshDialog()->bind(this);
 

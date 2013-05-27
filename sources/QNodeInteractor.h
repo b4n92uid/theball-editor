@@ -41,7 +41,7 @@ public:
     QNodeInteractor* getParent();
 
 public slots:
-    virtual void bindWithGui();
+    virtual void bindInterface();
     virtual void unbindFromGui();
     virtual void updateGui();
 

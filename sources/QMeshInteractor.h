@@ -9,7 +9,6 @@
 #define	QMESHINTERACTOR_H
 
 #include "QNodeInteractor.h"
-#include "MaterialDialog.h"
 
 class QMeshInteractor : public QNodeInteractor
 {
@@ -20,13 +19,13 @@ public:
     virtual ~QMeshInteractor();
 
     void setup();
-    
+
     QMeshInteractor* clone();
 
     QString typeName() const;
 
 public slots:
-    void bindWithGui();
+    void bindInterface();
     void unbindFromGui();
     void updateGui();
     void triggerDialog();

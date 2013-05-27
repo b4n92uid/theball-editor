@@ -50,9 +50,9 @@ QString QMapMarkInteractor::typeName() const
     return "MapMark";
 }
 
-void QMapMarkInteractor::bindWithGui()
+void QMapMarkInteractor::bindInterface()
 {
-    QNodeInteractor::bindWithGui();
+    QNodeInteractor::bindInterface();
 
     updateGui();
 }

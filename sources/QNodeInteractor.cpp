@@ -250,7 +250,7 @@ void QNodeInteractor::unsetup()
     m_mainwin->unregisterInteractor(this);
 }
 
-void QNodeInteractor::bindWithGui()
+void QNodeInteractor::bindInterface()
 {
     connect(m_mainwin->nodesGui.name, SIGNAL(textChanged(const QString&)), this, SLOT(setName(const QString&)));
     connect(m_mainwin->nodesGui.position, SIGNAL(valueChanged(const tbe::Vector3f&)), this, SLOT(setPos(const tbe::Vector3f&)));

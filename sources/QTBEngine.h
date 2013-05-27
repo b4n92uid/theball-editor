@@ -125,6 +125,7 @@ protected:
 
     void enterEvent(QEvent * event);
 
+    void selectFromPick(QMouseEvent* ev);
     void mousePressEvent(QMouseEvent* ev);
     void mouseReleaseEvent(QMouseEvent* ev);
     void mouseMoveEvent(QMouseEvent* ev);
@@ -162,12 +163,14 @@ private:
 
     bool m_grabCamera;
     bool m_moveCamera;
+    bool m_moveObject;
     bool m_staticView;
 
     struct ToolMode
     {
         ToolType type;
         QCursor cursor;
+        tbe::Vector3f axis;
     };
 
     ToolMode m_toolMode[TOOL_COUNT];
@@ -177,7 +180,6 @@ private:
     tbe::Vector2i m_curCursorPos;
     tbe::Vector3f m_curCursor3D;
 
-    tbe::Vector3f m_movementAxe;
     tbe::Vector3f m_centerTarget;
 
     tbe::scene::Node* m_rootNode;

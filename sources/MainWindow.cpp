@@ -180,7 +180,7 @@ void MainWindow::initWidgets()
     m_meshDialog = new MeshDialog(this);
     m_lightDialog = new LightDialog(this);
     m_particlesDialog = new ParticlesDialog(this);
-    
+
     m_environmentDialog = new EnvironmentDialog(this);
     m_environmentDialog->initConnection();
 
@@ -281,6 +281,8 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionNewLight, SIGNAL(triggered()), this, SLOT(guiLightNew()));
     connect(m_uinterface->actionNewParticles, SIGNAL(triggered()), this, SLOT(guiParticlesNew()));
     connect(m_uinterface->actionNewMapMark, SIGNAL(triggered()), this, SLOT(guiMarkNew()));
+
+    connect(m_uinterface->actionOpenPropertyDialog, SIGNAL(triggered()), this, SLOT(openPropertyDialog()));
     connect(m_uinterface->actionOpenEnvDialog, SIGNAL(triggered()), this, SLOT(openEnvironmentDialog()));
 
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
@@ -955,6 +957,14 @@ void MainWindow::takeScreenshot()
 void MainWindow::openEnvironmentDialog()
 {
     m_environmentDialog->show();
+}
+
+void MainWindow::openPropertyDialog()
+{
+    const QList<QNodeInteractor*>& sel = m_tbeWidget->selection();
+
+    if(!sel.isEmpty())
+        sel.first()->triggerDialog();
 }
 
 void MainWindow::pastMaterials()

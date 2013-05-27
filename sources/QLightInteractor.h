@@ -25,7 +25,7 @@ public:
     virtual QString typeName() const;
 
 public slots:
-    void bindWithGui();
+    void bindInterface();
     void unbindFromGui();
     void updateGui();
     void triggerDialog();
@@ -49,6 +49,7 @@ public slots:
 
 private:
     tbe::scene::Light* m_target;
+    tbe::scene::Mesh* m_visualIndicator;
 };
 
 #endif	/* QLIGHTINTERACTOR_H */

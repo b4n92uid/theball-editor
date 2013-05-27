@@ -10,7 +10,25 @@
 #include "QTBEngine.h"
 
 QLightInteractor::QLightInteractor(MainWindow* mainwin, tbe::scene::Light* target)
-: QNodeInteractor(mainwin, target), m_target(target) { }
+: QNodeInteractor(mainwin, target), m_target(target)
+{
+    using namespace tbe;
+    using namespace scene;
+
+    //    m_visualIndicator = new tbe::scene::Plane(target->getParallelScene(), 2, 2);
+    //
+    //    m_visualIndicator->getMaterial("main")->setTexture("light_node.png");
+    //    m_visualIndicator->getMaterial("main")->setRenderFlags(Material::TEXTURED | Material::ALPHA | Material::COLORED);
+    //    m_visualIndicator->getMaterial("main")->setAlphaThershold(0.4f);
+    //    m_visualIndicator->getMaterial("main")->setColor(Vector4f(1, 0, 0, 1));
+    //
+    //    m_visualIndicator->setBillBoard(true);
+    //    m_visualIndicator->setSerialized(false);
+    //    m_visualIndicator->setCastShadow(false);
+    //    m_visualIndicator->setReceiveShadow(false);
+    //
+    //    m_target->addChild(m_visualIndicator);
+}
 
 QLightInteractor::~QLightInteractor() { }
 
@@ -136,9 +154,9 @@ void QLightInteractor::setRaysNoiseLayer(QString path)
     m_target->getVolumeLight()->setNoiseLayer(path.toStdString());
 }
 
-void QLightInteractor::bindWithGui()
+void QLightInteractor::bindInterface()
 {
-    QNodeInteractor::bindWithGui();
+    QNodeInteractor::bindInterface();
 
     m_mainwin->getLightDialog()->bind(this);
 
