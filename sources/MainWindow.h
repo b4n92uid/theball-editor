@@ -22,7 +22,6 @@
 #include "QVectorBox.h"
 #include "QSignalBlocker.h"
 #include "PackerDialog.h"
-#include "MaterialDialog.h"
 #include "NodeListProxyModel.h"
 #include "Define.h"
 
@@ -96,8 +95,9 @@ public slots:
     void pastRotation();
 
     void takeScreenshot();
-    
+
     void openEnvironmentDialog();
+    void openPropertyDialog();
 
     void setCurrentTool(int type);
 

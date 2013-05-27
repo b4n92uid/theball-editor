@@ -54,6 +54,7 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
     m_device = NULL;
     m_sceneManager = NULL;
 
+    m_moveObject = false;
     m_grabCamera = false;
     m_moveCamera = false;
 
@@ -77,12 +78,15 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
 
     m_toolMode[SELECTION_TOOL].type = SELECTION_TOOL;
     m_toolMode[SELECTION_TOOL].cursor = Qt::OpenHandCursor;
+    m_toolMode[SELECTION_TOOL].axis(1, 0, 1);
 
     m_toolMode[ROTATE_TOOL].type = ROTATE_TOOL;
     m_toolMode[ROTATE_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/rotate.png"));
+    m_toolMode[ROTATE_TOOL].axis(0, 1, 0);
 
     m_toolMode[SCALE_TOOL].type = SCALE_TOOL;
     m_toolMode[SCALE_TOOL].cursor = QCursor(QPixmap(":/Medias/medias/resize.png"));
+    m_toolMode[SCALE_TOOL].axis(1, 1, 1);
 
     m_currentTool = NULL;
 
@@ -223,7 +227,7 @@ void QTBEngine::applyTranslationEvents()
     if(m_currentTool->type == SCALE_TOOL)
     {
         if(m_selectedNode
-           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT]
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
 
@@ -231,19 +235,19 @@ void QTBEngine::applyTranslationEvents()
             {
                 tbe::Vector3f scale = qnode->target()->getScale();
 
-                if(m_movementAxe.x > 0 && m_movementAxe.y > 0 && m_movementAxe.z > 0)
+                if(m_currentTool->axis.x > 0 && m_currentTool->axis.y > 0 && m_currentTool->axis.z > 0)
                 {
-                    scale += mousePosRel.y * m_sensivitySet.selection * scale;
+                    scale += -mousePosRel.y * m_sensivitySet.selection * scale;
                 }
                 else
                 {
-                    if(m_movementAxe.x > 0)
+                    if(m_currentTool->axis.x > 0)
                         scale.x += mousePosRel.x * m_sensivitySet.selection * 0.1;
 
-                    if(m_movementAxe.y > 0)
+                    if(m_currentTool->axis.y > 0)
                         scale.y += mousePosRel.y * m_sensivitySet.selection * 0.1;
 
-                    if(m_movementAxe.z > 0)
+                    if(m_currentTool->axis.z > 0)
                         scale.z += -mousePosRel.y * m_sensivitySet.selection * 0.1;
                 }
 
@@ -261,7 +265,7 @@ void QTBEngine::applyTranslationEvents()
     else if(m_currentTool->type == ROTATE_TOOL)
     {
         if(m_selectedNode
-           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT]
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
 
@@ -269,14 +273,14 @@ void QTBEngine::applyTranslationEvents()
             {
                 tbe::Quaternion rotation = qnode->target()->getRotation();
 
-                if(m_movementAxe.x > 0)
-                    rotation *= tbe::Quaternion(-mousePosRel.x * m_sensivitySet.selection * 0.1, Vector3f(0, 1, 0));
-
-                if(m_movementAxe.y > 0)
+                if(m_currentTool->axis.x > 0)
                     rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(1, 0, 0));
 
-                if(m_movementAxe.z > 0)
-                    rotation *= tbe::Quaternion(-mousePosRel.y * m_sensivitySet.selection * 0.1, Vector3f(0, 0, 1));
+                if(m_currentTool->axis.y > 0)
+                    rotation *= tbe::Quaternion(mousePosRel.x * m_sensivitySet.selection * 0.1, Vector3f(0, 1, 0));
+
+                if(m_currentTool->axis.z > 0)
+                    rotation *= tbe::Quaternion(mousePosRel.x * m_sensivitySet.selection * 0.1, Vector3f(0, 0, 1));
 
                 qnode->target()->setRotation(rotation);
 
@@ -291,7 +295,7 @@ void QTBEngine::applyTranslationEvents()
     else if(m_currentTool->type == SELECTION_TOOL)
     {
         if(m_selectedNode
-           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT]
+           && m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT]
            && m_eventManager->notify == EventManager::EVENT_MOUSE_MOVE)
         {
             Vector3f position;
@@ -305,6 +309,7 @@ void QTBEngine::applyTranslationEvents()
             left.normalize();
 
             Vector3f transform;
+            Quaternion rota;
 
             if(m_eventManager->keyState[EventManager::KEY_LALT])
             {
@@ -312,10 +317,21 @@ void QTBEngine::applyTranslationEvents()
             }
             else
             {
-                Quaternion rota;
-                transform = rota * (-left * mousePosRel.x * m_sensivitySet.selection);
-                transform -= rota * (target * mousePosRel.y * m_sensivitySet.selection);
-                transform.y = 0;
+                if(m_currentTool->axis == Vector3f(1, 0, 1))
+                {
+                    transform = rota * (-left * mousePosRel.x * m_sensivitySet.selection);
+                    transform -= rota * (target * mousePosRel.y * m_sensivitySet.selection);
+                    transform.y = 0;
+                }
+
+                else if(m_currentTool->axis.x > 0)
+                    transform.x -= mousePosRel.x * m_sensivitySet.selection;
+
+                else if(m_currentTool->axis.y > 0)
+                    transform.y -= mousePosRel.y * m_sensivitySet.selection;
+
+                else if(m_currentTool->axis.z > 0)
+                    transform.z -= mousePosRel.x * m_sensivitySet.selection;
             }
 
             position += transform;
@@ -342,8 +358,7 @@ void QTBEngine::applyCameraEvents()
 {
     Vector3f campos = m_camera->getCenter();
 
-    if(m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE]
-       && m_eventManager->keyState[EventManager::KEY_LCTRL])
+    if(m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE])
     {
         if(m_eventManager->keyState[EventManager::KEY_LALT])
         {
@@ -354,6 +369,8 @@ void QTBEngine::applyCameraEvents()
             m_centerTarget += -m_eventManager->mousePosRel.x * m_camera->getLeft().Y(0) * m_sensivitySet.camera;
             m_centerTarget += -m_eventManager->mousePosRel.y * m_camera->getTarget().Y(0) * m_sensivitySet.camera;
         }
+
+        m_eventManager->mousePosRel = 0;
     }
 
     if(m_centerTarget - campos > 0.01)
@@ -388,7 +405,7 @@ void QTBEngine::toggleSelBox(bool state)
     m_selbox->setVisible(state);
 
     std::for_each(m_selboxArray.begin(), m_selboxArray.end(),
-                  bind2nd(mem_fun(&Mesh::setVisible), state));
+                  bind2nd(mem_fun(&SelBox::setVisible), state));
 }
 
 void QTBEngine::toggleGrid(bool state)
@@ -587,117 +604,107 @@ struct Nearest
     }
 };
 
+void QTBEngine::selectFromPick(QMouseEvent* ev)
+{
+    using namespace std;
+    using namespace tbe;
+    using namespace scene;
+
+    m_selbox->Node::setEnable(false);
+    m_grid->setEnable(false);
+
+    // Disable locked node
+    QMap < QNodeInteractor*, bool> initialState;
+
+    foreach(QNodeInteractor* node, m_nodeInterface.values())
+    {
+        if(node->isLocked())
+        {
+            initialState[node] = node->target()->isEnable();
+            node->target()->setEnable(false);
+        }
+    }
+
+    if(m_selectedNode)
+    {
+        initialState[m_selectedNode] = true;
+        m_selectedNode->target()->setEnable(false);
+    }
+
+    // Ray cast
+    Vector3f campos = m_camera->getPos();
+    Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
+
+    if(!nodes.empty())
+    {
+        Nearest pred = {campos};
+        Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
+
+        if(m_nodeInterface.contains(nearest))
+        {
+            QNodeInteractor* qnode = m_nodeInterface[nearest];
+
+            // Selection
+            QFlags<Qt::KeyboardModifiers> mods(ev->modifiers());
+
+            if(mods.testFlag(Qt::ControlModifier))
+            {
+                if(m_selection.contains(qnode))
+                    emit deselection(qnode);
+                else
+                    emit selection(qnode);
+            }
+            else
+            {
+                emit deselectionAll();
+                emit selection(qnode);
+            }
+        }
+    }
+
+    // Restor state
+
+    foreach(QNodeInteractor* node, initialState.keys())
+    {
+        node->target()->setEnable(initialState[node]);
+    }
+
+    m_selbox->Node::setEnable(true);
+    m_grid->setEnable(m_gridset.enable);
+}
+
 void QTBEngine::mousePressEvent(QMouseEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_MOUSE_DOWN;
 
-    if(ev->button() == Qt::LeftButton && m_selectedNode)
+    if(ev->button() == Qt::LeftButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 1;
 
-        m_cursorRelativeMove = QCursor::pos();
+        m_grabCamera = true;
+
+        m_lastCursorPos = qptovec(ev->pos());
+        m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
+
+        setCursor(Qt::ClosedHandCursor);
     }
 
     else if(ev->button() == Qt::MiddleButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 1;
 
-        if(ev->modifiers() & Qt::CTRL)
-        {
-            m_moveCamera = true;
+        m_moveCamera = false;
 
-            m_cursorRelativeMove = QCursor::pos();
-
-            setCursor(Qt::BlankCursor);
-        }
-        else
-        {
-            m_grabCamera = true;
-
-            m_lastCursorPos = qptovec(ev->pos());
-            m_lastCursorPos.y = size().height() - m_lastCursorPos.y;
-
-            setCursor(Qt::ClosedHandCursor);
-        }
+        m_cursorRelativeMove = QCursor::pos();
     }
 
     else if(ev->button() == Qt::RightButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = 1;
 
-        using namespace std;
-        using namespace tbe;
-        using namespace scene;
+        m_moveObject = false;
 
-        if(m_currentTool->type == SELECTION_TOOL)
-        {
-            m_selbox->Node::setEnable(false);
-            m_grid->setEnable(false);
-
-            // Disable locked node
-            QMap < QNodeInteractor*, bool> initialState;
-
-            foreach(QNodeInteractor* node, m_nodeInterface.values())
-            {
-                if(node->isLocked())
-                {
-                    initialState[node] = node->target()->isEnable();
-                    node->target()->setEnable(false);
-                }
-            }
-
-            if(m_selectedNode)
-            {
-                initialState[m_selectedNode] = true;
-                m_selectedNode->target()->setEnable(false);
-            }
-
-            // Ray cast
-            Vector3f campos = m_camera->getPos();
-            Mesh::Array nodes = m_meshScene->findMeshs(campos, Vector3f::normalize(m_curCursor3D - campos));
-
-            if(!nodes.empty())
-            {
-                Nearest pred = {campos};
-                Mesh* nearest = *std::min_element(nodes.begin(), nodes.end(), pred);
-
-                if(m_nodeInterface.contains(nearest))
-                {
-                    QNodeInteractor* qnode = m_nodeInterface[nearest];
-
-                    // Selection
-                    QFlags<Qt::KeyboardModifiers> mods(ev->modifiers());
-
-                    if(mods.testFlag(Qt::ControlModifier))
-                    {
-                        if(m_selection.contains(qnode))
-                            emit deselection(qnode);
-                        else
-                            emit selection(qnode);
-                    }
-                    else
-                    {
-                        emit deselectionAll();
-                        emit selection(qnode);
-                    }
-                }
-            }
-
-            // Restor state
-
-            foreach(QNodeInteractor* node, initialState.keys())
-            {
-                node->target()->setEnable(initialState[node]);
-            }
-
-            m_selbox->Node::setEnable(true);
-            m_grid->setEnable(m_gridset.enable);
-        }
-
-        else if(m_currentTool->type == ROTATE_TOOL || m_currentTool->type == SCALE_TOOL)
-        {
-            pushHistoryStat(new ModificationState(m_selectedNode));
-        }
+        m_cursorRelativeMove = QCursor::pos();
     }
 }
 
@@ -709,22 +716,71 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_LEFT] = 0;
 
-        setCursor(m_currentTool->cursor);
+        m_grabCamera = false;
     }
 
     else if(ev->button() == Qt::MiddleButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 0;
 
-        setCursor(m_currentTool->cursor);
-
-        m_grabCamera = false;
-        m_moveCamera = false;
+        if(!m_moveCamera)
+            m_centerTarget = m_curCursor3D;
     }
 
     else if(ev->button() == Qt::RightButton)
     {
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_RIGHT] = 0;
+
+        if(!m_moveObject)
+            selectFromPick(ev);
+    }
+
+    setCursor(m_currentTool->cursor);
+}
+
+void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
+{
+    updateInformationGui();
+
+    // Engine input injection --------------------------------------------------
+
+    m_curCursorPos = qptovec(ev->pos());
+    m_curCursorPos.y = size().height() - m_curCursorPos.y;
+
+    Vector2f mousePosRel = m_curCursorPos - m_lastCursorPos;
+
+    m_eventManager->notify = EventManager::EVENT_MOUSE_MOVE;
+    m_eventManager->mousePos = m_curCursorPos;
+    m_eventManager->mousePosRel = mousePosRel;
+
+    m_lastCursorPos = m_curCursorPos;
+
+    // Input process -----------------------------------------------------------
+
+    if(ev->buttons() & Qt::LeftButton)
+    {
+        m_camera->onEvent(m_eventManager);
+    }
+
+    if(ev->buttons() & Qt::MidButton)
+    {
+        m_moveCamera = true;
+
+        setCursor(Qt::BlankCursor);
+
+        QCursor::setPos(m_cursorRelativeMove);
+    }
+
+    if(ev->buttons() & Qt::RightButton && m_selectedNode)
+    {
+        foreach(QNodeInteractor* qnode, m_selection)
+        pushHistoryStat(new ModificationState(qnode));
+
+        setCursor(Qt::BlankCursor);
+
+        m_moveObject = true;
+
+        QCursor::setPos(m_cursorRelativeMove);
     }
 }
 
@@ -748,108 +804,32 @@ void QTBEngine::wheelEvent(QWheelEvent* ev)
             m_eventManager->mouseState[EventManager::MOUSE_BUTTON_WHEEL_DOWN] = 0;
 }
 
-void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
-{
-    updateInformationGui();
-
-    // Engine input injection --------------------------------------------------
-
-    m_curCursorPos = qptovec(ev->pos());
-    m_curCursorPos.y = size().height() - m_curCursorPos.y;
-
-    Vector2f mousePosRel = m_curCursorPos - m_lastCursorPos;
-
-    m_eventManager->notify = EventManager::EVENT_MOUSE_MOVE;
-    m_eventManager->mousePos = m_curCursorPos;
-    m_eventManager->mousePosRel = mousePosRel;
-
-    m_lastCursorPos = m_curCursorPos;
-
-    // Input process -----------------------------------------------------------
-
-    if(ev->buttons() & Qt::MidButton)
-    {
-        if(m_grabCamera)
-        {
-            m_camera->onEvent(m_eventManager);
-        }
-        else
-        {
-            QCursor::setPos(m_cursorRelativeMove);
-        }
-    }
-
-    if(ev->buttons() & Qt::RightButton)
-    {
-    }
-
-    if(ev->buttons() & Qt::LeftButton && m_selectedNode)
-    {
-        foreach(QNodeInteractor* qnode, m_selection)
-        pushHistoryStat(new ModificationState(qnode));
-
-        setCursor(Qt::BlankCursor);
-
-        QCursor::setPos(m_cursorRelativeMove);
-    }
-
-    if(m_currentTool->type == SELECTION_TOOL)
-    {
-        if(ev->buttons() & Qt::LeftButton && m_selectedNode)
-        {
-            QCursor::setPos(m_cursorRelativeMove);
-        }
-    }
-
-    else if(m_currentTool->type == ROTATE_TOOL)
-    {
-        if(ev->buttons() & Qt::LeftButton && m_selectedNode)
-        {
-            QCursor::setPos(m_cursorRelativeMove);
-        }
-    }
-
-    else if(m_currentTool->type == SCALE_TOOL)
-    {
-        if(ev->buttons() & Qt::LeftButton && m_selectedNode)
-        {
-            QCursor::setPos(m_cursorRelativeMove);
-        }
-    }
-}
-
 void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
 
-    if(ev->modifiers() == Qt::AltModifier)
+    if(ev->modifiers() & Qt::AltModifier)
     {
         if(ev->key() == Qt::Key_X)
         {
-            m_movementAxe(1, 0, 0);
+            m_currentTool->axis(1, 0, 0);
             m_mainwin->statusBar()->showMessage("Movement sur l'axe X");
         }
         if(ev->key() == Qt::Key_Y)
         {
-            m_movementAxe(0, 1, 0);
+            m_currentTool->axis(0, 1, 0);
             m_mainwin->statusBar()->showMessage("Movement sur l'axe Y");
         }
         if(ev->key() == Qt::Key_Z)
         {
-            m_movementAxe(0, 0, 1);
+            m_currentTool->axis(0, 0, 1);
             m_mainwin->statusBar()->showMessage("Movement sur l'axe Z");
         }
         if(ev->key() == Qt::Key_A)
         {
-            m_movementAxe = 1;
+            m_currentTool->axis = 1;
             m_mainwin->statusBar()->showMessage("Movement sur tout les axes X, Y, Z");
         }
-    }
-
-    if(ev->key() == Qt::Key_Space)
-    {
-        if(m_selectedNode)
-            m_selectedNode->triggerDialog();
     }
 
     if(ev->key() == Qt::Key_U && m_selectedNode)
@@ -1185,8 +1165,6 @@ void QTBEngine::clearScene()
     m_curCursorPos = 0;
     m_curCursor3D = 0;
 
-    m_movementAxe = 1;
-
     m_grabCamera = false;
     m_moveCamera = false;
 
@@ -1364,7 +1342,7 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
         m_selection.push_back(qnode);
     }
 
-    qnode->bindWithGui();
+    qnode->bindInterface();
 
     if(m_gridset.enable)
         toggleGrid(true);

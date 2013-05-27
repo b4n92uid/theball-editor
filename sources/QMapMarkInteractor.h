@@ -27,7 +27,7 @@ public:
     void triggerDialog();
 
 public slots:
-    void bindWithGui();
+    void bindInterface();
     void unbindFromGui();
     void updateGui();
 
