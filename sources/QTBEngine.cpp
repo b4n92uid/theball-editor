@@ -2,7 +2,7 @@
  * File:   QTBEngine.cpp
  * Author: b4n92uid
  *
- * Created on 4 dÃ©cembre 2010, 13:30
+ * Created on 4 décembre 2010, 13:30
  */
 
 #include "QTBEngine.h"
@@ -894,7 +894,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_sensivitySet.selection += 0.01;
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("SensibilitÃ©: %1").arg(m_sensivitySet.selection), 1000);
+                    ->showMessage(QString("Sensibilité: %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
@@ -913,7 +913,7 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
             m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
 
             m_mainwin->statusBar()
-                    ->showMessage(QString("SensibilitÃ©:Â %1").arg(m_sensivitySet.selection), 1000);
+                    ->showMessage(QString("Sensibilité:Â %1").arg(m_sensivitySet.selection), 1000);
         }
     }
 
