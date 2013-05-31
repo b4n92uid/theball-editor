@@ -178,11 +178,13 @@ void QTBEngine::setupSelection()
     m_grid = new Grid(m_meshScene, 8, 8);
     m_grid->setName("grid");
     m_grid->setEnable(false);
-    m_grid->getMaterial("main")->setRenderFlags(Material::PIPELINE);
-    m_grid->getMaterial("main")->setLineWidth(1);
     m_grid->setSerialized(false);
     m_grid->setCastShadow(false);
     m_grid->setReceiveShadow(false);
+
+    Material* gridmat = m_grid->getSubMesh(0)->getMaterial();
+    gridmat->setRenderFlags(Material::PIPELINE);
+    gridmat->setLineWidth(1);
 
     m_rootNode->addChild(m_grid);
 }
@@ -219,7 +221,7 @@ void QTBEngine::resizeGL(int w, int h)
 
 void QTBEngine::applyTranslationEvents()
 {
-    if(m_eventManager->notify != EventManager::EVENT_MOUSE_MOVE)
+    if(m_eventManager->notify != EventManager::EVENT_MOUSE_MOVE || !m_moveObject)
         return;
 
     Vector2f mousePosRel = m_eventManager->mousePosRel;
@@ -432,8 +434,8 @@ void QTBEngine::toggleGrid(bool state)
         using namespace scene;
 
         m_grid->build(size, cuts);
-        m_grid->getMaterial("main")->setRenderFlags(Material::PIPELINE);
-        m_grid->getMaterial("main")->setColor(Vector4f(0.5, 0.5, 0.5, 0.75));
+        m_grid->getSubMesh(0)->getMaterial()->setRenderFlags(Material::PIPELINE);
+        m_grid->getSubMesh(0)->getMaterial()->setColor(Vector4f(0.5, 0.5, 0.5, 0.75));
 
         if(m_selectedNode)
         {
@@ -764,23 +766,30 @@ void QTBEngine::mouseMoveEvent(QMouseEvent* ev)
 
     if(ev->buttons() & Qt::MidButton)
     {
-        m_moveCamera = true;
-
         setCursor(Qt::BlankCursor);
+
+        m_moveCamera = true;
 
         QCursor::setPos(m_cursorRelativeMove);
     }
 
     if(ev->buttons() & Qt::RightButton && m_selectedNode)
     {
-        foreach(QNodeInteractor* qnode, m_selection)
-        pushHistoryStat(new ModificationState(qnode));
+        if(mousePosRel > 1 && !m_moveObject)
+        {
+            foreach(QNodeInteractor* qnode, m_selection)
+            pushHistoryStat(new ModificationState(qnode));
 
-        setCursor(Qt::BlankCursor);
+            m_moveObject = true;
 
-        m_moveObject = true;
+            setCursor(Qt::BlankCursor);
 
-        QCursor::setPos(m_cursorRelativeMove);
+            QCursor::setPos(m_cursorRelativeMove);
+        }
+        else if(m_moveObject)
+        {
+            QCursor::setPos(m_cursorRelativeMove);
+        }
     }
 }
 
@@ -1533,18 +1542,16 @@ void QTBEngine::selectRotateTool()
 
 SelBoxInterface::SelBoxInterface() { }
 
-SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : Box(parallelScene, 1)
+SelBox::SelBox(tbe::scene::MeshParallelScene* parallelScene) : QuadBox(parallelScene, 1)
 {
     using namespace tbe;
     using namespace scene;
 
     setName("selection");
-    getMaterial("main")->setRenderFlags(Material::COLORED | Material::ADDITIVE | Material::PIPELINE);
-    getMaterial("main")->setLineWidth(4);
-    getMaterial("main")->setFaceType(Material::LINES);
-    getMaterial("main")->setDrawPass(6);
-    getMaterial("main")->setColor(Vector4f(0, 0, 0.25, 1));
-    getMaterial("main")->setDepthTest(false);
+    Material* mat = getSubMesh(0)->getMaterial();
+    mat->setRenderFlags(Material::COLORED | Material::ADDITIVE | Material::PIPELINE);
+    mat->setPolygoneMode(GL_LINE);
+    mat->setColor(Vector4f(0, 0, 1, 1));
     setSerialized(false);
     setCastShadow(false);
     setReceiveShadow(false);

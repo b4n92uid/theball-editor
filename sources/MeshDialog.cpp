@@ -33,6 +33,16 @@ MeshDialog::MeshDialog(MainWindow* parent) : QDialog(parent), m_mainwin(parent)
 
 MeshDialog::~MeshDialog() { }
 
+tbe::scene::SubMesh* MeshDialog::getSelectedSubMesh()
+{
+    int index = materials_select->currentIndex();
+
+    if(index == -1)
+        index = 0;
+
+    return m_target->getSubMesh(index);
+}
+
 tbe::scene::Material* MeshDialog::getSelectedMaterial()
 {
     using namespace tbe::scene;
@@ -45,7 +55,7 @@ tbe::scene::Material* MeshDialog::getSelectedMaterial()
     std::string matname = materials_select
             ->itemData(index).toString().toStdString();
 
-    return m_target->getMaterial(matname);
+    return m_target->getSubMesh(matname)->getMaterial();
 }
 
 void MeshDialog::onMaterialSelected()
@@ -53,8 +63,9 @@ void MeshDialog::onMaterialSelected()
     if(!m_target)
         return;
 
+    using namespace std;
     using namespace tbe;
-    using namespace tbe::scene;
+    using namespace scene;
 
     Material* mat = getSelectedMaterial();
 
@@ -138,6 +149,22 @@ void MeshDialog::onMaterialSelected()
     {
         shader_path->clear();
         shader_release->setEnabled(false);
+    }
+
+    // Attached material file
+    string attachedFile = m_target->serializing().get<string>("material." + mat->getName(), "");
+
+    if(!attachedFile.empty())
+    {
+        reloadMaterial->setEnabled(true);
+        releaseMaterial->setEnabled(true);
+        matinfo->setText(QString::fromStdString(attachedFile));
+    }
+    else
+    {
+        reloadMaterial->setEnabled(false);
+        releaseMaterial->setEnabled(false);
+        matinfo->clear();
     }
 }
 
@@ -224,7 +251,7 @@ void MeshDialog::addTexture()
 
     Material* mat = getSelectedMaterial();
 
-    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin, QString(), m_filepath);
+    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin);
 
     int offset = mat->getTexturesCount();
 
@@ -590,10 +617,7 @@ void MeshDialog::bind(QMeshInteractor* mi)
 {
     connect(attachMaterial, SIGNAL(clicked()), this, SLOT(onAttachMaterial()));
     connect(releaseMaterial, SIGNAL(clicked()), this, SLOT(onReleaseMaterial()));
-
-    connect(this, SIGNAL(attachMaterialFile(QString)), mi, SLOT(attachMaterial(QString)));
-    connect(reloadMaterial, SIGNAL(clicked()), mi, SLOT(reloadMaterial()));
-    connect(this, SIGNAL(releaseMaterialFile()), mi, SLOT(releaseMaterial()));
+    connect(reloadMaterial, SIGNAL(clicked()), this, SLOT(onReloadMaterial()));
 
     connect(billboardX, SIGNAL(clicked(bool)), mi, SLOT(setBillBoardX(bool)));
     connect(billboardY, SIGNAL(clicked(bool)), mi, SLOT(setBillBoardY(bool)));
@@ -727,10 +751,11 @@ void MeshDialog::unbind()
     materials_select->clear();
 }
 
-void MeshDialog::updateMaterials(tbe::scene::Mesh* target, QString filepath)
+void MeshDialog::updateMaterials(tbe::scene::Mesh* target)
 {
+    using namespace std;
+
     m_target = target;
-    m_filepath = filepath;
 
     QSignalBlocker blocker;
     blocker
@@ -758,10 +783,11 @@ void MeshDialog::updateMaterials(tbe::scene::Mesh* target, QString filepath)
 
     materials_select->clear();
 
-    Material::Array matarr = m_target->getAllMaterial();
+    SubMesh::Array submeshs = m_target->getAllSubMesh();
 
-    foreach(Material* mat, matarr)
+    foreach(SubMesh* sm, submeshs)
     {
+        Material* mat = sm->getMaterial();
         QString matName = QString::fromStdString(mat->getName());
         QString matID = QString::fromStdString(mat->getName());
 
@@ -772,6 +798,12 @@ void MeshDialog::updateMaterials(tbe::scene::Mesh* target, QString filepath)
         }
 
         materials_select->addItem(matName, matID);
+
+        boost::optional<string> matFile = target->serializing()
+                .get_optional<string>("material." + matName.toStdString());
+
+        if(matFile)
+            m_filepath[matName] = QString::fromStdString(*matFile);
     }
 
     // Select the first material and update GUI 
@@ -797,29 +829,14 @@ void MeshDialog::update(tbe::scene::Mesh* m)
     computeNormal->setChecked(m->isComputeNormals());
     computeTangent->setChecked(m->isComputeTangent());
 
-    std::string matFile = m->getMaterialFile();
-
-    if(!matFile.empty())
-    {
-        QString path = QString::fromStdString(matFile);
-        updateMaterials(m, path);
-        reloadMaterial->setEnabled(true);
-        releaseMaterial->setEnabled(true);
-        matinfo->setText(path);
-    }
-    else
-    {
-        reloadMaterial->setEnabled(false);
-        releaseMaterial->setEnabled(false);
-        matinfo->clear();
-    }
+    updateMaterials(m);
 
     blocker.unblock();
 }
 
 void MeshDialog::openShaderFileName()
 {
-    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_filepath);
+    QString filename = QFileDialog::getOpenFileName(m_mainwin);
 
     if(!filename.isEmpty())
     {
@@ -858,9 +875,10 @@ void MeshDialog::onApply()
 
     if(!m_filepath.isEmpty())
     {
-        rtree materialTree = m_target->serializeMaterial(m_filepath.toStdString());
-
-        boost::property_tree::write_info(m_filepath.toStdString(), materialTree);
+        // TODO Serialize material to file
+        // MaterialManager* mm = m_target->getParallelScene()->getMaterialManager();
+        // rtree materialTree = mm->serialize(m_filepath.toStdString());
+        // boost::property_tree::write_info(m_filepath.toStdString(), materialTree);
     }
 }
 
@@ -875,7 +893,12 @@ void MeshDialog::onAttachMaterial()
 
         matinfo->setText(filename);
 
-        emit attachMaterialFile(filename);
+        SubMesh* smesh = getSelectedSubMesh();
+
+        MaterialManager* matmng = MaterialManager::get();
+        Material* newmat = matmng->loadMaterial(filename.toStdString());
+
+        smesh->setMaterial(newmat);
     }
 }
 
@@ -884,6 +907,6 @@ void MeshDialog::onReleaseMaterial()
     reloadMaterial->setEnabled(false);
     releaseMaterial->setEnabled(false);
     matinfo->clear();
-
-    emit releaseMaterialFile();
 }
+
+void MeshDialog::onReloadMaterial() { }

@@ -37,10 +37,6 @@ public slots:
     void setComputeNormal();
     void setComputeTangent();
 
-    void attachMaterial(QString filename);
-    void reloadMaterial();
-    void releaseMaterial();
-
 private:
     tbe::scene::Mesh* m_target;
 };
