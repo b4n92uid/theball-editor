@@ -119,28 +119,3 @@ void QMeshInteractor::updateGui()
 
     m_mainwin->tbeWidget()->highlight(this);
 }
-
-void QMeshInteractor::attachMaterial(QString filename)
-{
-    m_target->attachMaterialFile(filename.toStdString());
-    updateGui();
-}
-
-void QMeshInteractor::reloadMaterial()
-{
-    try
-    {
-        m_target->attachMaterialFile(m_target->getMaterialFile());
-        updateGui();
-    }
-    catch(std::exception& e)
-    {
-        QMessageBox::critical(m_mainwin, "Erreur rafrichisement", e.what());
-    }
-}
-
-void QMeshInteractor::releaseMaterial()
-{
-    m_target->releaseMaterialFile();
-    updateGui();
-}

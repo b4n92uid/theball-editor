@@ -229,7 +229,7 @@ public:
     virtual void setAround(tbe::scene::Node* node) = 0;
 };
 
-class SelBox : public SelBoxInterface, public tbe::scene::Box
+class SelBox : public SelBoxInterface, public tbe::scene::QuadBox
 {
     Q_OBJECT
 

@@ -31,13 +31,14 @@ public:
     void unbind();
 
     void update(tbe::scene::Mesh* m);
-    void updateMaterials(tbe::scene::Mesh* target, QString filepath);
+    void updateMaterials(tbe::scene::Mesh* target);
 
 public slots:
     void onApply();
 
     void onAttachMaterial();
     void onReleaseMaterial();
+    void onReloadMaterial();
 
     void onMaterialSelected();
     void onTextureSelected(const QModelIndex& index);
@@ -79,12 +80,9 @@ public slots:
     void openShaderFileName();
     void releaseShaderFileName();
 
-signals:
-    void attachMaterialFile(QString);
-    void releaseMaterialFile();
-
 protected:
     tbe::scene::Material* getSelectedMaterial();
+    tbe::scene::SubMesh* getSelectedSubMesh();
 
 private:
     MainWindow* m_mainwin;
@@ -99,7 +97,7 @@ private:
 
     QStandardItemModel* textureModel;
 
-    QString m_filepath;
+    QMap<QString, QString> m_filepath;
 
     tbe::scene::Mesh* m_target;
 };
