@@ -94,8 +94,11 @@ void MeshDialog::onMaterialSelected()
     // Select the first texture unit and update GUI
     QModelIndex first = textureModel->index(0, 0);
 
-    textureView->setCurrentIndex(first);
-    onTextureSelected(first);
+    if(first.isValid())
+    {
+        textureView->setCurrentIndex(first);
+        onTextureSelected(first);
+    }
 
     // Update material gui flag
     foged->setChecked(mat->isEnable(Material::FOGED));
@@ -875,10 +878,13 @@ void MeshDialog::onApply()
 
     if(!m_filepath.isEmpty())
     {
-        // TODO Serialize material to file
-        // MaterialManager* mm = m_target->getParallelScene()->getMaterialManager();
-        // rtree materialTree = mm->serialize(m_filepath.toStdString());
-        // boost::property_tree::write_info(m_filepath.toStdString(), materialTree);
+        string matname = getSelectedMaterial()->getName();
+        string matpath = m_filepath[QString::fromStdString(matname)].toStdString();
+
+        MaterialManager* mm = MaterialManager::get();
+        rtree materialTree = mm->serialize(matname, matpath);
+
+        property_tree::write_info(matpath, materialTree);
     }
 }
 
@@ -888,25 +894,63 @@ void MeshDialog::onAttachMaterial()
                                                     "Material (*.material);;Tout les fichiers (*.*)");
     if(!filename.isEmpty())
     {
-        reloadMaterial->setEnabled(true);
-        releaseMaterial->setEnabled(true);
+        try
+        {
+            std::string path = filename.toStdString();
 
-        matinfo->setText(filename);
+            SubMesh* smesh = getSelectedSubMesh();
 
-        SubMesh* smesh = getSelectedSubMesh();
+            MaterialManager* matmng = MaterialManager::get();
+            Material* newmat = matmng->loadMaterial(path);
 
-        MaterialManager* matmng = MaterialManager::get();
-        Material* newmat = matmng->loadMaterial(filename.toStdString());
+            smesh->setMaterial(newmat);
+            smesh->getOwner()->serializing().get_child("material").put(newmat->getName(), path);
 
-        smesh->setMaterial(newmat);
+            reloadMaterial->setEnabled(true);
+            releaseMaterial->setEnabled(true);
+
+            matinfo->setText(filename);
+        }
+        catch(std::exception& e)
+        {
+            QMessageBox::critical(this, "Erreur de chargement",
+                                  QString("Le fichier na pas pu etre chargé correctement\n%1").arg(+e.what()));
+        }
     }
 }
 
 void MeshDialog::onReleaseMaterial()
 {
-    reloadMaterial->setEnabled(false);
-    releaseMaterial->setEnabled(false);
-    matinfo->clear();
+    SubMesh* smesh = getSelectedSubMesh();
+    std::string matname = smesh->getMaterial()->getName();
+
+    Material* prevMat = MaterialManager::get()->backupMaterial(matname);
+
+    if(prevMat)
+    {
+        smesh->setMaterial(prevMat);
+        reloadMaterial->setEnabled(false);
+        releaseMaterial->setEnabled(false);
+        matinfo->clear();
+    }
+    else
+        QMessageBox::warning(this, "Erreur", "Aucun matèrieau précedent trouvé !");
 }
 
-void MeshDialog::onReloadMaterial() { }
+void MeshDialog::onReloadMaterial()
+{
+    SubMesh* smesh = getSelectedSubMesh();
+    std::string matname = smesh->getMaterial()->getName();
+    std::string matpath = m_filepath[matname.c_str()].toStdString();
+
+    try
+    {
+        Material* material = MaterialManager::get()->loadMaterial(matpath, true);
+        smesh->setMaterial(material);
+    }
+    catch(std::exception& e)
+    {
+        QMessageBox::critical(this, "Erreur de chargement",
+                              QString("Le fichier na pas pu etre chargé correctement\n%1").arg(+e.what()));
+    }
+}
