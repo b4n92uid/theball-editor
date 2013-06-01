@@ -117,12 +117,13 @@ void QTBEngine::initializeGL()
     m_meshScene = new MeshParallelScene;
     m_meshScene->setEnableFrustumTest(true);
     m_meshScene->setTransparencySort(true);
-    m_sceneManager->addParallelScene(m_meshScene);
-
     m_particlesScene = new ParticlesParallelScene;
-    m_sceneManager->addParallelScene(m_particlesScene);
-
     m_markScene = new MapMarkParallelScene;
+    m_waterScene = new WaterParallelScene;
+
+    m_sceneManager->addParallelScene(m_meshScene);
+    m_sceneManager->addParallelScene(m_waterScene);
+    m_sceneManager->addParallelScene(m_particlesScene);
     m_sceneManager->addParallelScene(m_markScene);
 
     m_sceneParser = new scene::SceneParser(m_sceneManager);
@@ -130,6 +131,7 @@ void QTBEngine::initializeGL()
     m_sceneParser->setMeshScene(m_meshScene);
     m_sceneParser->setParticlesScene(m_particlesScene);
     m_sceneParser->setMarkScene(m_markScene);
+    m_sceneParser->setWaterScene(m_waterScene);
 
     m_fog = m_sceneManager->getFog();
     m_skybox = m_sceneManager->getSkybox();
@@ -1333,6 +1335,8 @@ void QTBEngine::setSceneAmbiant(const tbe::Vector3f& value)
 
 void QTBEngine::selectNode(QNodeInteractor* qnode)
 {
+    qnode->bindInterface();
+
     if(m_selection.empty())
     {
         m_selectedNode = qnode;
@@ -1350,8 +1354,6 @@ void QTBEngine::selectNode(QNodeInteractor* qnode)
 
         m_selection.push_back(qnode);
     }
-
-    qnode->bindInterface();
 
     if(m_gridset.enable)
         toggleGrid(true);

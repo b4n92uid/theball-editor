@@ -93,6 +93,9 @@ void QMeshInteractor::setComputeTangent()
 
 void QMeshInteractor::bindInterface()
 {
+    if(!m_mainwin->tbeWidget()->selection().empty())
+        return;
+
     QNodeInteractor::bindInterface();
 
     m_mainwin->getMeshDialog()->bind(this);
@@ -114,7 +117,7 @@ void QMeshInteractor::updateGui()
     using namespace boost;
 
     QNodeInteractor::updateGui();
-    
+
     m_mainwin->getMeshDialog()->update(m_target);
 
     m_mainwin->tbeWidget()->highlight(this);

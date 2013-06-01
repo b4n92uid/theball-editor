@@ -453,6 +453,9 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_13">
       <item>
+       <widget class="QComboBox" name="materials_select"/>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QLineEdit" name="matinfo">
@@ -510,9 +513,6 @@
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QComboBox" name="materials_select"/>
       </item>
      </layout>
     </widget>
