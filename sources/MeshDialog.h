@@ -35,6 +35,7 @@ public:
 
 public slots:
     void onApply();
+    void onClose();
 
     void onAttachMaterial();
     void onReleaseMaterial();
@@ -97,7 +98,7 @@ private:
 
     QStandardItemModel* textureModel;
 
-    QMap<QString, QString> m_filepath;
+    std::map<std::string, std::string> m_filepath;
 
     tbe::scene::Mesh* m_target;
 };

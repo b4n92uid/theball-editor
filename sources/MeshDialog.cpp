@@ -52,10 +52,7 @@ tbe::scene::Material* MeshDialog::getSelectedMaterial()
     if(index == -1)
         index = 0;
 
-    std::string matname = materials_select
-            ->itemData(index).toString().toStdString();
-
-    return m_target->getSubMesh(matname)->getMaterial();
+    return m_target->getSubMesh(index)->getMaterial();
 }
 
 void MeshDialog::onMaterialSelected()
@@ -67,6 +64,7 @@ void MeshDialog::onMaterialSelected()
     using namespace tbe;
     using namespace scene;
 
+    SubMesh* sm = getSelectedSubMesh();
     Material* mat = getSelectedMaterial();
 
     // Reload textures list
@@ -155,7 +153,7 @@ void MeshDialog::onMaterialSelected()
     }
 
     // Attached material file
-    string attachedFile = m_target->serializing().get<string>("material." + mat->getName(), "");
+    string attachedFile = m_target->serializing().get<string>("material." + sm->getName(), "");
 
     if(!attachedFile.empty())
     {
@@ -633,7 +631,7 @@ void MeshDialog::bind(QMeshInteractor* mi)
 
     // Material
 
-    connect(this, SIGNAL(rejected()), this, SLOT(onApply()));
+    connect(this, SIGNAL(rejected()), this, SLOT(onClose()));
     connect(this, SIGNAL(accepted()), this, SLOT(onApply()));
 
     connect(textured, SIGNAL(clicked(bool)), this, SLOT(setTextured(bool)));
@@ -791,22 +789,21 @@ void MeshDialog::updateMaterials(tbe::scene::Mesh* target)
     foreach(SubMesh* sm, submeshs)
     {
         Material* mat = sm->getMaterial();
-        QString matName = QString::fromStdString(mat->getName());
-        QString matID = QString::fromStdString(mat->getName());
+        QString matName = QString("%1 (%2)").arg(sm->getName().c_str(), mat->getName().c_str());
 
         if(matName.isEmpty())
-        {
-            matName = QString("[Matériau sans nom #%1]")
-                    .arg(materials_select->count());
-        }
+            matName = QString("[SubMesh sans nom #%1]").arg(materials_select->count());
 
-        materials_select->addItem(matName, matID);
+        materials_select->addItem(matName);
 
         boost::optional<string> matFile = target->serializing()
-                .get_optional<string>("material." + matName.toStdString());
+                .get_optional<string>("material." + sm->getName());
 
         if(matFile)
-            m_filepath[matName] = QString::fromStdString(*matFile);
+        {
+            string abspath = m_mainwin->tbeWidget()->sceneParser()->resolve(*matFile);
+            m_filepath[sm->getName()] = abspath;
+        }
     }
 
     // Select the first material and update GUI 
@@ -871,20 +868,31 @@ void MeshDialog::releaseShaderFileName()
     shader_release->setEnabled(false);
 }
 
+void MeshDialog::onClose() { }
+
 void MeshDialog::onApply()
 {
     using namespace std;
     using namespace boost;
 
-    if(!m_filepath.isEmpty())
-    {
-        string matname = getSelectedMaterial()->getName();
-        string matpath = m_filepath[QString::fromStdString(matname)].toStdString();
+    Material* mat = getSelectedMaterial();
 
+    string smeshname = getSelectedSubMesh()->getName();
+    string matpath;
+
+    if(m_filepath.count(smeshname))
+        matpath = m_filepath[smeshname];
+    else
+        matpath = QFileDialog::getSaveFileName(this).toStdString();
+
+    if(!matpath.empty())
+    {
         MaterialManager* mm = MaterialManager::get();
-        rtree materialTree = mm->serialize(matname, matpath);
+        rtree materialTree = mm->serialize(mat->getName(), matpath);
 
         property_tree::write_info(matpath, materialTree);
+
+        m_mainwin->statusBar()->showMessage(QString("Matériau enregistré (%1)").arg(matpath.c_str()), 2000);
     }
 }
 
@@ -904,7 +912,7 @@ void MeshDialog::onAttachMaterial()
             Material* newmat = matmng->loadMaterial(path);
 
             smesh->setMaterial(newmat);
-            smesh->getOwner()->serializing().get_child("material").put(newmat->getName(), path);
+            smesh->getOwner()->serializing().put("material." + smesh->getName(), path);
 
             reloadMaterial->setEnabled(true);
             releaseMaterial->setEnabled(true);
@@ -940,8 +948,8 @@ void MeshDialog::onReleaseMaterial()
 void MeshDialog::onReloadMaterial()
 {
     SubMesh* smesh = getSelectedSubMesh();
-    std::string matname = smesh->getMaterial()->getName();
-    std::string matpath = m_filepath[matname.c_str()].toStdString();
+    std::string smeshname = smesh->getName();
+    std::string matpath = m_filepath[smeshname];
 
     try
     {
