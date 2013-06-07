@@ -79,7 +79,7 @@ void PackerDialog::fillList()
     foreach(QString path, m_parent->tbeWidget()->usedRessources())
     addAbsoluteFile(path);
 
-    BOOST_FOREACH(tbe::rtree::value_type v, descriptor.get_child("scene.content"))
+    BOOST_FOREACH(tbe::rtree::value_type v, descriptor.get_child("Content"))
     recursivFilesFind(v.second);
 
     m_fileListModel->sort(0);

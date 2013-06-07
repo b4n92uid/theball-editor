@@ -73,9 +73,6 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
     setFocusPolicy(Qt::StrongFocus);
     setCursor(Qt::OpenHandCursor);
 
-    m_gridset.enable = false;
-    m_gridset.size = 1;
-
     m_toolMode[SELECTION_TOOL].type = SELECTION_TOOL;
     m_toolMode[SELECTION_TOOL].cursor = Qt::OpenHandCursor;
     m_toolMode[SELECTION_TOOL].axis(1, 0, 1);
@@ -90,8 +87,12 @@ QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers),
 
     m_currentTool = NULL;
 
-    m_sensivitySet.selection = 0.05;
+    m_gridset.enable = false;
+    m_gridset.size = m_mainwin->ui()->grid_size->value();
+    m_gridset.cuts = m_mainwin->ui()->grid_cuts->value();
+
     m_sensivitySet.camera = 0.1;
+    m_sensivitySet.selection = m_mainwin->ui()->selection_sensitiv->value();
 }
 
 QTBEngine::~QTBEngine()
@@ -375,6 +376,12 @@ void QTBEngine::applyCameraEvents()
         }
 
         m_eventManager->mousePosRel = 0;
+
+        if(m_gridset.enable)
+        {
+            Vector3f pos = math::round(m_centerTarget);
+            m_grid->setPos(pos);
+        }
     }
 
     if(m_centerTarget - campos > 0.01)
@@ -414,38 +421,20 @@ void QTBEngine::toggleSelBox(bool state)
 
 void QTBEngine::toggleGrid(bool state)
 {
+    using namespace scene;
+
     m_gridset.enable = state;
 
     if(state)
     {
         m_grid->clear();
 
-        Vector2i cuts;
-
-        if(m_selectedNode)
-        {
-            AABB zone = m_selectedNode->target()->getAabb();
-            cuts.x = std::max(zone.getLength() * 2.0f, 16.0f);
-            cuts.y = std::max(zone.getLength() * 2.0f, 16.0f);
-        }
-        else
-            cuts = 16;
-
-        Vector2f size = cuts;
-
-        using namespace scene;
-
-        m_grid->build(size, cuts);
+        m_grid->build(m_gridset.size, m_gridset.cuts);
         m_grid->getSubMesh(0)->getMaterial()->setRenderFlags(Material::PIPELINE);
-        m_grid->getSubMesh(0)->getMaterial()->setColor(Vector4f(0.5, 0.5, 0.5, 0.75));
+        m_grid->getSubMesh(0)->getMaterial()->setColor(Vector4f(0, 0, 0, 0.75));
 
-        if(m_selectedNode)
-        {
-            Vector3f pos = m_selectedNode->target()->getAbsoluteMatrix().getPos();
-            pos = math::round(pos).Y(pos.y - m_selectedNode->target()->getAabb().max.y);
-
-            m_grid->setPos(pos);
-        }
+        Vector3f pos = math::round(m_centerTarget);
+        m_grid->setPos(pos);
     }
 
     m_grid->setEnable(m_gridset.enable);
@@ -728,7 +717,15 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
         m_eventManager->mouseState[EventManager::MOUSE_BUTTON_MIDDLE] = 0;
 
         if(!m_moveCamera)
+        {
             m_centerTarget = m_curCursor3D;
+
+            if(m_gridset.enable)
+            {
+                Vector3f pos = math::round(m_centerTarget);
+                m_grid->setPos(pos);
+            }
+        }
     }
 
     else if(ev->button() == Qt::RightButton)
@@ -737,6 +734,43 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 
         if(!m_moveObject)
             selectFromPick(ev);
+
+        if(m_gridset.enable)
+        {
+            if(ev->modifiers() & Qt::Key_Alt)
+            {
+
+                foreach(QNodeInteractor* qnode, m_selection)
+                {
+                    Vector3f current_position = qnode->target()->getPos();
+                    Vector3f round_position(0, m_gridset.size.y / m_gridset.cuts.y, 0);
+
+                    current_position = math::round(current_position, round_position).X(current_position.x).Z(current_position.z);
+
+                    qnode->target()->setPos(current_position);
+                    qnode->QNodeInteractor::updateGui();
+                    highlight(qnode);
+                }
+            }
+            else
+            {
+
+                foreach(QNodeInteractor* qnode, m_selection)
+                {
+                    Vector3f current_position = qnode->target()->getPos();
+                    Vector3f round_position;
+                    round_position.x = m_gridset.size.x / m_gridset.cuts.x;
+                    round_position.z = m_gridset.size.y / m_gridset.cuts.y;
+
+                    current_position = math::round(current_position, round_position).Y(current_position.y);
+
+                    qnode->target()->setPos(current_position);
+                    qnode->QNodeInteractor::updateGui();
+                    highlight(qnode);
+                }
+            }
+        }
+
     }
 
     setCursor(m_currentTool->cursor);
@@ -819,53 +853,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
 {
     m_eventManager->notify = EventManager::EVENT_KEY_DOWN;
 
-    if(ev->modifiers() & Qt::AltModifier)
-    {
-        if(ev->key() == Qt::Key_X)
-        {
-            m_currentTool->axis(1, 0, 0);
-            m_mainwin->statusBar()->showMessage("Movement sur l'axe X");
-        }
-        if(ev->key() == Qt::Key_Y)
-        {
-            m_currentTool->axis(0, 1, 0);
-            m_mainwin->statusBar()->showMessage("Movement sur l'axe Y");
-        }
-        if(ev->key() == Qt::Key_Z)
-        {
-            m_currentTool->axis(0, 0, 1);
-            m_mainwin->statusBar()->showMessage("Movement sur l'axe Z");
-        }
-        if(ev->key() == Qt::Key_A)
-        {
-            m_currentTool->axis = 1;
-            m_mainwin->statusBar()->showMessage("Movement sur tout les axes X, Y, Z");
-        }
-    }
-
-    if(ev->key() == Qt::Key_U && m_selectedNode)
-    {
-
-        foreach(QNodeInteractor* qnode, m_selection)
-        {
-            tbe::Vector3f position, scale;
-            tbe::Quaternion rotation;
-
-            qnode->target()->getMatrix().decompose(position, rotation, scale);
-
-            if(m_currentTool->type == ROTATE_TOOL)
-                rotation.identity();
-
-            else if(m_currentTool->type == SCALE_TOOL)
-                scale = 1;
-
-            qnode->target()->getMatrix().identity();
-            qnode->target()->getMatrix().transform(position, rotation, scale);
-
-            qnode->QNodeInteractor::updateGui();
-        }
-    }
-
     if(ev->key() == Qt::Key_Q && m_lastSelectedNode)
     {
         emit selection(m_lastSelectedNode);
@@ -879,44 +866,6 @@ void QTBEngine::keyPressEvent(QKeyEvent* ev)
     if(ev->key() == Qt::Key_Minus)
     {
         m_camera->setDistance(m_camera->getDistance() + 1);
-    }
-
-    if(ev->key() == Qt::Key_PageUp)
-    {
-        if(m_gridset.enable)
-        {
-            m_gridset.size += 0.5;
-
-            m_mainwin->statusBar()
-                    ->showMessage(QString("Taille de la grille: %1")
-                                  .arg(QString::fromStdString(m_gridset.size.toStr())), 1000);
-        }
-        else
-        {
-            m_sensivitySet.selection += 0.01;
-
-            m_mainwin->statusBar()
-                    ->showMessage(QString("Sensibilité: %1").arg(m_sensivitySet.selection), 1000);
-        }
-    }
-
-    if(ev->key() == Qt::Key_PageDown)
-    {
-        if(m_gridset.enable)
-        {
-            m_gridset.size = std::max(m_gridset.size - 0.5, Vector3f(0.5));
-
-            m_mainwin->statusBar()
-                    ->showMessage(QString("Taille de la grille: %1")
-                                  .arg(QString::fromStdString(m_gridset.size.toStr())), 1000);
-        }
-        else
-        {
-            m_sensivitySet.selection = std::max(m_sensivitySet.selection - 0.01, 0.01);
-
-            m_mainwin->statusBar()
-                    ->showMessage(QString("Sensibilité:Â %1").arg(m_sensivitySet.selection), 1000);
-        }
     }
 
     if(ev->key() == Qt::Key_1)
@@ -1090,49 +1039,6 @@ void QTBEngine::keyReleaseEvent(QKeyEvent* ev)
 
     m_eventManager->notify = EventManager::EVENT_KEY_UP;
 
-    if(ev->key() == Qt::Key_Shift)
-    {
-        setCursor(m_currentTool->cursor);
-
-        if(!m_selection.empty() && m_gridset.enable)
-        {
-            emit notifyChange();
-
-            foreach(QNodeInteractor* qnode, m_selection)
-            {
-                Vector3f current_position = qnode->target()->getPos();
-
-                current_position = math::round(current_position, m_gridset.size).Y(current_position.y);
-
-                qnode->target()->setPos(current_position);
-                qnode->QNodeInteractor::updateGui();
-            }
-
-            toggleGrid(true);
-        }
-    }
-
-    if(ev->key() == Qt::Key_Alt)
-    {
-        if(!m_selection.empty() && m_gridset.enable)
-        {
-            emit notifyChange();
-
-            foreach(QNodeInteractor* qnode, m_selection)
-            {
-
-                Vector3f current_position = qnode->target()->getPos();
-
-                current_position = math::round(current_position, m_gridset.size).X(current_position.x).Z(current_position.z);
-
-                qnode->target()->setPos(current_position);
-                qnode->QNodeInteractor::updateGui();
-            }
-
-            toggleGrid(true);
-        }
-    }
-
     int c = std::tolower(ev->key());
     translate(c);
 
@@ -1181,9 +1087,6 @@ void QTBEngine::clearScene()
 
     Texture::resetCache();
 
-    m_gridset.enable = false;
-    m_gridset.size = 1;
-
     setupSelection();
 }
 
@@ -1223,6 +1126,69 @@ struct RootSort
     }
 
 };
+
+void QTBEngine::setGridSize(double value)
+{
+    m_gridset.size = value;
+    m_grid->build(value, m_gridset.cuts);
+}
+
+void QTBEngine::setGridCuts(int value)
+{
+    m_gridset.cuts = value;
+    m_grid->build(m_gridset.size, value);
+}
+
+void QTBEngine::setSelectionSensitiv(double value)
+{
+    m_sensivitySet.selection = value;
+}
+
+void QTBEngine::setLockAxisX(bool check)
+{
+    m_currentTool->axis.X(check);
+}
+
+void QTBEngine::setLockAxisY(bool check)
+{
+    m_currentTool->axis.Y(check);
+}
+
+void QTBEngine::setLockAxisZ(bool check)
+{
+    m_currentTool->axis.Z(check);
+}
+
+void QTBEngine::setRestorePos()
+{
+
+    foreach(QNodeInteractor* qnode, m_selection)
+    {
+        qnode->target()->setPos(0);
+        qnode->QNodeInteractor::updateGui();
+    }
+}
+
+void QTBEngine::setRestoreRotation()
+{
+
+    foreach(QNodeInteractor* qnode, m_selection)
+    {
+        tbe::Quaternion rotation;
+        qnode->target()->setRotation(rotation);
+        qnode->QNodeInteractor::updateGui();
+    }
+}
+
+void QTBEngine::setRestoreScale()
+{
+
+    foreach(QNodeInteractor* qnode, m_selection)
+    {
+        qnode->target()->setScale(1);
+        qnode->QNodeInteractor::updateGui();
+    }
+}
 
 void QTBEngine::setupNewNode(tbe::scene::Node* thenew)
 {

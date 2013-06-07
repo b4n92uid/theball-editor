@@ -107,6 +107,16 @@ public slots:
     void selectSelectionTool();
     void selectRotateTool();
     void selectScaleTool();
+    
+    void setGridSize(double value);
+    void setGridCuts(int value);
+    void setSelectionSensitiv(double value);
+    void setLockAxisX(bool check);
+    void setLockAxisY(bool check);
+    void setLockAxisZ(bool check);
+    void setRestorePos();
+    void setRestoreRotation();
+    void setRestoreScale();
 
 signals:
 
@@ -207,7 +217,8 @@ private:
     struct GridSet
     {
         bool enable;
-        tbe::Vector3f size;
+        tbe::Vector2f size;
+        tbe::Vector2i cuts;
 
     } m_gridset;
 

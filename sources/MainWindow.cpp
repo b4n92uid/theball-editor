@@ -31,6 +31,11 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
+    m_meshDialog->reject();
+    m_lightDialog->reject();
+    m_particlesDialog->reject();
+    m_environmentDialog->reject();
+
     delete m_uinterface;
     delete m_rootNode;
 
@@ -286,6 +291,16 @@ void MainWindow::initConnections()
     connect(m_uinterface->actionOpenEnvDialog, SIGNAL(triggered()), this, SLOT(openEnvironmentDialog()));
 
     connect(m_uinterface->actionOpenPacker, SIGNAL(triggered()), m_packerDialog, SLOT(exec()));
+
+    connect(m_uinterface->selection_sensitiv, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(setSelectionSensitiv(double)));
+    connect(m_uinterface->grid_size, SIGNAL(valueChanged(double)), m_tbeWidget, SLOT(setGridSize(double)));
+    connect(m_uinterface->grid_cuts, SIGNAL(valueChanged(int)), m_tbeWidget, SLOT(setGridCuts(int)));
+    connect(m_uinterface->axis_lock_x, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setLockAxisX(bool)));
+    connect(m_uinterface->axis_lock_y, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setLockAxisY(bool)));
+    connect(m_uinterface->axis_lock_z, SIGNAL(clicked(bool)), m_tbeWidget, SLOT(setLockAxisZ(bool)));
+    connect(m_uinterface->restore_position, SIGNAL(clicked()), m_tbeWidget, SLOT(setRestorePos()));
+    connect(m_uinterface->restore_rotation, SIGNAL(clicked()), m_tbeWidget, SLOT(setRestoreRotation()));
+    connect(m_uinterface->restore_scale, SIGNAL(clicked()), m_tbeWidget, SLOT(setRestoreScale()));
 
     connect(this, SIGNAL(pauseRendring()), m_tbeWidget, SLOT(pauseRendring()));
     connect(this, SIGNAL(resumeRendring()), m_tbeWidget, SLOT(resumeRendring()));
@@ -880,8 +895,10 @@ QTBEngine* MainWindow::tbeWidget() const
     return m_tbeWidget;
 }
 
-void MainWindow::toggleFullWidget(bool full) {
-    //m_uinterface->propertyTab->setVisible(!full);
+void MainWindow::toggleFullWidget(bool full)
+{
+    m_uinterface->leftSide->setVisible(!full);
+    m_uinterface->rightSide->setVisible(!full);
 }
 
 void MainWindow::guiAddSceneField()
