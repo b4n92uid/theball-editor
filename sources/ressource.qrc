@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Medias">
+    <file>medias/colour_picker.png</file>
     <file>medias/resize.png</file>
     <file>medias/rotate.png</file>
     <file>medias/globe.png</file>

@@ -182,6 +182,9 @@ void EnvironmentDialog::guiSkyboxShift()
     else if(sender() == skybox_down)
         itemDst = skybox_list->itemBelow(itemSrc);
 
+    if(!itemDst)
+        return;
+
     QString src = itemSrc->data(1, Qt::UserRole).toString();
     QString dst = itemDst->data(1, Qt::UserRole).toString();
 

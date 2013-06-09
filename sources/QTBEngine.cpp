@@ -663,7 +663,13 @@ void QTBEngine::selectFromPick(QMouseEvent* ev)
     }
 
     m_selbox->Node::setEnable(true);
-    m_grid->setEnable(m_gridset.enable);
+
+    if(m_gridset.enable)
+    {
+        Vector3f pos = math::round(m_selbox->getPos());
+        m_grid->setPos(pos);
+        m_grid->setEnable(true);
+    }
 }
 
 void QTBEngine::mousePressEvent(QMouseEvent* ev)
@@ -737,7 +743,7 @@ void QTBEngine::mouseReleaseEvent(QMouseEvent* ev)
 
         if(m_gridset.enable)
         {
-            if(ev->modifiers() & Qt::Key_Alt)
+            if(ev->modifiers() & Qt::AltModifier)
             {
 
                 foreach(QNodeInteractor* qnode, m_selection)
