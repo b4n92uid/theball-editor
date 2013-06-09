@@ -736,7 +736,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="9,0,1">
+       <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="9,1,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetDefaultConstraint</enum>
         </property>
@@ -751,6 +751,17 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="shader_browse">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="ressource.qrc">
+            <normaloff>:/Medias/medias/explore.png</normaloff>:/Medias/medias/explore.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="shader_release">
           <property name="enabled">
            <bool>false</bool>
@@ -761,17 +772,6 @@
           <property name="icon">
            <iconset resource="ressource.qrc">
             <normaloff>:/Medias/medias/cross.png</normaloff>:/Medias/medias/cross.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="shader_browse">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="ressource.qrc">
-            <normaloff>:/Medias/medias/open.png</normaloff>:/Medias/medias/open.png</iconset>
           </property>
          </widget>
         </item>

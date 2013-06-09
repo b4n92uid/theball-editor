@@ -252,7 +252,7 @@ void MeshDialog::addTexture()
 
     Material* mat = getSelectedMaterial();
 
-    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin);
+    QStringList paths = QFileDialog::getOpenFileNames(m_mainwin, "", m_mainwin->openFileName());
 
     int offset = mat->getTexturesCount();
 
@@ -836,7 +836,7 @@ void MeshDialog::update(tbe::scene::Mesh* m)
 
 void MeshDialog::openShaderFileName()
 {
-    QString filename = QFileDialog::getOpenFileName(m_mainwin);
+    QString filename = QFileDialog::getOpenFileName(m_mainwin, "", m_mainwin->openFileName());
 
     if(!filename.isEmpty())
     {
@@ -876,14 +876,15 @@ void MeshDialog::onApply()
     using namespace boost;
 
     Material* mat = getSelectedMaterial();
+    SubMesh* smesh = getSelectedSubMesh();
 
-    string smeshname = getSelectedSubMesh()->getName();
+    string smeshname = smesh->getName();
     string matpath;
 
     if(m_filepath.count(smeshname))
         matpath = m_filepath[smeshname];
     else
-        matpath = QFileDialog::getSaveFileName(this).toStdString();
+        matpath = QFileDialog::getSaveFileName(this, "", m_mainwin->openFileName()).toStdString();
 
     if(!matpath.empty())
     {
@@ -892,7 +893,11 @@ void MeshDialog::onApply()
 
         property_tree::write_info(matpath, materialTree);
 
+        smesh->getOwner()->serializing().put("material." + smeshname, matpath);
+
         m_mainwin->statusBar()->showMessage(QString("Matériau enregistré (%1)").arg(matpath.c_str()), 2000);
+
+        m_mainwin->notifyChange();
     }
 }
 
@@ -918,6 +923,8 @@ void MeshDialog::onAttachMaterial()
             releaseMaterial->setEnabled(true);
 
             matinfo->setText(filename);
+
+            m_mainwin->notifyChange();
         }
         catch(std::exception& e)
         {
