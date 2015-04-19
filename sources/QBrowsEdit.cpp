@@ -7,6 +7,9 @@
 
 #include "QBrowsEdit.h"
 
+#include <QFileInfo>
+#include <QFileDialog>
+
 QBrowsEdit::QBrowsEdit(QObject* parent, QLineEdit* lineEdit, QPushButton* browse) : QObject(parent)
 {
     m_lineEdit = lineEdit;

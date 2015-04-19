@@ -58,7 +58,7 @@ void ParticlesDialog::unbind()
 void ParticlesDialog::update(tbe::scene::ParticlesEmiter* l)
 {
 
-    QSignalBlocker blocker;
+    QSignalBlockerStream blocker;
     blocker << gravity << boxsize
             << bulletsize << freemove
             << lifeinit << lifedown

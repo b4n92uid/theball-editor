@@ -57,7 +57,7 @@ void EnvironmentDialog::updateInterface()
 
     if(fog->isEnable())
     {
-        QSignalBlocker blocker;
+        QSignalBlockerStream blocker;
         blocker << fog_enable << fog_color << fog_start << fog_end;
         blocker.block();
 
@@ -73,7 +73,7 @@ void EnvironmentDialog::updateInterface()
 
     if(sky->isEnable())
     {
-        QSignalBlocker blocker;
+        QSignalBlockerStream blocker;
         blocker << skybox_apply << skybox_enable;
         blocker.block();
 

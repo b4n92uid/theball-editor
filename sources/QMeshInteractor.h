@@ -41,5 +41,7 @@ private:
     tbe::scene::Mesh* m_target;
 };
 
+Q_DECLARE_METATYPE(QMeshInteractor*)
+
 #endif	/* QMESHINTERACTOR_H */
 

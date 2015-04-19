@@ -47,6 +47,39 @@ void swapcontainer(TC& c, T1& v1, T2& v2)
     c = (TC) v1 == c ? (TC) v2 : (TC) v1;
 }
 
+class QTextureLoader : public tbe::TextureLoader
+{
+    TextureData* load(std::string filename, int origin);
+    void release(TextureData* tdata);
+};
+
+tbe::TextureLoader::TextureData* QTextureLoader::load(std::string filename, int origin)
+{
+    QImage img;
+    
+    if(img.load(QString::fromStdString(filename)))
+    {
+        QImage glimg = QGLWidget::convertToGLFormat(img);
+
+        TextureData* tdata = new TextureData;
+        tdata->width = glimg.width();
+        tdata->height = glimg.height();
+        tdata->pixels = new GLubyte[glimg.byteCount()];
+        
+        memcpy(tdata->pixels, glimg.bits(), glimg.byteCount());
+
+        return tdata;
+    }
+    
+    return NULL;
+}
+
+void QTextureLoader::release(TextureData* tdata)
+{
+    delete[] tdata->pixels;
+    delete tdata;
+}
+
 QTBEngine::QTBEngine(QWidget* parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent)
 {
     m_mainwin = dynamic_cast<MainWindow*> (parent->parentWidget());
@@ -111,6 +144,8 @@ void QTBEngine::initializeGL()
 
     m_device = new Device;
     m_device->init();
+    
+    Texture::registerLoader(new QTextureLoader);
 
     m_sceneManager = m_device->getSceneManager();
     m_eventManager = m_device->getEventManager();
@@ -638,9 +673,7 @@ void QTBEngine::selectFromPick(QMouseEvent* ev)
             QNodeInteractor* qnode = m_nodeInterface[nearest];
 
             // Selection
-            QFlags<Qt::KeyboardModifiers> mods(ev->modifiers());
-
-            if(mods.testFlag(Qt::ControlModifier))
+            if(ev->modifiers() & Qt::ControlModifier)
             {
                 if(m_selection.contains(qnode))
                     emit deselection(qnode);

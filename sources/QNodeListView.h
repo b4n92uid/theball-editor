@@ -8,7 +8,13 @@
 #ifndef QNODELISTVIEW_H
 #define	QNODELISTVIEW_H
 
-#include <QtGui/QtGui>
+#include <QWidget>
+#include <QTreeView>
+#include <QSortFilterProxyModel>
+#include <QMouseEvent>
+#include <QItemSelection>
+#include <QMenu>
+#include <QAction>
 
 #include "Define.h"
 

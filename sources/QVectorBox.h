@@ -9,7 +9,10 @@
 #define	QVECTORBOX_H
 
 #include <Tbe.h>
-#include <QtGui/QtGui>
+
+#include <QObject>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 class QDoubleVector3Box : public QObject
 {

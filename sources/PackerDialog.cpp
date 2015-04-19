@@ -14,8 +14,6 @@
 #include "QTBEngine.h"
 #include "MainWindow.h"
 
-Q_DECLARE_METATYPE(QFileInfo)
-
 using namespace tbe;
 using namespace scene;
 
@@ -30,7 +28,6 @@ PackerDialog::PackerDialog(MainWindow* parent) : QDialog(parent)
     fileListView->setModel(m_fileListModel);
     fileListView->setRootIsDecorated(false);
     fileListView->setSelectionMode(QTreeView::ExtendedSelection);
-    fileListView->header()->setResizeMode(QHeaderView::Stretch);
 
     connect(addFileButton, SIGNAL(clicked()), this, SLOT(openFilesDialog()));
     connect(delFileButton, SIGNAL(clicked()), this, SLOT(delFiles()));
@@ -99,7 +96,7 @@ void PackerDialog::changeBaseDir()
     fillList();
 }
 
-void PackerDialog::exec()
+int PackerDialog::exec()
 {
     QString sceneFileName = m_parent->openFileName();
 
@@ -107,7 +104,8 @@ void PackerDialog::exec()
     {
         QMessageBox::warning(m_parent, "Packer !", "Aucun fichier scene spécfier !\n"
                              "Enregistrer la scene en cour ou ouvrer un fichier scene");
-        return;
+
+        return 0;
     }
 
     m_sceneDir = m_baseDir = QFileInfo(sceneFileName).dir();
@@ -116,7 +114,7 @@ void PackerDialog::exec()
 
     fillList();
 
-    QDialog::exec();
+    return QDialog::exec();
 }
 
 inline qint64 unit(qint64 number, int it)

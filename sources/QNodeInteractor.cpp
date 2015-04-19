@@ -319,7 +319,7 @@ void QNodeInteractor::updateGui()
 {
     using namespace tbe;
 
-    QSignalBlocker blocker;
+    QSignalBlockerStream blocker;
     blocker
             << m_mainwin->nodesGui.name
             << m_mainwin->nodesGui.position

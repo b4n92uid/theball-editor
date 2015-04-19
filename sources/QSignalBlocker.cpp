@@ -7,15 +7,15 @@
 
 #include "QSignalBlocker.h"
 
-QSignalBlocker::QSignalBlocker()
+QSignalBlockerStream::QSignalBlockerStream()
 {
 }
 
-QSignalBlocker::~QSignalBlocker()
+QSignalBlockerStream::~QSignalBlockerStream()
 {
 }
 
-void QSignalBlocker::block()
+void QSignalBlockerStream::block()
 {
 
     foreach(QObject* obj, *this)
@@ -24,7 +24,7 @@ void QSignalBlocker::block()
     }
 }
 
-void QSignalBlocker::unblock()
+void QSignalBlockerStream::unblock()
 {
 
     foreach(QObject* obj, *this)

@@ -11,11 +11,11 @@
 #include <QObject>
 #include <QList>
 
-class QSignalBlocker : public QList<QObject*>
+class QSignalBlockerStream : public QList<QObject*>
 {
 public:
-    QSignalBlocker();
-    virtual ~QSignalBlocker();
+    QSignalBlockerStream();
+    virtual ~QSignalBlockerStream();
 
     void block();
     void unblock();

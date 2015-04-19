@@ -25,7 +25,7 @@ public:
     virtual ~PackerDialog();
 
 public slots:
-    void exec();
+    int exec();
 
     void openFilesDialog();
 
@@ -33,9 +33,9 @@ public slots:
     void addAbsoluteFile(QString filename);
 
     void delFiles();
-    
+
     void fillList();
-    
+
     void changeBaseDir();
 
     void exportPack();
