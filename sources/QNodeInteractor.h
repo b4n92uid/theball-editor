@@ -89,5 +89,8 @@ public:
 
     void triggerDialog() { }
 };
+
+Q_DECLARE_METATYPE(QNodeInteractor*)
+
 #endif	/* QNODEINTERACTOR_H */
 

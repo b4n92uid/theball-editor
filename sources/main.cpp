@@ -5,7 +5,7 @@
  * Created on 3 décembre 2010, 17:16
  */
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
@@ -28,13 +28,15 @@ int main(int argc, char *argv[])
 
     app.installTranslator(&translator);
 
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
-    // QApplication::setStyle(new QCleanlooksStyle);
-    QApplication::setOrganizationName("b4n92uid software");
-    QApplication::setApplicationName("theBall Editor");
+    #if QT_VERSION < 0x050000
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+    #endif
+
+    QApplication::setOrganizationName("Starfeel Interactive");
+    QApplication::setApplicationName("TheBall Editor");
 
     MainWindow* window = new MainWindow;
     window->initWidgets();

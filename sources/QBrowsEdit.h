@@ -8,7 +8,10 @@
 #ifndef QBROWSEDIT_H
 #define	QBROWSEDIT_H
 
-#include <QtGui/QtGui>
+#include <QObject>
+#include <QString>
+#include <QPushButton>
+#include <QLineEdit>
 
 class QBrowsEdit : public QObject
 {

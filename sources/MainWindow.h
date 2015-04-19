@@ -8,8 +8,8 @@
 #ifndef MAINWINDOW_H
 #define	MAINWINDOW_H
 
-#include <QtGui/QtGui>
 #include <Tbe.h>
+#include <QtGui/QtGui>
 
 #include "ui_about.h"
 

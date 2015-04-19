@@ -14,10 +14,11 @@
 #include <QSize>
 #include <QDebug>
 
-typedef QList<QStandardItem*> QItemsList;
-
+class QStandardItem;
 class QNodeInteractor;
 class QMeshInteractor;
+
+typedef QList<QStandardItem*> QItemsList;
 
 typedef QMap<QNodeInteractor*, QStandardItem*> QInterfaceItemsMap;
 typedef QMap<tbe::scene::Node*, QNodeInteractor*> QNodeInterfaceMap;
@@ -31,8 +32,6 @@ Q_DECLARE_METATYPE(tbe::scene::Material*)
 Q_DECLARE_METATYPE(tbe::scene::MapMark*)
 Q_DECLARE_METATYPE(tbe::Texture)
 Q_DECLARE_METATYPE(tbe::Vector3f)
-Q_DECLARE_METATYPE(QNodeInteractor*)
-Q_DECLARE_METATYPE(QMeshInteractor*)
 
 enum ItemRole
 {

@@ -758,7 +758,7 @@ void MeshDialog::updateMaterials(tbe::scene::Mesh* target)
 
     m_target = target;
 
-    QSignalBlocker blocker;
+    QSignalBlockerStream blocker;
     blocker
             << materials_select
             << alpha
@@ -815,7 +815,7 @@ void MeshDialog::updateMaterials(tbe::scene::Mesh* target)
 
 void MeshDialog::update(tbe::scene::Mesh* m)
 {
-    QSignalBlocker blocker;
+    QSignalBlockerStream blocker;
     blocker << billboardX << billboardY << castshadow << receiveshadow;
 
     blocker.block();

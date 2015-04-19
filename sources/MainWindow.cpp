@@ -206,7 +206,6 @@ void MainWindow::initWidgets()
     genGui.additionalView = m_uinterface->gen_additional;
     genGui.additionalView->setModel(genGui.additionalModel);
     genGui.additionalView->setRootIsDecorated(false);
-    genGui.additionalView->header()->setResizeMode(QHeaderView::Stretch);
 
     genGui.addField = m_uinterface->gen_addfield;
     genGui.delField = m_uinterface->gen_delfield;
@@ -221,7 +220,6 @@ void MainWindow::initWidgets()
     nodesGui.additionalView = m_uinterface->node_additional;
     nodesGui.additionalView->setModel(nodesGui.additionalModel);
     nodesGui.additionalView->setRootIsDecorated(false);
-    nodesGui.additionalView->header()->setResizeMode(QHeaderView::Stretch);
 
     nodesGui.addField = m_uinterface->node_addfield;
     nodesGui.delField = m_uinterface->node_delfield;
@@ -252,7 +250,6 @@ void MainWindow::initWidgets()
     nodesGui.nodesListView->setModel(nodesGui.nodesListProxyModel);
     nodesGui.nodesListView->setAlternatingRowColors(true);
     nodesGui.nodesListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    nodesGui.nodesListView->header()->setResizeMode(QHeaderView::Stretch);
     nodesGui.nodesListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 

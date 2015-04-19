@@ -71,7 +71,7 @@ void LightDialog::unbind()
 
 void LightDialog::update(tbe::scene::Light* l)
 {
-    QSignalBlocker blocker;
+    QSignalBlockerStream blocker;
     blocker << type << ambiant << diffuse << specular << radius
             << castshadow << shadow_size << shadow_blur << shadow_intensity << shadow_shader
             << castrays << rays_offset << rays_framesize << rays_lightsize << rays_noise;
