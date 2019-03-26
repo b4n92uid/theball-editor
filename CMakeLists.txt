@@ -1,7 +1,6 @@
-PROJECT(tbeditor)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build Type")
+project(tbeditor)
 
 set(TBEDITOR_TBENGINE_INC "" CACHE PATH "Include")
 set(TBEDITOR_BOOST_INC "" CACHE PATH "Include")
@@ -21,24 +20,24 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 # Qt bin must be on PATH var
-FIND_PACKAGE(Qt5Core)
-FIND_PACKAGE(Qt5Widgets)
-FIND_PACKAGE(Qt5Gui)
-FIND_PACKAGE(Qt5OpenGL)
+find_package(Qt5Core)
+find_package(Qt5Widgets)
+find_package(Qt5Gui)
+find_package(Qt5OpenGL)
 
 # qt5_use_modules(tbeditor Core OpenGL Gui Widgets)
 
-STRING(TOLOWER ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE} OUTPUT_PATH)
-SET(EXECUTABLE_OUTPUT_PATH ${OUTPUT_PATH})
+string(TOLOWER ${CMAKE_SOURCE_DIR}/${CMAKE_BUILD_TYPE} OUTPUT_PATH)
+set(EXECUTABLE_OUTPUT_PATH ${OUTPUT_PATH})
 
-INCLUDE_DIRECTORIES(${TBEDITOR_TBENGINE_INC})
-INCLUDE_DIRECTORIES(${TBEDITOR_BOOST_INC})
-INCLUDE_DIRECTORIES(${TBEDITOR_DEVIL_INC})
-INCLUDE_DIRECTORIES(${TBEDITOR_ZLIB_INC})
-INCLUDE_DIRECTORIES(${TBEDITOR_QUAZIP_INC})
-INCLUDE_DIRECTORIES(sources)
+include_directories(${TBEDITOR_TBENGINE_INC})
+include_directories(${TBEDITOR_BOOST_INC})
+include_directories(${TBEDITOR_DEVIL_INC})
+include_directories(${TBEDITOR_ZLIB_INC})
+include_directories(${TBEDITOR_QUAZIP_INC})
+include_directories(sources)
 
-LINK_DIRECTORIES(${TBEDITOR_BOOST_LIB_DIR})
+link_directories(${TBEDITOR_BOOST_LIB_DIR})
 
 file(GLOB_RECURSE SOURCES sources/*.cpp sources/*.rc)
 file(GLOB_RECURSE HEADERS sources/*.h)
@@ -48,9 +47,9 @@ file(GLOB_RECURSE QRC sources/*.qrc)
 qt5_wrap_ui(UI_SOURCE ${UI})
 qt5_add_resources(QRC_SOURCE ${QRC})
 
-ADD_EXECUTABLE(tbeditor ${SOURCES} ${UI_SOURCE} ${QRC_SOURCE})
+add_executable(tbeditor ${SOURCES} ${UI_SOURCE} ${QRC_SOURCE})
 
-TARGET_LINK_LIBRARIES(tbeditor
+target_link_libraries(tbeditor
   Qt5::Widgets
   Qt5::OpenGL
   ${TBEDITOR_TBENGINE_LIB}
